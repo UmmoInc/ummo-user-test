@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Register"
+    android:background="@color/White">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:id="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/logo"/>
+
+    <EditText
+        android:id="@+id/full_name"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="Full Name"
+        android:inputType="text"
+        android:textColorHint="@color/Grey"
+        android:backgroundTint="@color/Grey"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/logo"
+        android:layout_marginTop="60dp"/>
+
+    <EditText
+        android:id="@+id/mobile_contact"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="Mobile Contact"
+        android:inputType="number"
+        android:textColorHint="@color/Grey"
+        android:backgroundTint="@color/Grey"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/full_name"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/create_account_btn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/mobile_contact"
+        android:layout_marginTop="10dp"
+        android:text="Next"
+        android:textSize="14sp"
+        android:textColor="@color/White"
+        android:background="@drawable/register_next_button"/>
+
+
+</RelativeLayout>

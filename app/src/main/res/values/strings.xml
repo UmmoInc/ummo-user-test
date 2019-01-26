@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">UMMO USER</string>
+    <string name="title_activity_sign_up">SignUp</string>
 </resources>
