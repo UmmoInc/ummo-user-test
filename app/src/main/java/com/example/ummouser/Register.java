@@ -13,7 +13,7 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
-    public void nextToSignUp(View view){
+    public void register(View view){
 
         Intent i= new Intent(this, SignUp.class);
         finish();

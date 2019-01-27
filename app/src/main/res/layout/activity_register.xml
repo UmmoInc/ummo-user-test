@@ -50,7 +50,7 @@
         android:textSize="14sp"
         android:textColor="@color/White"
         android:background="@drawable/register_next_button"
-        android:onClick="nextToSignUp"/>
+        android:onClick="register"/>
 
 
 </RelativeLayout>

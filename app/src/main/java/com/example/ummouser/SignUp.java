@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 public class SignUp extends AppCompatActivity {
 
@@ -36,4 +37,12 @@ public class SignUp extends AppCompatActivity {
         Intent intent= new Intent(this, Register.class);
         startActivity(intent);
     }
+
+    public void signUp(View view){
+
+        Intent i= new Intent(this, Location.class);
+        finish();
+        startActivity(i);
+    }
+
 }

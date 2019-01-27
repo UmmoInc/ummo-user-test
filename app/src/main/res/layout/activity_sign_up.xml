@@ -52,7 +52,8 @@
         android:text="Sign-Up"
         android:textSize="14sp"
         android:textColor="@color/White"
-        android:background="@drawable/register_next_button"/>
+        android:background="@drawable/register_next_button"
+        android:onClick="signUp"/>
 
 
 

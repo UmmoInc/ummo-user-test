@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".Location">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/White">
+
+        <TextView
+            android:id="@+id/tool_left_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="@color/black"
+            android:text="Select your location"/>
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@color/White"
+        android:padding="10dp"
+        android:layout_below="@id/toolbar">
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:hint="Search location"
+            android:inputType="text"
+            android:textColorHint="@color/Grey"
+            android:backgroundTint="@color/Grey"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:drawableRight="@drawable/ic_search_black_24dp"/>
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="270dp"
+            android:layout_below="@id/search"
+            android:layout_marginTop="20dp"/>
+    </RelativeLayout>
+
+
+
+    <Button
+        android:id="@+id/confirm_location_btn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:text="CONFIRM LOCATION"
+        android:textSize="14sp"
+        android:textColor="@color/White"
+        android:background="@drawable/register_next_button"
+        android:onClick="confirmLocation"/>
+
+</RelativeLayout>
