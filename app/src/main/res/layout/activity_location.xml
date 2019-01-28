@@ -7,7 +7,7 @@
     android:gravity="center"
     tools:context=".Location">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             android:textColor="@color/black"
             android:text="Select your location"/>
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:id="@+id/map_container"
@@ -34,7 +34,14 @@
         android:padding="10dp"
         android:layout_below="@id/toolbar">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </RelativeLayout>
+
         <EditText
+
             android:id="@+id/search"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
@@ -54,8 +61,6 @@
             android:layout_below="@id/search"
             android:layout_marginTop="20dp"/>
     </RelativeLayout>
-
-
 
     <Button
         android:id="@+id/confirm_location_btn"

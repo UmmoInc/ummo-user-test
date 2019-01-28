@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UMMO USER</string>
+    <string name="app_name">Ummo</string>
     <string name="title_activity_sign_up">SignUp</string>
     <string name="title_activity_confirm_location">ConfirmLocation</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
