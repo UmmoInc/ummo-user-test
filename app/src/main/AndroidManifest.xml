@@ -22,6 +22,7 @@
         android:required="true" />
 
     <application
+        android:name=".User"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -42,6 +43,24 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".Splash"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accept URIs that begin with "http://www.ummo.xyz" -->
+                <data
+                    android:host="www.ummo.xyz"
+                    android:pathPrefix="/user"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".Location"
             android:label="@string/title_activity_location">
 
@@ -51,6 +70,7 @@
             android:name=".MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity android:name=".SignUp" />
 
         <activity

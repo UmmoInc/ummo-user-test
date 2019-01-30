@@ -15,42 +15,73 @@
         android:layout_marginTop="50dp"
         android:src="@drawable/logo"/>
 
-    <EditText
+    <!--<EditText
         android:id="@+id/full_name"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:hint="Full Name"
         android:inputType="text"
+        android:textColor="@color/black"
         android:textColorHint="@color/Grey"
-        android:backgroundTint="@color/Grey"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/logo"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="60dp"
+        android:autofillHints="Enter your full name" />-->
 
-    <EditText
+    <!--<EditText
         android:id="@+id/mobile_contact"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:hint="Mobile Contact"
-        android:inputType="number"
+        android:inputType="phone"
+        android:textColor="@color/black"
         android:textColorHint="@color/Grey"
-        android:backgroundTint="@color/Grey"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/full_name"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:autofillHints="Enter your mobile contact" />-->
+
+    <EditText
+        android:id="@+id/userNameEditText"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:ems="10"
+        android:inputType="textCapWords"
+        android:textColorHint="@color/Grey"
+        android:textColor="@color/black"
+        android:hint="Enter your full name..."
+        android:autofillHints="Enter your full name..."
+        tools:targetApi="o" />
+
+    <EditText
+        android:id="@+id/userContactEditText"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userNameEditText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:inputType="phone"
+        android:textColorHint="@color/Grey"
+        android:textColor="@color/black"
+        android:hint="Enter your mobile contact..."
+        android:autofillHints="Enter your mobile contact..."
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/create_account_btn"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/mobile_contact"
-        android:layout_marginTop="10dp"
-        android:text="Next"
-        android:textSize="14sp"
-        android:textColor="@color/White"
+        android:layout_below="@id/userContactEditText"
+        android:layout_marginTop="100dp"
         android:background="@drawable/register_next_button"
+        android:layout_centerHorizontal="true"
+        android:text="@string/next_registration_button"
+        android:textColor="@color/White"
+        android:textSize="14sp"
         android:onClick="register"/>
-
 
 </RelativeLayout>
