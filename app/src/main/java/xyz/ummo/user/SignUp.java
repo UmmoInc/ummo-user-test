@@ -40,23 +40,7 @@ public class SignUp extends AppCompatActivity {
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                ParseUser user = new ParseUser();
-//                //user.setPassword("my pass");
-//                user.setEmail(userEmailVal);
                 Log.e(TAG+" onClick", "user email->"+userEmailVal);
-
-                /*user.signUpInBackground(new SignUpCallback() {
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Toast.makeText(SignUp.this, "Welcome ...", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignUp.this, MainActivity.class));
-                        } else {
-                            Toast.makeText(SignUp.this, "Oops!", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG+" onSignUpBack", "user email->"+userEmailVal);
-                        }
-                    }
-                });*/
             }
         });
     }

@@ -13,7 +13,8 @@
         android:id="@+id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:src="@drawable/logo"/>
+        android:src="@drawable/logo"
+        android:contentDescription="@string/ummo_logo_descriptor" />
 
     <!--<EditText
         android:id="@+id/full_name"
@@ -52,7 +53,7 @@
         android:inputType="textCapWords"
         android:textColorHint="@color/Grey"
         android:textColor="@color/black"
-        android:hint="Enter your full name..."
+        android:hint="@string/name_prompt_hint"
         android:autofillHints="Enter your full name..."
         tools:targetApi="o" />
 
@@ -67,7 +68,7 @@
         android:inputType="phone"
         android:textColorHint="@color/Grey"
         android:textColor="@color/black"
-        android:hint="Enter your mobile contact..."
+        android:hint="@string/contact_prompt_hint"
         android:autofillHints="Enter your mobile contact..."
         tools:targetApi="o" />
 
