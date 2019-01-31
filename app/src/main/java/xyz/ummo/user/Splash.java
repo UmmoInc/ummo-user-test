@@ -30,7 +30,7 @@ public class Splash extends Activity {
                     Log.e(TAG, " onCreate->"+ie);
                 }
 
-                startActivity(new Intent(Splash.this, Register.class));
+                startActivity(new Intent(Splash.this, MainScreen.class));
             }
         }).start();
     }
