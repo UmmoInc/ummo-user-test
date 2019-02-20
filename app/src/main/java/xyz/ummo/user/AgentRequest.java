@@ -2,6 +2,7 @@ package xyz.ummo.user;
 
 import android.os.Bundle;
 
+import com.github.florent37.viewtooltip.ViewTooltip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -94,6 +95,12 @@ public class AgentRequest extends AppCompatActivity {
         separatorLine.setVisibility(View.VISIBLE);
         agentDetailsBody.setVisibility(View.VISIBLE);
         confirmAgentButton.setVisibility(View.VISIBLE);
+
+        ViewTooltip
+                .on(confirmAgentButton)
+                .position(ViewTooltip.Position.TOP)
+                .text(getResources().getString(R.string.agent_charge_tip))
+                .show();
 
     }
 

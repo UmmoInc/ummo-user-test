@@ -54,4 +54,7 @@ dependencies {
     //circular image
 
     implementation 'de.hdodenhof:circleimageview:2.1.0'
+
+    //tooltip
+    implementation 'com.github.florent37:viewtooltip:1.2.2'
 }

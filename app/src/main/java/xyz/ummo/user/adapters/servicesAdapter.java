@@ -93,7 +93,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 i.putExtra("personalDocs", personalDocs);
                 i.putExtra("cost", cost);
                 i.putExtra("duration", duration);
-                context.startActivity(i);
+                context.startActivity(i);   
 
             }
         });

@@ -1,5 +1,6 @@
 package xyz.ummo.user;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -22,6 +23,7 @@ public class Services extends AppCompatActivity {
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
     servicesAdapter adapter;
+    private ProgressDialog progress;
 
 
 
@@ -79,9 +81,32 @@ public class Services extends AppCompatActivity {
     }
 
     public void requestAgent(View view){
+        progress=new ProgressDialog(this);
+        progress.setMessage("Downloading Music");
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setIndeterminate(true);
+        progress.setProgress(0);
+        progress.show();
 
-        Intent i= new Intent(this, AgentRequest.class);
-        finish();
-        startActivity(i);
+        final int totalProgressTime = 100;
+        final Thread t = new Thread() {
+            @Override
+            public void run() {
+                int jumpTime = 0;
+
+                while(jumpTime < totalProgressTime) {
+                    try {
+                        sleep(200);
+                        jumpTime += 5;
+                        progress.setProgress(jumpTime);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        t.start();
     }
+
 }
