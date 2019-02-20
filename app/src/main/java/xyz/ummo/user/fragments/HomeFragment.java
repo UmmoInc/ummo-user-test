@@ -1,6 +1,7 @@
 package xyz.ummo.user.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,9 +17,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.Department;
+import xyz.ummo.user.LinePagerIndicatorDecoration;
+import xyz.ummo.user.MainScreen;
 import xyz.ummo.user.R;
+import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.departmentsAdapter;
 
 /**
@@ -87,6 +92,10 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new departmentsAdapter(getContext(), departmentArrayList));
 
+        PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(recyclerView);
+        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());
+
 
         return view;
     }
@@ -142,6 +151,13 @@ public class HomeFragment extends Fragment {
 
         department = new Department("Labour");
         departmentArrayList.add(department);
+
+    }
+
+    public void viewServices(View view){
+
+        Intent i= new Intent(getContext(), Services.class);
+        startActivity(i);
 
     }
 }
