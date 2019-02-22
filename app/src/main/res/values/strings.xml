@@ -53,4 +53,7 @@
     <string name="form_filled_string">Form Filled</string>
     <string name="service_payment_string">Service Payment</string>
     <string name="collection_string">Collection</string>
+
+    <string name="service_complete_string">Your agent has completed the service. Tap on ACCEPT to confirm receipt of your product \n\nPayment will be automatic</string>
+    <string name="service_complete_title_string">Service Complete</string>
 </resources>

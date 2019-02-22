@@ -1,7 +1,10 @@
 package xyz.ummo.user.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,6 +88,33 @@ public class CustomAdapter extends BaseAdapter {
                         progressPercentage = (checkedProgresses * progressBar.getMax()) /totalNumOfCheckboxes;
 
                         progressBar.setProgress(progressPercentage);
+
+                        if(progressBar.getProgress() == progressBar.getMax()){
+
+                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which){
+                                        case DialogInterface.BUTTON_POSITIVE:
+
+                                            showRatingAgentDiaolog();
+
+                                            break;
+
+                                        case DialogInterface.BUTTON_NEGATIVE:
+                                            //No button clicked
+                                            break;
+                                    }
+                                }
+                            };
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setTitle(R.string.service_complete_title_string);
+                            builder.setMessage(R.string.service_complete_string)
+                                    .setPositiveButton("ACCEPT", dialogClickListener)
+                                    .setNegativeButton("DECLINE", dialogClickListener).show();
+
+                        }
                     }
 
                     else{
@@ -125,6 +158,73 @@ public class CustomAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
+
+    public void showRatingAgentDiaolog(){
+
+        final AlertDialog.Builder popDialog = new AlertDialog.Builder(mContext);
+
+        LinearLayout linearLayout = new LinearLayout(mContext);
+        final RatingBar rating = new RatingBar(mContext);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        //set rating style and number of styles
+
+        rating.setLayoutParams(lp);
+        rating.setNumStars(5);
+        rating.setStepSize(1);
+
+        //create the "how can agent improve edittext"
+        final EditText  improveMessage = new EditText(mContext);
+
+        improveMessage.setLayoutParams(lp2);
+        improveMessage.setHint("How can agent improve?");
+
+        //add ratingBar to linearLayout
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(rating);
+        linearLayout.addView(improveMessage);
+
+        linearLayout.setGravity(Gravity.CENTER);
+
+
+        popDialog.setTitle("Rate Agent's Service");
+        popDialog.setMessage("Take a moment to rate Agent (out of 5 stars)");
+
+        //add linearLayout to dailog
+        popDialog.setView(linearLayout);
+
+
+
+        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
+                System.out.println("Rated val:"+v);
+            }
+        });
+
+        popDialog.setCancelable(false);
+        popDialog.setPositiveButton("SUBMIT",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+
+                });
+
+        popDialog.create();
+        popDialog.show();
+
+    }
+
 
 }
 

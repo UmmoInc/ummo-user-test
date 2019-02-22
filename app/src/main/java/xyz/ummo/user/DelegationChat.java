@@ -29,6 +29,7 @@ public class DelegationChat extends AppCompatActivity {
     private ImageView sendButton;
     private ScrollView chatRoom;
     private boolean hasCheckedServiceInitConfirmation = false;
+    private boolean hasInitiatedService;
 
 
     @Override
@@ -37,6 +38,10 @@ public class DelegationChat extends AppCompatActivity {
         setContentView(R.layout.activity_delegation_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Delegation Chat");
+
+        //check if the service has been initiated
+        hasInitiatedService = getIntent().getExtras().getBoolean("hasInitiatedService");
 
         chatRoom = findViewById(R.id.chat_room);
 
@@ -46,6 +51,7 @@ public class DelegationChat extends AppCompatActivity {
         confirmInitiationBox = findViewById(R.id.confirm_service_initiation_box);
         confirmInitiationContentBox = findViewById(R.id.confirm_initiation_content_box);
 
+
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -54,6 +60,7 @@ public class DelegationChat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isVisible) {
+
                     ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
                     isVisible = false;
                     rotate(-180);
@@ -82,6 +89,14 @@ public class DelegationChat extends AppCompatActivity {
                 }
             }
         });
+
+        if(hasInitiatedService){
+
+            ExpandOrCollapse.expand(confirmInitiationBox, 100);
+            ExpandOrCollapse.expand(confirmInitiationContentBox, 100);
+
+
+        }
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {

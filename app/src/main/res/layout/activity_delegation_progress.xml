@@ -15,6 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:titleTextAppearance="@style/Toolbar.TitleText"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" >
 
@@ -23,9 +24,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:id="@+id/submitEditNote"
-                android:layout_marginRight="10dp"
+                android:id="@+id/message_icon_button"
+                android:layout_marginRight="15dp"
                 android:src="@drawable/message_toolbar_icon"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:id="@+id/home_icon_button"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/home_icon_button"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true" />
 

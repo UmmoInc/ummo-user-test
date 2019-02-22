@@ -39,6 +39,7 @@ public class AgentRequest extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle("Agent Request");
 
         agentDetailsBody = findViewById(R.id.agent_details_cont);
         separatorLine= findViewById(R.id.view7);
@@ -128,9 +129,10 @@ public class AgentRequest extends AppCompatActivity {
 
     public void confirmAgent(){
 
-        Intent i= new Intent(this, DelegationChat.class);
+        Intent intent= new Intent(this, DelegationChat.class);
+        intent.putExtra("hasInitiatedService", false);
         finish();
-        startActivity(i);
+        startActivity(intent);
 
 
     }
