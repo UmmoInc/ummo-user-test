@@ -1,5 +1,6 @@
 package xyz.ummo.user;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
@@ -102,6 +103,15 @@ public class AgentRequest extends AppCompatActivity {
                 .text(getResources().getString(R.string.agent_charge_tip))
                 .show();
 
+        confirmAgentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                confirmAgent();
+
+            }
+        });
+
     }
 
     @Override
@@ -114,6 +124,15 @@ public class AgentRequest extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void confirmAgent(){
+
+        Intent i= new Intent(this, DelegationChat.class);
+        finish();
+        startActivity(i);
+
+
     }
 
 

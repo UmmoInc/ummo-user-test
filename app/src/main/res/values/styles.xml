@@ -33,4 +33,9 @@
 
     </style>
 
+    <style name="progressbar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:color">@color/ummo_3</item>
+
+    </style>
+
 </resources>

@@ -25,9 +25,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".DelegationProgress"
+            android:label="@string/title_activity_delegation_progress"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".DelegationChat"
+            android:label="@string/title_activity_delegation_chat"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".AgentRequest"
             android:label="@string/title_activity_agent_request"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Services"
             android:label="@string/title_activity_services"

@@ -388,7 +388,8 @@
                     android:textColor="@color/White"
                     android:background="@drawable/register_next_button"
                     android:visibility="invisible"
-                    android:tooltipText="@string/confirm_agent_string"/>
+                    android:tooltipText="@string/confirm_agent_string"
+                    android:onClick="confirmAgent"/>
 
                 <Button
                     android:id="@+id/more_agents_btn"
