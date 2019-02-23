@@ -56,4 +56,13 @@
 
     <string name="service_complete_string">Your agent has completed the service. Tap on ACCEPT to confirm receipt of your product \n\nPayment will be automatic</string>
     <string name="service_complete_title_string">Service Complete</string>
+
+    <string name="full_name_title_string">Full Name</string>
+    <string name="surname_title_string">Surname</string>
+    <string name="contact_title_string">Phone Number</string>
+    <string name="rating_title_string">Rating</string>
+    <string name="id_number_title_string">ID Number</string>
+    <string name="email_title_string">Email Address</string>
+    <string name="title_activity_edit_my_profile">EditMyProfile</string>
+
 </resources>

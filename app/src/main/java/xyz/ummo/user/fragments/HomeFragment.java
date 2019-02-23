@@ -1,5 +1,7 @@
 package xyz.ummo.user.fragments;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -160,4 +162,6 @@ public class HomeFragment extends Fragment {
         startActivity(i);
 
     }
+
+
 }

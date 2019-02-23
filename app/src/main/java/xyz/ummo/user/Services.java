@@ -35,12 +35,13 @@ public class Services extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        setTitle(getIntent().getStringExtra("departmentName"));
 
 
         loadServices();;
          LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
-        adapter = new servicesAdapter(this, servicesArrayList);
+        adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
         recyclerView= (RecyclerView)findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
@@ -53,6 +54,8 @@ public class Services extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home:
+                Intent intent = new Intent(this, MainScreen.class);
+                startActivity(intent);
                 finish();
                 return  true;
 

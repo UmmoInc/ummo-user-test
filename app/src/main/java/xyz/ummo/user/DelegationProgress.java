@@ -78,7 +78,7 @@ public class DelegationProgress extends AppCompatActivity {
         });
 
 
-        //Initialise the progressbar vand set the progress color
+        //Initialise the progressbar and set the progress color
         progressBar = findViewById(R.id.delegation_progress_bar);
         progressBar.setProgressTintList(ColorStateList.valueOf(R.color.ummo_4));
 
@@ -117,9 +117,13 @@ public class DelegationProgress extends AppCompatActivity {
 
     public void goToHome(){
 
+        new MainScreen().setAnyServiceInProgress(true);
+
         Intent intent = new Intent(this, MainScreen.class);
         finish();
         startActivity(intent);
+
+
 
     }
 

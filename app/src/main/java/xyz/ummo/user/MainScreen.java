@@ -1,5 +1,6 @@
 package xyz.ummo.user;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -10,7 +11,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.fragments.HomeFragment;
 import xyz.ummo.user.fragments.LegalTermsFragment;
 import xyz.ummo.user.fragments.MyProfileFragment;
@@ -21,6 +24,9 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class MainScreen extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -28,6 +34,8 @@ public class MainScreen extends AppCompatActivity
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private Toolbar toolbar;
+    private ImageView messageIconButton;
+    private ProgressBar circularProgreesBarButton;
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -36,6 +44,9 @@ public class MainScreen extends AppCompatActivity
     private static final String TAG_SERVICE_HISTORY = "serviceHistory";
     private static final String TAG_LEGAL_TERMS = "legalTerms";
     public static String CURRENT_TAG = TAG_HOME;
+
+    private boolean anyServiceInProgress = false;
+    private int serviceProgress = 0;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -51,6 +62,12 @@ public class MainScreen extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Ummo");
+
+        //initialise  the toolbar icons message icon and circular progress bar icon
+        messageIconButton = findViewById(R.id.message_icon_button);
+        circularProgreesBarButton = findViewById(R.id.circular_progressbar_btn);
+
+        circularProgreesBarButton.setProgress(serviceProgress);
 
         mHandler = new Handler();
 
@@ -115,6 +132,8 @@ public class MainScreen extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
 
+
+
         } else if (id == R.id.nav_payment_methods) {
 
         } else if (id == R.id.nav_service_history) {
@@ -177,11 +196,18 @@ public class MainScreen extends AppCompatActivity
         switch (navItemIndex) {
             case 0:
                 // home
+                setTitle("Ummo");
+                messageIconButton.setVisibility(View.VISIBLE);
+                circularProgreesBarButton.setVisibility(View.VISIBLE);
                 HomeFragment homeFragment = new HomeFragment();
                 return homeFragment;
             case 1:
                 // My Profile
                 MyProfileFragment myProfileFragment = new MyProfileFragment();
+
+                messageIconButton.setVisibility(View.INVISIBLE);
+                circularProgreesBarButton.setVisibility(View.INVISIBLE);
+                setTitle("Profile");
                 return myProfileFragment;
 
             case 2:
@@ -274,5 +300,56 @@ public class MainScreen extends AppCompatActivity
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+    }
+
+    public void setAnyServiceInProgress(boolean anyServiceInProgress) {
+        this.anyServiceInProgress = anyServiceInProgress;
+    }
+
+    public void setServiceProgress(int serviceProgress) {
+        this.serviceProgress = serviceProgress;
+    }
+
+    public void goToEditProfile(View view){
+
+        TextView textViewToEdit;
+
+        String textToEdit = " ", toolBarTitle = " ";
+
+        switch(view.getId()){
+
+            case R.id.full_name:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your full name";
+
+                break;
+
+            case R.id.id_number:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your ID Number";
+
+                break;
+
+            case R.id.contact:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your phone number";
+
+                break;
+
+            case R.id.email:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your email";
+
+                break;
+        }
+        finish();
+        Intent intent= new Intent(this, EditMyProfile.class);
+        intent.putExtra("name", textToEdit);
+        intent.putExtra("toolBarTitle", toolBarTitle);
+        startActivity(intent);
     }
 }

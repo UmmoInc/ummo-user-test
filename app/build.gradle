@@ -60,4 +60,7 @@ dependencies {
 
     //seekbar
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
+
+    //circular imageview
+    implementation 'com.mikhaellopez:circularimageview:3.2.0'
 }

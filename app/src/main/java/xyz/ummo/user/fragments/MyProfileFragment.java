@@ -1,6 +1,8 @@
 package xyz.ummo.user.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,7 +11,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import xyz.ummo.user.EditMyProfile;
 import xyz.ummo.user.R;
 
 /**
@@ -31,6 +35,8 @@ public class MyProfileFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+
 
     public MyProfileFragment() {
         // Required empty public constructor
@@ -107,5 +113,49 @@ public class MyProfileFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void goToEditProfile(View view){
+
+        TextView textViewToEdit;
+
+        String textToEdit = " ", toolBarTitle = " ";
+
+        switch(view.getId()){
+
+            case R.id.full_name:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your full name";
+
+                break;
+
+            case R.id.id_number:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your ID Number";
+
+                break;
+
+            case R.id.contact:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your phone number";
+
+                break;
+
+            case R.id.email:
+                textViewToEdit = view.findViewById(view.getId());
+                textToEdit = textViewToEdit.getText().toString();
+                toolBarTitle = "Enter your email";
+
+                break;
+        }
+        ((Activity)getContext()).finish();
+        Intent intent= new Intent(getContext(), EditMyProfile.class);
+        intent.putExtra("name", textToEdit);
+        intent.putExtra("toolBarTitle", toolBarTitle);
+        startActivity(intent);
+
     }
 }

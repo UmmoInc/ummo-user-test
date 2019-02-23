@@ -1,5 +1,6 @@
 package xyz.ummo.user.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
 
     private List<Service> services;
     Context context;
+    private String departmentName;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,9 +53,10 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     }
 
 
-    public servicesAdapter(Context context, List<Service>  services) {
+    public servicesAdapter(Context context, List<Service>  services, String departmentName) {
         this.services = services;
         this.context = context;
+        this.departmentName = departmentName;
     }
 
     @Override
@@ -88,12 +91,15 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
             public void onClick(View view) {
 
                 Intent i= new Intent(context, AgentRequest.class);
+                i.putExtra("departmentName", departmentName);
                 i.putExtra("serviceName", serviceName);
                 i.putExtra("form", form);
                 i.putExtra("personalDocs", personalDocs);
                 i.putExtra("cost", cost);
                 i.putExtra("duration", duration);
-                context.startActivity(i);   
+                ((Activity)context).finish();
+                context.startActivity(i);
+
 
             }
         });

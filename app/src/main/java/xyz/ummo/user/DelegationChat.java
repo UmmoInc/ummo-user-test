@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
@@ -30,6 +31,8 @@ public class DelegationChat extends AppCompatActivity {
     private ScrollView chatRoom;
     private boolean hasCheckedServiceInitConfirmation = false;
     private boolean hasInitiatedService;
+    private ProgressBar circularProgressBar;
+    private ImageView homeButton;
 
 
     @Override
@@ -39,6 +42,10 @@ public class DelegationChat extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Delegation Chat");
+
+        //initiate the home and progressbar icon in the toolbar
+        circularProgressBar = findViewById(R.id.circular_progressbar_btn);
+        homeButton = findViewById(R.id.home_icon_button);
 
         //check if the service has been initiated
         hasInitiatedService = getIntent().getExtras().getBoolean("hasInitiatedService");
@@ -94,6 +101,7 @@ public class DelegationChat extends AppCompatActivity {
 
             ExpandOrCollapse.expand(confirmInitiationBox, 100);
             ExpandOrCollapse.expand(confirmInitiationContentBox, 100);
+            circularProgressBar.setVisibility(View.VISIBLE);
 
 
         }
@@ -107,6 +115,28 @@ public class DelegationChat extends AppCompatActivity {
             }
 
 
+        });
+
+        //set the home icon onclick method
+        homeButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                goToHome();
+
+            }
+        });
+
+        //set the circular progress bar icon onclick method
+        circularProgressBar.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                goToDelegatePogress();
+
+            }
         });
     }
 
@@ -127,4 +157,13 @@ public class DelegationChat extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    public void goToHome(){
+
+        Intent intent = new Intent(this, MainScreen.class);
+        finish();
+        startActivity(intent);
+
+    }
+
 }

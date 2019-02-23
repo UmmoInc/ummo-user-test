@@ -119,6 +119,9 @@ public class AgentRequest extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home:
+                Intent intent = new Intent(this, Services.class);
+                intent.putExtra("departmentName", getIntent().getStringExtra("departmentName"));
+                startActivity(intent);
                 finish();
                 return  true;
 

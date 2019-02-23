@@ -29,7 +29,7 @@ public class Splash extends Activity {
                 catch (InterruptedException ie) {
                     Log.e(TAG, " onCreate->"+ie);
                 }
-
+                finish();;
                 startActivity(new Intent(Splash.this, MainScreen.class));
             }
         }).start();
