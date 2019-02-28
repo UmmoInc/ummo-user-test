@@ -65,4 +65,34 @@
     <string name="email_title_string">Email Address</string>
     <string name="title_activity_edit_my_profile">EditMyProfile</string>
 
+    <string name="payment_method_title_string">Payment Methods</string>
+    <string name="add_payment_method_string">Add payment method</string>
+    <string name="title_activity_add_payment_method">AddPaymentMethod</string>
+    <string name="title_activity_add_card">AddCard</string>
+
+    <string name="card_number_hint_string"><font size="18">Card Number</font></string>
+    <string name="date_hint_string"><font size="18">MM/YY</font></string>
+    <string name="cvv_hint_string"><font size="18">CVV</font></string>
+    <string name="country_title_string">Country</string>
+    <string name="post_code_hint_string"><font size="18">Postcode</font></string>
+    <string name="button_next_string">Next</string>
+    <string name="sliding_drawer_ok_btn_string">Ok</string>
+    <string name="title_activity_all_services">AllServices</string>
+
+    <string name="processes_string">Processes: </string>
+    <string name="documents_string">Documents: </string>
+    <string name="cost_string">Cost: </string>
+    <string name="duration_string">Duration: </string>
+    <string name="more_string">more</string>
+    <string name="title_activity_detailed_service">DetailedService</string>
+    <string name="service_description_title">Description</string>
+    <string name="servvice_documents_title_string">Documents</string>
+    <string name="service_cost_title_string">Cost</string>
+    <string name="service_duration_title">Duration</string>
+    <string name="service_processes_title">Steps to follow</string>
+
+    <string name="cost">R10.00</string>
+    <string name="service_docs">-Birth Certificate \n-National ID \n-And more</string>
+    <string name="duration">0800h - 1500h </string>
+
 </resources>

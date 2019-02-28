@@ -4,32 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.HomeFragment"
-    android:id="@+id/home_fragment">
+    android:id="@+id/home_fragment"
+    android:background="@color/White">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#e2e2e2">
+        android:background="@color/White">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/serviceproviders_rv"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/recyclerview_box"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
-        </androidx.recyclerview.widget.RecyclerView>
+            android:background="@color/White">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/serviceproviders_rv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </RelativeLayout>
 
         <Button
             android:id="@+id/request_agent_btn"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="50dp"
+            android:layout_below="@id/recyclerview_box"
+            android:layout_marginTop="50dp"
             android:text="Request Agent"
             android:textSize="14sp"
             android:textColor="@color/White"
             android:background="@drawable/register_next_button"/>
 
+
     </RelativeLayout>
+
 
 </FrameLayout>

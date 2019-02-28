@@ -26,7 +26,9 @@
                 android:id="@+id/message_icon_button"
                 android:src="@drawable/message_toolbar_icon"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                />
 
             <ProgressBar
 

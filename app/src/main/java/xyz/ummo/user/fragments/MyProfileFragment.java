@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import xyz.ummo.user.EditMyProfile;
 import xyz.ummo.user.R;
 
 /**
@@ -36,23 +35,18 @@ public class MyProfileFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    TextView thisOneNayo;
+
 
 
     public MyProfileFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static MyProfileFragment newInstance(String param1, String param2) {
+
         MyProfileFragment fragment = new MyProfileFragment();
+
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -73,7 +67,10 @@ public class MyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_profile, container, false);
+
+        final  View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -86,12 +83,13 @@ public class MyProfileFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        //if (context instanceof OnFragmentInteractionListener) {
-        //  mListener = (OnFragmentInteractionListener) context;
-        //} else {
-        //  throw new RuntimeException(context.toString()
-        //        + " must implement OnFragmentInteractionListener");
-        //}
+
+        if (context instanceof OnFragmentInteractionListener) {
+          mListener = (OnFragmentInteractionListener) context;
+        } else {
+          throw new RuntimeException(context.toString()
+                + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -115,47 +113,4 @@ public class MyProfileFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void goToEditProfile(View view){
-
-        TextView textViewToEdit;
-
-        String textToEdit = " ", toolBarTitle = " ";
-
-        switch(view.getId()){
-
-            case R.id.full_name:
-                textViewToEdit = view.findViewById(view.getId());
-                textToEdit = textViewToEdit.getText().toString();
-                toolBarTitle = "Enter your full name";
-
-                break;
-
-            case R.id.id_number:
-                textViewToEdit = view.findViewById(view.getId());
-                textToEdit = textViewToEdit.getText().toString();
-                toolBarTitle = "Enter your ID Number";
-
-                break;
-
-            case R.id.contact:
-                textViewToEdit = view.findViewById(view.getId());
-                textToEdit = textViewToEdit.getText().toString();
-                toolBarTitle = "Enter your phone number";
-
-                break;
-
-            case R.id.email:
-                textViewToEdit = view.findViewById(view.getId());
-                textToEdit = textViewToEdit.getText().toString();
-                toolBarTitle = "Enter your email";
-
-                break;
-        }
-        ((Activity)getContext()).finish();
-        Intent intent= new Intent(getContext(), EditMyProfile.class);
-        intent.putExtra("name", textToEdit);
-        intent.putExtra("toolBarTitle", toolBarTitle);
-        startActivity(intent);
-
-    }
 }

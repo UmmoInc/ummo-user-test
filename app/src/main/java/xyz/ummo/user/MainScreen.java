@@ -1,7 +1,7 @@
 package xyz.ummo.user;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
@@ -11,9 +11,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.fragments.HomeFragment;
 import xyz.ummo.user.fragments.LegalTermsFragment;
 import xyz.ummo.user.fragments.MyProfileFragment;
@@ -21,7 +19,7 @@ import xyz.ummo.user.fragments.PaymentMethodsFragment;
 import xyz.ummo.user.fragments.ServiceHistoryFragment;
 
 import android.os.Handler;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,7 +27,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainScreen extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements MyProfileFragment.OnFragmentInteractionListener,
+        NavigationView.OnNavigationItemSelectedListener{
+
+    private Fragment fragment;
 
     private DrawerLayout drawer;
     private NavigationView navigationView;
@@ -59,6 +60,7 @@ public class MainScreen extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Ummo");
@@ -86,6 +88,7 @@ public class MainScreen extends AppCompatActivity
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
+
             CURRENT_TAG = TAG_HOME;
             loadHomeFragment();
         }
@@ -99,13 +102,6 @@ public class MainScreen extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_screen, menu);
-        return true;
     }
 
     @Override
@@ -148,13 +144,12 @@ public class MainScreen extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri){
+        //you can leave it empty
+    }
+
     private void loadHomeFragment() {
-        // selecting appropriate nav menu item
-        //selectNavMenu();
-
-        // set toolbar title
-        //setToolbarTitle();
-
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
@@ -162,11 +157,6 @@ public class MainScreen extends AppCompatActivity
 
             return;
         }
-
-        // Sometimes, when fragment has huge data, screen seems hanging
-        // when switching between navigation menus
-        // So using runnable, the fragment is loaded with cross fade effect
-        // This effect can be seen in GMail app
         Runnable mPendingRunnable = new Runnable() {
             @Override
             public void run() {
@@ -200,19 +190,25 @@ public class MainScreen extends AppCompatActivity
                 messageIconButton.setVisibility(View.VISIBLE);
                 circularProgreesBarButton.setVisibility(View.VISIBLE);
                 HomeFragment homeFragment = new HomeFragment();
+
                 return homeFragment;
             case 1:
                 // My Profile
                 MyProfileFragment myProfileFragment = new MyProfileFragment();
 
-                messageIconButton.setVisibility(View.INVISIBLE);
-                circularProgreesBarButton.setVisibility(View.INVISIBLE);
+                messageIconButton.setVisibility(View.GONE);
+                circularProgreesBarButton.setVisibility(View.GONE);
                 setTitle("Profile");
+
                 return myProfileFragment;
 
             case 2:
                 // payment methods fragment
                 PaymentMethodsFragment paymentMethodsFragment = new PaymentMethodsFragment();
+                messageIconButton.setVisibility(View.GONE);
+                circularProgreesBarButton.setVisibility(View.GONE);
+                setTitle("Payment Method");
+
                 return paymentMethodsFragment;
 
             case 3:
@@ -224,7 +220,7 @@ public class MainScreen extends AppCompatActivity
                 // legal terms fragment
                 LegalTermsFragment legalTermsFragment= new LegalTermsFragment();
                 return legalTermsFragment;
-
+ 
             default:
                 return new HomeFragment();
         }
@@ -346,10 +342,22 @@ public class MainScreen extends AppCompatActivity
 
                 break;
         }
-        finish();
+
+        MyProfileFragment myProfileFragment  = new MyProfileFragment();
         Intent intent= new Intent(this, EditMyProfile.class);
+        String tag = myProfileFragment.getTag();
+        intent.putExtra(EditMyProfile.CONST_TAG, tag);
         intent.putExtra("name", textToEdit);
         intent.putExtra("toolBarTitle", toolBarTitle);
         startActivity(intent);
+    }
+
+    public void finishEditrofile(View view){
+
+        Fragment fragment = new MyProfileFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame, fragment, "TAG_PROFILE");
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

@@ -1,7 +1,6 @@
 package xyz.ummo.user.fragments;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,18 +11,17 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
 import xyz.ummo.user.LinePagerIndicatorDecoration;
-import xyz.ummo.user.MainScreen;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.departmentsAdapter;
@@ -49,6 +47,9 @@ public class HomeFragment extends Fragment {
     private ArrayList<Department> departmentArrayList = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
+
+    private Button requestAgent;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -86,7 +87,6 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         final FragmentActivity c = getActivity();
         final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.serviceproviders_rv);
@@ -97,6 +97,19 @@ public class HomeFragment extends Fragment {
         PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
         pagerSnapHelper.attachToRecyclerView(recyclerView);
         recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());
+
+        requestAgent = view.findViewById(R.id.request_agent_btn);
+
+        requestAgent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent= new Intent(getContext(), AllServices.class);
+                ((Activity)getContext()).finish();
+                getContext().startActivity(intent);
+
+            }
+        });
 
 
         return view;

@@ -18,6 +18,19 @@
         android:ellipsize="end"
         android:maxLines="2"/>
 
+
+    <TextView
+        android:id="@+id/more_on_the_service_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/UmmoPictonBlue"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="@string/more_string"
+        android:layout_alignParentRight="true"/>
+
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
@@ -62,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:text="Form: "
+            android:text="@string/processes_string"
             android:textSize="14sp"
             android:ellipsize="end"
             android:maxLines="10"
@@ -90,7 +103,7 @@
             android:id="@+id/service_personal_docs_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Personal Docs: "
+            android:text="@string/documents_string"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:ellipsize="end"
@@ -124,7 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:text="Cost: "
+            android:text="@string/cost_string"
             android:textSize="14sp"
             android:ellipsize="end"
             android:maxLines="10"
@@ -156,7 +169,7 @@
             android:id="@+id/service_duration_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Duration: "
+            android:text="@string/duration_string"
             android:textColor="@color/black"
             android:textSize="14sp"
             android:ellipsize="end"

@@ -8,10 +8,11 @@ public class Service {
     private String personalDocs;
     private String cost;
     private String duraion;
+    private String[] steps;
 
 
     public Service(String serviceName, String serviceDescription, String form, String personalDocs,
-                   String cost, String duraion){
+                   String cost, String duraion, String[] steps){
 
         this.serviceName = serviceName;
         this.serviceDescription = serviceDescription;
@@ -19,6 +20,11 @@ public class Service {
         this.personalDocs = personalDocs;
         this.cost = cost;
         this.duraion = duraion;
+        this.steps = steps;
+    }
+
+    public void setSteps(String[] steps) {
+        this.steps = steps;
     }
 
     public String getServiceName() {
@@ -43,5 +49,9 @@ public class Service {
 
     public String getDuraion() {
         return duraion;
+    }
+
+    public String[] getSteps() {
+        return steps;
     }
 }

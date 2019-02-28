@@ -17,6 +17,7 @@ import javax.xml.datatype.Duration;
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.AgentRequest;
 import xyz.ummo.user.Department;
+import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Service;
 import xyz.ummo.user.Services;
@@ -31,7 +32,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
 
 
         public TextView serviceTitle, serviceDescription, serviceForm, servicePersonalDocs,
-                serviceCost, serviceDuration;
+                serviceCost, serviceDuration, moreButton;
 
         Button requestAgentButton;
 
@@ -49,6 +50,8 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
             serviceDuration = view.findViewById(R.id.service_duration);
 
             requestAgentButton = view.findViewById(R.id.request_agent_btn);
+
+            moreButton = view.findViewById(R.id.more_on_the_service_text);
         }
     }
 
@@ -71,16 +74,17 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     @Override
     public void onBindViewHolder(servicesAdapter.MyViewHolder holder, int position) {
         Service service = services.get(position);
-        holder.serviceTitle.setText(service.getServiceName());
-        holder.serviceDescription.setText(service.getServiceDescription());
-        holder.serviceForm.setText(service.getForm());
-        holder.servicePersonalDocs.setText(service.getPersonalDocs());
-        holder.serviceCost.setText(service.getCost());
-        holder.serviceDuration.setText(service.getDuraion());
+        holder.serviceTitle.setText(" " + service.getServiceName());
+        holder.serviceDescription.setText(" " + service.getServiceDescription());
+        holder.serviceForm.setText(" " + service.getForm());
+        holder.servicePersonalDocs.setText(" " + service.getPersonalDocs());
+        holder.serviceCost.setText(" " + service.getCost());
+        holder.serviceDuration.setText( " " + service.getDuraion());
 
-        final String serviceName, form, personalDocs, cost, duration;
+        final String serviceName, description, form, personalDocs, cost, duration;
 
         serviceName = holder.serviceTitle.getText().toString();
+        description = holder.serviceDescription.getText().toString();
         form = holder.serviceForm.getText().toString();
         personalDocs = holder.servicePersonalDocs.getText().toString();
         cost = holder.serviceCost.getText().toString();
@@ -100,6 +104,23 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 ((Activity)context).finish();
                 context.startActivity(i);
 
+
+            }
+        });
+
+        holder.moreButton.setOnClickListener(new View.OnClickListener(){
+
+
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(context, DetailedService.class);
+                intent.putExtra("serviceName", serviceName);
+                intent.putExtra("description", description);
+                intent.putExtra("cost", cost);
+                intent.putExtra("duration", duration);
+                ((Activity)context).finish();
+                context.startActivity(intent);
 
             }
         });

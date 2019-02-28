@@ -1,6 +1,5 @@
 package xyz.ummo.user;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,19 +24,16 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
-public class Services extends AppCompatActivity {
+public class AllServices extends AppCompatActivity {
 
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
     servicesAdapter adapter;
-    private ProgressDialog progress;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_services);
+        setContentView(R.layout.activity_all_services);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -46,7 +42,7 @@ public class Services extends AppCompatActivity {
 
 
         loadServices();;
-         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
@@ -61,21 +57,6 @@ public class Services extends AppCompatActivity {
         Intent intent = new Intent(this, MainScreen.class);
         startActivity(intent);
         finish();
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case android.R.id.home:
-                Intent intent = new Intent(this, MainScreen.class);
-                startActivity(intent);
-                finish();
-                return  true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override
@@ -100,10 +81,17 @@ public class Services extends AppCompatActivity {
         searchAutoComplete.setHintTextColor(getResources().getColor(R.color.black));
         searchAutoComplete.setTextColor(getResources().getColor(android.R.color.black));
 
+        searchView.setIconifiedByDefault(true);
+        searchView.setFocusable(true);
+        searchView.setIconified(false);
+        searchView.requestFocusFromTouch();
+
+        MenuItem searchMenuItem = menu.findItem( R.id.menu_search); // get my MenuItem with placeholder submenu
+        searchMenuItem.expandActionView();
+
 
         return true;
     }
-
 
     public void loadServices() {
 
@@ -126,32 +114,4 @@ public class Services extends AppCompatActivity {
 
     }
 
-    public void requestAgent(View view){
-        progress=new ProgressDialog(this);
-        progress.setMessage("Downloading Music");
-        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progress.setIndeterminate(true);
-        progress.setProgress(0);
-        progress.show();
-
-        final int totalProgressTime = 100;
-        final Thread t = new Thread() {
-            @Override
-            public void run() {
-                int jumpTime = 0;
-
-                while(jumpTime < totalProgressTime) {
-                    try {
-                        sleep(200);
-                        jumpTime += 5;
-                        progress.setProgress(jumpTime);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
-        t.start();
-    }
 }

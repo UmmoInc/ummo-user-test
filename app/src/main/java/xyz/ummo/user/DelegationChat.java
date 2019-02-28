@@ -140,6 +140,13 @@ public class DelegationChat extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainScreen.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void rotate(float degree) {
         final RotateAnimation rotateAnim = new RotateAnimation(0.0f, degree,
                 RotateAnimation.RELATIVE_TO_SELF, 0.5f,

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".AddCard"
+    tools:showIn="@layout/activity_add_card">
+
+    <RelativeLayout
+        android:id="@+id/main_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@color/White">
+
+        <EditText
+            android:id="@+id/card_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/card_number_hint_string"
+            android:drawableLeft="@drawable/debit_icon_hint"
+            android:backgroundTint="@color/Grey"
+            android:textCursorDrawable="@drawable/cursor"
+            android:drawableRight="@drawable/camera_hint"/>
+
+        <LinearLayout
+            android:id="@+id/date_and_cvv_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card_number"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <EditText
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/date_hint_string"
+                android:backgroundTint="@color/Grey"
+                android:textCursorDrawable="@drawable/cursor"
+                android:drawableRight="@drawable/help_outline"
+                android:layout_weight="1"/>
+
+            <EditText
+                android:id="@+id/cvv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/cvv_hint_string"
+                android:backgroundTint="@color/Grey"
+                android:textCursorDrawable="@drawable/cursor"
+                android:drawableRight="@drawable/help_outline"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/country_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/greyProfile"
+            android:text="@string/country_title_string"
+            android:textSize="18sp"
+            android:layout_below="@id/date_and_cvv_box"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"/>
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/ccp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:ccp_showFullName="true"
+            app:ccp_showPhoneCode="false"
+            app:ccp_showNameCode="false"
+            android:layout_below="@+id/country_title"/>
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/Grey"
+            android:layout_below="@id/ccp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"/>
+
+        <EditText
+            android:id="@+id/post_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/post_code_hint_string"
+            android:backgroundTint="@color/Grey"
+            android:textCursorDrawable="@drawable/cursor"
+            android:layout_below="@+id/view1"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/request_agent_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:text="@string/button_next_string"
+            android:textSize="14sp"
+            android:textColor="@color/White"
+            android:background="@drawable/register_next_button"/>
+
+    </RelativeLayout>
+
+    <SlidingDrawer
+        android:id="@+id/sliding_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="250dip"
+        android:layout_alignParentBottom="true"
+        android:content="@+id/contentLayout"
+        android:handle="@+id/slideButton"
+        android:orientation="vertical"
+        android:padding="10dip" >
+
+        <Button
+            android:id="@+id/slideButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="^"
+            android:visibility="invisible">
+        </Button>
+
+        <RelativeLayout
+            android:id="@+id/contentLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dip"
+            android:background="@color/black">
+
+            <TextView
+                android:id="@+id/sliding_drawer_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/White"
+                android:textSize="18sp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:id="@+id/sliding_drawer_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/White"
+                android:textSize="14sp"
+                android:layout_below="@id/sliding_drawer_title"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"/>
+
+            <Button
+                android:id="@+id/sliding_drawer_ok_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="10dp"
+                android:text="@string/sliding_drawer_ok_btn_string"
+                android:textSize="14sp"
+                android:textColor="@color/White"
+                android:background="@drawable/register_next_button"/>
+
+        </RelativeLayout>
+    </SlidingDrawer>
+
+</RelativeLayout>

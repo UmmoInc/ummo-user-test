@@ -63,4 +63,7 @@ dependencies {
 
     //circular imageview
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
+
+    //CPP
+    implementation 'com.hbb20:ccp:2.2.4'
 }

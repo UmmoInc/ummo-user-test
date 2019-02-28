@@ -116,6 +116,14 @@ public class AgentRequest extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, Services.class);
+        intent.putExtra("departmentName", getIntent().getStringExtra("departmentName"));
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home:

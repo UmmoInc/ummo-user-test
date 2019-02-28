@@ -19,5 +19,6 @@
     <color name="screenWhite">#eeeeee</color>
 
     <color name="greyProfile">#a6a3a4</color>
+    <color name="dim_color">#cc000000</color>
 
 </resources>
