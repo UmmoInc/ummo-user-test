@@ -24,4 +24,36 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_services">Services</string>
+    <string name="title_activity_agent_request">AgentRequest</string>
+
+    <string name="loading_agent_message">Finding you the nearest agent</string>
+    <string name="nearest_agent_string">Nearest Agent</string>
+    <string name="confirm_agent_string">Confirm Agent</string>
+    <string name="get_another_string">Request Another</string>
+    <string name="agent_charge_tip">Hourly rate: R25.00 + R2.50</string>
+    <string name="title_activity_delegation_chat">DelegationChat</string>
+    <string name="confirm_service_string">Confirm service initiation</string>
+    <string name="initiation_chat_string">Service initiation chat</string>
+    <string name="first_line_string">Use this chat to initiate the service with your agent.</string>
+    <string name="second_line_string">Note:</string>
+    <string name="third_line_string">-meet agent at a public place</string>
+    <string name="fourth_line_string">-only share certified copies of your docs</string>
+    <string name="fifth_line_string">billing will start once you confirm "Service Initiation"</string>
+    <string name="follow_up_agent_string">Start chatting with your agent to meet</string>
+    <string name="type_message_hint"><font size="18">Chat with agent</font></string>
+    <string name="title_activity_delegation_progress">DelegationProgress</string>
+
+    <string name="track_progress_string">Track Service Progress</string>
+    <string name="progress_string">Service Progress</string>
+    <string name="progress_info_title">Service Progress Info</string>
+    <string name="progress_first_line">Your agent will keep you up-to-date om the progress of your service in the real-time.</string>
+    <string name="progress_second_line">To know more about the status of your service, use the chat feature above.</string>
+    <string name="progress_third_line">If there are any issues, you will be notified.</string>
+    <string name="form_filled_string">Form Filled</string>
+    <string name="service_payment_string">Service Payment</string>
+    <string name="collection_string">Collection</string>
+
+    <string name="service_complete_string">Your agent has completed the service. Tap on ACCEPT to confirm receipt of your product \n\nPayment will be automatic</string>
+    <string name="service_complete_title_string">Service Complete</string>
 </resources>

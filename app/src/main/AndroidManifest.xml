@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="xyz.ummo.user">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -10,13 +9,9 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!-- Required to show current location -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Required to show current location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <!-- Required OpenGL ES 2.0. for Maps V2 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Required OpenGL ES 2.0. for Maps V2 -->
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -29,7 +24,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".DelegationProgress"
+            android:label="@string/title_activity_delegation_progress"
+            android:theme="@style/AppTheme.NoActionBar">
 
+        </activity>
+        <activity
+            android:name=".DelegationChat"
+            android:label="@string/title_activity_delegation_chat"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AgentRequest"
+            android:label="@string/title_activity_agent_request"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Services"
+            android:label="@string/title_activity_services"
+            android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -59,36 +71,30 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Location"
-            android:label="@string/title_activity_location">
-
-        </activity>
-
+            android:label="@string/title_activity_location" />
         <activity
             android:name=".MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity android:name=".SignUp" />
-
         <activity
             android:name=".Register"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <data
-                    android:scheme="http"
-                    android:host="www.ummo.xyz"/>
+                    android:host="www.ummo.xyz"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MainActivity" />
-
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package xyz.ummo.user.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.Department;
 import xyz.ummo.user.R;
+import xyz.ummo.user.Services;
 
 public class departmentsAdapter extends RecyclerView.Adapter<departmentsAdapter.MyViewHolder>  {
 
@@ -43,6 +45,18 @@ public class departmentsAdapter extends RecyclerView.Adapter<departmentsAdapter.
                 .inflate(R.layout.departments_list, parent, false);
 
 
+
+        RelativeLayout serviceGround = itemView.findViewById(R.id.department_ground);
+        serviceGround.isClickable();
+
+        serviceGround.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(context, Services.class);
+                context.startActivity(intent);
+
+            }
+        });
 
         return new MyViewHolder(itemView);
     }
