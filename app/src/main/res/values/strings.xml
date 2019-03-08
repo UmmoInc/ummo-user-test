@@ -15,8 +15,9 @@
     <string name="email_prompt2">Enter your email address(required)</string>
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
-    <string name="name_prompt_hint">Enter your full name...</string>
-    <string name="contact_prompt_hint">Enter your mobile contact...</string>
+    <string name="search_location_string">Search location</string>
+    <string name="name_prompt_hint">Enter your full name</string>
+    <string name="contact_prompt_hint">Enter your mobile contact</string>
     <string name="ummo_logo_descriptor">Ummo Logo</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
@@ -94,5 +95,9 @@
     <string name="cost">R10.00</string>
     <string name="service_docs">-Birth Certificate \n-National ID \n-And more</string>
     <string name="duration">0800h - 1500h </string>
+    
+    <string name="next">Next</string>
+    <string name="skip">Back</string>
+    <string name="start">Done</string>
 
 </resources>

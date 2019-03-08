@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Register"
-    android:background="@color/White">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:layout_width="150dp"
@@ -56,7 +53,8 @@
         android:hint="@string/name_prompt_hint"
         android:autofillHints="Enter your full name..."
         tools:targetApi="o"
-        android:backgroundTint="@color/Grey"/>
+        android:backgroundTint="@color/black"
+        android:textCursorDrawable="@drawable/cursor"/>
 
     <EditText
         android:id="@+id/userContactEditText"
@@ -72,19 +70,7 @@
         android:hint="@string/contact_prompt_hint"
         android:autofillHints="Enter your mobile contact..."
         tools:targetApi="o"
-        android:backgroundTint="@color/Grey"/>
-
-    <Button
-        android:id="@+id/create_account_btn"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/userContactEditText"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/register_next_button"
-        android:layout_centerHorizontal="true"
-        android:text="@string/next_registration_button"
-        android:textColor="@color/White"
-        android:textSize="14sp"
-        android:onClick="register"/>
+        android:backgroundTint="@color/black"
+        android:textCursorDrawable="@drawable/cursor"/>
 
 </RelativeLayout>

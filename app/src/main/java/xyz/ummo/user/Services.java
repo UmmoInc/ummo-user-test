@@ -50,7 +50,7 @@ public class Services extends AppCompatActivity {
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
-        recyclerView= (RecyclerView)findViewById(R.id.services_rv);
+        recyclerView= findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
 
