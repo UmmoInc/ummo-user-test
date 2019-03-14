@@ -59,7 +59,7 @@
         android:backgroundTint="@color/Grey"/>
 
     <EditText
-        android:id="@+id/userContactEditText"
+        android:id="@+id/userContactEditText2"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/userNameEditText"

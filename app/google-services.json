@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "572487897841",
+    "firebase_url": "https://ummo-dd2d7.firebaseio.com",
+    "project_id": "ummo-dd2d7",
+    "storage_bucket": "ummo-dd2d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572487897841:android:03b22a63e347bb97",
+        "android_client_info": {
+          "package_name": "xyz.ummo.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "572487897841-np01qdn4e9lpm14315h1fi6bdncl5ram.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.ummo.user",
+            "certificate_hash": "0e5dd7dd489eeddd6a918c39585ff9a23737112b"
+          }
+        },
+        {
+          "client_id": "572487897841-864narrrq1ueu0fe6c5582i9dsnv7n35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6Ul323AzqdWpz5AzBokbDL4kHFKTO6Po"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "572487897841-864narrrq1ueu0fe6c5582i9dsnv7n35.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

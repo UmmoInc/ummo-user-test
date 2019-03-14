@@ -17,7 +17,7 @@
     <string name="sign_up_button">Sign-Up</string>
     <string name="search_location_string">Search location</string>
     <string name="name_prompt_hint">Enter your full name</string>
-    <string name="contact_prompt_hint">Enter your mobile contact</string>
+    <string name="contact_prompt_hint">Enter your contact</string>
     <string name="ummo_logo_descriptor">Ummo Logo</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>

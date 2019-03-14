@@ -20,10 +20,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/card_number_hint_string"
-            android:drawableLeft="@drawable/debit_icon_hint"
+            android:drawableStart="@drawable/debit_icon_hint"
             android:backgroundTint="@color/Grey"
             android:textCursorDrawable="@drawable/cursor"
-            android:drawableRight="@drawable/camera_hint"/>
+            android:drawableEnd="@drawable/camera_hint"/>
 
         <LinearLayout
             android:id="@+id/date_and_cvv_box"
@@ -40,10 +40,8 @@
                 android:hint="@string/date_hint_string"
                 android:backgroundTint="@color/Grey"
                 android:textCursorDrawable="@drawable/cursor"
-                android:drawableRight="@drawable/help_outline"
-                android:layout_weight="1"
                 android:drawableEnd="@drawable/help_outline"
-                tools:targetApi="lollipop" />
+                android:layout_weight="1"/>
 
             <EditText
                 android:id="@+id/cvv"
@@ -52,10 +50,8 @@
                 android:hint="@string/cvv_hint_string"
                 android:backgroundTint="@color/Grey"
                 android:textCursorDrawable="@drawable/cursor"
-                android:drawableRight="@drawable/help_outline"
                 android:layout_weight="1"
-                android:drawableEnd="@drawable/help_outline"
-                tools:targetApi="lollipop" />
+                android:drawableEnd="@drawable/help_outline" />
         </LinearLayout>
 
         <TextView
@@ -66,7 +62,6 @@
             android:text="@string/country_title_string"
             android:textSize="18sp"
             android:layout_below="@id/date_and_cvv_box"
-            android:layout_marginLeft="5dp"
             android:layout_marginTop="20dp"
             android:layout_marginStart="5dp" />
 
@@ -145,7 +140,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/White"
                 android:textSize="18sp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="20dp"/>
 
             <TextView
@@ -155,7 +150,7 @@
                 android:textColor="@color/White"
                 android:textSize="14sp"
                 android:layout_below="@id/sliding_drawer_title"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginTop="10dp"/>
 
             <Button
