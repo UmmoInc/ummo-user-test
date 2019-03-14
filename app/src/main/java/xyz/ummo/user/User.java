@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 
-import com.parse.Parse;
+//import com.parse.Parse;
 
 public class User extends Application {
     private static User user;
@@ -15,12 +15,12 @@ public class User extends Application {
 
         setUser();
 
-        Parse.initialize(new Parse.Configuration.Builder(this)
+        /*Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("ummo-delegate-dev-server")
                 .clientKey("")
                 .server("https://ummo-dev.herokuapp.com/parse")
                 .build()
-        );
+        );*/
     }
 
     @Override

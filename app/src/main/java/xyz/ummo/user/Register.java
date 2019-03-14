@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
+//import com.parse.ParseException;
+//import com.parse.ParseUser;
+//import com.parse.SignUpCallback;
 
 public class Register extends AppCompatActivity {
     private final String TAG = "Register";
@@ -35,7 +35,7 @@ public class Register extends AppCompatActivity {
 
         Log.e(TAG+" onRegister", "user name->"+userNameVal);
 
-        ParseUser user = new ParseUser();
+        /*ParseUser user = new ParseUser();
         user.setUsername(userNameVal);
         user.setPassword("my pass");
 
@@ -54,6 +54,6 @@ public class Register extends AppCompatActivity {
                     Log.e(TAG+" onSignUpBack", "user name->"+userNameVal);
                 }
             }
-        });
+        });*/
     }
 }
