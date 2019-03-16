@@ -96,8 +96,11 @@ public class AllServices extends AppCompatActivity {
     public void loadServices() {
 
         String[] steps = {"step 1", "step 2", "Step 3", "Step 4"};
-        Service service = new Service("Service 1", "Description of service 1 because it is the first service displayed",
-                "form 1", "docs 1", "cost 1", "duration 1", steps);
+        Service service = new Service(" Motor Vehicle Permit",
+                " A temporary motor vehicle permit is valid for 21 " +
+                        "days and is used for a motor vehicle that is registered, licensed and roadworthy",
+                "Special Permit (TSP1) form", "Copy of your identity document",
+                "R130", "One day", steps);
         servicesArrayList.add(service);
 
         service = new Service("Service 2", "Description of servce 2",

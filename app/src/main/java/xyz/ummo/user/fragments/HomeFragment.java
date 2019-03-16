@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
 import xyz.ummo.user.LinePagerIndicatorDecoration;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.departmentsAdapter;
+import xyz.ummo.user.adapters.servicesCarouselAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +52,8 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private Button requestAgent;
+
+    private servicesCarouselAdapter carouselAdapter;
 
 
     public HomeFragment() {
@@ -87,16 +92,18 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         final FragmentActivity c = getActivity();
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.serviceproviders_rv);
+        /*final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.serviceproviders_rv);
         LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.HORIZONTAL, true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(new departmentsAdapter(getContext(), departmentArrayList));
 
         PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
         pagerSnapHelper.attachToRecyclerView(recyclerView);
-        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());
+        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());*/
 
         requestAgent = view.findViewById(R.id.request_agent_btn);
 
@@ -112,7 +119,28 @@ public class HomeFragment extends Fragment {
         });
 
 
+
+        final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
+        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), departmentArrayList));
+        coverFlow.setOnScrollPositionListener(onScrollListener());
+
+
+
         return view;
+    }
+
+    private FeatureCoverFlow.OnScrollPositionListener onScrollListener() {
+        return new FeatureCoverFlow.OnScrollPositionListener() {
+            @Override
+            public void onScrolledToPosition(int position) {
+                Log.v("MainActiivty", "position: " + position);
+            }
+
+            @Override
+            public void onScrolling() {
+                Log.i("MainActivity", "scrolling");
+            }
+        };
     }
 
     // TODO: Rename method, update argument and hook method into UI event

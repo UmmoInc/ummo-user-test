@@ -49,8 +49,8 @@ public class EditMyProfile extends AppCompatActivity
     @Override
     public void onBackPressed() {
         finish();
-        Intent intent= new Intent(this, MyProfileFragment.class);
-        startActivity(intent);
+        //Intent intent= new Intent(this, MyProfileFragment.class);
+//        startActivity(intent);
     }
 
     @Override
@@ -59,20 +59,20 @@ public class EditMyProfile extends AppCompatActivity
     }
 
     public void goBackToMyProfile(View view){
-
-        finish();
-        Intent intent= new Intent(this,MyProfileFragment.class);
-        startActivity(intent);
+onBackPressed();
+     //   finish();
+    //    Intent intent= new Intent(this,MyProfileFragment.class);
+     //   startActivity(intent);
     }
 
     public void finishEditProfile(View view){
+        Log.e("FINISH","EDITPRO");
 
+        //MyProfileFragment fragment = MyProfileFragment.newInstance("param1", "param2");
 
-        MyProfileFragment fragment = MyProfileFragment.newInstance("param1", "param2");
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.frame, fragment , "");
-        transaction.addToBackStack(null);
-        transaction.commit();
+        //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        //transaction.add(R.id.frame, fragment , "");
+        //transaction.addToBackStack(null);
+        //llltransaction.commit();
     }
 }

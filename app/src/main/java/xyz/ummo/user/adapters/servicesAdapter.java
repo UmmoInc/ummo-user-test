@@ -74,8 +74,8 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     @Override
     public void onBindViewHolder(servicesAdapter.MyViewHolder holder, int position) {
         Service service = services.get(position);
-        holder.serviceTitle.setText(" " + service.getServiceName());
-        holder.serviceDescription.setText(" " + service.getServiceDescription());
+        holder.serviceTitle.setText(service.getServiceName());
+        holder.serviceDescription.setText(service.getServiceDescription());
         holder.serviceForm.setText(" " + service.getForm());
         holder.servicePersonalDocs.setText(" " + service.getPersonalDocs());
         holder.serviceCost.setText(" " + service.getCost());

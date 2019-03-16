@@ -1,11 +1,20 @@
 package xyz.ummo.user;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +27,23 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Objects;
 
 public class SlideIntro extends AppCompatActivity {
 
@@ -28,11 +54,24 @@ public class SlideIntro extends AppCompatActivity {
     private int[] layouts;
     private Button btnNext;
     private PrefManager prefManager;
+    SupportMapFragment mapFragment;
+
+    private GoogleMap mMap;
+    private static final int MY_LOCATION_REQUEST_CODE = 1;
+    SupportMapFragment mapFrag;
+    LocationRequest mLocationRequest;
+    GoogleApiClient mGoogleApiClient;
+    android.location.Location mLastLocation;
+    Marker mCurrLocationMarker;
+    private int requestCode;
+    private String[] permissions;
+    private int[] grantResults;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         // Checking for first time launch - before calling setContentView()
         prefManager = new PrefManager(this);
@@ -52,8 +91,7 @@ public class SlideIntro extends AppCompatActivity {
         // add few more layouts if you want
         layouts = new int[]{
                 R.layout.register_slide,
-                R.layout.sign_up_slide,
-                R.layout.location_slide};
+                R.layout.sign_up_slide};
 
         // adding bottom dots
         addBottomDots(0);
@@ -80,6 +118,10 @@ public class SlideIntro extends AppCompatActivity {
                 }
             }
         });
+
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//        Objects.requireNonNull(mapFragment).getMapAsync(this);
     }
 
     private void addBottomDots(int currentPage) {
@@ -141,35 +183,18 @@ public class SlideIntro extends AppCompatActivity {
         }
     };
 
-    /**
-     * Making notification bar transparent
-     */
-    private void changeStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-        }
-    }
 
-    /**
-     * View pager adapter
-     */
 
-    public boolean textViewSet(TextView textView){
-
-        if(textView.getText().equals(""))
-            return false;
-        else
-            return true;
-
-    }
 
     public class MyViewPagerAdapter extends PagerAdapter {
         private LayoutInflater layoutInflater;
 
+
         public MyViewPagerAdapter() {
         }
+
+
+
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
@@ -178,8 +203,12 @@ public class SlideIntro extends AppCompatActivity {
             View view = layoutInflater.inflate(layouts[position], container, false);
             container.addView(view);
 
+            mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.maps);
+
             return view;
         }
+
 
         @Override
         public int getCount() {

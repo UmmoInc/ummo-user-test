@@ -31,6 +31,10 @@ public class AgentRequest extends AppCompatActivity {
     TextView serviceTitle, serviceForm, servicePersonalDocs,
             serviceCost, serviceDuration;
 
+    public TextView agentName, agentContact, publicRating;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,12 @@ public class AgentRequest extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Agent Request");
+
+        Agent agent = new Agent("Naledi Masimula", "+27 73 194 8321", "4.8");
+
+        agentName= findViewById(R.id.agent_name);
+        agentContact = findViewById(R.id.agent_contact);
+        publicRating = findViewById(R.id.agent_public_rating);
 
         agentDetailsBody = findViewById(R.id.agent_details_cont);
         separatorLine= findViewById(R.id.view7);
@@ -66,6 +76,11 @@ public class AgentRequest extends AppCompatActivity {
         servicePersonalDocs.setText(personalDocs);
         serviceCost.setText(cost);
         serviceDuration.setText(duration);
+
+
+        agentName.setText(" " + agent.getAgentName());
+        agentContact.setText(" " + agent.getAgentContact());
+        publicRating.setText(" " + agent.getPublicRating());
 
 
         // Start long running operation in a background thread
@@ -144,7 +159,6 @@ public class AgentRequest extends AppCompatActivity {
         intent.putExtra("hasInitiatedService", false);
         finish();
         startActivity(intent);
-
 
     }
 
