@@ -109,8 +109,6 @@ public class DelegationProgress extends AppCompatActivity {
 
     }
 
-
-
     public void goToHome(){
 
         new MainScreen().setAnyServiceInProgress(true);
@@ -119,9 +117,5 @@ public class DelegationProgress extends AppCompatActivity {
         finish();
         startActivity(intent);
 
-
-
     }
-
-
 }

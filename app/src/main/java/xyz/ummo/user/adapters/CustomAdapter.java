@@ -27,7 +27,7 @@ import xyz.ummo.user.MainScreen;
 import xyz.ummo.user.Progress;
 import xyz.ummo.user.R;
 
-import static com.parse.Parse.getApplicationContext;
+//import static com.parse.Parse.getApplicationContext;
 
 public class CustomAdapter extends BaseAdapter {
 
