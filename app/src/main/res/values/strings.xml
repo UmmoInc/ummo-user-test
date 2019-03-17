@@ -100,4 +100,6 @@
     <string name="skip">Back</string>
     <string name="start">Done</string>
 
+    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
+
 </resources>
