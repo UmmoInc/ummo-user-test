@@ -8,6 +8,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import xyz.ummo.user.delegate.Login;
+import xyz.ummo.user.delegate.UmmoUser;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -47,6 +49,8 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.hbb20.CountryCodePicker;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -100,8 +104,7 @@ public class SlideIntro extends AppCompatActivity {
         layouts = new int[]{
                 R.layout.register_slide,
                 R.layout.contact_confirmation_slide,
-                R.layout.sign_up_slide,
-                R.layout.location_slide};
+                R.layout.sign_up_slide};
 
         // adding bottom dots
         addBottomDots(0);
@@ -162,8 +165,24 @@ public class SlideIntro extends AppCompatActivity {
                 }
 
             } else {
-                Log.e(TAG + " btnNext", "User has completed sign-up!");
-                launchHomeScreen();
+                email = myViewPagerAdapter.getUserEmail();
+                Log.e(TAG + " btnNext", "User has completed sign-up!"+myViewPagerAdapter.getUserEmail());;
+
+                new Login(this,name,email,contact){
+                    @Override
+                    public void done(@NotNull byte[] data, @NotNull Number code) {
+                        if(code.equals(200)){
+                            launchHomeScreen();
+                            //startActivity();
+                            Log.e("Result",new String(data));
+                        }else {
+                            Log.e("Error","Something happened");
+                            Toast.makeText(SlideIntro.this,"Something went Awfully bad",Toast.LENGTH_LONG).show();
+                            //Show an error
+                        }
+                    }
+                };
+
             }
         });
 
@@ -416,8 +435,6 @@ public class SlideIntro extends AppCompatActivity {
             View view = layoutInflater.inflate(layouts[position], container, false);
             container.addView(view);
 
-            mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.maps);
 
             return view;
         }
