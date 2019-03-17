@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MainScreen extends AppCompatActivity
         implements MyProfileFragment.OnFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener{
@@ -64,6 +66,13 @@ public class MainScreen extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Ummo");
+
+        new xyz.ummo.user.delegate.Service(this){
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                //Do something with list of services
+            }
+        };
 
         //initialise  the toolbar icons message icon and circular progress bar icon
         messageIconButton = findViewById(R.id.message_icon_button);
