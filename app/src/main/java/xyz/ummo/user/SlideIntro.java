@@ -90,9 +90,6 @@ public class SlideIntro extends AppCompatActivity {
             launchHomeScreen();
             finish();
         }
-
-//        email = userEmailField.getText().toString();
-
         setContentView(R.layout.activity_slide_intro);
 
         viewPager = findViewById(R.id.view_pager);
@@ -123,6 +120,7 @@ public class SlideIntro extends AppCompatActivity {
             if (current < layouts.length) {
                 // move to next screen
                 viewPager.setCurrentItem(current);
+                userEmailField = findViewById(R.id.userEmailEditText);
 
                 /*
                  * Checking viewPager index to capture user sign-up details & auth
@@ -154,30 +152,21 @@ public class SlideIntro extends AppCompatActivity {
                         myViewPagerAdapter.toggleRegistrationLayout();
                     }
 
-                } else if (viewPager.getCurrentItem() == 2) {
-                    Log.e(TAG + " btnNext", "User has entered code->" + viewPager.getCurrentItem());
-                    //Authenticating contact
-                } else if (viewPager.getCurrentItem() == 3) {
-                    Log.e(TAG + " btnNext", "User has entered email!->" + viewPager.getCurrentItem());
-                    //Authenticating email
-                    email = myViewPagerAdapter.getUserEmail();
-                    Log.e(TAG + " btnNext", "User email!->" + email);
                 }
 
             } else {
                 email = myViewPagerAdapter.getUserEmail();
-                Log.e(TAG + " btnNext", "User has completed sign-up!"+myViewPagerAdapter.getUserEmail());;
-
-                new Login(this,name,email,contact){
+                if (email.length() == 0) return;
+                new Login(this, name, email, contact) {
                     @Override
                     public void done(@NotNull byte[] data, @NotNull Number code) {
-                        if(code.equals(200)){
+                        if (code.equals(200)) {
                             launchHomeScreen();
                             //startActivity();
-                            Log.e("Result",new String(data));
-                        }else {
-                            Log.e("Error","Something happened");
-                            Toast.makeText(SlideIntro.this,"Something went Awfully bad",Toast.LENGTH_LONG).show();
+                            Log.e("Result", new String(data));
+                        } else {
+                            Log.e("Error", "Something happened");
+                            Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
                             //Show an error
                         }
                     }
@@ -316,14 +305,13 @@ public class SlideIntro extends AppCompatActivity {
     };
 
 
-
     public boolean textViewSet(TextView textView) {
 
         return !textView.getText().equals("");
 
     }
 
-    public void handlingDeepLinks(){
+    public void handlingDeepLinks() {
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
                 .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
@@ -331,14 +319,14 @@ public class SlideIntro extends AppCompatActivity {
                     public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
                         Uri deepLink = null;
 
-                        if (pendingDynamicLinkData != null){
+                        if (pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
                         }
 
-                        Log.e(TAG+" handlingDLs", " onSuccess Deep Link ->"+ deepLink);
+                        Log.e(TAG + " handlingDLs", " onSuccess Deep Link ->" + deepLink);
                     }
                 })
-                .addOnFailureListener(this, e -> Log.e(TAG+" handlingDLs"," onFailure ->"+e));
+                .addOnFailureListener(this, e -> Log.e(TAG + " handlingDLs", " onFailure ->" + e));
     }
 
     public class MyViewPagerAdapter extends PagerAdapter {
@@ -374,8 +362,10 @@ public class SlideIntro extends AppCompatActivity {
 
         String getUserEmail() {
             if (userEmailField != null) {
+                Log.e("has", "Yes");
                 return userEmailField.getText().toString();
             } else {
+                Log.e("no email", "NOP");
                 return "";
             }
         }
@@ -420,7 +410,11 @@ public class SlideIntro extends AppCompatActivity {
             userNameField = findViewById(R.id.userNameEditText);
             userContactField = findViewById(R.id.userContactEditText);
             confirmationCodeField = findViewById(R.id.confirmation_code);
-            userEmailField = findViewById(R.id.userEmailEditText);
+
+
+            if (position == 2) {
+                userEmailField = findViewById(R.id.userEmailEditText);
+            }
 
             registrationLoader = findViewById(R.id.registration_loader);
             confirmationLoader = findViewById(R.id.confirmation_loader);
