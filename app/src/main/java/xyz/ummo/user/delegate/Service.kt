@@ -10,8 +10,7 @@ import xyz.ummo.user.R.string.*
 abstract class Service(context: Context) {
     init {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
-        Fuel.get("${context.getString(serverUrl)}/service")
-                .header("Jwt" to jwt)
+        Fuel.get("/service")
                 .response { request, response, result ->
                     done(response.data,response.statusCode)
                 }
