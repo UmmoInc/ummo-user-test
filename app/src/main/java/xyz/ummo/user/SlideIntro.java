@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import xyz.ummo.user.delegate.Login;
-import xyz.ummo.user.delegate.UmmoUser;
+
 
 import android.Manifest;
 import android.content.Context;
