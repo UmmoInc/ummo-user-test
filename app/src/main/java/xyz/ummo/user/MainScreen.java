@@ -67,9 +67,10 @@ public class MainScreen extends AppCompatActivity
         setSupportActionBar(toolbar);
         setTitle("Ummo");
 
-        new xyz.ummo.user.delegate.Service(this){
+        new xyz.ummo.user.delegate.PublicService(){
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
+                Log.e("CODE",new String(data));
                 //Do something with list of services
             }
         };
