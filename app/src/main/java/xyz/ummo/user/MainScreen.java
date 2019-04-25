@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.fragments.HomeFragment;
 import xyz.ummo.user.fragments.LegalTermsFragment;
 import xyz.ummo.user.fragments.MyProfileFragment;
@@ -27,6 +29,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class MainScreen extends AppCompatActivity
         implements MyProfileFragment.OnFragmentInteractionListener,
@@ -69,8 +73,8 @@ public class MainScreen extends AppCompatActivity
 
         new xyz.ummo.user.delegate.PublicService(){
             @Override
-            public void done(@NotNull byte[] data, @NotNull Number code) {
-                Log.e("CODE",new String(data));
+            public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                loadHomeFragment(data);
                 //Do something with list of services
             }
         };
@@ -100,7 +104,7 @@ public class MainScreen extends AppCompatActivity
             navItemIndex = 0;
 
             CURRENT_TAG = TAG_HOME;
-            loadHomeFragment();
+
         }
     }
 
@@ -159,7 +163,7 @@ public class MainScreen extends AppCompatActivity
         //you can leave it empty
     }
 
-    private void loadHomeFragment() {
+    private void loadHomeFragment(List data) {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         if (getSupportFragmentManager().findFragmentByTag(CURRENT_TAG) != null) {
@@ -171,7 +175,7 @@ public class MainScreen extends AppCompatActivity
             @Override
             public void run() {
                 // update the main content by replacing fragments
-                Fragment fragment = getHomeFragment();
+                Fragment fragment = getHomeFragment(data);
                 FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
                         android.R.anim.fade_out);
@@ -192,14 +196,14 @@ public class MainScreen extends AppCompatActivity
         invalidateOptionsMenu();
     }
 
-    private Fragment getHomeFragment() {
+    private Fragment getHomeFragment(List data) {
         switch (navItemIndex) {
             case 0:
                 // home
                 setTitle("Ummo");
                 messageIconButton.setVisibility(View.VISIBLE);
                 circularProgreesBarButton.setVisibility(View.VISIBLE);
-                HomeFragment homeFragment = new HomeFragment();
+                HomeFragment homeFragment = new HomeFragment(data);
 
                 return homeFragment;
             case 1:
@@ -232,7 +236,7 @@ public class MainScreen extends AppCompatActivity
                 return legalTermsFragment;
  
             default:
-                return new HomeFragment();
+                return new HomeFragment(data);
         }
     }
 
@@ -279,7 +283,7 @@ public class MainScreen extends AppCompatActivity
                 }
                 menuItem.setChecked(true);
 
-                loadHomeFragment();
+               // loadHomeFragment(data);
 
                 return true;
             }
@@ -362,7 +366,7 @@ public class MainScreen extends AppCompatActivity
         startActivity(intent);
     }
 
-    public void finishEditrofile(View view){
+    public void finishEditProfile(View view){
 
         Fragment fragment = new MyProfileFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

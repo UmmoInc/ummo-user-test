@@ -1,5 +1,8 @@
 package xyz.ummo.user;
 
+/*
+The public service name is the department
+ */
 public class Department {
 
     private  String departmentName;

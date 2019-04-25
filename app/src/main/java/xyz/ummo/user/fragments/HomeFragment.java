@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +29,8 @@ import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.departmentsAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
+import xyz.ummo.user.delegate.PublicService;
+import xyz.ummo.user.delegate.PublicServiceData;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +50,8 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private List<PublicServiceData> _data;
+
     private ArrayList<Department> departmentArrayList = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
@@ -56,23 +61,23 @@ public class HomeFragment extends Fragment {
     private servicesCarouselAdapter carouselAdapter;
 
 
-    public HomeFragment() {
+    public HomeFragment(List<PublicServiceData> data) {
         // Required empty public constructor
+        _data = data;
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
      * @param param2 Parameter 2.
      * @return A new instance of fragment HomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
+    public static HomeFragment newInstance(List<PublicServiceData> data, String param2) {
+        HomeFragment fragment = new HomeFragment(data);
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM1, "param1");
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -86,7 +91,7 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        loadDepartments();
+        loadDepartments(_data);
     }
 
     @Override
@@ -119,7 +124,7 @@ public class HomeFragment extends Fragment {
         });
 
 
-
+        //TODO get all departments and do the stuff below
         final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
         coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), departmentArrayList));
         coverFlow.setOnScrollPositionListener(onScrollListener());
@@ -182,19 +187,10 @@ public class HomeFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void loadDepartments() {
-        Department department = new Department("Home Affairs");
-        departmentArrayList.add(department);
-
-        department = new Department("Education");
-        departmentArrayList.add(department);
-
-        department = new Department("ICT");
-        departmentArrayList.add(department);
-
-        department = new Department("Labour");
-        departmentArrayList.add(department);
-
+    public void loadDepartments(List<PublicServiceData> data) {
+        for(int i = 0; i<data.size();i++){
+            departmentArrayList.add(new Department(data.get(i).getServiceName()));
+        }
     }
 
     public void viewServices(View view){
