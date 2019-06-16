@@ -36,9 +36,9 @@
 
         </RelativeLayout>
 
-        <EditText
+        <AutoCompleteTextView
 
-            android:id="@+id/search"
+            android:id="@+id/search_location"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:hint="@string/search_location_string"
@@ -55,7 +55,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="270dp"
-            android:layout_below="@id/search"
+            android:layout_below="@id/search_location"
             android:layout_marginTop="20dp"/>
     </RelativeLayout>
 
