@@ -3,6 +3,7 @@ package xyz.ummo.user.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.services_list, parent, false);
 
-
+        Log.e("Adapter","create vh");
         return new servicesAdapter.MyViewHolder(itemView);
     }
 

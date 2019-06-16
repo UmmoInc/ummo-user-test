@@ -16,12 +16,20 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.adapters.servicesAdapter;
+import xyz.ummo.user.delegate.GetProducts;
 
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -45,7 +53,6 @@ public class Services extends AppCompatActivity {
         setTitle(getIntent().getStringExtra("departmentName"));
 
 
-        loadServices();;
          LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
@@ -53,6 +60,7 @@ public class Services extends AppCompatActivity {
         recyclerView= findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
+        loadServices();
 
     }
 
@@ -106,23 +114,60 @@ public class Services extends AppCompatActivity {
 
 
     public void loadServices() {
+        Log.e("Load","Services/Products");
+        new GetProducts(){
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                System.out.println(new String(data));
+                try {
+                    JSONArray productsJsonArray = new JSONArray(new String(data));
+                    servicesArrayList.clear();
+                    for (int i =0;i<productsJsonArray.length();i++){
+                        JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
+                        //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
+                        // Can we stick to the convetions we had to keep our work simple. PS If anyone will ever read this comment
+                        // I think we need to discuss this one
+                        String steps[] = new String[0];
+                        if(productJsonObject.getJSONObject("requirements").has("procurement_process")){
+                            JSONArray stepsJsonArray = productJsonObject.getJSONObject("requirements").getJSONArray("procurement_process");
+                            steps = new String[stepsJsonArray.length()];
+                            for (int j=0; j<stepsJsonArray.length();j++){
+                                steps[j] = stepsJsonArray.getString(j);
+                            }
+                        }
 
-        String[] steps = {"step 1", "step 2", "Step 3", "Step 4"};
-        Service service = new Service("Service 1", "Description of service 1 because it is the first service displayed",
-                "form 1", "docs 1", "cost 1", "duration 1", steps);
-        servicesArrayList.add(service);
+                        String docs = "";
 
-        service = new Service("Service 2", "Description of servce 2",
-                "form 2", "docs 2", "cost 2", "duration 2", steps);
-        servicesArrayList.add(service);
+                        if(productJsonObject.getJSONObject("requirements").has("documents")){
+                            JSONArray docsArray = productJsonObject.getJSONObject("requirements").getJSONArray("documents");
+                            for (int j=0;j<docsArray.length();j++){
+                                docs += docsArray.getString(j);
+                                docs += j==docsArray.length()-1?"":", ";
+                            }
+                        }
 
-        service = new Service("Service 3", "Description of service 3",
-                "form 3", "docs 3", "cost 3", "duration 3", steps);
-        servicesArrayList.add(service);
+                        Service service = new Service(
+                                productJsonObject.getString("product_name"),
+                                "NOT in ERD",
+                                "TF is a Form?",
+                                docs,
+                                productJsonObject.getJSONObject("requirements").getString("procurement_cost"),
+                                "In Actual Service in ERD",
+                                steps
+                        );
+                        Log.e("docs",service.getPersonalDocs());
+                        servicesArrayList.add(service);
+                        Log.e("added",docs);
 
-        service = new Service("Service 4", "Description of service 4",
-                "form 4", "docs 4", "cost 4", "duration 4", steps);
-        servicesArrayList.add(service);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                }catch (JSONException jse){
+                    Log.e("JSONERROR",jse.toString());
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        };
 
     }
 

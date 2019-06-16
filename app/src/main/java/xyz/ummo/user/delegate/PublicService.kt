@@ -16,6 +16,7 @@ abstract class PublicService() {
                 .response { request, response, result ->
                     try {
                         var array = JSONArray(String(response.data))
+                        Log.e("Got new service data",String(response.data))
                         done(fromJSONList(array), response.statusCode)
                     } catch (ex: JSONException) {
                         Log.e(TAG, ex.toString())

@@ -114,8 +114,11 @@ public class SlideIntro extends AppCompatActivity {
         btnNext.setOnClickListener(view -> {
             // checking for last page
             // if last page home screen will be launched
+            handleSlideProgress(viewPager.getCurrentItem());
+
             int current = getItem(+1);
             if (current < layouts.length) {
+
                 // move to next screen
                 viewPager.setCurrentItem(current);
                 userEmailField = findViewById(R.id.userEmailEditText);
@@ -163,7 +166,7 @@ public class SlideIntro extends AppCompatActivity {
                             //startActivity();
                             Log.e("Result", new String(data));
                         } else {
-                            Log.e("Error", "Something happened");
+                            Log.e("Error", "Something happened"+code+" data "+new String(data));
                             Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
                             //Show an error
                         }
@@ -177,6 +180,25 @@ public class SlideIntro extends AppCompatActivity {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 //        Objects.requireNonNull(mapFragment).getMapAsync(this);
     }
+
+    private void handleSlideProgress(int sliderPosition){
+        Log.e(TAG,sliderPosition+"");
+
+        switch (layouts[sliderPosition]){
+            case R.layout.register_slide:
+                //handle name and number
+                break;
+            case R.layout.contact_confirmation_slide:
+                //handle contact confirmation
+            case R.layout.sign_up_slide:
+                //handle sign up
+            default:
+                // I dont know where you are here
+
+        }
+    }
+
+
 
     public void verifyPhoneNumber(final String phoneNumber) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -273,6 +295,7 @@ public class SlideIntro extends AppCompatActivity {
         finish();
     }
 
+
     //  viewpager change listener
     ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
 
@@ -290,6 +313,8 @@ public class SlideIntro extends AppCompatActivity {
                 btnNext.setText(getString(R.string.next));
             }
         }
+
+
 
         @Override
         public void onPageScrolled(int arg0, float arg1, int arg2) {
