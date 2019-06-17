@@ -1,4 +1,4 @@
 package xyz.ummo.user.delegate
 
-class UserAccount {
+abstract class UserAccount() {
 }
