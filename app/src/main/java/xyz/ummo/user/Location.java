@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.Spanned;
@@ -58,11 +59,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import xyz.ummo.user.adapters.PlaceAutocompleteAdapter;
+import xyz.ummo.user.delegate.UpdateUserLocation;
 
 import static android.text.Html.fromHtml;
 import static androidx.constraintlayout.widget.Constraints.TAG;
@@ -553,6 +559,22 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         prefEditor.putFloat("lat", lat.floatValue());
         prefEditor.putFloat("lng", lng.floatValue());
         prefEditor.apply();
+
+        String user_data = PreferenceManager.getDefaultSharedPreferences(this).getString("user","");
+
+        try {
+            String _id = new JSONObject(user_data).getString("_id");
+            new UpdateUserLocation(this,lat,lng,_id){
+                @Override
+                public void done(@NotNull byte[] data, @NotNull Number code) {
+
+                }
+            };
+        }catch (JSONException jse){
+            Log.e("JSONE",jse.toString());
+        }
+
+
 //
 //
 //        float latPref  = latLngPref.getFloat("lat", 0);
