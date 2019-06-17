@@ -22,10 +22,12 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                         val jwt = response.headers.get("Jwt")?.get(0).toString()
                         Log.e("jwt",jwt)
                         FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
+
                         PreferenceManager
                                 .getDefaultSharedPreferences(context)
                                 .edit()
                                 .putString("jwt",jwt)
+                                .putString("user",String(response.data))
                                 .apply()
                     }
                     done(response.data, response.statusCode)
