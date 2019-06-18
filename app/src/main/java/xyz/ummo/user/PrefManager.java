@@ -2,6 +2,14 @@ package xyz.ummo.user;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.regex.Pattern;
 
 public class PrefManager  {
     SharedPreferences pref;
@@ -27,7 +35,29 @@ public class PrefManager  {
         editor.commit();
     }
 
-    public boolean isFirstTimeLaunch() {
-        return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+
+    //public boolean isFirstTimeLaunch() {
+    //    return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
+    //}
+
+    boolean isFirstTimeLaunch() {
+
+        return PreferenceManager
+                .getDefaultSharedPreferences(this._context)
+                .getString("jwt", "")
+                .isEmpty();
+    }
+
+    public String getUserId(){
+        try{
+            String jwt =  PreferenceManager
+                    .getDefaultSharedPreferences(this._context)
+                    .getString("jwt", "")
+             .split(Pattern.quote("."))[1];
+            return new JSONObject(jwt).getString("_id");
+        }catch (JSONException jse){
+            return null;
+        }
+
     }
 }
