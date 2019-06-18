@@ -109,18 +109,18 @@
                     android:pathPrefix="/user"
                     android:scheme="http" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".Location"
-            android:label="@string/title_activity_location" >
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
+        <activity
+            android:name=".Location"
+            android:label="@string/title_activity_location" >
+        </activity>
+
         <activity
             android:name=".MainScreen"
             android:label="@string/title_activity_confirm_location"

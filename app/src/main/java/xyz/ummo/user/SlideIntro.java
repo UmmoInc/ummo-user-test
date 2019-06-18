@@ -7,13 +7,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
+import io.sentry.event.BreadcrumbBuilder;
+import io.sentry.event.UserBuilder;
 import xyz.ummo.user.delegate.Login;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -75,11 +82,18 @@ public class SlideIntro extends AppCompatActivity {
     private Boolean isValid = false;
     private RelativeLayout registrationLayout, progressLayout;
     private CountryCodePicker registrationCcp;
+    private final int mode = Activity.MODE_PRIVATE;
+    private final String slideIntroPrefs = "UMMO_USER_PREFERENCES";
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Init Sentry
+        Context context = this.getApplicationContext();
+        String sentryDSN = getString(R.string.sentryDsn);
+        Sentry.init(sentryDSN, new AndroidSentryClientFactory(context));
 
 //        myViewPagerAdapter.detectUserContact();
         // Checking for first time launch - before calling setContentView()
@@ -179,6 +193,34 @@ public class SlideIntro extends AppCompatActivity {
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 //        Objects.requireNonNull(mapFragment).getMapAsync(this);
+    }
+
+    private void unsafeMethod(){
+        throw new UnsupportedOperationException("This needs attention!");
+    }
+
+    private void logWithStaticAPI(){
+
+        SharedPreferences mainActPreferences = getSharedPreferences(slideIntroPrefs, mode);
+        String agentName = mainActPreferences.getString("AGENT_NAME","");
+        String agentEmail = mainActPreferences.getString("AGENT_EMAIL", "");
+
+        Sentry.getContext().recordBreadcrumb(
+                new BreadcrumbBuilder().setMessage("Agent made an action")
+                        .build());
+
+        /*Sentry.getContext().setUser(
+                new UserBuilder().setUsername(agentName).setEmail(agentEmail)
+                        .build());*/
+
+        Sentry.capture("Mic check...1,2!");
+
+        try {
+            unsafeMethod();
+            Log.e(TAG, "logWithStaticAPI, unsafeMethod");
+        } catch (Exception e){
+            Sentry.capture(e);
+        }
     }
 
     private void handleSlideProgress(int sliderPosition){
