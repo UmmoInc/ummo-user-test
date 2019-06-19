@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -95,7 +97,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
 
@@ -117,7 +119,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
 
                 Intent intent= new Intent(getContext(), AllServices.class);
-                ((Activity)getContext()).finish();
+                ((Activity) Objects.requireNonNull(getContext())).finish();
                 getContext().startActivity(intent);
 
             }
@@ -199,6 +201,4 @@ public class HomeFragment extends Fragment {
         startActivity(i);
 
     }
-
-
 }

@@ -3,8 +3,6 @@ package xyz.ummo.user;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -15,25 +13,20 @@ import io.sentry.event.UserBuilder;
 import xyz.ummo.user.delegate.Login;
 
 
-import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -42,13 +35,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chaos.view.PinView;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -67,23 +65,29 @@ public class SlideIntro extends AppCompatActivity {
     private LinearLayout dotsLayout;
     private TextView[] dots;
     private int[] layouts;
-    private Button btnNext;
+    private Button btnNext, signUpButton;
     private PrefManager prefManager;
     private static final String TAG = "SlideIntro";
     private EditText userNameField, userContactField, userEmailField;
-    private String name, contact, email;
+    private static String userName, userContact, userEmail;
     private String mVerificationId;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    private boolean mVerificationInProgress = false;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks;
     private FirebaseAuth firebaseAuth;
     private int ONBOARDING_VAL, confirmationCode;
-    private PinView confirmationCodeField;
+    private String phoneVerificationId;
+    private PhoneAuthProvider.ForceResendingToken resendToken;
+    private PinEntryEditText confirmationCodeField;
     private ProgressBar registrationLoader, confirmationLoader, signUpLoader;
     private Boolean isClear = false;
     private Boolean isValid = false;
+    private Boolean autoVerified = false;
     private RelativeLayout registrationLayout, progressLayout;
     private CountryCodePicker registrationCcp;
     private final int mode = Activity.MODE_PRIVATE;
-    private final String slideIntroPrefs = "UMMO_USER_PREFERENCES";
+    private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
+    private TextView resendCodeButton;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -94,6 +98,9 @@ public class SlideIntro extends AppCompatActivity {
         Context context = this.getApplicationContext();
         String sentryDSN = getString(R.string.sentryDsn);
         Sentry.init(sentryDSN, new AndroidSentryClientFactory(context));
+
+        //Init firebaseAuth
+        firebaseAuth = FirebaseAuth.getInstance();
 
 //        myViewPagerAdapter.detectUserContact();
         // Checking for first time launch - before calling setContentView()
@@ -107,6 +114,7 @@ public class SlideIntro extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         dotsLayout = findViewById(R.id.layoutDots);
         btnNext = findViewById(R.id.btn_next);
+        signUpButton = findViewById(R.id.sign_up_btn);
 
         // layouts of all welcome sliders
         // add few more layouts if you want
@@ -134,65 +142,263 @@ public class SlideIntro extends AppCompatActivity {
             if (current < layouts.length) {
 
                 // move to next screen
-                viewPager.setCurrentItem(current);
+                //viewPager.setCurrentItem(current);
                 userEmailField = findViewById(R.id.userEmailEditText);
-
+                userContact = registrationCcp.getFullNumberWithPlus();
                 /*
                  * Checking viewPager index to capture user sign-up details & auth
                  * */
+
                 if (viewPager.getCurrentItem() == 1) {
-                    Log.e(TAG + " btnNext", "User has entered contact!->" + viewPager.getCurrentItem());
-                    name = myViewPagerAdapter.getUserName();
+                    Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
+                    userName = myViewPagerAdapter.getUserName();
                     myViewPagerAdapter.contactCorrectnessCheck();
 
-                    Log.e(TAG + " btnNext", "is the number valid? ->" + isValid);
+//                    Log.e(TAG + " btnNext", "is the number valid? ->" + isValid);
 
                     //TODO: Prevent user from proceeding with a wrong number
 
-                    /*Authenticating phone number
-                     * Assigning the number retrieved from Country Code Picker (incl. '+268' country code
-                     */
-                    contact = registrationCcp.getFullNumberWithPlus();
-                    verifyPhoneNumber(contact);
-                    Log.e(TAG + " btnNext", "CCP retrieved contact ->" + contact);
+                    userContact = registrationCcp.getFullNumberWithPlus();
+                    verifyPhoneNumber(userContact);
+//                    Log.e(TAG + " btnNext", "CCP retrieved userContact-> " + userContact);
 
-                    if (name.isEmpty() || name.length() < 3) {
-                        userNameField.setError("Your name should have at least 3 letters!");
+                    /*if (userName.isEmpty() || userName.length() < 3) {
+                        userNameField.setError("Your userName should have at least 3 letters!");
+                        userNameField.requestFocus();
                         isClear = false;
-                        myViewPagerAdapter.toggleRegistrationLayout();
+//                        myViewPagerAdapter.toggleRegistrationLayout();
                         //TODO: Prevent user from proceeding with incorrect details
-                    } else {
+                    } else if (userContact.isEmpty() || !isValid){
+                        userContactField.setError("Please use a valid userContact.");
+                        userContactField.requestFocus();
+                    }
+                    else {
                         userNameField.setError(null);
                         isClear = true;
-                        myViewPagerAdapter.toggleRegistrationLayout();
-                    }
+                        //TODO: [JAY] What was the intention of toggleRegistrationLayout [DISCUSS]?
+//                        myViewPagerAdapter.toggleRegistrationLayout();
+                    }*/
 
+                } else if (viewPager.getCurrentItem() == 2){
+                    Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
+                } else {
+                    //Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
+                    userName = myViewPagerAdapter.getUserName();
+                    myViewPagerAdapter.contactCorrectnessCheck();
+                    if (userName.isEmpty() || userName.length() < 3) {
+                        userNameField.setError("Your user name should have at least 3 letters!");
+                        userNameField.requestFocus();
+                        isClear = false;
+                        return;
+//                        myViewPagerAdapter.toggleRegistrationLayout();
+                        //TODO: Prevent user from proceeding with incorrect details
+                    } else if (userContact.isEmpty() || !isValid){
+                        userContactField.setError("Please use a valid contact.");
+                        userContactField.requestFocus();
+                        return;
+                    } else {
+                        userNameField.setError(null);
+                        sendCode(view);
+                    }
                 }
 
+                viewPager.setCurrentItem(current);
+
             } else {
-                email = myViewPagerAdapter.getUserEmail();
-                if (email.length() == 0) return;
-                new Login(this, name, email, contact) {
+                userEmailField = findViewById(R.id.userEmailEditText);
+                userEmail = myViewPagerAdapter.getUserEmail();
+                Log.e(TAG, "onLogin-0, EMAIL->"+userEmail);
+
+                if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
+                    userEmailField.setError("Please use a valid email...");
+                    userEmailField.requestFocus();
+                } else if (userEmail.length() == 0) {
+                    userEmailField.setError("Please provide an email to proceed...");
+                    userEmailField.requestFocus();
+                    Log.e(TAG, "onLogin-1, EMAIL->"+userEmail);
+                } else {
+                    ProgressDialog progress = new ProgressDialog(SlideIntro.this);
+                    progress.setMessage("Signing up...");
+                    progress.show();
+
+//                    signUpClick(view);
+
+                    signUpButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Log.e(TAG+" userSignUp", "This is inside the buttonClick>");
+                            new Login(getApplicationContext(), userName, userEmail, userContact) {
+                                @Override
+                                public void done(@NotNull byte[] data, @NotNull Number code) {
+                                    if (code.equals(200)) {
+                                        launchHomeScreen();
+                                        SharedPreferences sharedPreferences = getSharedPreferences(ummoUserPreferences, mode);
+                                        SharedPreferences.Editor editor;
+                                        editor = sharedPreferences.edit();
+                                        editor.putBoolean("SIGNED_UP", true);
+                                        editor.putString("USER_NAME", userName);
+                                        editor.putString("USER_CONTACT", userContact);
+                                        editor.putString("USER_EMAIL", userEmail);
+                                        editor.apply();
+
+                                        //startActivity();
+                                        Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
+                                    } else {
+                                        Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
+                                        Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
+                                        logWithStaticAPI();
+                                    }
+                                }
+                            };
+
+                            firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    //progressBar.setVisibility(View.GONE);
+
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Registered Successfully!",
+                                                Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(SlideIntro.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Already Registered!",
+                                                    Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(getApplicationContext(),
+                                                    Objects.requireNonNull(task.getException()).getMessage(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    /*firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            //progressBar.setVisibility(View.GONE);
+
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Registered Successfully!",
+                                        Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SlideIntro.this, MainActivity.class));
+                                finish();
+                            } else {
+                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Already Registered!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(),
+                                            Objects.requireNonNull(task.getException()).getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                    });*/
+
+                    /*new Login(this, userName, userEmail, userContact) {
+                        @Override
+                        public void done(@NotNull byte[] data, @NotNull Number code) {
+                            if (code.equals(200)) {
+                                launchHomeScreen();
+                                SharedPreferences sharedPreferences = getSharedPreferences(ummoUserPreferences, mode);
+                                SharedPreferences.Editor editor;
+                                editor = sharedPreferences.edit();
+                                editor.putBoolean("SIGNED_UP", true);
+                                editor.putString("USER_NAME", userName);
+                                editor.putString("USER_CONTACT", userContact);
+                                editor.putString("USER_EMAIL", userEmail);
+                                editor.apply();
+
+                                //startActivity();
+                                Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
+                            } else {
+                                Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
+                                Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
+                                logWithStaticAPI();
+                                //Show an error
+                            }
+                        }
+                    };*/
+                }
+            }
+        });
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//        Objects.requireNonNull(mapFragment).getMapAsync(this);
+    }
+
+    /*public void signUpClick(View view){
+        Log.e(TAG+" signUpClick", "This is inside the buttonClick");
+        signUpButton = findViewById(R.id.sign_up_btn);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userSignUpComplete(userName, userEmail, userContact);
+            }
+        });
+    }*/
+
+    private void userSignUpComplete(String uName, String uEmail, String uContact){
+
+        Log.e(TAG+" userSignUp", "This is inside the buttonClick>");
+        new Login(getApplicationContext(), uName, uEmail, uContact) {
                     @Override
                     public void done(@NotNull byte[] data, @NotNull Number code) {
                         if (code.equals(200)) {
                             launchHomeScreen();
+                            SharedPreferences sharedPreferences = getSharedPreferences(ummoUserPreferences, mode);
+                            SharedPreferences.Editor editor;
+                            editor = sharedPreferences.edit();
+                            editor.putBoolean("SIGNED_UP", true);
+                            editor.putString("USER_NAME", uName);
+                            editor.putString("USER_CONTACT", uContact);
+                            editor.putString("USER_EMAIL", uEmail);
+                            editor.apply();
+
                             //startActivity();
-                            Log.e("Result", new String(data));
+                            Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
                         } else {
-                            Log.e("Error", "Something happened"+code+" data "+new String(data));
+                            Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
                             Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
-                            //Show an error
+                            logWithStaticAPI();
                         }
                     }
                 };
 
-            }
-        });
+        firebaseAuth.createUserWithEmailAndPassword(uEmail, uContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //progressBar.setVisibility(View.GONE);
 
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Registered Successfully!",
+                                    Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SlideIntro.this, MainActivity.class));
+                            finish();
+                        } else {
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Already Registered!",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(),
+                                        Objects.requireNonNull(task.getException()).getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        Objects.requireNonNull(mapFragment).getMapAsync(this);
     }
 
     private void unsafeMethod(){
@@ -201,17 +407,17 @@ public class SlideIntro extends AppCompatActivity {
 
     private void logWithStaticAPI(){
 
-        SharedPreferences mainActPreferences = getSharedPreferences(slideIntroPrefs, mode);
-        String agentName = mainActPreferences.getString("AGENT_NAME","");
-        String agentEmail = mainActPreferences.getString("AGENT_EMAIL", "");
+        SharedPreferences mainActPreferences = getSharedPreferences(ummoUserPreferences, mode);
+        String userName = mainActPreferences.getString("USER_NAME","");
+        String userEmail = mainActPreferences.getString("USER_EMAIL", "");
 
         Sentry.getContext().recordBreadcrumb(
                 new BreadcrumbBuilder().setMessage("Agent made an action")
                         .build());
 
-        /*Sentry.getContext().setUser(
-                new UserBuilder().setUsername(agentName).setEmail(agentEmail)
-                        .build());*/
+        Sentry.getContext().setUser(
+                new UserBuilder().setUsername(userName).setEmail(userEmail)
+                        .build());
 
         Sentry.capture("Mic check...1,2!");
 
@@ -223,28 +429,183 @@ public class SlideIntro extends AppCompatActivity {
         }
     }
 
+    public void resendCode(View view) {
+
+        String phoneNumber = registrationCcp.getFullNumberWithPlus();
+
+        setUpVerificationCallbacks();
+
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                verificationCallbacks,
+                resendToken);
+        Log.e(TAG, "resendCode called on contact->"+phoneNumber);
+    }
+
     private void handleSlideProgress(int sliderPosition){
-        Log.e(TAG,sliderPosition+"");
+//        Log.e(TAG,"handleSlideProgress Position->"+sliderPosition);
 
         switch (layouts[sliderPosition]){
             case R.layout.register_slide:
-                //handle name and number
+                //handle userName and number
+                Log.e(TAG, "handleSlideProgress - currently on registerSlide-> "+sliderPosition);
                 break;
             case R.layout.contact_confirmation_slide:
-                //handle contact confirmation
+                //handle userContact confirmation
+                Log.e(TAG, "handleSlideProgress - currently on codeConfirmationSlide-> "+sliderPosition);
             case R.layout.sign_up_slide:
                 //handle sign up
+                Log.e(TAG, "handleSlideProgress - currently on emailSlide-> "+sliderPosition);
             default:
                 // I dont know where you are here
-
+                Log.e(TAG, "handleSlideProgress - Well, this is awkward!-> "+sliderPosition);
         }
     }
 
+    public void sendCode(View view){
+        userContact = registrationCcp.getFullNumberWithPlus();
+        setUpVerificationCallbacks();
 
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                userContact,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                verificationCallbacks);
+        Log.e(TAG, "sendCode called on contact->"+userContact);
+
+        mVerificationInProgress = true;
+    }
+
+    // [START sign_in_with_phone]
+    private void  signInWithPhoneAuthCredential(PhoneAuthCredential credential){
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            //Sign in success, update UI with signed-in user info
+                            FirebaseUser firebaseAgent = Objects.requireNonNull(task.getResult()).getUser();
+                            Log.e(TAG, "signInWithCredential: Success! Agent->"+firebaseAgent);
+                            autoVerified = true;
+                            // [START_EXCLUDE]
+                            //TODO: Handle UX for verification
+                            Snackbar.make(findViewById(android.R.id.content), "Auto Verifying....",
+                                    Snackbar.LENGTH_SHORT).show();
+
+                            /*Thread verifier = new Thread() {
+                                public void run() {
+                                    try {
+                                    sleep(5000);
+                                } catch (InterruptedException e) {
+                                        Log.e(TAG, "verifierException->"+e);
+                                    }
+                                }
+                            };
+                            verifier.run();*/
+
+                            //TODO: Improve UX (not ideal)
+                            viewPager.setCurrentItem(2,true);
+                            //progress.dismiss();
+
+                        } else {
+                            // Sign in failed, display a message & update the UI
+                            Log.e(TAG, "signInWithCredential: Failure", task.getException());
+
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                // The verification code entered was invalid
+                                // [START_EXCLUDE silent]
+                                Snackbar.make(findViewById(android.R.id.content), "Verification failed: "+ task.getException(),
+                                        Snackbar.LENGTH_SHORT).show();
+                                // [END_EXCLUDE]
+                            }
+                            // [START_EXCLUDE silent]
+                            // Update UI
+//                            updateUI(STATE_SIGNIN_FAILED);
+                            // [END_EXCLUDE]
+                        }
+                    }
+                });
+    }
+    // [END sign_in_with_phone]
+
+
+    private void setUpVerificationCallbacks() {
+        //[START initialize_auth]
+        verificationCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential credential) {
+                // This callback will be invoked in two situations:
+                // 1 - Instant verification. In some cases the phone number can be instantly
+                //     verified without needing to send or enter a verification code.
+                // 2 - Auto-retrieval. On some devices Google Play services can automatically
+                //     detect the incoming verification SMS and perform verification without
+                //     user action.
+                Log.e(TAG, "onVerificationCompleted:" + credential);
+                // [START_EXCLUDE silent]
+                mVerificationInProgress = false;
+                // [END_EXCLUDE]
+
+                // [START_EXCLUDE silent]
+                // Update the UI and attempt sign in with the phone credential
+                //updateUI(STATE_VERIFY_SUCCESS, credential);
+                // [END_EXCLUDE]
+                signInWithPhoneAuthCredential(credential);
+            }
+
+            @Override
+            public void onVerificationFailed(FirebaseException e) {
+                // This callback is invoked in an invalid request for verification is made,
+                // for instance if the the phone number format is not valid.
+                Log.e(TAG, "onVerificationFailed", e);
+                // [START_EXCLUDE silent]
+                mVerificationInProgress = false;
+                // [END_EXCLUDE]
+
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    // Invalid request
+                    // [START_EXCLUDE]
+                    userContactField.setError("Invalid phone number!");
+                    // [END_EXCLUDE]
+                } else if (e instanceof FirebaseTooManyRequestsException) {
+                    // The SMS quota for the project has been exceeded
+                    // [START_EXCLUDE]
+                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.",
+                            Snackbar.LENGTH_SHORT).show();
+                    // [END_EXCLUDE]
+                }
+                // Show a message and update the UI
+                // [START_EXCLUDE]
+                //updateUI(STATE_VERIFY_FAILED);
+                // [END_EXCLUDE]
+            }
+
+            @Override
+            public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken token) {
+                // The SMS verification code has been sent to the provided phone number, we
+                // now need to ask the user to enter the code and then construct a credential
+                // by combining the code with a verification ID.
+                Log.e(TAG, "onCodeSent: verificaitonID -> " + verificationId);
+                Log.e(TAG, "onCodeSent: token-> " + token);
+
+                // Save verification ID and resending token so we can use them later
+                phoneVerificationId = verificationId;
+                resendToken = token;
+
+//                resendCodeButton.setEnabled(true);
+            }
+        };
+        // [END phone_auth_callbacks]
+    }
 
     public void verifyPhoneNumber(final String phoneNumber) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNumber,                                        //User's contact to verify
+                phoneNumber,                                        //User's userContact to verify
                 60,                                            //Timeout duration
                 TimeUnit.SECONDS,                              //Unit of timeout
                 this,                                          //Activity
@@ -253,6 +614,7 @@ public class SlideIntro extends AppCompatActivity {
                     @Override
                     public void onVerificationFailed(FirebaseException e) {
                         Log.e(TAG, " onVerificationFailed", e);
+                        logWithStaticAPI();
                         ONBOARDING_VAL = 0;
                         if (e instanceof FirebaseAuthInvalidCredentialsException) {
                             Log.e(TAG + " onVerif.Fail", "Invalid Request!");
@@ -275,8 +637,8 @@ public class SlideIntro extends AppCompatActivity {
 
                     @Override
                     public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-//                        Log.e(TAG, " onVerificationCompleted:" + phoneAuthCredential);
-                        verifyPhoneNumber(phoneNumber);
+                        Log.e(TAG, " onVerificationCompleted:" + phoneAuthCredential);
+//                        verifyPhoneNumber(phoneNumber); //TODO: Second call
                         ONBOARDING_VAL = 2;
 
                         /*firebaseAuth.signInWithCredential(phoneAuthCredential)
@@ -307,7 +669,6 @@ public class SlideIntro extends AppCompatActivity {
                 });
     }
 
-
     private void addBottomDots(int currentPage) {
         dots = new TextView[layouts.length];
 
@@ -337,7 +698,6 @@ public class SlideIntro extends AppCompatActivity {
         finish();
     }
 
-
     //  viewpager change listener
     ViewPager.OnPageChangeListener viewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
 
@@ -348,15 +708,14 @@ public class SlideIntro extends AppCompatActivity {
             // changing the next button text 'NEXT' / 'GOT IT'
             if (position == layouts.length - 1) {
                 // last page. make button text to GOT IT
-                btnNext.setText(getString(R.string.start));
+                //btnNext.setText(getString(R.string.start));
+                btnNext.setVisibility(View.GONE);
                 //btnSkip.setVisibility(View.GONE);
             } else {
                 // still pages are left
                 btnNext.setText(getString(R.string.next));
             }
         }
-
-
 
         @Override
         public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -369,11 +728,9 @@ public class SlideIntro extends AppCompatActivity {
         }
     };
 
-
     public boolean textViewSet(TextView textView) {
 
         return !textView.getText().equals("");
-
     }
 
     public void handlingDeepLinks() {
@@ -427,10 +784,10 @@ public class SlideIntro extends AppCompatActivity {
 
         String getUserEmail() {
             if (userEmailField != null) {
-                Log.e("has", "Yes");
+                Log.e(TAG,"getUserEmail - HAS!");
                 return userEmailField.getText().toString();
             } else {
-                Log.e("no email", "NOP");
+                Log.e(TAG,"getUserEmail - NO HAVE!");
                 return "";
             }
         }
@@ -446,8 +803,8 @@ public class SlideIntro extends AppCompatActivity {
         void contactCorrectnessCheck() {
             registrationCcp.registerCarrierNumberEditText(userContactField);
             isValid = registrationCcp.isValidFullNumber();
-            Log.e(TAG + "", "contactCorrectnessCheck validity:->" + isValid);
-            Log.e(TAG + "", "contactCorrectnessCheck registrationCCP->" + registrationCcp.getFullNumberWithPlus());
+//            Log.e(TAG, "contactCorrectnessCheck validity:->" + isValid);
+//            Log.e(TAG, "contactCorrectnessCheck registrationCCP->" + registrationCcp.getFullNumberWithPlus());
         }
 
         /*@RequiresApi(api = Build.VERSION_CODES.M)
@@ -481,7 +838,7 @@ public class SlideIntro extends AppCompatActivity {
                 userEmailField = findViewById(R.id.userEmailEditText);
             }
 
-            registrationLoader = findViewById(R.id.registration_loader);
+//            registrationLoader = findViewById(R.id.registration_loader);
             confirmationLoader = findViewById(R.id.confirmation_loader);
             signUpLoader = findViewById(R.id.signUp_loader);
 
@@ -494,10 +851,8 @@ public class SlideIntro extends AppCompatActivity {
             View view = layoutInflater.inflate(layouts[position], container, false);
             container.addView(view);
 
-
             return view;
         }
-
 
         @Override
         public int getCount() {
@@ -509,12 +864,10 @@ public class SlideIntro extends AppCompatActivity {
             return view == obj;
         }
 
-
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             View view = (View) object;
             container.removeView(view);
         }
     }
-
 }

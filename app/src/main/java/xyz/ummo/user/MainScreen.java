@@ -1,6 +1,8 @@
 package xyz.ummo.user;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -42,7 +44,7 @@ public class MainScreen extends AppCompatActivity
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ImageView messageIconButton;
-    private ProgressBar circularProgreesBarButton;
+    private ProgressBar circularProgressBarButton;
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -61,6 +63,9 @@ public class MainScreen extends AppCompatActivity
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
+    private int mode = Activity.MODE_PRIVATE;
+    private static final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
+    private static final String TAG = "MainScreen";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +84,17 @@ public class MainScreen extends AppCompatActivity
             }
         };
 
+        SharedPreferences mainActPrefs = getSharedPreferences(ummoUserPreferences, mode);
+
+        String userNamePref = mainActPrefs.getString("USER_NAME", "");
+        Log.e(TAG, "Username->"+userNamePref);
+
+
         //initialise  the toolbar icons message icon and circular progress bar icon
         messageIconButton = findViewById(R.id.message_icon_button);
-        circularProgreesBarButton = findViewById(R.id.circular_progressbar_btn);
+        circularProgressBarButton = findViewById(R.id.circular_progressbar_btn);
 
-        circularProgreesBarButton.setProgress(serviceProgress);
+        circularProgressBarButton.setProgress(serviceProgress);
 
         mHandler = new Handler();
 
@@ -141,8 +152,6 @@ public class MainScreen extends AppCompatActivity
         if (id == R.id.nav_home) {
 
         } else if (id == R.id.nav_profile) {
-
-
 
         } else if (id == R.id.nav_payment_methods) {
 
@@ -202,7 +211,7 @@ public class MainScreen extends AppCompatActivity
                 // home
                 setTitle("Ummo");
                 messageIconButton.setVisibility(View.VISIBLE);
-                circularProgreesBarButton.setVisibility(View.VISIBLE);
+                circularProgressBarButton.setVisibility(View.VISIBLE);
                 HomeFragment homeFragment = new HomeFragment(data);
 
                 return homeFragment;
@@ -211,7 +220,7 @@ public class MainScreen extends AppCompatActivity
                 MyProfileFragment myProfileFragment = new MyProfileFragment();
 
                 messageIconButton.setVisibility(View.GONE);
-                circularProgreesBarButton.setVisibility(View.GONE);
+                circularProgressBarButton.setVisibility(View.GONE);
                 setTitle("Profile");
 
                 return myProfileFragment;
@@ -220,7 +229,7 @@ public class MainScreen extends AppCompatActivity
                 // payment methods fragment
                 PaymentMethodsFragment paymentMethodsFragment = new PaymentMethodsFragment();
                 messageIconButton.setVisibility(View.GONE);
-                circularProgreesBarButton.setVisibility(View.GONE);
+                circularProgressBarButton.setVisibility(View.GONE);
                 setTitle("Payment Method");
 
                 return paymentMethodsFragment;

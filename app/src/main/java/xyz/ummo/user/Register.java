@@ -16,6 +16,7 @@ import android.widget.Toast;
 import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
+import io.sentry.event.UserBuilder;
 
 //import com.parse.ParseException;
 //import com.parse.ParseUser;
@@ -79,17 +80,17 @@ public class Register extends AppCompatActivity {
 
     private void logWithStaticAPI(){
 
-        SharedPreferences mainActPreferences = getSharedPreferences(registerPrefs, mode);
-        String agentName = mainActPreferences.getString("AGENT_NAME","");
-        String agentEmail = mainActPreferences.getString("AGENT_EMAIL", "");
+        SharedPreferences registerPreferences = getSharedPreferences(registerPrefs, mode);
+        String userName = registerPreferences.getString("USER_NAME","");
+        String userEmail = registerPreferences.getString("USER_EMAIL", "");
 
         Sentry.getContext().recordBreadcrumb(
-                new BreadcrumbBuilder().setMessage("Agent made an action")
+                new BreadcrumbBuilder().setMessage("User made an action")
                         .build());
 
-        /*Sentry.getContext().setUser(
-                new UserBuilder().setUsername(agentName).setEmail(agentEmail)
-                        .build());*/
+        Sentry.getContext().setUser(
+                new UserBuilder().setUsername(userName).setEmail(userEmail)
+                        .build());
 
         Sentry.capture("Mic check...1,2!");
 

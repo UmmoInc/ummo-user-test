@@ -1,4 +1,4 @@
-package xyz.ummo.user
+package xyz.ummo.user.delegate
 
 import android.app.Application
 import android.content.Context
@@ -22,7 +22,6 @@ class User : Application() {
         if(jwt!=""){
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
         }
-
 
         Log.e("App", "Applicaytion created")
 
