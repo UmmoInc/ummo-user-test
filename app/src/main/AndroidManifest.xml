@@ -36,9 +36,7 @@
 
             <intent-filter>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data
-                    android:host="ummo.xyz"
-                    android:scheme="https"/>
+
             </intent-filter>
 
         </activity>

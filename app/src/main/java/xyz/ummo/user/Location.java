@@ -560,19 +560,15 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         prefEditor.putFloat("lng", lng.floatValue());
         prefEditor.apply();
 
-        String user_data = PreferenceManager.getDefaultSharedPreferences(this).getString("user","");
-
-        try {
-            String _id = new JSONObject(user_data).getString("_id");
+        
+            String _id = new PrefManager(this).getUserId();
             new UpdateUserLocation(this,lat,lng,_id){
                 @Override
                 public void done(@NotNull byte[] data, @NotNull Number code) {
 
                 }
             };
-        }catch (JSONException jse){
-            Log.e("JSONE",jse.toString());
-        }
+
 
 
 //
