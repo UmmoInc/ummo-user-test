@@ -75,7 +75,7 @@ public class MainScreen extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Ummo");
-
+        Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
         new xyz.ummo.user.delegate.PublicService(){
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {

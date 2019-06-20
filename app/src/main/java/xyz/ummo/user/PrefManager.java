@@ -55,7 +55,7 @@ public class PrefManager  {
                     .getDefaultSharedPreferences(this._context)
                     .getString("jwt", "")
              .split(Pattern.quote("."))[1];
-            return new JSONObject(jwt).getString("_id");
+            return new JSONObject(new String(Base64.decode(jwt,Base64.DEFAULT))).getString("_id");
         }catch (JSONException jse){
             return null;
         }

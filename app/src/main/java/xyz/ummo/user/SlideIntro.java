@@ -114,7 +114,7 @@ public class SlideIntro extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         dotsLayout = findViewById(R.id.layoutDots);
         btnNext = findViewById(R.id.btn_next);
-        signUpButton = findViewById(R.id.sign_up_btn);
+
 
         // layouts of all welcome sliders
         // add few more layouts if you want
@@ -160,27 +160,10 @@ public class SlideIntro extends AppCompatActivity {
 
                     userContact = registrationCcp.getFullNumberWithPlus();
                     verifyPhoneNumber(userContact);
-//                    Log.e(TAG + " btnNext", "CCP retrieved userContact-> " + userContact);
-
-                    /*if (userName.isEmpty() || userName.length() < 3) {
-                        userNameField.setError("Your userName should have at least 3 letters!");
-                        userNameField.requestFocus();
-                        isClear = false;
-//                        myViewPagerAdapter.toggleRegistrationLayout();
-                        //TODO: Prevent user from proceeding with incorrect details
-                    } else if (userContact.isEmpty() || !isValid){
-                        userContactField.setError("Please use a valid userContact.");
-                        userContactField.requestFocus();
-                    }
-                    else {
-                        userNameField.setError(null);
-                        isClear = true;
-                        //TODO: [JAY] What was the intention of toggleRegistrationLayout [DISCUSS]?
-//                        myViewPagerAdapter.toggleRegistrationLayout();
-                    }*/
 
                 } else if (viewPager.getCurrentItem() == 2){
                     Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
+                    handleSlideProgress(2);
                 } else {
                     //Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
                     userName = myViewPagerAdapter.getUserName();
@@ -203,9 +186,15 @@ public class SlideIntro extends AppCompatActivity {
                 }
 
                 viewPager.setCurrentItem(current);
+                Log.e(TAG, "Just after setting the viewPager's currentItem, current is->"+current);
+                if (viewPager.getCurrentItem() == 2) {
+                    handleSlideProgress(2);
+                    Log.e(TAG, "Manually setting currentSlide to 2");
+                }
 
             } else {
-                userEmailField = findViewById(R.id.userEmailEditText);
+                handleSlideProgress(2);
+                /*userEmailField = findViewById(R.id.userEmailEditText);
                 userEmail = myViewPagerAdapter.getUserEmail();
                 Log.e(TAG, "onLogin-0, EMAIL->"+userEmail);
 
@@ -216,70 +205,15 @@ public class SlideIntro extends AppCompatActivity {
                     userEmailField.setError("Please provide an email to proceed...");
                     userEmailField.requestFocus();
                     Log.e(TAG, "onLogin-1, EMAIL->"+userEmail);
-                } else {
-                    ProgressDialog progress = new ProgressDialog(SlideIntro.this);
+                } else {*/
+/*                    ProgressDialog progress = new ProgressDialog(SlideIntro.this);
                     progress.setMessage("Signing up...");
                     progress.show();
 
+                    Log.e(TAG+" userSignUp", "This is outside the buttonClick>");*/
 //                    signUpClick(view);
 
-                    signUpButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            Log.e(TAG+" userSignUp", "This is inside the buttonClick>");
-                            new Login(getApplicationContext(), userName, userEmail, userContact) {
-                                @Override
-                                public void done(@NotNull byte[] data, @NotNull Number code) {
-                                    if (code.equals(200)) {
-                                        launchHomeScreen();
-                                        SharedPreferences sharedPreferences = getSharedPreferences(ummoUserPreferences, mode);
-                                        SharedPreferences.Editor editor;
-                                        editor = sharedPreferences.edit();
-                                        editor.putBoolean("SIGNED_UP", true);
-                                        editor.putString("USER_NAME", userName);
-                                        editor.putString("USER_CONTACT", userContact);
-                                        editor.putString("USER_EMAIL", userEmail);
-                                        editor.apply();
-
-                                        //startActivity();
-                                        Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
-                                    } else {
-                                        Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
-                                        Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
-                                        logWithStaticAPI();
-                                    }
-                                }
-                            };
-
-                            firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    //progressBar.setVisibility(View.GONE);
-
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(getApplicationContext(),
-                                                "Registered Successfully!",
-                                                Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(SlideIntro.this, MainActivity.class));
-                                        finish();
-                                    } else {
-                                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                            Toast.makeText(getApplicationContext(),
-                                                    "Already Registered!",
-                                                    Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(getApplicationContext(),
-                                                    Objects.requireNonNull(task.getException()).getMessage(),
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-
-                    /*firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+/*                    firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             //progressBar.setVisibility(View.GONE);
@@ -303,8 +237,8 @@ public class SlideIntro extends AppCompatActivity {
                             }
                         }
                     });*/
-
-                    /*new Login(this, userName, userEmail, userContact) {
+/*
+                    new Login(this, userName, userEmail, userContact) {
                         @Override
                         public void done(@NotNull byte[] data, @NotNull Number code) {
                             if (code.equals(200)) {
@@ -328,7 +262,7 @@ public class SlideIntro extends AppCompatActivity {
                             }
                         }
                     };*/
-                }
+                //}
             }
         });
 
@@ -336,21 +270,29 @@ public class SlideIntro extends AppCompatActivity {
 //        Objects.requireNonNull(mapFragment).getMapAsync(this);
     }
 
-    /*public void signUpClick(View view){
+    public void signUpClick(){
         Log.e(TAG+" signUpClick", "This is inside the buttonClick");
         signUpButton = findViewById(R.id.sign_up_btn);
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userSignUpComplete(userName, userEmail, userContact);
-            }
-        });
-    }*/
+        signUpButton = findViewById(R.id.sign_up_btn);
+        signUpButton.setOnClickListener(v -> {
+            userEmailField = findViewById(R.id.userEmailEditText);
+            userEmail = myViewPagerAdapter.getUserEmail();
 
-    private void userSignUpComplete(String uName, String uEmail, String uContact){
+            if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
+                userEmailField.setError("Please use a valid email...");
+                userEmailField.requestFocus();
+            } else if (userEmail.length() == 0) {
+                userEmailField.setError("Please provide an email to proceed...");
+                userEmailField.requestFocus();
+                Log.e(TAG, "onLogin-1, EMAIL->"+userEmail);
+            } else {
 
-        Log.e(TAG+" userSignUp", "This is inside the buttonClick>");
-        new Login(getApplicationContext(), uName, uEmail, uContact) {
+                ProgressDialog progress = new ProgressDialog(SlideIntro.this);
+                progress.setMessage("Signing up...");
+                progress.show();
+
+                Log.e(TAG + " userSignUp-2", "This is inside the buttonClick>");
+                new Login(getApplicationContext(), userName, userEmail, userContact) {
                     @Override
                     public void done(@NotNull byte[] data, @NotNull Number code) {
                         if (code.equals(200)) {
@@ -359,22 +301,22 @@ public class SlideIntro extends AppCompatActivity {
                             SharedPreferences.Editor editor;
                             editor = sharedPreferences.edit();
                             editor.putBoolean("SIGNED_UP", true);
-                            editor.putString("USER_NAME", uName);
-                            editor.putString("USER_CONTACT", uContact);
-                            editor.putString("USER_EMAIL", uEmail);
+                            editor.putString("USER_NAME", userName);
+                            editor.putString("USER_CONTACT", userContact);
+                            editor.putString("USER_EMAIL", userEmail);
                             editor.apply();
-
+                            progress.dismiss();
                             //startActivity();
-                            Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
+                            Log.e(TAG + " onLogin-2", "successfully logging in->" + new String(data));
                         } else {
-                            Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
+                            Log.e(TAG + " Error", "Something happened" + code + " data " + new String(data));
                             Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
                             logWithStaticAPI();
                         }
                     }
                 };
 
-        firebaseAuth.createUserWithEmailAndPassword(uEmail, uContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         //progressBar.setVisibility(View.GONE);
@@ -398,7 +340,8 @@ public class SlideIntro extends AppCompatActivity {
                         }
                     }
                 });
-
+            }
+        });
     }
 
     private void unsafeMethod(){
@@ -453,12 +396,15 @@ public class SlideIntro extends AppCompatActivity {
                 //handle userName and number
                 Log.e(TAG, "handleSlideProgress - currently on registerSlide-> "+sliderPosition);
                 break;
+
             case R.layout.contact_confirmation_slide:
                 //handle userContact confirmation
                 Log.e(TAG, "handleSlideProgress - currently on codeConfirmationSlide-> "+sliderPosition);
+                break;
             case R.layout.sign_up_slide:
-                //handle sign up
-                Log.e(TAG, "handleSlideProgress - currently on emailSlide-> "+sliderPosition);
+                Log.e(TAG+" userSignUp-1", "This is outside the buttonClick>");
+                signUpClick();
+                break;
             default:
                 // I dont know where you are here
                 Log.e(TAG, "handleSlideProgress - Well, this is awkward!-> "+sliderPosition);
@@ -494,7 +440,7 @@ public class SlideIntro extends AppCompatActivity {
                             autoVerified = true;
                             // [START_EXCLUDE]
                             //TODO: Handle UX for verification
-                            Snackbar.make(findViewById(android.R.id.content), "Auto Verifying....",
+                            Snackbar.make(findViewById(android.R.id.content), "Auto Verified",
                                     Snackbar.LENGTH_SHORT).show();
 
                             /*Thread verifier = new Thread() {
@@ -510,6 +456,7 @@ public class SlideIntro extends AppCompatActivity {
 
                             //TODO: Improve UX (not ideal)
                             viewPager.setCurrentItem(2,true);
+                            handleSlideProgress(2);
                             //progress.dismiss();
 
                         } else {
@@ -686,6 +633,9 @@ public class SlideIntro extends AppCompatActivity {
 
         if (dots.length > 0)
             dots[currentPage].setTextColor(colorsActive[currentPage]);
+
+        if (dots.length == 2)
+            dotsLayout.setVisibility(View.GONE);
     }
 
     private int getItem(int i) {
@@ -710,7 +660,6 @@ public class SlideIntro extends AppCompatActivity {
                 // last page. make button text to GOT IT
                 //btnNext.setText(getString(R.string.start));
                 btnNext.setVisibility(View.GONE);
-                //btnSkip.setVisibility(View.GONE);
             } else {
                 // still pages are left
                 btnNext.setText(getString(R.string.next));
@@ -832,7 +781,6 @@ public class SlideIntro extends AppCompatActivity {
             userNameField = findViewById(R.id.userNameEditText);
             userContactField = findViewById(R.id.userContactEditText);
             confirmationCodeField = findViewById(R.id.confirmation_code);
-
 
             if (position == 2) {
                 userEmailField = findViewById(R.id.userEmailEditText);
