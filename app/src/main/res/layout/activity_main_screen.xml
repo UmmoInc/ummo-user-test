@@ -21,6 +21,51 @@
         android:fitsSystemWindows="true"
         app:theme="@style/NavigationDrawerStyle"
         app:headerLayout="@layout/nav_header_main_screen"
-        app:menu="@menu/activity_main_screen_drawer" />
+        app:menu="@menu/activity_main_screen_drawer">
+
+        <RelativeLayout
+            android:id="@+id/nav_view_relative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:focusable="true">
+            <LinearLayout
+                android:id="@+id/verifyInfoLinear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="bottom"
+                android:padding="16dp">
+                <TextView
+                    android:id="@+id/verifyInfoTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/verifyUserInfo"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:focusable="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/logoutLinear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/verifyInfoLinear"
+                android:padding="16dp"
+                android:focusable="true">
+                <TextView
+                    android:id="@+id/logout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/logout"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

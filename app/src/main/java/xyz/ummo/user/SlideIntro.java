@@ -11,6 +11,7 @@ import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.UserBuilder;
 import xyz.ummo.user.delegate.Login;
+import xyz.ummo.user.ui.LoginActivity;
 
 
 import android.app.Activity;
@@ -194,75 +195,6 @@ public class SlideIntro extends AppCompatActivity {
 
             } else {
                 handleSlideProgress(2);
-                /*userEmailField = findViewById(R.id.userEmailEditText);
-                userEmail = myViewPagerAdapter.getUserEmail();
-                Log.e(TAG, "onLogin-0, EMAIL->"+userEmail);
-
-                if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
-                    userEmailField.setError("Please use a valid email...");
-                    userEmailField.requestFocus();
-                } else if (userEmail.length() == 0) {
-                    userEmailField.setError("Please provide an email to proceed...");
-                    userEmailField.requestFocus();
-                    Log.e(TAG, "onLogin-1, EMAIL->"+userEmail);
-                } else {*/
-/*                    ProgressDialog progress = new ProgressDialog(SlideIntro.this);
-                    progress.setMessage("Signing up...");
-                    progress.show();
-
-                    Log.e(TAG+" userSignUp", "This is outside the buttonClick>");*/
-//                    signUpClick(view);
-
-/*                    firebaseAuth.createUserWithEmailAndPassword(userEmail, userContact).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            //progressBar.setVisibility(View.GONE);
-
-                            if (task.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Registered Successfully!",
-                                        Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SlideIntro.this, MainActivity.class));
-                                finish();
-                            } else {
-                                if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Already Registered!",
-                                            Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(),
-                                            Objects.requireNonNull(task.getException()).getMessage(),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                    });*/
-/*
-                    new Login(this, userName, userEmail, userContact) {
-                        @Override
-                        public void done(@NotNull byte[] data, @NotNull Number code) {
-                            if (code.equals(200)) {
-                                launchHomeScreen();
-                                SharedPreferences sharedPreferences = getSharedPreferences(ummoUserPreferences, mode);
-                                SharedPreferences.Editor editor;
-                                editor = sharedPreferences.edit();
-                                editor.putBoolean("SIGNED_UP", true);
-                                editor.putString("USER_NAME", userName);
-                                editor.putString("USER_CONTACT", userContact);
-                                editor.putString("USER_EMAIL", userEmail);
-                                editor.apply();
-
-                                //startActivity();
-                                Log.e(TAG+" onLogin-2", "successfully logging in->"+new String(data));
-                            } else {
-                                Log.e(TAG+" Error", "Something happened"+code+" data "+new String(data));
-                                Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
-                                logWithStaticAPI();
-                                //Show an error
-                            }
-                        }
-                    };*/
-                //}
             }
         });
 
@@ -640,6 +572,13 @@ public class SlideIntro extends AppCompatActivity {
 
     private int getItem(int i) {
         return viewPager.getCurrentItem() + i;
+    }
+
+    public void launchLoginActivity(View view){
+        startActivity(new Intent(SlideIntro.this, LoginActivity.class));
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+        Log.e(TAG, "launchLogInScreen successfully!"+view);
+        finish();
     }
 
     private void launchHomeScreen() {

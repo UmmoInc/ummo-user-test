@@ -72,6 +72,20 @@
             android:backgroundTint="@color/black"
             android:textCursorDrawable="@drawable/cursor"/>
 
+        <TextView
+            android:id="@+id/textViewLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userContactEditText"
+            android:padding="8dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:text="@string/already_have_an_account_log_in"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:onClick="launchLoginActivity"/>
     </RelativeLayout>
 
     <RelativeLayout
