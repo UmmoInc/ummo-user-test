@@ -31,7 +31,7 @@
             android:contentDescription="@string/ummo_logo_text" />
 
         <ProgressBar
-            android:id="@+id/ProgressBar"
+            android:id="@+id/splashProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ummoLogo"

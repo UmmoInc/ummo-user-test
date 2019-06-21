@@ -20,7 +20,7 @@
         android:required="true" />
 
     <application
-        android:name=".User"
+        android:name=".delegate.User"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
@@ -35,20 +35,19 @@
             android:name=".SlideIntro"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".DetailedService"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".AllServices"
             android:label="@string/title_activity_all_services"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".AddCard"
             android:label="@string/title_activity_add_card"
@@ -100,24 +99,31 @@
                     android:pathPrefix="/user"
                     android:scheme="http" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name=".Location"
-            android:label="@string/title_activity_location"></activity>
+            android:label="@string/title_activity_location" >
+        </activity>
+
+        <activity android:name=".ui.LoginActivity"/>
+
         <activity
             android:name=".MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SignUp" />
+
         <activity
             android:name=".Register"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.LAUNCHER" />
 
                 <data
                     android:host="www.ummo.xyz"

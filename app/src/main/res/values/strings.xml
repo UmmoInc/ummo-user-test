@@ -12,7 +12,7 @@
     <string name="ummo_logo_text">Ummo Logo</string>
     <string name="next_registration_button">Next</string>
     <string name="email_prompt">What\'s your email?</string>
-    <string name="email_prompt2">Enter your email address(required)</string>
+    <string name="email_prompt2">Enter your email address (required)</string>
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
     <string name="search_location_string">Search location</string>
@@ -103,6 +103,12 @@
     <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
 
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
-
+    <string name="sentryDsn">https://c46e9ae28cb847e7ab39746902f6c29a@sentry.io/1485110</string>
+    <string name="passcode_screen_title_string">Verify phone number</string>
+    <string name="passcode_prompt_string">Enter the 6 digit code which we have just sent to the phone number you registered with.</string>
+    <string name="resend_btn_string">Resend Code</string>
+    <string name="already_have_an_account_log_in">Already have an account? Log-in here</string>
+    <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
+    <string name="logout">Log out</string>
 
 </resources>

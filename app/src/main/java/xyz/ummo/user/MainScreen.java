@@ -1,10 +1,15 @@
 package xyz.ummo.user;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -13,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import xyz.ummo.user.delegate.Logout;
 import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.fragments.HomeFragment;
 import xyz.ummo.user.fragments.LegalTermsFragment;
@@ -25,6 +31,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -42,7 +49,8 @@ public class MainScreen extends AppCompatActivity
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ImageView messageIconButton;
-    private ProgressBar circularProgreesBarButton;
+    private ProgressBar circularProgressBarButton;
+    private LinearLayout logoutLayout;
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -54,6 +62,7 @@ public class MainScreen extends AppCompatActivity
 
     private boolean anyServiceInProgress = false;
     private int serviceProgress = 0;
+    private FirebaseAuth mAuth;
 
     // flag to load home fragment when user presses back key
     private boolean shouldLoadHomeFragOnBackPress = true;
@@ -61,6 +70,9 @@ public class MainScreen extends AppCompatActivity
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
+    private int mode = Activity.MODE_PRIVATE;
+    private static final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
+    private static final String TAG = "MainScreen";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +82,7 @@ public class MainScreen extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Ummo");
-
+        //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
         new xyz.ummo.user.delegate.PublicService(){
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
@@ -79,11 +91,20 @@ public class MainScreen extends AppCompatActivity
             }
         };
 
+        mAuth = FirebaseAuth.getInstance();
+
+        SharedPreferences mainActPrefs = getSharedPreferences(ummoUserPreferences, mode);
+
+        String userNamePref = mainActPrefs.getString("USER_NAME", "");
+        Log.e(TAG, "Username->"+userNamePref);
+
+        logoutClick();
+
         //initialise  the toolbar icons message icon and circular progress bar icon
         messageIconButton = findViewById(R.id.message_icon_button);
-        circularProgreesBarButton = findViewById(R.id.circular_progressbar_btn);
+        circularProgressBarButton = findViewById(R.id.circular_progressbar_btn);
 
-        circularProgreesBarButton.setProgress(serviceProgress);
+        circularProgressBarButton.setProgress(serviceProgress);
 
         mHandler = new Handler();
 
@@ -141,8 +162,6 @@ public class MainScreen extends AppCompatActivity
         if (id == R.id.nav_home) {
 
         } else if (id == R.id.nav_profile) {
-
-
 
         } else if (id == R.id.nav_payment_methods) {
 
@@ -202,7 +221,7 @@ public class MainScreen extends AppCompatActivity
                 // home
                 setTitle("Ummo");
                 messageIconButton.setVisibility(View.VISIBLE);
-                circularProgreesBarButton.setVisibility(View.VISIBLE);
+                circularProgressBarButton.setVisibility(View.VISIBLE);
                 HomeFragment homeFragment = new HomeFragment(data);
 
                 return homeFragment;
@@ -211,7 +230,7 @@ public class MainScreen extends AppCompatActivity
                 MyProfileFragment myProfileFragment = new MyProfileFragment();
 
                 messageIconButton.setVisibility(View.GONE);
-                circularProgreesBarButton.setVisibility(View.GONE);
+                circularProgressBarButton.setVisibility(View.GONE);
                 setTitle("Profile");
 
                 return myProfileFragment;
@@ -220,7 +239,7 @@ public class MainScreen extends AppCompatActivity
                 // payment methods fragment
                 PaymentMethodsFragment paymentMethodsFragment = new PaymentMethodsFragment();
                 messageIconButton.setVisibility(View.GONE);
-                circularProgreesBarButton.setVisibility(View.GONE);
+                circularProgressBarButton.setVisibility(View.GONE);
                 setTitle("Payment Method");
 
                 return paymentMethodsFragment;
@@ -316,6 +335,10 @@ public class MainScreen extends AppCompatActivity
         this.anyServiceInProgress = anyServiceInProgress;
     }
 
+    public LinearLayout getLogoutLayout() {
+        return logoutLayout;
+    }
+
     public void setServiceProgress(int serviceProgress) {
         this.serviceProgress = serviceProgress;
     }
@@ -373,5 +396,38 @@ public class MainScreen extends AppCompatActivity
         transaction.replace(R.id.frame, fragment, "TAG_PROFILE");
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void logoutClick(){
+        logoutLayout = findViewById(R.id.logoutLinear);
+        logoutLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                ProgressDialog progress = new ProgressDialog(MainScreen.this);
+                progress.setMessage("Logging out...");
+                progress.show();
+                new Logout(MainScreen.this){
+                    @Override
+                    public void done() {
+                        startActivity(new Intent(getApplicationContext(), SlideIntro.class));
+                    }
+                };
+            }
+        });
+    }
+
+    public void logout(View view){
+        mAuth.signOut();
+        ProgressDialog progress = new ProgressDialog(MainScreen.this);
+        progress.setMessage("Logging out...");
+        progress.show();
+        new Logout(this){
+            @Override
+            public void done() {
+                startActivity(new Intent(MainScreen.this, SlideIntro.class));
+            }
+        };
+        // prefManager.unSetFirstTimeLaunch();
     }
 }

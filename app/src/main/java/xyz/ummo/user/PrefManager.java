@@ -12,15 +12,15 @@ import org.json.JSONObject;
 import java.util.regex.Pattern;
 
 public class PrefManager  {
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
-    Context _context;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
+    private Context _context;
 
     // shared pref mode
-    int PRIVATE_MODE = 0;
+    private int PRIVATE_MODE = 0;
 
     // Shared preferences file name
-    private static final String PREF_NAME = "androidhive-welcome";
+    private static final String PREF_NAME = "UMMO_USER_PREFERENCES";
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
@@ -28,6 +28,7 @@ public class PrefManager  {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+        editor.apply();
     }
 
     public void setFirstTimeLaunch(boolean isFirstTime) {
@@ -54,7 +55,7 @@ public class PrefManager  {
                     .getDefaultSharedPreferences(this._context)
                     .getString("jwt", "")
              .split(Pattern.quote("."))[1];
-            return new JSONObject(jwt).getString("_id");
+            return new JSONObject(new String(Base64.decode(jwt,Base64.DEFAULT))).getString("_id");
         }catch (JSONException jse){
             return null;
         }

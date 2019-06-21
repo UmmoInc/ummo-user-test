@@ -70,4 +70,16 @@
         style="?android:attr/progressBarStyleLarge"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/sign_up_btn"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:text="@string/sign_up_button"
+        android:textSize="14sp"
+        android:textColor="@color/White"
+        android:background="@drawable/register_next_button"/>
+
 </RelativeLayout>

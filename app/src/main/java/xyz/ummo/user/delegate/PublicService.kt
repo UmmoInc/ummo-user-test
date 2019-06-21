@@ -8,7 +8,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-val TAG = "PublicService"
+const val TAG = "PublicService.kt"
 
 abstract class PublicService() {
     init {
@@ -16,7 +16,7 @@ abstract class PublicService() {
                 .response { request, response, result ->
                     try {
                         var array = JSONArray(String(response.data))
-                        Log.e("Got new service data",String(response.data))
+                        Log.e(TAG, "Got new service data"+String(response.data))
                         done(fromJSONList(array), response.statusCode)
                     } catch (ex: JSONException) {
                         Log.e(TAG, ex.toString())
@@ -27,7 +27,7 @@ abstract class PublicService() {
 
     private fun fromJSONList(array: JSONArray): List<PublicServiceData> {
         val tmp = ArrayList<PublicServiceData>()
-        for (i in 0..array.length() - 1) {
+        for (i in 0 until array.length()) {
             tmp.add(fromJSONObject(array.getJSONObject(i)))
         }
         return tmp
