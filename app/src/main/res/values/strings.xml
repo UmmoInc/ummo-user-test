@@ -95,7 +95,7 @@
     <string name="cost">R10.00</string>
     <string name="service_docs">-Birth Certificate \n-National ID \n-And more</string>
     <string name="duration">0800h - 1500h </string>
-    
+
     <string name="next">Next</string>
     <string name="skip">Back</string>
     <string name="start">Done</string>
@@ -103,7 +103,6 @@
     <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
 
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
-
 
 
 </resources>

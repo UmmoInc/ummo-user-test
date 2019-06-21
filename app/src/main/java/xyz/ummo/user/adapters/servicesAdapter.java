@@ -13,15 +13,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import javax.xml.datatype.Duration;
-
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.AgentRequest;
-import xyz.ummo.user.Department;
 import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Service;
-import xyz.ummo.user.Services;
 
 public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyViewHolder>  {
 
@@ -66,7 +62,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     @Override
     public servicesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.services_list, parent, false);
+                .inflate(R.layout.service_content, parent, false);
 
         Log.e("Adapter","create vh");
         return new servicesAdapter.MyViewHolder(itemView);
@@ -81,6 +77,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
         holder.servicePersonalDocs.setText(" " + service.getPersonalDocs());
         holder.serviceCost.setText(" " + service.getCost());
         holder.serviceDuration.setText( " " + service.getDuraion());
+
 
         final String serviceName, description, form, personalDocs, cost, duration;
 

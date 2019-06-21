@@ -68,6 +68,8 @@ import java.util.List;
 import java.util.Objects;
 
 import xyz.ummo.user.adapters.PlaceAutocompleteAdapter;
+import xyz.ummo.user.delegate.PublicService;
+import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.delegate.UpdateUserLocation;
 
 import static android.text.Html.fromHtml;
@@ -80,6 +82,8 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
+
 
 
     private GoogleMap mMap;
@@ -103,6 +107,7 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
         setTitle("Select your location");
+
 
         if(!Places.isInitialized()){
 
@@ -560,12 +565,12 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         prefEditor.putFloat("lng", lng.floatValue());
         prefEditor.apply();
 
-        
+
             String _id = new PrefManager(this).getUserId();
             new UpdateUserLocation(this,lat,lng,_id){
                 @Override
                 public void done(@NotNull byte[] data, @NotNull Number code) {
-
+                    Log.e("Location",""+code);
                 }
             };
 
