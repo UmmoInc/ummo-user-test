@@ -35,7 +35,6 @@ public class DetailedService extends AppCompatActivity {
 
     ListView stepsList;
 
-
     ArrayList<String> steps;
 
 
@@ -43,7 +42,7 @@ public class DetailedService extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed_service);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -53,7 +52,7 @@ public class DetailedService extends AppCompatActivity {
 
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_layout);
 
-        AppBarLayout appBar = (AppBarLayout)  findViewById(R.id.app_bar);
+        AppBarLayout appBar = findViewById(R.id.app_bar);
 
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
@@ -72,7 +71,7 @@ public class DetailedService extends AppCompatActivity {
 
         String serviceName = getIntent().getStringExtra("serviceName");
         String description = getIntent().getStringExtra("description");
-;       String cost = getIntent().getStringExtra("cost");
+        String cost = getIntent().getStringExtra("cost");
         String duration = getIntent().getStringExtra("duration");
 
         toolbar.setTitle(serviceName);
@@ -85,8 +84,7 @@ public class DetailedService extends AppCompatActivity {
         serviceCost.setText(cost);
         serviceDuration.setText(duration);
 
-        steps = new ArrayList<String>();
-
+        steps = new ArrayList<>();
 
         stepsList = findViewById(R.id.steps);
         loadSteps();
@@ -100,7 +98,7 @@ public class DetailedService extends AppCompatActivity {
             listItem.measure(0, 0);
             totalHeight += listItem.getMeasuredHeight();
         }
-        ViewGroup.LayoutParams lp = (ViewGroup.LayoutParams) stepsList.getLayoutParams();
+        ViewGroup.LayoutParams lp = stepsList.getLayoutParams();
         int height = totalHeight;
 
         // arraylist list is in which all data is kept

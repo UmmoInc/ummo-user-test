@@ -29,6 +29,7 @@ public class AllServices extends AppCompatActivity {
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
     servicesAdapter adapter;
+    private final static String TAG = "AllServices";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +41,12 @@ public class AllServices extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getIntent().getStringExtra("departmentName"));
 
-
-        loadServices();;
+        loadServices();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
-        recyclerView= (RecyclerView)findViewById(R.id.services_rv);
+        recyclerView= findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -103,7 +103,7 @@ public class AllServices extends AppCompatActivity {
                 "R130", "One day", steps);
         servicesArrayList.add(service);
 
-        service = new Service("Service 2", "Description of servce 2",
+        service = new Service("Service 2", "Description of service 2",
                 "form 2", "docs 2", "cost 2", "duration 2", steps);
         servicesArrayList.add(service);
 

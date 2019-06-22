@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final String TAG = "HomeFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -131,8 +131,6 @@ public class HomeFragment extends Fragment {
         coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), departmentArrayList));
         coverFlow.setOnScrollPositionListener(onScrollListener());
 
-
-
         return view;
     }
 
@@ -140,7 +138,7 @@ public class HomeFragment extends Fragment {
         return new FeatureCoverFlow.OnScrollPositionListener() {
             @Override
             public void onScrolledToPosition(int position) {
-                Log.v("MainActiivty", "position: " + position);
+                Log.e(TAG, "FeatureCoverFlow position: " + position);
             }
 
             @Override

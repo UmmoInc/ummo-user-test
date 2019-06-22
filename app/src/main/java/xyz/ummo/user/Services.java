@@ -39,7 +39,7 @@ public class Services extends AppCompatActivity {
     private RecyclerView recyclerView;
     servicesAdapter adapter;
     private ProgressDialog progress;
-
+    private final static String TAG = "Services";
 
 
     @Override
@@ -52,8 +52,7 @@ public class Services extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getIntent().getStringExtra("departmentName"));
 
-
-         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
@@ -108,13 +107,12 @@ public class Services extends AppCompatActivity {
         searchAutoComplete.setHintTextColor(getResources().getColor(R.color.black));
         searchAutoComplete.setTextColor(getResources().getColor(android.R.color.black));
 
-
         return true;
     }
 
 
     public void loadServices() {
-        Log.e("Load","Services/Products");
+        Log.e(TAG,"loadServices [OUTSIDE GetProducts]");
         new GetProducts(){
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
@@ -125,7 +123,7 @@ public class Services extends AppCompatActivity {
                     for (int i =0;i<productsJsonArray.length();i++){
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
-                        // Can we stick to the convetions we had to keep our work simple. PS If anyone will ever read this comment
+                        // Can we stick to the conventions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
                         String steps[] = new String[0];
                         if(productJsonObject.getJSONObject("requirements").has("procurement_process")){
@@ -155,15 +153,14 @@ public class Services extends AppCompatActivity {
                                 "In Actual Service in ERD",
                                 steps
                         );
-                        Log.e("docs",service.getPersonalDocs());
+                        Log.e(TAG, "GetPersonalDocs->"+service.getPersonalDocs());
                         servicesArrayList.add(service);
-                        Log.e("added",docs);
-
+                        Log.e(TAG, "Added docs->"+docs);
                     }
 
                     adapter.notifyDataSetChanged();
                 }catch (JSONException jse){
-                    Log.e("JSONERROR",jse.toString());
+                    Log.e(TAG, "JSON_ERROR->"+jse.toString());
                     adapter.notifyDataSetChanged();
                 }
             }
