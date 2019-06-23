@@ -25,11 +25,13 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     Context context;
     private String departmentName;
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
 
         public TextView serviceTitle, serviceDescription, serviceForm, servicePersonalDocs,
                 serviceCost, serviceDuration, moreButton;
+        String steps = "";
 
         Button requestAgentButton;
 
@@ -71,9 +73,17 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     @Override
     public void onBindViewHolder(servicesAdapter.MyViewHolder holder, int position) {
         Service service = services.get(position);
+
+        String steps ="";
+
+        for (int i = 0; i< service.getSteps().size(); i++){
+            steps += service.getSteps().get(i)+" ";
+        }
+        holder.steps = steps;
+
         holder.serviceTitle.setText(service.getServiceName());
         holder.serviceDescription.setText(service.getServiceDescription());
-        holder.serviceForm.setText(" " + service.getForm());
+        holder.serviceForm.setText(" " + steps);
         holder.servicePersonalDocs.setText(" " + service.getPersonalDocs());
         holder.serviceCost.setText(" " + service.getCost());
         holder.serviceDuration.setText( " " + service.getDuraion());
@@ -96,13 +106,11 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 i.putExtra("departmentName", departmentName);
                 i.putExtra("serviceName", serviceName);
                 i.putExtra("form", form);
-                i.putExtra("personalDocs", personalDocs);
+                i.putExtra("docs", personalDocs);
                 i.putExtra("cost", cost);
+                i.putExtra("steps",holder.steps);
                 i.putExtra("duration", duration);
-                ((Activity)context).finish();
                 context.startActivity(i);
-
-
             }
         });
 
@@ -116,8 +124,9 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 intent.putExtra("serviceName", serviceName);
                 intent.putExtra("description", description);
                 intent.putExtra("cost", cost);
+                intent.putExtra("steps",holder.steps);
                 intent.putExtra("duration", duration);
-                ((Activity)context).finish();
+                intent.putExtra("docs",personalDocs);
                 context.startActivity(intent);
 
             }
