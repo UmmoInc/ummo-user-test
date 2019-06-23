@@ -52,6 +52,7 @@ public class MainScreen extends AppCompatActivity
     private ImageView messageIconButton;
     private ProgressBar circularProgressBarButton;
     private LinearLayout logoutLayout;
+    private TextView navigationHeaderTitle, navigationHeaderSubtitle;
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -97,6 +98,7 @@ public class MainScreen extends AppCompatActivity
         SharedPreferences mainActPrefs = getSharedPreferences(ummoUserPreferences, mode);
 
         String userNamePref = mainActPrefs.getString("USER_NAME", "");
+        String userEmailPref = mainActPrefs.getString("USER_EMAIL","");
         Log.e(TAG, "Username->"+userNamePref);
 
         logoutClick();
@@ -107,6 +109,13 @@ public class MainScreen extends AppCompatActivity
 
         circularProgressBarButton.setProgress(serviceProgress);
 
+        navigationView = findViewById(R.id.nav_view);
+        View headerLayout = navigationView.getHeaderView(0);
+        navigationHeaderTitle = headerLayout.findViewById(R.id.navHeaderUsername);
+        navigationHeaderTitle.setText("Name: "+userNamePref);
+        navigationHeaderSubtitle = headerLayout.findViewById(R.id.navHeaderEmail);
+        navigationHeaderSubtitle.setText("Email: "+userEmailPref);
+
         mHandler = new Handler();
 
         drawer = findViewById(R.id.drawer_layout);
@@ -115,9 +124,7 @@ public class MainScreen extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         // initializing navigation menu
         setUpNavigationView();
@@ -189,10 +196,10 @@ public class MainScreen extends AppCompatActivity
 
         switch (menuItem.getItemId()){
             case R.id.nav_home:
-//                selectedFragment = HomeFragment.newInstance(List<PublicServiceData> data);
+//                selectedFragment = HomeFragment.newInstance(data);
                 break;
             case R.id.nav_profile:
-                selectedFragment = MyProfileFragment.newInstance();
+//                selectedFragment = MyProfileFragment.newInstance();
                 break;
             case R.id.nav_payment_methods:
                 break;
@@ -202,7 +209,7 @@ public class MainScreen extends AppCompatActivity
                 break;
 
         }
-        fragmentTransaction.replace(R.id.rootLayout, selectedFragment);
+        fragmentTransaction.replace(R.id.frame, selectedFragment);
         fragmentTransaction.commit();
     }
 
@@ -305,7 +312,7 @@ public class MainScreen extends AppCompatActivity
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_HOME]->"+menuItem);
-                        selectFragment(menuItem);
+//                        selectFragment(menuItem);
                         break;
                     case R.id.nav_profile:
                         navItemIndex = 1;
