@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Services extends AppCompatActivity {
 
@@ -50,8 +51,14 @@ public class Services extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle(getIntent().getStringExtra("departmentName"));
-        String public_service = getIntent().getStringExtra("public_service");
+        try {
+            setTitle(getIntent().getStringExtra("departmentName"));
+            String public_service = getIntent().getStringExtra("public_service");
+            loadServices(public_service);
+        }catch (Exception e){
+            Log.e("Bohoo",e.toString());
+        }
+
 
         Log.e("LOG","Oncreate");
 
@@ -63,7 +70,6 @@ public class Services extends AppCompatActivity {
         recyclerView = findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        loadServices(public_service);
 
     }
 
@@ -129,12 +135,12 @@ public class Services extends AppCompatActivity {
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
                         // Can we stick to the convetions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
-                        String steps[] = new String[0];
-                        if (productJsonObject.getJSONObject("requirements").has("procurement_process")) {
-                            JSONArray stepsJsonArray = productJsonObject.getJSONObject("requirements").getJSONArray("procurement_process");
-                            steps = new String[stepsJsonArray.length()];
+                        List<String> steps = new ArrayList<>();
+                        if (productJsonObject.has("procurement_process")) {
+                            JSONArray stepsJsonArray = productJsonObject.getJSONArray("procurement_process");
+                            Log.e("Steps",stepsJsonArray.toString());
                             for (int j = 0; j < stepsJsonArray.length(); j++) {
-                                steps[j] = stepsJsonArray.getString(j);
+                                steps.add(stepsJsonArray.getString(j));
                             }
                         }
 
