@@ -189,9 +189,10 @@ public class MainScreen extends AppCompatActivity
 
         switch (menuItem.getItemId()){
             case R.id.nav_home:
-//                selectedFragment = HomeFragment.newInstance()
+//                selectedFragment = HomeFragment.newInstance(List<PublicServiceData> data);
                 break;
             case R.id.nav_profile:
+                selectedFragment = MyProfileFragment.newInstance();
                 break;
             case R.id.nav_payment_methods:
                 break;
@@ -218,6 +219,7 @@ public class MainScreen extends AppCompatActivity
 
             return;
         }
+
         Runnable mPendingRunnable = new Runnable() {
             @Override
             public void run() {
@@ -303,7 +305,7 @@ public class MainScreen extends AppCompatActivity
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_HOME]->"+menuItem);
-                        //selectFragment(menuItem);
+                        selectFragment(menuItem);
                         break;
                     case R.id.nav_profile:
                         navItemIndex = 1;
