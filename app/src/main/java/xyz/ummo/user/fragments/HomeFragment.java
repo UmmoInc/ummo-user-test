@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
 
         //TODO get all departments and do the stuff below
         final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
-        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), departmentArrayList));
+        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
         coverFlow.setOnScrollPositionListener(onScrollListener());
 
 

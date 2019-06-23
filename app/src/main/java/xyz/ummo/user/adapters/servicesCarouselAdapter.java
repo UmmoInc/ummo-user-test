@@ -21,10 +21,11 @@ import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Service;
 import xyz.ummo.user.Services;
+import xyz.ummo.user.delegate.PublicServiceData;
 
 public class servicesCarouselAdapter extends BaseAdapter {
 
-    private List<Department> departments;
+    private List<PublicServiceData> departments;
     Context context;
     String departmentName;
 
@@ -44,7 +45,7 @@ public class servicesCarouselAdapter extends BaseAdapter {
     }
 
 
-    public servicesCarouselAdapter(Context context, List<Department>  departments) {
+    public servicesCarouselAdapter(Context context, List<PublicServiceData>  departments) {
         this.departments = departments;
         this.context = context;
     }
@@ -65,7 +66,7 @@ public class servicesCarouselAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Department department= departments.get(position);
+        PublicServiceData item = departments.get(position);
 
 
         viewHolder.serviceGround.isClickable();
@@ -74,7 +75,9 @@ public class servicesCarouselAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(context, Services.class);
-                intent.putExtra("departmentName", departmentName);
+                intent.putExtra("departmentName", departments.get(position).getServiceName());
+                intent.putExtra("public_service",departments.get(position).getServiceCode());
+
                 ((Activity)context).finish();
                 context.startActivity(intent);
 
@@ -82,8 +85,8 @@ public class servicesCarouselAdapter extends BaseAdapter {
         });
 
 
-        viewHolder.departmentTitle.setText("Browse " + department.getDepartmentName() + " Services");
-        departmentName = department.getDepartmentName();
+        viewHolder.departmentTitle.setText("Browse " + item.getServiceName() + " Services");
+        //departmentName = department.getDepartmentName();
 
         convertView.setOnClickListener(onClickListener(position));
 
@@ -97,7 +100,8 @@ public class servicesCarouselAdapter extends BaseAdapter {
             public void onClick(View v) {
 
                 Intent intent= new Intent(context, Services.class);
-                intent.putExtra("departmentName", departmentName);
+                intent.putExtra("departmentName", departments.get(position).getServiceName());
+                intent.putExtra("public_service",departments.get(position).getServiceCode());
                 ((Activity)context).finish();
                 context.startActivity(intent);
             }
@@ -113,7 +117,7 @@ public class servicesCarouselAdapter extends BaseAdapter {
     }
 
     @Override
-    public Department getItem(int position) {
+    public PublicServiceData getItem(int position) {
         return departments.get(position);
     }
 

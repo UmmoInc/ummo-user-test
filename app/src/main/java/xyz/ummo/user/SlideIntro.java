@@ -585,7 +585,7 @@ public class SlideIntro extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
-        startActivity(new Intent(SlideIntro.this, Home.class));
+        startActivity(new Intent(SlideIntro.this, MainScreen.class));
         finish();
     }
 

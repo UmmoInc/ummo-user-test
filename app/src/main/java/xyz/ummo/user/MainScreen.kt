@@ -154,7 +154,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         //you can leave it empty
     }
 
-    private fun loadHomeFragment(data: List<*>) {
+    private fun loadHomeFragment(data: List<PublicServiceData>) {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
         if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
@@ -173,9 +173,9 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         }
 
         // If mPendingRunnable is not null, then add to the message queue
-        if (mPendingRunnable != null) {
-            mHandler!!.post(mPendingRunnable)
-        }
+
+        mHandler!!.post(mPendingRunnable)
+
 
         //Closing drawer on item click
         drawer!!.closeDrawers()
@@ -184,7 +184,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         invalidateOptionsMenu()
     }
 
-    private fun getHomeFragment(data: List<*>): Fragment {
+    private fun getHomeFragment(data: List<PublicServiceData>): Fragment {
         when (navItemIndex) {
             0 -> {
                 // home
@@ -275,19 +275,19 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
 
         val actionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
-            override fun onDrawerClosed(drawerView: View?) {
-                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
-                super.onDrawerClosed(drawerView)
-            }
+            /* override fun onDrawerClosed(drawerView: View?) {
+                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                 super.onDrawerClosed(drawerView)
+             }
 
-            override fun onDrawerOpened(drawerView: View?) {
-                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-                super.onDrawerOpened(drawerView)
-            }
+             override fun onDrawerOpened(drawerView: View?) {
+                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+                 super.onDrawerOpened(drawerView)
+             }*/
         }
 
         //Setting the actionbarToggle to drawer layout
-        drawer!!.setDrawerListener(actionBarDrawerToggle)
+        drawer?.setDrawerListener(actionBarDrawerToggle)
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState()

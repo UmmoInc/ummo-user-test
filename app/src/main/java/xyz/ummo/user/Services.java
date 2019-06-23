@@ -51,6 +51,7 @@ public class Services extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getIntent().getStringExtra("departmentName"));
+        String public_service = getIntent().getStringExtra("public_service");
 
         Log.e("LOG","Oncreate");
 
@@ -62,7 +63,7 @@ public class Services extends AppCompatActivity {
         recyclerView = findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        loadServices();
+        loadServices(public_service);
 
     }
 
@@ -114,9 +115,9 @@ public class Services extends AppCompatActivity {
     }
 
 
-    public void loadServices() {
+    public void loadServices(String public_service) {
         Log.e("Load", "Services/Products");
-        new GetProducts() {
+        new GetProducts(this,public_service) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
                 System.out.println(new String(data));
@@ -153,7 +154,7 @@ public class Services extends AppCompatActivity {
                                 "TF is a Form?",
                                 docs,
                                 productJsonObject.getJSONObject("requirements").getString("procurement_cost"),
-                                "In Actual Service in ERD",
+                                productJsonObject.getString("duration"),
                                 steps
                         );
                         Log.e("docs", service.getPersonalDocs());
