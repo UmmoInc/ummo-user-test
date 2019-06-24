@@ -60,8 +60,6 @@ public class Services extends AppCompatActivity {
             Log.e("Bohoo",e.toString());
         }
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-
         Log.e("LOG","Oncreate");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

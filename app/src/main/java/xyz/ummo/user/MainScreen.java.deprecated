@@ -83,7 +83,7 @@ public class MainScreen extends AppCompatActivity
         setSupportActionBar(toolbar);
         setTitle("Ummo");
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
-        new xyz.ummo.user.delegate.PublicService(){
+        new xyz.ummo.user.delegate.PublicService(this){
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
                 loadHomeFragment(data);
