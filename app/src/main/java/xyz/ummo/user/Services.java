@@ -15,6 +15,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import xyz.ummo.user.adapters.servicesAdapter;
 import xyz.ummo.user.delegate.GetProducts;
 
@@ -32,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Services extends AppCompatActivity {
 
@@ -50,16 +52,24 @@ public class Services extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        setTitle(getIntent().getStringExtra("departmentName"));
+        try {
+            setTitle(getIntent().getStringExtra("departmentName"));
+            String public_service = getIntent().getStringExtra("public_service");
+            loadServices(public_service);
+        }catch (Exception e){
+            Log.e("Bohoo",e.toString());
+        }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
+        Log.e("LOG","Oncreate");
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
-        recyclerView= findViewById(R.id.services_rv);
+        recyclerView = findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        loadServices();
 
     }
 
@@ -72,13 +82,13 @@ public class Services extends AppCompatActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, MainScreen.class);
                 startActivity(intent);
                 finish();
-                return  true;
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -111,36 +121,36 @@ public class Services extends AppCompatActivity {
     }
 
 
-    public void loadServices() {
-        Log.e(TAG,"loadServices [OUTSIDE GetProducts]");
-        new GetProducts(){
+    public void loadServices(String public_service) {
+        Log.e("Load", "Services/Products");
+        new GetProducts(this,public_service) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
                 System.out.println(new String(data));
                 try {
                     JSONArray productsJsonArray = new JSONArray(new String(data));
                     servicesArrayList.clear();
-                    for (int i =0;i<productsJsonArray.length();i++){
+                    for (int i = 0; i < productsJsonArray.length(); i++) {
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
                         // Can we stick to the conventions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
-                        String steps[] = new String[0];
-                        if(productJsonObject.getJSONObject("requirements").has("procurement_process")){
-                            JSONArray stepsJsonArray = productJsonObject.getJSONObject("requirements").getJSONArray("procurement_process");
-                            steps = new String[stepsJsonArray.length()];
-                            for (int j=0; j<stepsJsonArray.length();j++){
-                                steps[j] = stepsJsonArray.getString(j);
+                        List<String> steps = new ArrayList<>();
+                        if (productJsonObject.has("procurement_process")) {
+                            JSONArray stepsJsonArray = productJsonObject.getJSONArray("procurement_process");
+                            Log.e("Steps",stepsJsonArray.toString());
+                            for (int j = 0; j < stepsJsonArray.length(); j++) {
+                                steps.add(stepsJsonArray.getString(j));
                             }
                         }
 
                         String docs = "";
 
-                        if(productJsonObject.getJSONObject("requirements").has("documents")){
+                        if (productJsonObject.getJSONObject("requirements").has("documents")) {
                             JSONArray docsArray = productJsonObject.getJSONObject("requirements").getJSONArray("documents");
-                            for (int j=0;j<docsArray.length();j++){
+                            for (int j = 0; j < docsArray.length(); j++) {
                                 docs += docsArray.getString(j);
-                                docs += j==docsArray.length()-1?"":", ";
+                                docs += j == docsArray.length() - 1 ? "" : ", ";
                             }
                         }
 
@@ -150,7 +160,7 @@ public class Services extends AppCompatActivity {
                                 "TF is a Form?",
                                 docs,
                                 productJsonObject.getJSONObject("requirements").getString("procurement_cost"),
-                                "In Actual Service in ERD",
+                                productJsonObject.getString("duration"),
                                 steps
                         );
                         Log.e(TAG, "GetPersonalDocs->"+service.getPersonalDocs());
@@ -158,18 +168,21 @@ public class Services extends AppCompatActivity {
                         Log.e(TAG, "Added docs->"+docs);
                     }
 
-                    adapter.notifyDataSetChanged();
-                }catch (JSONException jse){
-                    Log.e(TAG, "JSON_ERROR->"+jse.toString());
+
+                } catch (JSONException jse) {
+                    Log.e("JSONERROR", jse.toString());
                     adapter.notifyDataSetChanged();
                 }
+                Log.e("Adapter","Should update here");
+              //  adapter = new servicesAdapter(Services.this, servicesArrayList, getIntent().getStringExtra("departmentName"));
+                adapter.notifyDataSetChanged();
             }
         };
 
     }
 
-    public void requestAgent(View view){
-        progress=new ProgressDialog(this);
+    public void requestAgent(View view) {
+        progress = new ProgressDialog(this);
         progress.setMessage("Downloading Music");
         progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progress.setIndeterminate(true);
@@ -182,7 +195,7 @@ public class Services extends AppCompatActivity {
             public void run() {
                 int jumpTime = 0;
 
-                while(jumpTime < totalProgressTime) {
+                while (jumpTime < totalProgressTime) {
                     try {
                         sleep(200);
                         jumpTime += 5;

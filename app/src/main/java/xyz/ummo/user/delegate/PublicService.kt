@@ -1,25 +1,32 @@
 package xyz.ummo.user.delegate
 
+import android.app.Activity
 import android.content.Context
 import android.preference.PreferenceManager
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
+import com.google.gson.JsonArray
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 const val TAG = "PublicService.kt"
 
-abstract class PublicService() {
+abstract class PublicService(val activity:Activity) {
     init {
         Fuel.get("/public-service")
                 .response { request, response, result ->
                     try {
-                        var array = JSONArray(String(response.data))
-                        Log.e(TAG, "Got new service data"+String(response.data))
-                        done(fromJSONList(array), response.statusCode)
+                        activity.runOnUiThread(Runnable {
+                            var array = JSONArray(String(response.data))
+                            Log.e(TAG, "Got new service data"+String(response.data))
+                            done(fromJSONList(array), response.statusCode)
+                        })
+
                     } catch (ex: JSONException) {
-                        Log.e(TAG, ex.toString())
+                        Log.e(TAG, String(response.data))
+                        Log.e(TAG, "Here  error $ex")
+                        done(fromJSONList(JSONArray("[]")),200)
                     }
 
                 }

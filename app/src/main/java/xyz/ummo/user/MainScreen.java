@@ -16,7 +16,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import xyz.ummo.user.delegate.Logout;
@@ -52,7 +51,6 @@ public class MainScreen extends AppCompatActivity
     private ImageView messageIconButton;
     private ProgressBar circularProgressBarButton;
     private LinearLayout logoutLayout;
-    private TextView navigationHeaderTitle, navigationHeaderSubtitle;
 
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
@@ -98,7 +96,6 @@ public class MainScreen extends AppCompatActivity
         SharedPreferences mainActPrefs = getSharedPreferences(ummoUserPreferences, mode);
 
         String userNamePref = mainActPrefs.getString("USER_NAME", "");
-        String userEmailPref = mainActPrefs.getString("USER_EMAIL","");
         Log.e(TAG, "Username->"+userNamePref);
 
         logoutClick();
@@ -109,13 +106,6 @@ public class MainScreen extends AppCompatActivity
 
         circularProgressBarButton.setProgress(serviceProgress);
 
-        navigationView = findViewById(R.id.nav_view);
-        View headerLayout = navigationView.getHeaderView(0);
-        navigationHeaderTitle = headerLayout.findViewById(R.id.navHeaderUsername);
-        navigationHeaderTitle.setText("Name: "+userNamePref);
-        navigationHeaderSubtitle = headerLayout.findViewById(R.id.navHeaderEmail);
-        navigationHeaderSubtitle.setText("Email: "+userEmailPref);
-
         mHandler = new Handler();
 
         drawer = findViewById(R.id.drawer_layout);
@@ -124,7 +114,9 @@ public class MainScreen extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         // initializing navigation menu
         setUpNavigationView();
@@ -167,7 +159,7 @@ public class MainScreen extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        /*if (id == R.id.nav_home) {
+        if (id == R.id.nav_home) {
 
         } else if (id == R.id.nav_profile) {
 
@@ -178,39 +170,11 @@ public class MainScreen extends AppCompatActivity
         }
         else if (id == R.id.nav_legal_terms) {
 
-        }*/
-
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    protected void selectFragment(MenuItem menuItem){
-        menuItem.setChecked(true);
-        FragmentManager fragmentManager;
-        FragmentTransaction fragmentTransaction;
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment selectedFragment = null;
-
-        switch (menuItem.getItemId()){
-            case R.id.nav_home:
-//                selectedFragment = HomeFragment.newInstance(data);
-                break;
-            case R.id.nav_profile:
-//                selectedFragment = MyProfileFragment.newInstance();
-                break;
-            case R.id.nav_payment_methods:
-                break;
-            case R.id.nav_service_history:
-                break;
-            case R.id.nav_legal_terms:
-                break;
-
-        }
-        fragmentTransaction.replace(R.id.frame, selectedFragment);
-        fragmentTransaction.commit();
     }
 
     @Override
@@ -226,7 +190,6 @@ public class MainScreen extends AppCompatActivity
 
             return;
         }
-
         Runnable mPendingRunnable = new Runnable() {
             @Override
             public void run() {
@@ -302,37 +265,30 @@ public class MainScreen extends AppCompatActivity
 
             // This method will trigger on item Click of navigation menu
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//                selectFragment(menuItem);
-//                return false;
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
                     //Replacing the main content with ContentFragment Which is our Inbox View;
                     case R.id.nav_home:
                         navItemIndex = 0;
                         CURRENT_TAG = TAG_HOME;
-                        Log.e(TAG, "onNavigationItemSelected: [NAV_HOME]->"+menuItem);
-//                        selectFragment(menuItem);
                         break;
                     case R.id.nav_profile:
                         navItemIndex = 1;
                         CURRENT_TAG = TAG_PROFILE;
-                        Log.e(TAG, "onNavigationItemSelected: [NAV_PROFILE]->"+menuItem);
                         break;
                     case R.id.nav_payment_methods:
                         navItemIndex = 2;
                         CURRENT_TAG = TAG_PAYMENTS;
-                        Log.e(TAG, "onNavigationItemSelected: [NAV_PAYMENT]->"+menuItem);
                         break;
                     case R.id.nav_service_history:
                         navItemIndex = 3;
                         CURRENT_TAG = TAG_SERVICE_HISTORY;
-                        Log.e(TAG, "onNavigationItemSelected: [NAV_HISTORY]->"+menuItem);
                         break;
                     case R.id.nav_legal_terms:
                         navItemIndex = 4;
                         CURRENT_TAG = TAG_LEGAL_TERMS;
-                        Log.e(TAG, "onNavigationItemSelected: [NAV_LEGAL]->"+menuItem);
                         break;
                     default:
                         navItemIndex = 0;
@@ -351,6 +307,7 @@ public class MainScreen extends AppCompatActivity
                 return true;
             }
         });
+
 
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
@@ -376,6 +333,10 @@ public class MainScreen extends AppCompatActivity
 
     public void setAnyServiceInProgress(boolean anyServiceInProgress) {
         this.anyServiceInProgress = anyServiceInProgress;
+    }
+
+    public LinearLayout getLogoutLayout() {
+        return logoutLayout;
     }
 
     public void setServiceProgress(int serviceProgress) {

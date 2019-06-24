@@ -30,8 +30,9 @@ public class DetailedService extends AppCompatActivity {
 
     NestedScrollView nestedScrollView;
     CollapsingToolbarLayout mCollapsingToolbarLayout;
-    TextView serviceDescription, serviceCost, serviceDuration;
+    TextView serviceDescription, serviceCost, serviceDuration, serviceDocs;
     Toolbar toolbar;
+
 
     ListView stepsList;
 
@@ -73,21 +74,27 @@ public class DetailedService extends AppCompatActivity {
         String description = getIntent().getStringExtra("description");
         String cost = getIntent().getStringExtra("cost");
         String duration = getIntent().getStringExtra("duration");
+        String _steps = getIntent().getStringExtra("steps");
+        String docs = getIntent().getStringExtra("docs");
+
 
         toolbar.setTitle(serviceName);
 
         serviceDescription = findViewById(R.id.service_description);
         serviceCost = findViewById(R.id.service_cost);
         serviceDuration = findViewById(R.id.service_duration);
-
+        serviceDocs = findViewById(R.id.service_documents);
+        serviceDocs.setText(docs);
         serviceDescription.setText(description);
         serviceCost.setText(cost);
+
         serviceDuration.setText(duration);
 
         steps = new ArrayList<>();
 
+        steps.add(_steps);
         stepsList = findViewById(R.id.steps);
-        loadSteps();
+
 
         ArrayAdapter<String> arrayAdapter =
                 new ArrayAdapter<String>(this, R.layout.steps_list, R.id.step,steps);
@@ -131,14 +138,4 @@ public class DetailedService extends AppCompatActivity {
         }
     }
 
-    public void loadSteps(){
-
-        steps.add("step 1");
-        steps.add("step 2");
-        steps.add("step 3");
-        steps.add("step 4");
-        steps.add("step 5");
-        steps.add("step 6");
-
-    }
 }

@@ -95,7 +95,7 @@
     <string name="cost">R10.00</string>
     <string name="service_docs">-Birth Certificate \n-National ID \n-And more</string>
     <string name="duration">0800h - 1500h </string>
-    
+
     <string name="next">Next</string>
     <string name="skip">Back</string>
     <string name="start">Done</string>
@@ -110,6 +110,5 @@
     <string name="already_have_an_account_log_in">Already have an account? Log-in here</string>
     <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
     <string name="logout">Log out</string>
-
 
 </resources>
