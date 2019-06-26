@@ -110,5 +110,6 @@
     <string name="already_have_an_account_log_in">Already have an account? Log-in here</string>
     <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
     <string name="logout">Log out</string>
+    <string name="search">Search</string>
 
 </resources>

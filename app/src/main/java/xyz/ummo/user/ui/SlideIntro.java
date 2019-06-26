@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -10,8 +10,10 @@ import io.sentry.Sentry;
 import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.UserBuilder;
+import xyz.ummo.user.MainActivity;
+import xyz.ummo.user.utilities.PrefManager;
+import xyz.ummo.user.R;
 import xyz.ummo.user.delegate.Login;
-import xyz.ummo.user.ui.LoginActivity;
 
 
 import android.app.Activity;
@@ -206,7 +208,6 @@ public class SlideIntro extends AppCompatActivity {
 
     public void signUpClick(){
         Log.e(TAG+" signUpClick", "This is inside the buttonClick");
-        signUpButton = findViewById(R.id.sign_up_btn);
         signUpButton = findViewById(R.id.sign_up_btn);
         signUpButton.setOnClickListener(v -> {
             userEmailField = findViewById(R.id.userEmailEditText);

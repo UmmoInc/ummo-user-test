@@ -125,7 +125,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         //TODO get all departments and do the stuff below
         final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
         coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
@@ -143,7 +142,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onScrolling() {
-                Log.i("MainActivity", "scrolling");
+                Log.e(TAG, "onScrolling");
             }
         };
     }
@@ -156,7 +155,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         //if (context instanceof OnFragmentInteractionListener) {
           //  mListener = (OnFragmentInteractionListener) context;
@@ -187,7 +186,7 @@ public class HomeFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void loadDepartments(List<PublicServiceData> data) {
+    private void loadDepartments(List<PublicServiceData> data) {
         for(int i = 0; i<data.size();i++){
             departmentArrayList.add(new Department(data.get(i).getServiceName()));
         }

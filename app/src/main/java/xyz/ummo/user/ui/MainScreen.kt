@@ -1,9 +1,8 @@
-package xyz.ummo.user
+package xyz.ummo.user.ui
 
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import com.google.android.material.navigation.NavigationView
@@ -15,7 +14,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
@@ -33,6 +31,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import xyz.ummo.user.EditMyProfile
+import xyz.ummo.user.R
 
 class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,6 +40,9 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
 
     private var drawer: DrawerLayout? = null
     private var navigationView: NavigationView? = null
+    private var navigationHeader: View? = null
+    private var navHeaderUserName: TextView? = null
+    private var navHeaderUserEmail: TextView? = null
     private var toolbar: Toolbar? = null
     private var messageIconButton: ImageView? = null
     private var circularProgressBarButton: ProgressBar? = null
@@ -75,6 +78,8 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
 
         val userNamePref = mainActPrefs.getString("USER_NAME", "")
+        val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
+
         Log.e(TAG, "Username->" + userNamePref!!)
 
         logoutClick()
@@ -96,6 +101,12 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         navigationView = findViewById(R.id.nav_view)
         navigationView!!.setNavigationItemSelectedListener(this)
 
+        navigationHeader = navigationView!!.getHeaderView(0)
+        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
+        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
+
+        navHeaderUserName!!.text = userNamePref
+        navHeaderUserEmail!!.text = userEmailPref
 
         // initializing navigation menu
         setUpNavigationView()
@@ -260,11 +271,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
             }
 
             //Checking if the item is in checked state or not, if not make it in checked state
-            if (menuItem.isChecked) {
-                menuItem.isChecked = false
-            } else {
-                menuItem.isChecked = true
-            }
+            menuItem.isChecked = !menuItem.isChecked
             menuItem.isChecked = true
 
             // loadHomeFragment(data);
