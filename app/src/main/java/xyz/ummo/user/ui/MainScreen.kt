@@ -1,9 +1,8 @@
-package xyz.ummo.user
+package xyz.ummo.user.ui
 
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import com.google.android.material.navigation.NavigationView
@@ -15,15 +14,14 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.fragments.HomeFragment
-import xyz.ummo.user.fragments.LegalTermsFragment
-import xyz.ummo.user.fragments.MyProfileFragment
-import xyz.ummo.user.fragments.PaymentMethodsFragment
-import xyz.ummo.user.fragments.ServiceHistoryFragment
+import xyz.ummo.user.ui.fragments.HomeFragment
+import xyz.ummo.user.ui.fragments.LegalTermsFragment
+import xyz.ummo.user.ui.fragments.ProfileFragment
+import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
+import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
 import android.os.Handler
 import android.util.Log
@@ -33,13 +31,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import xyz.ummo.user.EditMyProfile
+import xyz.ummo.user.R
 
-class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     private val fragment: Fragment? = null
 
     private var drawer: DrawerLayout? = null
     private var navigationView: NavigationView? = null
+    private var navigationHeader: View? = null
+    private var navHeaderUserName: TextView? = null
+    private var navHeaderUserEmail: TextView? = null
     private var toolbar: Toolbar? = null
     private var messageIconButton: ImageView? = null
     private var circularProgressBarButton: ProgressBar? = null
@@ -75,6 +78,8 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
 
         val userNamePref = mainActPrefs.getString("USER_NAME", "")
+        val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
+
         Log.e(TAG, "Username->" + userNamePref!!)
 
         logoutClick()
@@ -96,6 +101,12 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         navigationView = findViewById(R.id.nav_view)
         navigationView!!.setNavigationItemSelectedListener(this)
 
+        navigationHeader = navigationView!!.getHeaderView(0)
+        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
+        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
+
+        navHeaderUserName!!.text = userNamePref
+        navHeaderUserEmail!!.text = userEmailPref
 
         // initializing navigation menu
         setUpNavigationView()
@@ -115,6 +126,29 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun displaySelectedScreen(itemId: Int) {
+        var selectedFragment: Fragment? = null
+
+        var data: List<PublicServiceData>
+
+        when (itemId) {
+            R.id.nav_home -> selectedFragment = HomeFragment()
+            R.id.nav_profile -> selectedFragment = ProfileFragment()
+            R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
+            R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
+            R.id.nav_legal_terms -> selectedFragment = LegalTermsFragment()
+        }
+
+        if (selectedFragment != null) {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, selectedFragment)
+            fragmentTransaction.commit()
+        }
+
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        drawerLayout.closeDrawers()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -159,7 +193,6 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
         // just close the navigation drawer
         if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
             drawer!!.closeDrawers()
-
             return
         }
         val mPendingRunnable = Runnable {
@@ -196,7 +229,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
             }
             1 -> {
                 // My Profile
-                val myProfileFragment = MyProfileFragment()
+                val myProfileFragment = ProfileFragment()
 
                 messageIconButton!!.visibility = View.GONE
                 circularProgressBarButton!!.visibility = View.GONE
@@ -232,39 +265,10 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
     private fun setUpNavigationView() {
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView!!.setNavigationItemSelectedListener { menuItem ->
-            // This method will trigger on item Click of navigation menu
-            //Check to see which item was being clicked and perform appropriate action
-            when (menuItem.itemId) {
-                //Replacing the main content with ContentFragment Which is our Inbox View;
-                R.id.nav_home -> {
-                    navItemIndex = 0
-                    CURRENT_TAG = TAG_HOME
-                }
-                R.id.nav_profile -> {
-                    navItemIndex = 1
-                    CURRENT_TAG = TAG_PROFILE
-                }
-                R.id.nav_payment_methods -> {
-                    navItemIndex = 2
-                    CURRENT_TAG = TAG_PAYMENTS
-                }
-                R.id.nav_service_history -> {
-                    navItemIndex = 3
-                    CURRENT_TAG = TAG_SERVICE_HISTORY
-                }
-                R.id.nav_legal_terms -> {
-                    navItemIndex = 4
-                    CURRENT_TAG = TAG_LEGAL_TERMS
-                }
-                else -> navItemIndex = 0
-            }
 
+            displaySelectedScreen(menuItem.itemId)
             //Checking if the item is in checked state or not, if not make it in checked state
-            if (menuItem.isChecked) {
-                menuItem.isChecked = false
-            } else {
-                menuItem.isChecked = true
-            }
+            menuItem.isChecked = !menuItem.isChecked
             menuItem.isChecked = true
 
             // loadHomeFragment(data);
@@ -272,18 +276,8 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
             true
         }
 
-
         val actionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
-            /* override fun onDrawerClosed(drawerView: View?) {
-                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
-                 super.onDrawerClosed(drawerView)
-             }
-
-             override fun onDrawerOpened(drawerView: View?) {
-                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-                 super.onDrawerOpened(drawerView)
-             }*/
         }
 
         //Setting the actionbarToggle to drawer layout
@@ -335,7 +329,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
             }
         }
 
-        val myProfileFragment = MyProfileFragment()
+        val myProfileFragment = ProfileFragment()
         val intent = Intent(this, EditMyProfile::class.java)
         val tag = myProfileFragment.tag
         intent.putExtra(EditMyProfile.CONST_TAG, tag)
@@ -346,7 +340,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
 
     fun finishEditProfile(view: View) {
 
-        val fragment = MyProfileFragment()
+        val fragment = ProfileFragment()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.frame, fragment, "TAG_PROFILE")
         transaction.addToBackStack(null)
@@ -382,7 +376,6 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
     }
 
     companion object {
-
         // tags used to attach the fragments
         private val TAG_HOME = "home"
         private val TAG_PROFILE = "profile"
@@ -393,7 +386,7 @@ class MainScreen : AppCompatActivity(), MyProfileFragment.OnFragmentInteractionL
 
         // index to identify current nav menu item
         var navItemIndex = 0
-        private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
-        private val TAG = "MainScreen"
+        private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
+        private const val TAG = "MainScreen"
     }
 }

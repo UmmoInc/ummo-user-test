@@ -22,9 +22,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 
-import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
@@ -60,17 +58,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import xyz.ummo.user.adapters.PlaceAutocompleteAdapter;
-import xyz.ummo.user.delegate.PublicService;
-import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.delegate.UpdateUserLocation;
+import xyz.ummo.user.ui.MainScreen;
+import xyz.ummo.user.utilities.PrefManager;
 
 import static android.text.Html.fromHtml;
 import static androidx.constraintlayout.widget.Constraints.TAG;

@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -18,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import xyz.ummo.user.adapters.servicesAdapter;
 import xyz.ummo.user.delegate.GetProducts;
+import xyz.ummo.user.ui.MainScreen;
 
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,8 +57,9 @@ public class Services extends AppCompatActivity {
             Log.e("Bohoo",e.toString());
         }
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        Log.e("LOG","Oncreate");
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
         recyclerView = findViewById(R.id.services_rv);
@@ -118,9 +116,9 @@ public class Services extends AppCompatActivity {
     }
 
 
-    public void loadServices() {
-        Log.e(TAG,"loadServices [OUTSIDE GetProducts]");
-        new GetProducts(){
+    public void loadServices(String public_service) {
+        Log.e("Load", "Services/Products");
+        new GetProducts(this,public_service) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
                 System.out.println(new String(data));
@@ -162,7 +160,6 @@ public class Services extends AppCompatActivity {
                                 steps,
                                 productJsonObject.getString("_id")
                         );
-                        Log.e("docs", service.getPersonalDocs());
                         Log.e(TAG, "GetPersonalDocs->"+service.getPersonalDocs());
                         servicesArrayList.add(service);
                         Log.e(TAG, "Added docs->"+docs);

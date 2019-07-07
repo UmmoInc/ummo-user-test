@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,7 +41,7 @@ public class PrefManager  {
     //    return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     //}
 
-    boolean isFirstTimeLaunch() {
+    public boolean isFirstTimeLaunch() {
 
         return PreferenceManager
                 .getDefaultSharedPreferences(this._context)
