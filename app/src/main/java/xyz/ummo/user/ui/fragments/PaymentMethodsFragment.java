@@ -1,6 +1,8 @@
-package xyz.ummo.user.fragments;
+package xyz.ummo.user.ui.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,18 +11,25 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import xyz.ummo.user.AddPaymentMethod;
+import xyz.ummo.user.PaymentMethod;
 import xyz.ummo.user.R;
+import xyz.ummo.user.adapters.CustomPaymentMethodAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LegalTermsFragment.OnFragmentInteractionListener} interface
+ * {@link PaymentMethodsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LegalTermsFragment#newInstance} factory method to
+ * Use the {@link PaymentMethodsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LegalTermsFragment extends Fragment {
+public class PaymentMethodsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,7 +41,11 @@ public class LegalTermsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public LegalTermsFragment() {
+    private ArrayList<PaymentMethod> paymentMethods = new ArrayList<>();
+    private ListView paymentMethodsList;
+    private TextView addPaymentMethodButton;
+
+    public PaymentMethodsFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +55,11 @@ public class LegalTermsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LegalTermsFragment.
+     * @return A new instance of fragment PaymentMethodsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LegalTermsFragment newInstance(String param1, String param2) {
-        LegalTermsFragment fragment = new LegalTermsFragment();
+    public static PaymentMethodsFragment newInstance(String param1, String param2) {
+        PaymentMethodsFragment fragment = new PaymentMethodsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -67,8 +80,28 @@ public class LegalTermsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_legal_terms, container, false);
+        final View view = inflater.inflate(R.layout.fragment_payment_methods, container, false);
+
+        addPaymentMethodButton = view.findViewById(R.id.add_payment_method_btn);
+        addPaymentMethodButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                goAddPayemntMethod();
+
+            }
+        });
+
+        //set the payment method list with the custom payment method adapter
+        paymentMethodsList = view.findViewById(R.id.payment_methods_list);
+        CustomPaymentMethodAdapter customPaymentMethodAdapter = new CustomPaymentMethodAdapter(getContext(), paymentMethods);
+        paymentMethodsList.setAdapter(customPaymentMethodAdapter);
+
+       return view;
     }
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -108,4 +141,12 @@ public class LegalTermsFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+   public void goAddPayemntMethod(){
+       Intent intent = new Intent(getContext(), AddPaymentMethod.class);
+       ((Activity)getContext()).finish();
+       startActivity(intent);
+
+   }
 }

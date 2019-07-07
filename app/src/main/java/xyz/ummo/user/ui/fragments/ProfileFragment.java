@@ -1,4 +1,4 @@
-package xyz.ummo.user.fragments;
+package xyz.ummo.user.ui.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,18 +9,19 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import xyz.ummo.user.R;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ServiceHistoryFragment.OnFragmentInteractionListener} interface
+ * {@link ProfileFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ServiceHistoryFragment#newInstance} factory method to
+ * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ServiceHistoryFragment extends Fragment {
+public class ProfileFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,21 +33,18 @@ public class ServiceHistoryFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public ServiceHistoryFragment() {
+    TextView thisOneNayo;
+
+
+
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ServiceHistoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ServiceHistoryFragment newInstance(String param1, String param2) {
-        ServiceHistoryFragment fragment = new ServiceHistoryFragment();
+    public static ProfileFragment newInstance(String param1, String param2) {
+
+        ProfileFragment fragment = new ProfileFragment();
+
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -67,7 +65,10 @@ public class ServiceHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_service_history, container, false);
+
+        final  View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -80,12 +81,13 @@ public class ServiceHistoryFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        //if (context instanceof OnFragmentInteractionListener) {
-        //  mListener = (OnFragmentInteractionListener) context;
-        //} else {
-        //  throw new RuntimeException(context.toString()
-        //        + " must implement OnFragmentInteractionListener");
-        //}
+
+        if (context instanceof OnFragmentInteractionListener) {
+          mListener = (OnFragmentInteractionListener) context;
+        } else {
+          throw new RuntimeException(context.toString()
+                + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -108,4 +110,5 @@ public class ServiceHistoryFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }

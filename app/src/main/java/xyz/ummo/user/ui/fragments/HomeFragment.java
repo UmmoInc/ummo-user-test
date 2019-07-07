@@ -1,4 +1,4 @@
-package xyz.ummo.user.fragments;
+package xyz.ummo.user.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,18 +20,13 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
+
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
-import xyz.ummo.user.LinePagerIndicatorDecoration;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
-import xyz.ummo.user.adapters.departmentsAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
-import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
 
 /**
@@ -63,6 +58,7 @@ public class HomeFragment extends Fragment {
     private servicesCarouselAdapter carouselAdapter;
 
 
+    public HomeFragment(){}
     public HomeFragment(List<PublicServiceData> data) {
         // Required empty public constructor
         _data = data;

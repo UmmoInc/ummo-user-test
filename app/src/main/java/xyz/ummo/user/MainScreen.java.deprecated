@@ -20,11 +20,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import xyz.ummo.user.delegate.Logout;
 import xyz.ummo.user.delegate.PublicServiceData;
-import xyz.ummo.user.fragments.HomeFragment;
-import xyz.ummo.user.fragments.LegalTermsFragment;
-import xyz.ummo.user.fragments.MyProfileFragment;
-import xyz.ummo.user.fragments.PaymentMethodsFragment;
-import xyz.ummo.user.fragments.ServiceHistoryFragment;
+import xyz.ummo.user.ui.fragments.HomeFragment;
+import xyz.ummo.user.ui.fragments.LegalTermsFragment;
+import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
+import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
 
 import android.os.Handler;
 import android.util.Log;

@@ -1,22 +1,19 @@
 package xyz.ummo.user;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import xyz.ummo.user.fragments.HomeFragment;
-import xyz.ummo.user.fragments.MyProfileFragment;
+
+import xyz.ummo.user.ui.fragments.ProfileFragment;
 
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 public class EditMyProfile extends AppCompatActivity
-        implements  MyProfileFragment.OnFragmentInteractionListener{
+        implements  ProfileFragment.OnFragmentInteractionListener{
 
 
     EditText editText;
@@ -49,7 +46,7 @@ public class EditMyProfile extends AppCompatActivity
     @Override
     public void onBackPressed() {
         finish();
-        //Intent intent= new Intent(this, MyProfileFragment.class);
+        //Intent intent= new Intent(this, ProfileFragment.class);
 //        startActivity(intent);
     }
 
@@ -61,14 +58,14 @@ public class EditMyProfile extends AppCompatActivity
     public void goBackToMyProfile(View view){
 onBackPressed();
      //   finish();
-    //    Intent intent= new Intent(this,MyProfileFragment.class);
+    //    Intent intent= new Intent(this,ProfileFragment.class);
      //   startActivity(intent);
     }
 
     public void finishEditProfile(View view){
         Log.e("FINISH","EDITPRO");
 
-        //MyProfileFragment fragment = MyProfileFragment.newInstance("param1", "param2");
+        //ProfileFragment fragment = ProfileFragment.newInstance("param1", "param2");
 
         //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         //transaction.add(R.id.frame, fragment , "");
