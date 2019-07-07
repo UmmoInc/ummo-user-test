@@ -1,5 +1,6 @@
 package xyz.ummo.user.delegate
 
+import android.app.Activity
 import android.content.Context
 import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
@@ -11,7 +12,11 @@ abstract class GetAgents(context:Context) {
         Fuel.get("${context.getString(R.string.serverUrl)}/agent")
                 .header("Jwt" to jwt)
                 .response { request, response, result ->
-                    done(response.data,response.statusCode)
+                    if(response.statusCode == 200){
+                        ( context as Activity).runOnUiThread {
+                            done(response.data,response.statusCode)
+                        }
+                    }
                 }
     }
 

@@ -104,8 +104,10 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
 
                 Intent i= new Intent(context, AgentRequest.class);
                 i.putExtra("departmentName", departmentName);
+              //  i.putExtra("serviceId",service)
                 i.putExtra("serviceName", serviceName);
                 i.putExtra("form", form);
+                i.putExtra("id",service.getId());
                 i.putExtra("docs", personalDocs);
                 i.putExtra("cost", cost);
                 i.putExtra("steps",holder.steps);

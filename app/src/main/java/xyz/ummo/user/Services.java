@@ -122,7 +122,6 @@ public class Services extends AppCompatActivity {
 
 
     public void loadServices(String public_service) {
-        Log.e("Load", "Services/Products");
         new GetProducts(this,public_service) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
@@ -132,6 +131,7 @@ public class Services extends AppCompatActivity {
                     servicesArrayList.clear();
                     for (int i = 0; i < productsJsonArray.length(); i++) {
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
+                        Log.e("Product",productJsonObject.toString());
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
                         // Can we stick to the convetions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
@@ -161,7 +161,8 @@ public class Services extends AppCompatActivity {
                                 docs,
                                 productJsonObject.getJSONObject("requirements").getString("procurement_cost"),
                                 productJsonObject.getString("duration"),
-                                steps
+                                steps,
+                                productJsonObject.getString("_id")
                         );
                         Log.e("docs", service.getPersonalDocs());
                         servicesArrayList.add(service);

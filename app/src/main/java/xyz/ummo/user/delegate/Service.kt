@@ -12,6 +12,7 @@ abstract class Service(context: Context) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
         Fuel.get("/service")
                 .response { request, response, result ->
+                    Log.e("Services",String(response.data))
                     done(response.data,response.statusCode)
                 }
     }
