@@ -11,12 +11,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Random;
+
+import xyz.ummo.user.delegate.GetAgents;
+import xyz.ummo.user.delegate.StartServiceHandshake;
 
 public class AgentRequest extends AppCompatActivity {
 
@@ -34,7 +45,6 @@ public class AgentRequest extends AppCompatActivity {
     public TextView agentName, agentContact, publicRating;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,21 +55,41 @@ public class AgentRequest extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle("Agent Request");
 
-        Agent agent = new Agent("Naledi Masimula", "+27 73 194 8321", "4.8");
+        new GetAgents(this) {
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                try {
+                    JSONArray agentsJsonArray = new JSONArray(new String(data));
+                    Random rand = new Random();
+                    int index = rand.nextInt(agentsJsonArray.length());
+                    JSONObject agentJsonObject = agentsJsonArray.getJSONObject(index);
+                    String contact = agentJsonObject.getString("contact");
+                    String cost = getIntent().getStringExtra("cost");
+                    String name = agentJsonObject.getString("name");
+                    agentName.setText(name);
+                    agentContact.setText(contact);
+                    publicRating.setText(cost);
+                } catch (JSONException jse) {
+                    Log.e("jSE", jse.toString());
+                }
 
-        agentName= findViewById(R.id.agent_name);
+            }
+        };
+
+
+        agentName = findViewById(R.id.agent_name);
         agentContact = findViewById(R.id.agent_contact);
         publicRating = findViewById(R.id.agent_public_rating);
 
         agentDetailsBody = findViewById(R.id.agent_details_cont);
-        separatorLine= findViewById(R.id.view7);
+        separatorLine = findViewById(R.id.view7);
         nearestAgentTitle = findViewById(R.id.nearest_agent_title);
         confirmAgentButton = findViewById(R.id.confirm_agent_btn);
         looadingNearestAgentText = findViewById(R.id.loading_agent_message);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        serviceTitle= findViewById(R.id.service_title);
+        serviceTitle = findViewById(R.id.service_title);
         serviceForm = findViewById(R.id.service_form);
         servicePersonalDocs = findViewById(R.id.service_personal_docs);
         serviceCost = findViewById(R.id.service_cost);
@@ -76,11 +106,6 @@ public class AgentRequest extends AppCompatActivity {
         servicePersonalDocs.setText(personalDocs);
         serviceCost.setText(cost);
         serviceDuration.setText(duration);
-
-
-        agentName.setText(" " + agent.getAgentName());
-        agentContact.setText(" " + agent.getAgentContact());
-        publicRating.setText(" " + agent.getPublicRating());
 
 
         // Start long running operation in a background thread
@@ -139,28 +164,40 @@ public class AgentRequest extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, Services.class);
                 intent.putExtra("departmentName", getIntent().getStringExtra("departmentName"));
                 startActivity(intent);
                 finish();
-                return  true;
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void confirmAgent(){
+    public void confirmAgent() {
 
-        Intent intent= new Intent(this, DelegationChat.class);
+        Intent intent = new Intent(this, DelegationChat.class);
+        new StartServiceHandshake(getIntent().getStringExtra("id"),"",""){
+            @Override
+            public void handshakeFinished(boolean accepted) {
+
+                if(accepted){
+                    delegate();
+                }
+            }
+        };
         intent.putExtra("hasInitiatedService", false);
         finish();
         startActivity(intent);
 
     }
 
+    public void delegate(){
+
+    }
 
 }

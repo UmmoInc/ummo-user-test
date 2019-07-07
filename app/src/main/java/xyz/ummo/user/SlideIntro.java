@@ -107,9 +107,11 @@ public class SlideIntro extends AppCompatActivity {
         // Checking for first time launch - before calling setContentView()
         prefManager = new PrefManager(this);
         if (!prefManager.isFirstTimeLaunch()) {
+            Log.e("Launch","Not first time");
             launchHomeScreen();
             finish();
         }
+        Log.e("Launch","first time");
         setContentView(R.layout.activity_slide_intro);
 
         viewPager = findViewById(R.id.view_pager);

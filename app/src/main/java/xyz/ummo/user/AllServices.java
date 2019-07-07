@@ -41,7 +41,6 @@ public class AllServices extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         setTitle(getIntent().getStringExtra("departmentName"));
 
-        loadServices();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
@@ -93,28 +92,5 @@ public class AllServices extends AppCompatActivity {
         return true;
     }
 
-    public void loadServices() {
-
-        String[] steps = {"step 1", "step 2", "Step 3", "Step 4"};
-        Service service = new Service(" Motor Vehicle Permit",
-                " A temporary motor vehicle permit is valid for 21 " +
-                        "days and is used for a motor vehicle that is registered, licensed and roadworthy",
-                "Special Permit (TSP1) form", "Copy of your identity document",
-                "R130", "One day", steps);
-        servicesArrayList.add(service);
-
-        service = new Service("Service 2", "Description of service 2",
-                "form 2", "docs 2", "cost 2", "duration 2", steps);
-        servicesArrayList.add(service);
-
-        service = new Service("Service 3", "Description of service 3",
-                "form 3", "docs 3", "cost 3", "duration 3", steps);
-        servicesArrayList.add(service);
-
-        service = new Service("Service 4", "Description of service 4",
-                "form 4", "docs 4", "cost 4", "duration 4", steps);
-        servicesArrayList.add(service);
-
-    }
 
 }

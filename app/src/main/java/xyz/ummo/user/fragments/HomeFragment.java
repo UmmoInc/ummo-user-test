@@ -100,17 +100,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
-        final FragmentActivity c = getActivity();
-        /*final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.serviceproviders_rv);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.HORIZONTAL, true);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(new departmentsAdapter(getContext(), departmentArrayList));
-
-        PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
-        pagerSnapHelper.attachToRecyclerView(recyclerView);
-        recyclerView.addItemDecoration(new LinePagerIndicatorDecoration());*/
 
         requestAgent = view.findViewById(R.id.request_agent_btn);
 
@@ -128,7 +118,7 @@ public class HomeFragment extends Fragment {
 
         //TODO get all departments and do the stuff below
         final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
-        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), departmentArrayList));
+        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
         coverFlow.setOnScrollPositionListener(onScrollListener());
 
         return view;
