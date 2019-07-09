@@ -21,11 +21,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import xyz.ummo.user.delegate.Logout;
 import xyz.ummo.user.delegate.PublicServiceData;
-import xyz.ummo.user.fragments.HomeFragment;
-import xyz.ummo.user.fragments.LegalTermsFragment;
-import xyz.ummo.user.fragments.MyProfileFragment;
-import xyz.ummo.user.fragments.PaymentMethodsFragment;
-import xyz.ummo.user.fragments.ServiceHistoryFragment;
+import xyz.ummo.user.ui.SlideIntro;
+import xyz.ummo.user.ui.fragments.HomeFragment;
+import xyz.ummo.user.ui.fragments.LegalTermsFragment;
+import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
+import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
 
 import android.os.Handler;
 import android.util.Log;
@@ -41,7 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class MainScreen extends AppCompatActivity
-        implements MyProfileFragment.OnFragmentInteractionListener,
+        implements ProfileFragment.OnFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener{
 
     private Fragment fragment;
@@ -52,7 +53,6 @@ public class MainScreen extends AppCompatActivity
     private ImageView messageIconButton;
     private ProgressBar circularProgressBarButton;
     private LinearLayout logoutLayout;
-
     // tags used to attach the fragments
     private static final String TAG_HOME = "home";
     private static final String TAG_PROFILE = "profile";
@@ -84,7 +84,7 @@ public class MainScreen extends AppCompatActivity
         setSupportActionBar(toolbar);
         setTitle("Ummo");
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
-        new xyz.ummo.user.delegate.PublicService(){
+        new xyz.ummo.user.delegate.PublicService(this){
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
                 loadHomeFragment(data);
@@ -117,16 +117,11 @@ public class MainScreen extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         // initializing navigation menu
         setUpNavigationView();
 
         if (savedInstanceState == null) {
             navItemIndex = 0;
-
-            CURRENT_TAG = TAG_HOME;
-
         }
     }
 
@@ -159,20 +154,6 @@ public class MainScreen extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
-        /*if (id == R.id.nav_home) {
-
-        } else if (id == R.id.nav_profile) {
-
-        } else if (id == R.id.nav_payment_methods) {
-
-        } else if (id == R.id.nav_service_history) {
-
-        }
-        else if (id == R.id.nav_legal_terms) {
-
-        }*/
-
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -255,7 +236,7 @@ public class MainScreen extends AppCompatActivity
                 return homeFragment;
             case 1:
                 // My Profile
-                MyProfileFragment myProfileFragment = new MyProfileFragment();
+                ProfileFragment myProfileFragment = new ProfileFragment();
 
                 messageIconButton.setVisibility(View.GONE);
                 circularProgressBarButton.setVisibility(View.GONE);
@@ -274,13 +255,11 @@ public class MainScreen extends AppCompatActivity
 
             case 3:
                 // service history fragment
-                ServiceHistoryFragment serviceHistoryFragment = new ServiceHistoryFragment();
-                return serviceHistoryFragment;
+                return new ServiceHistoryFragment();
 
             case 4:
                 // legal terms fragment
-                LegalTermsFragment legalTermsFragment= new LegalTermsFragment();
-                return legalTermsFragment;
+                return new LegalTermsFragment();
  
             default:
                 return new HomeFragment(data);
@@ -410,7 +389,7 @@ public class MainScreen extends AppCompatActivity
                 break;
         }
 
-        MyProfileFragment myProfileFragment  = new MyProfileFragment();
+        ProfileFragment myProfileFragment  = new ProfileFragment();
         Intent intent= new Intent(this, EditMyProfile.class);
         String tag = myProfileFragment.getTag();
         intent.putExtra(EditMyProfile.CONST_TAG, tag);
@@ -421,7 +400,7 @@ public class MainScreen extends AppCompatActivity
 
     public void finishEditProfile(View view){
 
-        Fragment fragment = new MyProfileFragment();
+        Fragment fragment = new ProfileFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame, fragment, "TAG_PROFILE");
         transaction.addToBackStack(null);

@@ -115,7 +115,6 @@ public class Services extends AppCompatActivity {
         return true;
     }
 
-
     public void loadServices(String public_service) {
         Log.e("Load", "Services/Products");
         new GetProducts(this,public_service) {
@@ -165,12 +164,8 @@ public class Services extends AppCompatActivity {
                         Log.e(TAG, "Added docs->"+docs);
                     }
 
-
                 } catch (JSONException jse) {
                     Log.e("JSONERROR", jse.toString());
-                    adapter.notifyDataSetChanged();
-                }catch (JSONException jse){
-                    Log.e(TAG, "JSON_ERROR->"+jse.toString());
                     adapter.notifyDataSetChanged();
                 }
                 Log.e("Adapter","Should update here");
@@ -178,7 +173,6 @@ public class Services extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         };
-
     }
 
     public void requestAgent(View view) {

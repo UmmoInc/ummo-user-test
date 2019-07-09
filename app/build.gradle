@@ -1,3 +1,18 @@
+//[START] OneSignal Integration
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/'}
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:0.12.2'
+    }
+}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+
+repositories {
+    maven { url 'https://maven.google.com' }
+}
+//[END] OneSignal Integration
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
@@ -12,6 +27,14 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        //[START] OneSignal Integration
+        manifestPlaceholders = [
+                onesignal_app_id: '98ba7bca-4e5c-41b3-b9a9-831cd0c8ec48',
+                // Project number pulled from dashboard, local value is ignored.
+                onesignal_google_project_number: 'REMOTE'
+        ]
+        //[END] OneSignal Integration
     }
     buildTypes {
         release {
@@ -89,6 +112,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'support-v13'
     }
+
+    //OneSignal
+    implementation 'com.onesignal:OneSignal:3.11.0'
 
     //tooltip
     implementation 'com.github.florent37:viewtooltip:1.2.2'
