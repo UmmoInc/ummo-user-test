@@ -6,10 +6,9 @@ import android.content.res.Configuration
 import android.preference.PreferenceManager
 import android.util.Log
 import com.github.kittinunf.fuel.core.FuelManager
+import com.onesignal.OneSignal
 
 import xyz.ummo.user.R.string.*
-
-//import com.parse.Parse;
 
 class User : Application() {
 
@@ -23,16 +22,15 @@ class User : Application() {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
         }
 
-        Log.e("App", "Applicaytion created")
+        Log.e("App", "Application created")
 
         setUser()
 
-        /*Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId("ummo-delegate-dev-server")
-                .clientKey("")
-                .server("https://ummo-dev.herokuapp.com/parse")
-                .build()
-        );*/
+        // OneSignal Initialization
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init()
     }
 
     override fun attachBaseContext(base: Context) {
