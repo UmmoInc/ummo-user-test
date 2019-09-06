@@ -22,7 +22,7 @@ class User : Application() {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
         }
 
-        Log.e("App", "Application created")
+        Log.e("App", "Application created - Server URL->${getString(serverUrl)}")
 
         setUser()
 

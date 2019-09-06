@@ -244,7 +244,7 @@ public class SlideIntro extends AppCompatActivity {
                             //startActivity();
                             Log.e(TAG + " onLogin-2", "successfully logging in->" + new String(data));
                         } else {
-                            Log.e(TAG + " Error", "Something happened" + code + " data " + new String(data));
+                            Log.e(TAG + " Error", "Something happened..." + code + " data " + new String(data));
                             Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
                             logWithStaticAPI();
                         }

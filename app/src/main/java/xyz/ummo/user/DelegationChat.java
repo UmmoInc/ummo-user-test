@@ -81,7 +81,6 @@ public class DelegationChat extends AppCompatActivity {
                                 .show();
 
                         hasCheckedServiceInitConfirmation = true;
-
                     }
 
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -92,7 +91,6 @@ public class DelegationChat extends AppCompatActivity {
                     ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
                     isVisible = true;
                     rotate(360);
-
                 }
             }
         });
@@ -102,29 +100,21 @@ public class DelegationChat extends AppCompatActivity {
             ExpandOrCollapse.expand(confirmInitiationBox, 100);
             ExpandOrCollapse.expand(confirmInitiationContentBox, 100);
             circularProgressBar.setVisibility(View.VISIBLE);
-
-
         }
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToDelegatePogress();
-
+                goToDelegateProgress();
             }
-
-
         });
 
         //set the home icon onclick method
         homeButton.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View v) {
-
                 goToHome();
-
             }
         });
 
@@ -133,9 +123,7 @@ public class DelegationChat extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
-                goToDelegatePogress();
-
+                goToDelegateProgress();
             }
         });
     }
@@ -157,20 +145,15 @@ public class DelegationChat extends AppCompatActivity {
         arrow.startAnimation(rotateAnim);
     }
 
-    public void goToDelegatePogress(){
-
+    public void goToDelegateProgress(){
         Intent intent = new Intent(this, DelegationProgress.class);
         finish();
         startActivity(intent);
-
     }
 
     public void goToHome(){
-
         Intent intent = new Intent(this, MainScreen.class);
         finish();
         startActivity(intent);
-
     }
-
 }
