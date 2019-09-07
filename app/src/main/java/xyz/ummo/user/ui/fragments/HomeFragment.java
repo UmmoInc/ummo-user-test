@@ -1,4 +1,4 @@
-package xyz.ummo.user.fragments;
+package xyz.ummo.user.ui.fragments;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,18 +20,13 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
+
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
-import xyz.ummo.user.LinePagerIndicatorDecoration;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
-import xyz.ummo.user.adapters.departmentsAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
-import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
 
 /**
@@ -47,7 +42,7 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final String TAG = "HomeFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -63,6 +58,7 @@ public class HomeFragment extends Fragment {
     private servicesCarouselAdapter carouselAdapter;
 
 
+    public HomeFragment(){}
     public HomeFragment(List<PublicServiceData> data) {
         // Required empty public constructor
         _data = data;
@@ -115,13 +111,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         //TODO get all departments and do the stuff below
         final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
         coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
         coverFlow.setOnScrollPositionListener(onScrollListener());
-
-
 
         return view;
     }
@@ -130,12 +123,12 @@ public class HomeFragment extends Fragment {
         return new FeatureCoverFlow.OnScrollPositionListener() {
             @Override
             public void onScrolledToPosition(int position) {
-                Log.v("MainActiivty", "position: " + position);
+                Log.e(TAG, "FeatureCoverFlow position: " + position);
             }
 
             @Override
             public void onScrolling() {
-                Log.i("MainActivity", "scrolling");
+                Log.e(TAG, "onScrolling");
             }
         };
     }
@@ -148,7 +141,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         //if (context instanceof OnFragmentInteractionListener) {
           //  mListener = (OnFragmentInteractionListener) context;
@@ -179,7 +172,7 @@ public class HomeFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void loadDepartments(List<PublicServiceData> data) {
+    private void loadDepartments(List<PublicServiceData> data) {
         for(int i = 0; i<data.size();i++){
             departmentArrayList.add(new Department(data.get(i).getServiceName()));
         }

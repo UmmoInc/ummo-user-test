@@ -80,10 +80,8 @@ public class servicesCarouselAdapter extends BaseAdapter {
 
                 ((Activity)context).finish();
                 context.startActivity(intent);
-
             }
         });
-
 
         viewHolder.departmentTitle.setText("Browse " + item.getServiceName() + " Services");
         //departmentName = department.getDepartmentName();

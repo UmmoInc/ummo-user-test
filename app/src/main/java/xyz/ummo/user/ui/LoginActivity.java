@@ -27,10 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-import xyz.ummo.user.MainActivity;
-import xyz.ummo.user.MainScreen;
 import xyz.ummo.user.R;
-import xyz.ummo.user.SlideIntro;
 import xyz.ummo.user.delegate.Login;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{

@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -18,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import xyz.ummo.user.adapters.servicesAdapter;
 import xyz.ummo.user.delegate.GetProducts;
+import xyz.ummo.user.ui.MainScreen;
 
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,6 +38,7 @@ public class Services extends AppCompatActivity {
     private RecyclerView recyclerView;
     servicesAdapter adapter;
     private ProgressDialog progress;
+    private final static String TAG = "Services";
 
 
     @Override
@@ -59,12 +57,9 @@ public class Services extends AppCompatActivity {
             Log.e("Bohoo",e.toString());
         }
 
-
         Log.e("LOG","Oncreate");
 
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
         recyclerView = findViewById(R.id.services_rv);
@@ -120,8 +115,8 @@ public class Services extends AppCompatActivity {
         return true;
     }
 
-
     public void loadServices(String public_service) {
+        Log.e("Load", "Services/Products");
         new GetProducts(this,public_service) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
@@ -133,7 +128,7 @@ public class Services extends AppCompatActivity {
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
                         Log.e("Product",productJsonObject.toString());
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
-                        // Can we stick to the convetions we had to keep our work simple. PS If anyone will ever read this comment
+                        // Can we stick to the conventions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
                         List<String> steps = new ArrayList<>();
                         if (productJsonObject.has("procurement_process")) {
@@ -164,12 +159,10 @@ public class Services extends AppCompatActivity {
                                 steps,
                                 productJsonObject.getString("_id")
                         );
-                        Log.e("docs", service.getPersonalDocs());
+                        Log.e(TAG, "GetPersonalDocs->"+service.getPersonalDocs());
                         servicesArrayList.add(service);
-                        Log.e("added", docs);
-
+                        Log.e(TAG, "Added docs->"+docs);
                     }
-
 
                 } catch (JSONException jse) {
                     Log.e("JSONERROR", jse.toString());
@@ -180,7 +173,6 @@ public class Services extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
             }
         };
-
     }
 
     public void requestAgent(View view) {

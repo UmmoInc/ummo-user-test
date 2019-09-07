@@ -6,20 +6,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.adapters.servicesAdapter;
+import xyz.ummo.user.ui.MainScreen;
 
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -29,6 +26,7 @@ public class AllServices extends AppCompatActivity {
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
     servicesAdapter adapter;
+    private final static String TAG = "AllServices";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +42,7 @@ public class AllServices extends AppCompatActivity {
 
         adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
-        recyclerView= (RecyclerView)findViewById(R.id.services_rv);
+        recyclerView= findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
 

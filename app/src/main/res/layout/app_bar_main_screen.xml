@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
-    tools:context=".MainScreen">
+    tools:context=".ui.MainScreen">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -22,13 +22,13 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:id="@+id/message_icon_button"
                 android:src="@drawable/message_toolbar_icon"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="10dp"
-                />
+                android:layout_marginEnd="10dp" />
 
             <ProgressBar
 
@@ -39,7 +39,7 @@
                 android:indeterminate="false"
                 android:max="100"
                 android:progress="50"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:progressDrawable="@drawable/circular_progress_bar"
                 android:secondaryProgress="100"
                 />

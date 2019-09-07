@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.ui;
 
 import android.app.Activity;
 //import android.content.Context;
@@ -7,9 +7,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
+
+import xyz.ummo.user.R;
 
 public class Splash extends Activity {
     private String TAG = "Splash";
