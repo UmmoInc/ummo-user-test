@@ -367,7 +367,8 @@
                         android:maxLines="10"
                         android:layout_marginTop="5dp"
                         android:layout_below="@id/view6"
-                        android:layout_toRightOf="@id/agent_public_rating_label"/>
+                        android:layout_toRightOf="@id/agent_public_rating_label"
+                        android:drawableRight="@drawable/rating_star"/>
 
 
                     </RelativeLayout>

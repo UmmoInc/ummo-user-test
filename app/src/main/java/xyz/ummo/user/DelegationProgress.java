@@ -1,32 +1,20 @@
 package xyz.ummo.user;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import xyz.ummo.user.adapters.CustomAdapter;
-import xyz.ummo.user.fragments.HomeFragment;
+import xyz.ummo.user.ui.MainScreen;
 
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-
-import static com.parse.Parse.getApplicationContext;
 
 public class DelegationProgress extends AppCompatActivity {
 
@@ -78,7 +66,7 @@ public class DelegationProgress extends AppCompatActivity {
         });
 
 
-        //Initialise the progressbar vand set the progress color
+        //Initialise the progressbar and set the progress color
         progressBar = findViewById(R.id.delegation_progress_bar);
         progressBar.setProgressTintList(ColorStateList.valueOf(R.color.ummo_4));
 
@@ -89,6 +77,13 @@ public class DelegationProgress extends AppCompatActivity {
         progressList = findViewById(R.id.progress_list);
         progressList.setAdapter(customAdapter);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainScreen.class);
+        startActivity(intent);
+        finish();
     }
 
     public void loadProcesses(){
@@ -117,11 +112,11 @@ public class DelegationProgress extends AppCompatActivity {
 
     public void goToHome(){
 
+        new MainScreen().setAnyServiceInProgress(true);
+
         Intent intent = new Intent(this, MainScreen.class);
         finish();
         startActivity(intent);
 
     }
-
-
 }

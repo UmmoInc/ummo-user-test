@@ -12,11 +12,12 @@
     <string name="ummo_logo_text">Ummo Logo</string>
     <string name="next_registration_button">Next</string>
     <string name="email_prompt">What\'s your email?</string>
-    <string name="email_prompt2">Enter your email address(required)</string>
+    <string name="email_prompt2">Enter your email address (required)</string>
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
-    <string name="name_prompt_hint">Enter your full name...</string>
-    <string name="contact_prompt_hint">Enter your mobile contact...</string>
+    <string name="search_location_string">Search location</string>
+    <string name="name_prompt_hint">Enter your full name</string>
+    <string name="contact_prompt_hint">Enter your contact</string>
     <string name="ummo_logo_descriptor">Ummo Logo</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
@@ -56,4 +57,59 @@
 
     <string name="service_complete_string">Your agent has completed the service. Tap on ACCEPT to confirm receipt of your product \n\nPayment will be automatic</string>
     <string name="service_complete_title_string">Service Complete</string>
+
+    <string name="full_name_title_string">Full Name</string>
+    <string name="surname_title_string">Surname</string>
+    <string name="contact_title_string">Phone Number</string>
+    <string name="rating_title_string">Rating</string>
+    <string name="id_number_title_string">ID Number</string>
+    <string name="email_title_string">Email Address</string>
+    <string name="title_activity_edit_my_profile">EditMyProfile</string>
+
+    <string name="payment_method_title_string">Payment Methods</string>
+    <string name="add_payment_method_string">Add payment method</string>
+    <string name="title_activity_add_payment_method">AddPaymentMethod</string>
+    <string name="title_activity_add_card">AddCard</string>
+
+    <string name="card_number_hint_string"><font size="18">Card Number</font></string>
+    <string name="date_hint_string"><font size="18">MM/YY</font></string>
+    <string name="cvv_hint_string"><font size="18">CVV</font></string>
+    <string name="country_title_string">Country</string>
+    <string name="post_code_hint_string"><font size="18">Postcode</font></string>
+    <string name="button_next_string">Next</string>
+    <string name="sliding_drawer_ok_btn_string">Ok</string>
+    <string name="title_activity_all_services">AllServices</string>
+
+    <string name="processes_string">Processes: </string>
+    <string name="documents_string">Documents: </string>
+    <string name="cost_string">Cost: </string>
+    <string name="duration_string">Duration: </string>
+    <string name="more_string">more</string>
+    <string name="title_activity_detailed_service">DetailedService</string>
+    <string name="service_description_title">Description</string>
+    <string name="servvice_documents_title_string">Documents</string>
+    <string name="service_cost_title_string">Cost</string>
+    <string name="service_duration_title">Duration</string>
+    <string name="service_processes_title">Steps to follow</string>
+
+    <string name="cost">R10.00</string>
+    <string name="service_docs">-Birth Certificate \n-National ID \n-And more</string>
+    <string name="duration">0800h - 1500h </string>
+
+    <string name="next">Next</string>
+    <string name="skip">Back</string>
+    <string name="start">Done</string>
+
+    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
+
+    <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
+    <string name="sentryDsn">https://c46e9ae28cb847e7ab39746902f6c29a@sentry.io/1485110</string>
+    <string name="passcode_screen_title_string">Verify phone number</string>
+    <string name="passcode_prompt_string">Enter the 6 digit code which we have just sent to the phone number you registered with.</string>
+    <string name="resend_btn_string">Resend Code</string>
+    <string name="already_have_an_account_log_in">Already have an account? Log-in here</string>
+    <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
+    <string name="logout">Log out</string>
+    <string name="search">Search</string>
+
 </resources>

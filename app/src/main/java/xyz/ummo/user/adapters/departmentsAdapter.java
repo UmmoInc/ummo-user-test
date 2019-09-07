@@ -1,5 +1,6 @@
 package xyz.ummo.user.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ public class departmentsAdapter extends RecyclerView.Adapter<departmentsAdapter.
 
     private List<Department> departments;
     Context context;
+    String departmentName;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView departmentTitle;
@@ -47,12 +49,15 @@ public class departmentsAdapter extends RecyclerView.Adapter<departmentsAdapter.
 
 
         RelativeLayout serviceGround = itemView.findViewById(R.id.department_ground);
+        final TextView departmentTitle = itemView.findViewById(R.id.department_title);
         serviceGround.isClickable();
 
         serviceGround.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(context, Services.class);
+                intent.putExtra("departmentName", departmentName);
+                ((Activity)context).finish();
                 context.startActivity(intent);
 
             }
@@ -68,6 +73,7 @@ public class departmentsAdapter extends RecyclerView.Adapter<departmentsAdapter.
 
 
         holder.departmentTitle.setText("Browse " + department.getDepartmentName() + " Services");
+        departmentName = department.getDepartmentName();
 
         /*holder.contactsForeground.setOnClickListener(new View.OnClickListener() {
             @Override

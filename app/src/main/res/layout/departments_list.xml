@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="15dp"
-    android:background="#eeeeee">
+    android:padding="3dp"
+    android:background="@color/black">
 
     <RelativeLayout
         android:id="@+id/department_ground"

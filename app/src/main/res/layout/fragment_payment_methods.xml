@@ -3,12 +3,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.PaymentMethodsFragment">
+    tools:context=".ui.fragments.PaymentMethodsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
+        android:id="@+id/payment_methods_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:background="@drawable/department_foreground"
+        android:padding="5dp"
+        android:layout_margin="10dp"
+        android:focusable="true">
 
+        <TextView
+            android:id="@+id/payment_method_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_centerHorizontal="true"
+            android:text="@string/payment_method_title_string"/>
+
+        <RelativeLayout
+            android:id="@+id/progress_info_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/blue_ground"
+            android:layout_below="@id/payment_method_title">
+
+            <ListView
+                android:id="@+id/payment_methods_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+
+            <TextView
+                android:id="@+id/add_payment_method_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp"
+                android:padding="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="5dp"
+                android:text="@string/add_payment_method_string"
+                android:layout_below="@id/payment_methods_list"
+                android:clickable="true"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
 </FrameLayout>

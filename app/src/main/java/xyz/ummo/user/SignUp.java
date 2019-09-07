@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
+//import com.parse.ParseException;
+//import com.parse.ParseUser;
+//import com.parse.SignUpCallback;
 
 import java.util.Objects;
 
@@ -73,21 +73,21 @@ public class SignUp extends AppCompatActivity {
 
         Log.e(TAG+" onClick", "user email->"+userEmailVal);
 
-        ParseUser user = new ParseUser();
-        user.setEmail(userEmailVal);
-
-        user.signUpInBackground(new SignUpCallback() {
-            public void done(ParseException e) {
-                if (e == null) {
-                    Toast.makeText(SignUp.this, "Welcome ...", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG+" onSignUpBack", "user email->"+userEmailVal);
-//                    startActivity(new Intent(SignUp.this, MainActivity.class));
-                } else {
-                    Toast.makeText(SignUp.this, "Oops!", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG+" onSignUpBack", "user email->"+userEmailVal);
-                }
-            }
-        });
+//        ParseUser user = new ParseUser();
+//        user.setEmail(userEmailVal);
+//
+//        user.signUpInBackground(new SignUpCallback() {
+//            public void done(ParseException e) {
+//                if (e == null) {
+//                    Toast.makeText(SignUp.this, "Welcome ...", Toast.LENGTH_SHORT).show();
+//                    Log.e(TAG+" onSignUpBack", "user email->"+userEmailVal);
+////                    startActivity(new Intent(SignUp.this, MainActivity.class));
+//                } else {
+//                    Toast.makeText(SignUp.this, "Oops!", Toast.LENGTH_SHORT).show();
+//                    Log.e(TAG+" onSignUpBack", "user email->"+userEmailVal);
+//                }
+//            }
+//        });
 //        Intent i= new Intent(this, Location.class);
 //        finish();
 //        startActivity(i);

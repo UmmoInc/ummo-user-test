@@ -1,30 +1,30 @@
 package xyz.ummo.user.adapters;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import xyz.ummo.user.ui.MainScreen;
 import xyz.ummo.user.Progress;
 import xyz.ummo.user.R;
 
-import static com.parse.Parse.getApplicationContext;
+//import static com.parse.Parse.getApplicationContext;
 
 public class CustomAdapter extends BaseAdapter {
 
@@ -81,22 +81,28 @@ public class CustomAdapter extends BaseAdapter {
                     if(cb.isChecked()){
 
                         //when a checkbox is checked increase the progress percentage and up date the progressbar
-
                         progress.setSelected(cb.isChecked());
                         checkedProgresses++;
 
+
+                        //calculate the progress
                         progressPercentage = (checkedProgresses * progressBar.getMax()) /totalNumOfCheckboxes;
 
+                        //update progress in to th ProgressBar
                         progressBar.setProgress(progressPercentage);
 
+
+                        //check if the ProgressBar is full
                         if(progressBar.getProgress() == progressBar.getMax()){
 
+                            // if ProgressBar is full show an alert dialog to tell the user the service is complete
                             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which){
                                         case DialogInterface.BUTTON_POSITIVE:
 
+                                            //if the user press the 'ACCEPT' button, the user should be prompted to rate the agent
                                             showRatingAgentDiaolog();
 
                                             break;
@@ -113,6 +119,9 @@ public class CustomAdapter extends BaseAdapter {
                             builder.setMessage(R.string.service_complete_string)
                                     .setPositiveButton("ACCEPT", dialogClickListener)
                                     .setNegativeButton("DECLINE", dialogClickListener).show();
+
+                            AlertDialog a=builder.create();
+
 
                         }
                     }
@@ -216,6 +225,9 @@ public class CustomAdapter extends BaseAdapter {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        Intent intent = new Intent(mContext, MainScreen.class);
+                        ((Activity)mContext).finish();
+                        mContext.startActivity(intent);
                     }
 
                 });
@@ -225,7 +237,9 @@ public class CustomAdapter extends BaseAdapter {
 
     }
 
-
+    public int getProgressPercentage() {
+        return progressPercentage;
+    }
 }
 
 

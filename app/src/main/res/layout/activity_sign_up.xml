@@ -45,7 +45,7 @@
         tools:targetApi="lollipop" />-->
 
     <EditText
-        android:id="@+id/userEmailEditText"
+        android:id="@+id/userEmailEditText2"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/email_prompt"
@@ -63,7 +63,7 @@
         tools:targetApi="o"/>
 
     <Button
-        android:id="@+id/sign_up_btn"
+        android:id="@+id/sign_up_btn2"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
