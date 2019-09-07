@@ -22,19 +22,20 @@ class User : Application() {
 
     private var mSocket: Socket? = null
 
-    private fun initalizeSocket(_id:String){
+    private fun initalizeSocket(_id: String) {
         try {
-            Log.e("User","Trying connection")
+            Log.e("User", "Trying connection")
             mSocket = IO.socket("${getString(serverUrl)}/user-$_id");
         } catch (e: URISyntaxException) {
-            Log.e("User",e.toString())
+            Log.e("User", e.toString())
         }
     }
 
 
-    public fun getUserId(_jwt:String):String{ //Remember, it takes a jwt string
-        return JSONObject(String(Base64.decode(_jwt.split(".")[1],Base64.DEFAULT))).getString("_id")
-    }
+
+        fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
+            return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
+        }
 
 
 
@@ -42,15 +43,15 @@ class User : Application() {
         super.onCreate()
         FuelManager.instance.basePath = getString(serverUrl)
 
-        val jwt:String = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt","")
+        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "")
 
-        if(jwt!=""){
+        if (jwt != "") {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
             initalizeSocket(getUserId(jwt))
             mSocket?.connect()
             mSocket?.on("service-created", Emitter.Listener {
-                val intent = Intent(this,DelegationChat::class.java)
-                intent.putExtra("service-created",it[0].toString())
+                val intent = Intent(this, DelegationChat::class.java)
+                intent.putExtra("service-created", it[0].toString())
                 startActivity(intent)
             })
 

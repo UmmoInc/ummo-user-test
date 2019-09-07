@@ -3,6 +3,7 @@ package xyz.ummo.user.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +15,15 @@ import android.widget.TextView;
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jetbrains.annotations.NotNull;
+
 import xyz.ummo.user.AgentRequest;
 import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Service;
+import xyz.ummo.user.delegate.DelegateService;
+import xyz.ummo.user.delegate.User;
 
 public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyViewHolder>  {
 
@@ -112,7 +118,14 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 i.putExtra("cost", cost);
                 i.putExtra("steps",holder.steps);
                 i.putExtra("duration", duration);
-                context.startActivity(i);
+                 String jwt = PreferenceManager.getDefaultSharedPreferences(servicesAdapter.this.context).getString("jwt", "");
+                new DelegateService(servicesAdapter.this.context, User.Companion.getUser().getUserId(jwt),service.getId()){
+                    @Override
+                    public void done(@NotNull byte[] data, int code) {
+                        Log.e("Done",new String(data));
+                    }
+                };
+               // context.startActivity(i);
             }
         });
 
