@@ -13,11 +13,10 @@ import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import org.json.JSONObject
 import xyz.ummo.user.DelegationChat
+import com.onesignal.OneSignal
 
 import xyz.ummo.user.R.string.*
 import java.net.URISyntaxException
-
-//import com.parse.Parse;
 
 class User : Application() {
 
@@ -57,19 +56,15 @@ class User : Application() {
 
         }
 
-
-
-
-        Log.e("App", "Applicaytion created")
+        Log.e("App", "Application created")
 
         setUser()
 
-        /*Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId("ummo-delegate-dev-server")
-                .clientKey("")
-                .server("https://ummo-dev.herokuapp.com/parse")
-                .build()
-        );*/
+        // OneSignal Initialization
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init()
     }
 
     override fun attachBaseContext(base: Context) {
