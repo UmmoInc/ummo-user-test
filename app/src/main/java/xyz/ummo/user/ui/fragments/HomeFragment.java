@@ -20,12 +20,17 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
+import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
+import xyz.ummo.user.ServiceProvider;
 import xyz.ummo.user.Services;
+import xyz.ummo.user.adapters.ServiceProviderAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
 import xyz.ummo.user.delegate.PublicServiceData;
 
@@ -56,6 +61,9 @@ public class HomeFragment extends Fragment {
     private Button requestAgent;
 
     private servicesCarouselAdapter carouselAdapter;
+    ServiceProviderAdapter serviceProviderAdapter;
+
+    ArrayList<ServiceProvider> serviceProviderList= new ArrayList<>();
 
 
     public HomeFragment(){}
@@ -89,7 +97,12 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList);
+
+
         loadDepartments(_data);
+        addServiceProviders();
+        serviceProviderAdapter.addProduct();
     }
 
     @Override
@@ -97,24 +110,31 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
+        final FragmentActivity c = getActivity();
+        final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
 
-        requestAgent = view.findViewById(R.id.request_agent_btn);
+        serviceProviderAdapter.addProduct();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.VERTICAL, true);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(serviceProviderAdapter);
 
-        requestAgent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent= new Intent(getContext(), AllServices.class);
-                ((Activity) Objects.requireNonNull(getContext())).finish();
-                getContext().startActivity(intent);
-
-            }
-        });
-
-        //TODO get all departments and do the stuff below
-        final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
-        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
-        coverFlow.setOnScrollPositionListener(onScrollListener());
+//        requestAgent = view.findViewById(R.id.request_agent_btn);
+//
+//        requestAgent.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Intent intent= new Intent(getContext(), AllServices.class);
+//                ((Activity) Objects.requireNonNull(getContext())).finish();
+//                getContext().startActivity(intent);
+//
+//            }
+//        });
+//
+//        //TODO get all departments and do the stuff below
+//        final FeatureCoverFlow coverFlow = view.findViewById(R.id.coverflow);
+//        coverFlow.setAdapter(new servicesCarouselAdapter(getContext(), _data));
+//        coverFlow.setOnScrollPositionListener(onScrollListener());
 
         return view;
     }
@@ -184,4 +204,24 @@ public class HomeFragment extends Fragment {
         startActivity(i);
 
     }
+
+    public void addServiceProviders(){
+        ServiceProvider serviceProvider= new ServiceProvider("Home Affairs");
+        serviceProviderList.add(serviceProvider);
+
+        serviceProvider = new ServiceProvider("Public Services");
+        serviceProviderList.add(serviceProvider);
+
+        serviceProvider = new ServiceProvider("Labour and Social Security");
+        serviceProviderList.add(serviceProvider);
+
+        serviceProvider = new ServiceProvider("Health");
+        serviceProviderList.add(serviceProvider);
+
+    }
+
+    public void ViewService(View view){
+
+    }
+
 }
