@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import xyz.ummo.user.Agent;
+import xyz.ummo.user.AgentRequest;
 import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
@@ -50,7 +52,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
         productBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent(context, DetailedService.class);
+                Intent intent= new Intent(context, AgentRequest.class);
                 context.startActivity(intent);
             }
         });

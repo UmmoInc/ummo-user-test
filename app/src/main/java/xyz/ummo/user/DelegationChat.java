@@ -13,11 +13,19 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import xyz.ummo.user.adapters.MessageAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
 public class DelegationChat extends AppCompatActivity {
@@ -27,12 +35,18 @@ public class DelegationChat extends AppCompatActivity {
     RelativeLayout confirmInitiationContentBox;
     private ExpandOrCollapse mAnimationManager;
     private ImageView arrow;
-    private ImageView sendButton;
     private ScrollView chatRoom;
     private boolean hasCheckedServiceInitConfirmation = false;
     private boolean hasInitiatedService;
     private ProgressBar circularProgressBar;
     private ImageView homeButton;
+
+    private ListView listView;
+    private View btnSend;
+    private EditText editText;
+    boolean myMessage = true;
+    private List<ChatBubble> ChatBubbles;
+    private ArrayAdapter<ChatBubble> adapter;
 
 
     @Override
@@ -50,10 +64,7 @@ public class DelegationChat extends AppCompatActivity {
         //check if the service has been initiated
         hasInitiatedService = getIntent().getExtras().getBoolean("hasInitiatedService");
 
-        chatRoom = findViewById(R.id.chat_room);
-
         arrow = findViewById(R.id.arrow_down_up);
-        sendButton = findViewById(R.id.send_btn);
 
         confirmInitiationBox = findViewById(R.id.confirm_service_initiation_box);
         confirmInitiationContentBox = findViewById(R.id.confirm_initiation_content_box);
@@ -106,15 +117,37 @@ public class DelegationChat extends AppCompatActivity {
 
         }
 
+//        Chat box code below
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        ChatBubbles = new ArrayList<>();
+
+        listView = (ListView) findViewById(R.id.list_msg);
+        btnSend = findViewById(R.id.send_btn);
+        editText = (EditText) findViewById(R.id.message);
+
+        //set ListView adapter first
+        adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
+        listView.setAdapter(adapter);
+
+        //event for button SEND
+        btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToDelegatePogress();
-
+                if (editText.getText().toString().trim().equals("")) {
+                    Toast.makeText(DelegationChat.this, "Please input some text...", Toast.LENGTH_SHORT).show();
+                } else {
+                    //add message to list
+                    ChatBubble ChatBubble = new ChatBubble(editText.getText().toString(), myMessage);
+                    ChatBubbles.add(ChatBubble);
+                    adapter.notifyDataSetChanged();
+                    editText.setText("");
+                    if (myMessage) {
+                        myMessage = false;
+                    } else {
+                        myMessage = true;
+                    }
+                }
             }
-
-
         });
 
         //set the home icon onclick method
