@@ -8,12 +8,14 @@ import com.github.kittinunf.fuel.core.FuelManager
 import org.json.JSONObject
 import xyz.ummo.user.R.string.*
 
-abstract class Login(context: Context, name: String, email: String, mobile_contact: String) {
+abstract class Login(context: Context, name: String, email: String, mobile_contact: String, user_pid: String) {
     init {
         val _user = JSONObject()
                 .put("name", name)
                 .put("email", email)
                 .put("mobile_contact", mobile_contact)
+                .put("user_pid", user_pid)
+
 
         Fuel.post("/user/login")
                 .jsonBody(_user.toString())

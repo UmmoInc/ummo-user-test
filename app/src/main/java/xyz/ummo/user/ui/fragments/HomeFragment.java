@@ -182,6 +182,5 @@ public class HomeFragment extends Fragment {
 
         Intent i= new Intent(getContext(), Services.class);
         startActivity(i);
-
     }
 }
