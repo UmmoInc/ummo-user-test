@@ -22,9 +22,10 @@
             android:title="Service History" />
 
         <item
-            android:id="@+id/nav_legal_terms"
+            android:id="@+id/nav_delegated_services"
             android:icon="@drawable/ic_account_balance_black_24dp"
-            android:title="Legal Terms" />
+            android:title="Delegated Services" />
+
     </group>
 
 

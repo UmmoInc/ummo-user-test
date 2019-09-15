@@ -9,15 +9,24 @@ import com.github.florent37.viewtooltip.ViewTooltip;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import xyz.ummo.user.adapters.MessageAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
 public class DelegationChat extends AppCompatActivity {
@@ -27,12 +36,17 @@ public class DelegationChat extends AppCompatActivity {
     RelativeLayout confirmInitiationContentBox;
     private ExpandOrCollapse mAnimationManager;
     private ImageView arrow;
-    private ImageView sendButton;
-    private ScrollView chatRoom;
     private boolean hasCheckedServiceInitConfirmation = false;
     private boolean hasInitiatedService;
     private ProgressBar circularProgressBar;
     private ImageView homeButton;
+
+    private ListView listView;
+    private View btnSend;
+    private EditText editText;
+    boolean myMessage = true;
+    private List<ChatBubble> ChatBubbles;
+    private ArrayAdapter<ChatBubble> adapter;
 
 
     @Override
@@ -41,19 +55,19 @@ public class DelegationChat extends AppCompatActivity {
         setContentView(R.layout.activity_delegation_chat);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Delegation Chat");
+
+        Intent intent = getIntent();
+        setTitle(intent.getExtras().getString("agentName"));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //initiate the home and progressbar icon in the toolbar
         circularProgressBar = findViewById(R.id.circular_progressbar_btn);
-        homeButton = findViewById(R.id.home_icon_button);
 
         //check if the service has been initiated
-        hasInitiatedService = getIntent().getExtras().getBoolean("hasInitiatedService");
-
-        chatRoom = findViewById(R.id.chat_room);
+//        hasInitiatedService = getIntent().getExtras().getBoolean("hasInitiatedService");
 
         arrow = findViewById(R.id.arrow_down_up);
-        sendButton = findViewById(R.id.send_btn);
 
         confirmInitiationBox = findViewById(R.id.confirm_service_initiation_box);
         confirmInitiationContentBox = findViewById(R.id.confirm_initiation_content_box);
@@ -74,11 +88,11 @@ public class DelegationChat extends AppCompatActivity {
 
                     if(!hasCheckedServiceInitConfirmation){
 
-                        ViewTooltip
-                                .on(chatRoom)
-                                .position(ViewTooltip.Position.TOP)
-                                .text(getResources().getString(R.string.follow_up_agent_string))
-                                .show();
+//                        ViewTooltip
+//                                .on(chatRoom)
+//                                .position(ViewTooltip.Position.TOP)
+//                                .text(getResources().getString(R.string.follow_up_agent_string))
+//                                .show();
 
                         hasCheckedServiceInitConfirmation = true;
 
@@ -96,37 +110,15 @@ public class DelegationChat extends AppCompatActivity {
                 }
             }
         });
-
-        if(hasInitiatedService){
-
-            ExpandOrCollapse.expand(confirmInitiationBox, 100);
-            ExpandOrCollapse.expand(confirmInitiationContentBox, 100);
-            circularProgressBar.setVisibility(View.VISIBLE);
-
-
-        }
-
-
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToDelegatePogress();
-
-            }
-
-
-        });
-
-        //set the home icon onclick method
-        homeButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-
-                goToHome();
-
-            }
-        });
+//
+//        if(hasInitiatedService){
+//
+//            ExpandOrCollapse.expand(confirmInitiationBox, 100);
+//            ExpandOrCollapse.expand(confirmInitiationContentBox, 100);
+//            circularProgressBar.setVisibility(View.VISIBLE);
+//
+//
+//        }
 
         //set the circular progress bar icon onclick method
         circularProgressBar.setOnClickListener(new View.OnClickListener(){
@@ -138,13 +130,54 @@ public class DelegationChat extends AppCompatActivity {
 
             }
         });
+
+        ChatBubbles = new ArrayList<>();
+
+        listView = (ListView) findViewById(R.id.list_msg);
+        btnSend = findViewById(R.id.send_btn);
+        editText = (EditText) findViewById(R.id.message);
+
+        //set ListView adapter first
+        adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
+        listView.setAdapter(adapter);
+
+        //event for button SEND
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editText.getText().toString().trim().equals("")) {
+                    Toast.makeText(DelegationChat.this, "Please input some text...", Toast.LENGTH_SHORT).show();
+                } else {
+                    //add message to list
+                    ChatBubble ChatBubble = new ChatBubble(editText.getText().toString(), myMessage);
+                    ChatBubbles.add(ChatBubble);
+                    adapter.notifyDataSetChanged();
+                    editText.setText("");
+                    if (myMessage) {
+                        myMessage = false;
+                    } else {
+                        myMessage = true;
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainScreen.class);
-        startActivity(intent);
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return  true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void rotate(float degree) {
@@ -160,14 +193,6 @@ public class DelegationChat extends AppCompatActivity {
     public void goToDelegatePogress(){
 
         Intent intent = new Intent(this, DelegationProgress.class);
-        finish();
-        startActivity(intent);
-
-    }
-
-    public void goToHome(){
-
-        Intent intent = new Intent(this, MainScreen.class);
         finish();
         startActivity(intent);
 

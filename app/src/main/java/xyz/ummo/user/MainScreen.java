@@ -22,8 +22,8 @@ import androidx.fragment.app.FragmentTransaction;
 import xyz.ummo.user.delegate.Logout;
 import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.ui.SlideIntro;
+import xyz.ummo.user.ui.fragments.DelegatedServicesFragment;
 import xyz.ummo.user.ui.fragments.HomeFragment;
-import xyz.ummo.user.ui.fragments.LegalTermsFragment;
 import xyz.ummo.user.ui.fragments.ProfileFragment;
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
@@ -58,7 +58,7 @@ public class MainScreen extends AppCompatActivity
     private static final String TAG_PROFILE = "profile";
     private static final String TAG_PAYMENTS = "paymentMethods";
     private static final String TAG_SERVICE_HISTORY = "serviceHistory";
-    private static final String TAG_LEGAL_TERMS = "legalTerms";
+    private static final String TAG_DELEGATED_SERVICES = "delegatedServices";
     public static String CURRENT_TAG = TAG_HOME;
 
     private boolean anyServiceInProgress = false;
@@ -178,7 +178,7 @@ public class MainScreen extends AppCompatActivity
                 break;
             case R.id.nav_service_history:
                 break;
-            case R.id.nav_legal_terms:
+            case R.id.nav_delegated_services:
                 break;
 
         }
@@ -259,7 +259,8 @@ public class MainScreen extends AppCompatActivity
 
             case 4:
                 // legal terms fragment
-                return new LegalTermsFragment();
+                return new DelegatedServicesFragment();
+
  
             default:
                 return new HomeFragment(data);
@@ -299,11 +300,12 @@ public class MainScreen extends AppCompatActivity
                         CURRENT_TAG = TAG_SERVICE_HISTORY;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_HISTORY]->"+menuItem);
                         break;
-                    case R.id.nav_legal_terms:
+                    case R.id.nav_delegated_services:
                         navItemIndex = 4;
-                        CURRENT_TAG = TAG_LEGAL_TERMS;
+                        CURRENT_TAG = TAG_DELEGATED_SERVICES;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_LEGAL]->"+menuItem);
                         break;
+
                     default:
                         navItemIndex = 0;
                 }
