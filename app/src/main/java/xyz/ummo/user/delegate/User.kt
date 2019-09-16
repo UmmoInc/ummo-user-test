@@ -59,7 +59,7 @@ class User : Application() {
 
         }
 
-        Log.e("App", "Application created")
+        Log.e("App", "Application created - Server URL->${getString(serverUrl)}")
 
         setUser()
 

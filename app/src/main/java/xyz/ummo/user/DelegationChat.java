@@ -95,7 +95,6 @@ public class DelegationChat extends AppCompatActivity {
 //                                .show();
 
                         hasCheckedServiceInitConfirmation = true;
-
                     }
 
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -106,7 +105,6 @@ public class DelegationChat extends AppCompatActivity {
                     ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
                     isVisible = true;
                     rotate(360);
-
                 }
             }
         });
@@ -190,12 +188,15 @@ public class DelegationChat extends AppCompatActivity {
         arrow.startAnimation(rotateAnim);
     }
 
-    public void goToDelegatePogress(){
-
+    public void goToDelegateProgress(){
         Intent intent = new Intent(this, DelegationProgress.class);
         finish();
         startActivity(intent);
-
     }
 
+    public void goToHome(){
+        Intent intent = new Intent(this, MainScreen.class);
+        finish();
+        startActivity(intent);
+    }
 }
