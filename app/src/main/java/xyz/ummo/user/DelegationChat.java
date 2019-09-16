@@ -100,7 +100,7 @@ public class DelegationChat extends AppCompatActivity {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 
-                } else if (!isVisible){
+                } else {
 
                     ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
                     isVisible = true;
@@ -124,16 +124,16 @@ public class DelegationChat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                goToDelegatePogress();
+                goToDelegateProgress();
 
             }
         });
 
         ChatBubbles = new ArrayList<>();
 
-        listView = (ListView) findViewById(R.id.list_msg);
+        listView = findViewById(R.id.list_msg);
         btnSend = findViewById(R.id.send_btn);
-        editText = (EditText) findViewById(R.id.message);
+        editText = findViewById(R.id.message);
 
         //set ListView adapter first
         adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
@@ -151,11 +151,7 @@ public class DelegationChat extends AppCompatActivity {
                     ChatBubbles.add(ChatBubble);
                     adapter.notifyDataSetChanged();
                     editText.setText("");
-                    if (myMessage) {
-                        myMessage = false;
-                    } else {
-                        myMessage = true;
-                    }
+                    myMessage = !myMessage;
                 }
             }
         });
@@ -194,7 +190,7 @@ public class DelegationChat extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void goToHome(){
+    public void goHome(){
         Intent intent = new Intent(this, MainScreen.class);
         finish();
         startActivity(intent);
