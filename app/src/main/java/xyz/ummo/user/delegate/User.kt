@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.preference.PreferenceManager
+import android.support.v4.media.MediaBrowserCompat
 import android.util.Base64
 import android.util.Log
 import com.github.kittinunf.fuel.core.FuelManager
@@ -25,7 +26,7 @@ class User : Application() {
     private fun initalizeSocket(_id: String) {
         try {
             Log.e("User", "Trying connection")
-            mSocket = IO.socket("${getString(serverUrl)}/user-$_id");
+            mSocket = IO.socket("${getString(serverUrl)}/user-$_id")
         } catch (e: URISyntaxException) {
             Log.e("User", e.toString())
         }
@@ -51,6 +52,7 @@ class User : Application() {
             mSocket?.connect()
             mSocket?.on("service-created", Emitter.Listener {
                 val intent = Intent(this, DelegationChat::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra("service-created", it[0].toString())
                 startActivity(intent)
             })
@@ -66,18 +68,6 @@ class User : Application() {
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init()
-    }
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
     }
 
     fun setUser() {
