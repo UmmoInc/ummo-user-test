@@ -4,10 +4,12 @@ public class DelegatedService {
 
     String serviceName;
     String agentName;
+    String serviceId;
 
-    public DelegatedService(String serviceName, String agentName) {
+    public DelegatedService(String serviceName, String agentName, String serviceId) {
         this.serviceName = serviceName;
         this.agentName = agentName;
+        this.serviceId=serviceId;
     }
 
     public String getServiceName() {
@@ -17,4 +19,6 @@ public class DelegatedService {
     public String getAgentName() {
         return agentName;
     }
+
+    public String getServiceId(){return serviceId;}
 }

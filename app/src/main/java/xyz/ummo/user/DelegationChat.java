@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
+import com.github.nkzawa.emitter.Emitter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,10 +25,22 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.ummo.user.delegate.GetService;
+import xyz.ummo.user.delegate.Service;
+
+
 import xyz.ummo.user.adapters.MessageAdapter;
+import xyz.ummo.user.delegate.SendChatMessage;
+import xyz.ummo.user.delegate.SocketIO;
+import xyz.ummo.user.delegate.User;
 import xyz.ummo.user.ui.MainScreen;
 
 public class DelegationChat extends AppCompatActivity {
@@ -48,6 +62,19 @@ public class DelegationChat extends AppCompatActivity {
     private List<ChatBubble> ChatBubbles;
     private ArrayAdapter<ChatBubble> adapter;
 
+    @Override
+    protected void onDestroy() {
+      //  SocketIO.INSTANCE.getMSocket().off("message");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+      //  SocketIO.INSTANCE.getMSocket().off("message");
+        super.onPause();
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +87,8 @@ public class DelegationChat extends AppCompatActivity {
         setTitle(intent.getExtras().getString("agentName"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        String service_id = getIntent().getStringExtra("SERVICE_ID");
 
         //initiate the home and progressbar icon in the toolbar
         circularProgressBar = findViewById(R.id.circular_progressbar_btn);
@@ -139,20 +168,75 @@ public class DelegationChat extends AppCompatActivity {
         adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
         listView.setAdapter(adapter);
 
+     //   Log.e("Connected", SocketIO.INSTANCE.getMSocket().connected()+"");
+
+        new GetService(this,service_id){
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject obj = new JSONObject(new  String(data));
+                            Log.e("OBJ",obj.toString());
+                            JSONArray chatArr = obj.getJSONArray("chat");
+                            for (int i = 0;i<chatArr.length(); i++){
+                                JSONObject message = chatArr.getJSONObject(i);
+                                ChatBubble chatBubble = new ChatBubble(message.getString("message"), message.getString("from").equals("user"));
+                                ChatBubbles.add(chatBubble);
+                            }
+                            adapter.notifyDataSetChanged();
+
+
+                        }catch (JSONException e){
+                            Log.e("JSONE",e.toString());
+                        }
+
+                    }
+                });
+
+            }
+        };
+
+        SocketIO.INSTANCE.getMSocket().on("message", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.e("Mess","Received");
+                try {
+                    JSONObject message = new JSONObject(args[0].toString());
+                    Log.e("Mine","Equals"+message.getString("from").equals("agent"));
+                    ChatBubble chatBubble = new ChatBubble(message.getString("message"), message.getString("from").equals("user"));
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChatBubbles.add(chatBubble);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+
+                }catch (JSONException e){
+                    Log.e("MESSERR", e.toString());
+                }
+            }
+        });
+
         //event for button SEND
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (editText.getText().toString().trim().equals("")) {
                     Toast.makeText(DelegationChat.this, "Please input some text...", Toast.LENGTH_SHORT).show();
                 } else {
-                    //add message to list
-                    ChatBubble ChatBubble = new ChatBubble(editText.getText().toString(), myMessage);
-                    ChatBubbles.add(ChatBubble);
-                    adapter.notifyDataSetChanged();
-                    editText.setText("");
-                    myMessage = !myMessage;
+                    new SendChatMessage(editText.getText().toString(),service_id){
+                        @Override
+                        public void done(@NotNull byte[] data, @NotNull Number code) {
+                            Log.e("SENT-MESSAGE",new String(data));
+                        }
+                    };
                 }
+                editText.setText("");
             }
         });
     }
