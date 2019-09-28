@@ -58,6 +58,8 @@ public class DelegationChat extends AppCompatActivity {
 
         Intent intent = getIntent();
         setTitle(intent.getExtras().getString("agentName"));
+        getSupportActionBar().setSubtitle(intent.getExtras().getString("serviceName"));
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
