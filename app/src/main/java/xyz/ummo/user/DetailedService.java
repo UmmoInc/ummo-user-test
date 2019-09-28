@@ -16,13 +16,21 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.adapters.CustomStepsAdapter;
+import xyz.ummo.user.adapters.servicesAdapter;
+import xyz.ummo.user.delegate.DelegateService;
+import xyz.ummo.user.delegate.User;
 
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -32,12 +40,11 @@ public class DetailedService extends AppCompatActivity {
     CollapsingToolbarLayout mCollapsingToolbarLayout;
     TextView serviceDescription, serviceCost, serviceDuration, serviceDocs;
     Toolbar toolbar;
-
+    Button requestAgentBtn;
 
     ListView stepsList;
 
     ArrayList<String> steps;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,7 @@ public class DetailedService extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         nestedScrollView = findViewById(R.id.nested_scrollview);
+        requestAgentBtn = findViewById(R.id.request_agent_btn);
 
 
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_layout);
@@ -76,6 +84,7 @@ public class DetailedService extends AppCompatActivity {
         String duration = getIntent().getStringExtra("duration");
         String _steps = getIntent().getStringExtra("steps");
         String docs = getIntent().getStringExtra("docs");
+        String id = getIntent().getStringExtra("id");
 
 
         toolbar.setTitle(serviceName);
@@ -98,6 +107,19 @@ public class DetailedService extends AppCompatActivity {
 
         ArrayAdapter<String> arrayAdapter =
                 new ArrayAdapter<String>(this, R.layout.steps_list, R.id.step,steps);
+
+        requestAgentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedService.this).getString("jwt", "");
+                new DelegateService(DetailedService.this, User.Companion.getUserId(jwt),id){
+                    @Override
+                    public void done(@NotNull byte[] data, int code) {
+                        Log.e("Done",new String(data));
+                    }
+                };
+            }
+        });
 
         int totalHeight = 0;
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
