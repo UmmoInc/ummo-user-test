@@ -23,31 +23,29 @@ class User : Application() {
 
     //public var mSocket: Socket? = null
 
-    private fun initializeSocket(_id:String){
+    private fun initializeSocket(_id: String) {
         try {
-            Log.e("User","Trying connection")
+            Log.e("User", "Trying connection")
             SocketIO.mSocket = IO.socket("${getString(serverUrl)}/user-$_id")
-            Log.e("NMSP","${getString(serverUrl)}/user-$_id")
+            Log.e("NMSP", "${getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
-            if(SocketIO.mSocket==null){
-                Log.e("AGeNT","Probably not connected");
-            }else{
-                Log.e("Agent","Probably connected")
+            if (SocketIO.mSocket == null) {
+                Log.e("AGeNT", "Probably not connected");
+            } else {
+                Log.e("Agent", "Probably connected")
             }
         } catch (e: URISyntaxException) {
-            Log.e("User",e.toString())
+            Log.e("User", e.toString())
         }
     }
 
 
-        companion object{
-            fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
-                return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
-            }
+    companion object {
+        fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
+            return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
         }
-
-
+    }
 
 
     override fun onCreate() {
@@ -61,34 +59,33 @@ class User : Application() {
             initializeSocket(getUserId(jwt))
             //SocketIO.mSocket?.connect()
             SocketIO.mSocket?.on("connect", Emitter.Listener {
-                Log.e("Socket","Connected to ")
+                Log.e("Socket", "Connected to ")
             })
             SocketIO.mSocket?.on("message1", Emitter.Listener {
-                Log.e("Message","it[0].toString()")
+                Log.e("Message", "it[0].toString()")
             })
             SocketIO.mSocket?.on("service-created", Emitter.Listener {
                 val intent = Intent(this, DelegationChat::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.putExtra("service-created", it[0].toString())
+                intent.putExtra("SERVICE_ID", JSONObject(it[0].toString()).getString("_id"))
                 startActivity(intent)
             })
 
-         /*   mSocket?.on("message", Emitter.Listener {
-                Log.e("Socket","Got message")
-            })*/
+            /*   mSocket?.on("message", Emitter.Listener {
+                   Log.e("Socket","Got message")
+               })*/
 
             SocketIO.mSocket?.on("connect_error", Emitter.Listener {
-                Log.e("COERR",it[0].toString()+SocketIO.mSocket?.io().toString())
+                Log.e("COERR", it[0].toString() + SocketIO.mSocket?.io().toString())
             })
 
             SocketIO.mSocket?.on("error", Emitter.Listener {
-                Log.e("COERR",it[0].toString()+SocketIO.mSocket?.io().toString())
+                Log.e("COERR", it[0].toString() + SocketIO.mSocket?.io().toString())
             })
 
-          /*  SocketIO.mSocket?.on("message", Emitter.Listener {
-                Log.e("Message",it[0].toString())
-            })*/
-
+            /*  SocketIO.mSocket?.on("message", Emitter.Listener {
+                  Log.e("Message",it[0].toString())
+              })*/
 
 
         }
@@ -97,14 +94,14 @@ class User : Application() {
 
 
         // OneSignal Initialization
-       /* OneSignal.startInit(this)
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                .unsubscribeWhenNotificationsAreDisabled(true)
-                .init()*/
+        /* OneSignal.startInit(this)
+                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                 .unsubscribeWhenNotificationsAreDisabled(true)
+                 .init()*/
     }
 }
 
-object SocketIO{
+object SocketIO {
     var mSocket: Socket? = null
     var anything = ""
 
