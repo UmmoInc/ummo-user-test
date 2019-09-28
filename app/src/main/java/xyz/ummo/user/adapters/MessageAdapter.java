@@ -38,13 +38,13 @@ public class MessageAdapter extends ArrayAdapter<ChatBubble> {
             layoutResource = R.layout.right_chat_bubble;
         }
 
-        if (convertView != null) {
+        /*if (convertView != null) {
             holder = (ViewHolder) convertView.getTag();
-        } else {
+        } else {*/
             convertView = inflater.inflate(layoutResource, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
-        }
+       // }
 
         //set message content
         holder.msg.setText(ChatBubble.getContent());

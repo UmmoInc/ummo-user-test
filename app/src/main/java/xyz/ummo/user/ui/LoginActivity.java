@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OneSignal;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -92,6 +94,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email = emailLogin.getText().toString().trim();
         String contact = contactLogin.getText().toString().trim();
 
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        String oneToken = status.getSubscriptionStatus().getPushToken();
+        String onePlayerId = status.getSubscriptionStatus().getUserId();
+
         if (email.isEmpty()){
             emailLogin.setError("Email is required.");
             emailLogin.requestFocus();
@@ -131,7 +137,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Log.e(TAG, "onLoginComplete userName->"+userName+ " userContact->"+userContact);
 
                         if (userName != null && userContact != null) {
-                            new Login(LoginActivity.this,userName,email,userContact){
+                            new Login(LoginActivity.this,userName,email,userContact, onePlayerId){
                                 @Override
                                 public void done(@NotNull byte[] data, @NotNull Number code) {
                                     Log.e(TAG,"Login Result->"+new String(data));

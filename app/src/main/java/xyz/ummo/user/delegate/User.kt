@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.preference.PreferenceManager
+import android.support.v4.media.MediaBrowserCompat
 import android.util.Base64
 import android.util.Log
 import com.github.kittinunf.fuel.core.FuelManager
@@ -20,22 +21,32 @@ import java.net.URISyntaxException
 
 class User : Application() {
 
-    private var mSocket: Socket? = null
+    //public var mSocket: Socket? = null
 
-    private fun initalizeSocket(_id: String) {
+    private fun initializeSocket(_id:String){
         try {
-            Log.e("User", "Trying connection")
-            mSocket = IO.socket("${getString(serverUrl)}/user-$_id");
+            Log.e("User","Trying connection")
+            SocketIO.mSocket = IO.socket("${getString(serverUrl)}/user-$_id")
+            Log.e("NMSP","${getString(serverUrl)}/user-$_id")
+            SocketIO.mSocket?.connect()
+            SocketIO.anything = "Hello World"
+            if(SocketIO.mSocket==null){
+                Log.e("AGeNT","Probably not connected");
+            }else{
+                Log.e("Agent","Probably connected")
+            }
         } catch (e: URISyntaxException) {
-            Log.e("User", e.toString())
+            Log.e("User",e.toString())
         }
     }
 
 
-
-        fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
-            return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
+        companion object{
+            fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
+                return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
+            }
         }
+
 
 
 
@@ -47,45 +58,54 @@ class User : Application() {
 
         if (jwt != "") {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
-            initalizeSocket(getUserId(jwt))
-            mSocket?.connect()
-            mSocket?.on("service-created", Emitter.Listener {
+            initializeSocket(getUserId(jwt))
+            //SocketIO.mSocket?.connect()
+            SocketIO.mSocket?.on("connect", Emitter.Listener {
+                Log.e("Socket","Connected to ")
+            })
+            SocketIO.mSocket?.on("message1", Emitter.Listener {
+                Log.e("Message","it[0].toString()")
+            })
+            SocketIO.mSocket?.on("service-created", Emitter.Listener {
                 val intent = Intent(this, DelegationChat::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra("service-created", it[0].toString())
                 startActivity(intent)
             })
 
+         /*   mSocket?.on("message", Emitter.Listener {
+                Log.e("Socket","Got message")
+            })*/
+
+            SocketIO.mSocket?.on("connect_error", Emitter.Listener {
+                Log.e("COERR",it[0].toString()+SocketIO.mSocket?.io().toString())
+            })
+
+            SocketIO.mSocket?.on("error", Emitter.Listener {
+                Log.e("COERR",it[0].toString()+SocketIO.mSocket?.io().toString())
+            })
+
+          /*  SocketIO.mSocket?.on("message", Emitter.Listener {
+                Log.e("Message",it[0].toString())
+            })*/
+
+
+
         }
 
-        Log.e("App", "Application created")
+        Log.e("App", "Application created - Server URL->${getString(serverUrl)}")
 
-        setUser()
 
         // OneSignal Initialization
-        OneSignal.startInit(this)
+       /* OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
-                .init()
+                .init()*/
     }
+}
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-    }
+object SocketIO{
+    var mSocket: Socket? = null
+    var anything = ""
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-    }
-
-    fun setUser() {
-        user = this
-    }
-
-    companion object {
-        var user: User? = null
-            private set
-    }
 }

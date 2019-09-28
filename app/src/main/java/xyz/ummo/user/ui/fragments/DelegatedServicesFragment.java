@@ -101,7 +101,7 @@ public class DelegatedServicesFragment extends Fragment {
 
         TypedArray a = getContext().obtainStyledAttributes(ATTRS);
         Drawable divider = a.getDrawable(0);
-        int insetRight = getResources().getDimensionPixelSize(R.dimen.divider_item_right);;
+        int insetRight = getResources().getDimensionPixelSize(R.dimen.divider_item_right);
         int insetLeft = getResources().getDimensionPixelSize(R.dimen.divider_item_left);
         InsetDrawable insetDivider = new InsetDrawable(divider, insetLeft, 0, insetRight, 0);
         a.recycle();
@@ -173,8 +173,10 @@ public class DelegatedServicesFragment extends Fragment {
                                 JSONObject agentObject = jsonObject.getJSONObject("agent");
                                 JSONObject productObject = jsonObject.getJSONObject("product");
 
+                                Log.e("_ID",jsonObject.getString("_id"));
+
                                 DelegatedService delegatedService = new DelegatedService(productObject.
-                                        getString("product_name"), agentObject.getString("name"));
+                                        getString("product_name"), agentObject.getString("name"), jsonObject.getString("_id"));
                                 delegatedServiceArrayList.add(delegatedService);
 
                                 Log.e("tag", jsonObject.toString());

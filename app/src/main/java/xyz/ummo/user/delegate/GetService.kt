@@ -4,15 +4,13 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
+import java.security.AccessControlContext
 
-import xyz.ummo.user.R.string.*
-
-abstract class Service(context: Context) {
+abstract class GetService(context: Context, service_id: String) {
     init {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
-        Fuel.get("/service?user=${User.getUserId(jwt)}")
+        Fuel.get("/service/$service_id")
                 .response { request, response, result ->
-                    Log.e("Services",String(response.data))
                     done(response.data,response.statusCode)
                 }
     }

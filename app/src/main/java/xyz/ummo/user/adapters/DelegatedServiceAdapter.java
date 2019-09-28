@@ -1,6 +1,7 @@
 package xyz.ummo.user.adapters;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView serviceName, agentName;
+        public DelegatedService service;
 
         public MyViewHolder(View view) {
             super(view);
@@ -42,15 +44,6 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
                 .inflate(R.layout.delegated_services_list, parent, false);
 
         RelativeLayout delegatedSevice = itemView.findViewById(R.id.delegated_service);
-        delegatedSevice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(itemView.getContext(), DelegationChat.class);
-                intent.putExtra("agentName", agentName);
-                intent.putExtra("serviceName", serviceName);
-                itemView.getContext().startActivity(intent);
-            }
-        });
 
         return new MyViewHolder(itemView);
     }
@@ -61,9 +54,20 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
 
         agentName = delegatedService.getAgentName();
         serviceName = delegatedService.getServiceName();
-
         holder.serviceName.setText(delegatedService.getServiceName());
         holder.agentName.setText(delegatedService.getAgentName());
+
+        holder.serviceName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holder.itemView.getContext(), DelegationChat.class);
+                intent.putExtra("agentName", agentName);
+                intent.putExtra("serviceName", serviceName);
+                intent.putExtra("SERVICE_ID", delegatedService.getServiceId());
+                Log.e("SERVICE_ID", delegatedService.getAgentName());
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
 
 
     }
