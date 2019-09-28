@@ -59,7 +59,7 @@ public class DelegationChat extends AppCompatActivity {
     private View btnSend;
     private EditText editText;
     boolean myMessage = true;
-    private List<ChatBubble> ChatBubbles;
+    private List<ChatBubble> ChatBubbles= new ArrayList<ChatBubble>();
     private ArrayAdapter<ChatBubble> adapter;
 
     @Override
@@ -160,8 +160,10 @@ public class DelegationChat extends AppCompatActivity {
 
         //set ListView adapter first
         adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
+        listView = findViewById(R.id.list_msg);
         listView.setAdapter(adapter);
-
+        btnSend = findViewById(R.id.send_btn);
+        editText = findViewById(R.id.message);
      //   Log.e("Connected", SocketIO.INSTANCE.getMSocket().connected()+"");
 
         new GetService(this,service_id){

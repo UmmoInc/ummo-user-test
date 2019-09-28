@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment {
         serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 
 
-        loadDepartments(_data);
+//        loadDepartments(_data);
         addServiceProviders();
        // serviceProviderAdapter.addProduct();
     }
