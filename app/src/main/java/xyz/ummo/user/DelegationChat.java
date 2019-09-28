@@ -148,16 +148,6 @@ public class DelegationChat extends AppCompatActivity {
 //
 //        }
 
-
-
-
-
-
-
-
-
-
-
         //set ListView adapter first
         adapter = new MessageAdapter(this, R.layout.left_chat_bubble, ChatBubbles);
         listView = findViewById(R.id.list_msg);
