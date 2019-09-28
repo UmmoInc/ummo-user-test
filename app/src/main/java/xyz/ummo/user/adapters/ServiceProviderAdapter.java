@@ -1,5 +1,6 @@
 package xyz.ummo.user.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +24,23 @@ import xyz.ummo.user.AddCard;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
 import xyz.ummo.user.ServiceProvider;
+import xyz.ummo.user.delegate.GetProducts;
+import xyz.ummo.user.delegate.PublicServiceData;
 
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
 
-    private List<ServiceProvider> serviceProviderList;
-    ArrayList<Product> providers= new ArrayList<>();
+    private List<PublicServiceData> serviceProviderList;
 
+
+    Activity context;
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView serviceProviderName, moreText;
         public RelativeLayout serviceProviderBackground;
         ProductAdapter productAdapter;
         RecyclerView productsRecyclerView;
+        PublicServiceData publicServiceData;
+        ArrayList<Product> providers= new ArrayList<>();
 
         public MyViewHolder(View view) {
             super(view);
@@ -39,7 +50,6 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
             serviceProviderBackground= (RelativeLayout) view.findViewById(R.id.service_provider_background);
             productsRecyclerView= view.findViewById(R.id.products_rv);
 
-            addProduct();
 
             productAdapter = new ProductAdapter(providers);
 
@@ -50,7 +60,8 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         }
     }
 
-    public ServiceProviderAdapter(List<ServiceProvider> serviceProviderList){
+    public ServiceProviderAdapter(List<PublicServiceData> serviceProviderList, Activity activity){
+        context = activity;
         this.serviceProviderList= serviceProviderList;
 
     }
@@ -65,9 +76,10 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        ServiceProvider serviceProvider= serviceProviderList.get(position);
-
-        holder.serviceProviderName.setText(serviceProvider.serviceProviderName);
+        PublicServiceData serviceProvider= serviceProviderList.get(position);
+        holder.publicServiceData = serviceProvider;
+        holder.serviceProviderName.setText(serviceProvider.getServiceName());
+        addProduct(holder);
     }
 
     @Override
@@ -76,27 +88,24 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
 
     }
 
-    public  void addProduct(){
-        Product product = new Product("Home Affairs", "Mbabane",
-                "+204 5466", "www.homeaffairs.org.sz");
-        providers.add(product);
+    public  void addProduct(MyViewHolder holder){
 
-        product = new Product("Mbabane Hospital", "Mbabane",
-                "+204 0092", "www.mbabanehospital.org.sz");
-        providers.add(product);
+        new GetProducts(context,holder.publicServiceData.getServiceCode()){
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                try{
+                    JSONArray arr = new JSONArray(new String(data));
+                    for(int i = 0; i< arr.length();i++){
+                        JSONObject obj = arr.getJSONObject(i);
+                        holder.providers.add(new Product(obj.getString("product_name"),holder.publicServiceData.getTown(),holder.publicServiceData.getProvince(),"website to be replaced"));
+                    }
+                    holder.productAdapter.notifyDataSetChanged();
 
-        product = new Product("Manzini Hospital", "Manzini",
-                "+204 0488", "www.manzinihospital.org.sz");
-        providers.add(product);
+                }catch (JSONException jse){
 
-        product = new Product("Central Bank of Eswatini", "Mbabane",
-                "+204 9900", "www.centralbankeswatini.org.sz");
-        providers.add(product);
-
-        product = new Product("Mbabane Library", "Mbabane",
-                "+204 9900", "www.mbabanenationallibrary.org.sz");
-        providers.add(product);
-
+                }
+            }
+        };
     }
 
 }

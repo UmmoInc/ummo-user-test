@@ -23,6 +23,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.NotNull;
+
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
 import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
@@ -32,7 +34,9 @@ import xyz.ummo.user.ServiceProvider;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.ServiceProviderAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
+import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
+import xyz.ummo.user.delegate.PublicServiceKt;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,7 +67,7 @@ public class HomeFragment extends Fragment {
     private servicesCarouselAdapter carouselAdapter;
     ServiceProviderAdapter serviceProviderAdapter;
 
-    ArrayList<ServiceProvider> serviceProviderList= new ArrayList<>();
+    ArrayList<PublicServiceData> serviceProviderList= new ArrayList<>();
 
 
     public HomeFragment(){}
@@ -97,12 +101,12 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList);
+        serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 
 
         loadDepartments(_data);
         addServiceProviders();
-        serviceProviderAdapter.addProduct();
+       // serviceProviderAdapter.addProduct();
     }
 
     @Override
@@ -113,7 +117,7 @@ public class HomeFragment extends Fragment {
         final FragmentActivity c = getActivity();
         final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
 
-        serviceProviderAdapter.addProduct();
+        //serviceProviderAdapter.addProduct();
         LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(serviceProviderAdapter);
@@ -206,17 +210,14 @@ public class HomeFragment extends Fragment {
     }
 
     public void addServiceProviders(){
-        ServiceProvider serviceProvider= new ServiceProvider("Home Affairs");
-        serviceProviderList.add(serviceProvider);
 
-        serviceProvider = new ServiceProvider("Public Services");
-        serviceProviderList.add(serviceProvider);
-
-        serviceProvider = new ServiceProvider("Labour and Social Security");
-        serviceProviderList.add(serviceProvider);
-
-        serviceProvider = new ServiceProvider("Health");
-        serviceProviderList.add(serviceProvider);
+        new PublicService(getActivity()){
+            @Override
+            public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                serviceProviderList.addAll(data);
+                serviceProviderAdapter.notifyDataSetChanged();
+            }
+        };
 
     }
 
