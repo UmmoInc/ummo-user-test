@@ -136,8 +136,6 @@
             android:divider="@null"
             android:layout_below="@id/confirm_initiation_content_box"/>
 
-
-
         <EditText
             android:id="@+id/message"
             android:layout_width="match_parent"

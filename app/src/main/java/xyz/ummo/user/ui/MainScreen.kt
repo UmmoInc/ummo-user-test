@@ -18,7 +18,7 @@ import androidx.fragment.app.Fragment
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
 import xyz.ummo.user.ui.fragments.HomeFragment
-import xyz.ummo.user.ui.fragments.LegalTermsFragment
+import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
 import xyz.ummo.user.ui.fragments.ProfileFragment
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
@@ -138,7 +138,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             R.id.nav_profile -> selectedFragment = ProfileFragment()
             R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
             R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_legal_terms -> selectedFragment = LegalTermsFragment()
+            R.id.nav_delegated_services -> selectedFragment = DelegatedServicesFragment()
         }
 
         if (selectedFragment != null) {
@@ -175,7 +175,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         } else if (id == R.id.nav_service_history) {
 
-        } else if (id == R.id.nav_legal_terms) {
+        } else if (id == R.id.nav_delegated_services) {
 
         }
 
@@ -255,7 +255,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             4 -> {
                 // legal terms fragment
-                return LegalTermsFragment()
+                return DelegatedServicesFragment()
             }
 
             else -> return HomeFragment(data)

@@ -119,7 +119,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 i.putExtra("steps",holder.steps);
                 i.putExtra("duration", duration);
                  String jwt = PreferenceManager.getDefaultSharedPreferences(servicesAdapter.this.context).getString("jwt", "");
-                new DelegateService(servicesAdapter.this.context, User.Companion.getUser().getUserId(jwt),service.getId()){
+                new DelegateService(servicesAdapter.this.context, User.Companion.getUserId(jwt),service.getId()){
                     @Override
                     public void done(@NotNull byte[] data, int code) {
                         Log.e("Done",new String(data));
