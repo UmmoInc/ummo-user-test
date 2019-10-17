@@ -7,6 +7,7 @@ import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -43,6 +44,7 @@ public class DelegatedServicesFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "DelegatedServicesFrag.";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -67,7 +69,7 @@ public class DelegatedServicesFragment extends Fragment {
      * @return A new instance of fragment DelegatedServicesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DelegatedServicesFragment newInstance(String param1, String param2) {
+    private static DelegatedServicesFragment newInstance(String param1, String param2) {
         DelegatedServicesFragment fragment = new DelegatedServicesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -126,7 +128,7 @@ public class DelegatedServicesFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         //if (context instanceof OnFragmentInteractionListener) {
         //  mListener = (OnFragmentInteractionListener) context;
@@ -157,7 +159,7 @@ public class DelegatedServicesFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void addDelegatedServices(){
+    private void addDelegatedServices(){
 
         new Service(getActivity()){
             @Override
@@ -186,7 +188,7 @@ public class DelegatedServicesFragment extends Fragment {
                             delegatedServiceAdapter.notifyDataSetChanged();
 
                         }catch (JSONException e){
-
+                            Log.e(TAG, "addDelegatedServices: newService JSE -> "+e.toString());
                         }
                     }
                 });

@@ -3,25 +3,28 @@ package xyz.ummo.user.delegate
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.preference.PreferenceManager
-import android.support.v4.media.MediaBrowserCompat
 import android.util.Base64
 import android.util.Log
+import androidx.lifecycle.ViewModelProviders
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import org.json.JSONObject
-import xyz.ummo.user.DelegationChat
-import com.onesignal.OneSignal
 
 import xyz.ummo.user.R.string.*
+import xyz.ummo.user.ui.detailedService.DetailedProduct
+import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import java.net.URISyntaxException
+
 
 class User : Application() {
 
     //public var mSocket: Socket? = null
+    private var detailedProductViewModel: DetailedProductViewModel? = null
+
 
     private fun initializeSocket(_id: String) {
         try {
@@ -31,9 +34,9 @@ class User : Application() {
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {
-                Log.e("AGeNT", "Probably not connected");
+                Log.e("User.kt", "Probably not connected")
             } else {
-                Log.e("Agent", "Probably connected")
+                Log.e("User.kt", "Probably connected")
             }
         } catch (e: URISyntaxException) {
             Log.e("User", e.toString())
@@ -65,15 +68,14 @@ class User : Application() {
                 Log.e("Message", "it[0].toString()")
             })
             SocketIO.mSocket?.on("service-created", Emitter.Listener {
-                val intent = Intent(this, DelegationChat::class.java)
+                val intent = Intent(this, DetailedProduct::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                Log.e(TAG, "Service-Created: IT->"+JSONObject(it[0].toString()))
                 intent.putExtra("SERVICE_ID", JSONObject(it[0].toString()).getString("_id"))
+                Log.e(TAG, "service-created with ID->${JSONObject(it[0].toString()).getString("_id")}")
+
                 startActivity(intent)
             })
-
-            /*   mSocket?.on("message", Emitter.Listener {
-                   Log.e("Socket","Got message")
-               })*/
 
             SocketIO.mSocket?.on("connect_error", Emitter.Listener {
                 Log.e("COERR", it[0].toString() + SocketIO.mSocket?.io().toString())
@@ -86,12 +88,9 @@ class User : Application() {
             /*  SocketIO.mSocket?.on("message", Emitter.Listener {
                   Log.e("Message",it[0].toString())
               })*/
-
-
         }
 
         Log.e("App", "Application created - Server URL->${getString(serverUrl)}")
-
 
         // OneSignal Initialization
         /* OneSignal.startInit(this)

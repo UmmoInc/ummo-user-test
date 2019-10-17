@@ -19,7 +19,7 @@ import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
 import xyz.ummo.user.ui.fragments.HomeFragment
 import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
-import xyz.ummo.user.ui.fragments.ProfileFragment
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
@@ -304,7 +304,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         when (view.id) {
 
-            R.id.full_name -> {
+            R.id.profile_name -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your full name"
@@ -316,13 +316,13 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 toolBarTitle = "Enter your ID Number"
             }
 
-            R.id.contact -> {
+            R.id.profile_contact -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your phone number"
             }
 
-            R.id.email -> {
+            R.id.profile_email -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your email"

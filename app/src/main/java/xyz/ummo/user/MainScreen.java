@@ -24,7 +24,7 @@ import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.ui.SlideIntro;
 import xyz.ummo.user.ui.fragments.DelegatedServicesFragment;
 import xyz.ummo.user.ui.fragments.HomeFragment;
-import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment;
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
 
@@ -362,7 +362,7 @@ public class MainScreen extends AppCompatActivity
 
         switch(view.getId()){
 
-            case R.id.full_name:
+            case R.id.profile_name:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your full name";
@@ -376,14 +376,14 @@ public class MainScreen extends AppCompatActivity
 
                 break;
 
-            case R.id.contact:
+            case R.id.profile_contact:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your phone number";
 
                 break;
 
-            case R.id.email:
+            case R.id.profile_email:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your email";

@@ -22,7 +22,7 @@ import xyz.ummo.user.delegate.Logout;
 import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.ui.fragments.HomeFragment;
 import xyz.ummo.user.ui.fragments.DelegatedServicesFragment;
-import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment;
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
 

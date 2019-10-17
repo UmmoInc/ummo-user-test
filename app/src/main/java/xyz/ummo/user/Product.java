@@ -1,31 +1,20 @@
 package xyz.ummo.user;
 
+import java.util.ArrayList;
+
 public class Product {
 
-    String providerName;
-    String location;
-    String contact;
-    String description;
-
-    public String getDocs() {
-        return docs;
-    }
-
-    String docs;
-
-    public String getSteps() {
-        return steps;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    String steps;
-    String duration;
+    private String providerName;
+    private String location;
+    private String contact;
+    private String description;
+    private String cost;
+    private String  docs;
+    private String  steps;
+    private String duration;
     String id;
 
-    public Product(String providerName, String location, String contact, String id, String description, String steps, String duration, String docs){
+    public Product(String providerName, String location, String contact, String id, String description, String steps, String duration, String docs, String cost){
         this.providerName= providerName;
         this.location= location;
         this.contact= contact;
@@ -34,6 +23,11 @@ public class Product {
         this.steps = steps;
         this.description = description;
         this.duration = duration;
+        this.cost = cost;
+    }
+
+    public String  getDocs() {
+        return docs;
     }
 
     public String getDescription() {
@@ -42,6 +36,14 @@ public class Product {
 
     public String getProviderName() {
         return providerName;
+    }
+
+    public String getSteps() {
+        return steps;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public String getLocation() {
@@ -54,5 +56,13 @@ public class Product {
 
     public String getId() {
         return id;
+    }
+
+    public String getCost() {
+        return cost;
+    }
+
+    public void setCost(String cost) {
+        this.cost = cost;
     }
 }
