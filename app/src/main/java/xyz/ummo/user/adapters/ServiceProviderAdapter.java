@@ -99,7 +99,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
                     JSONArray arr = new JSONArray(new String(data));
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject obj = arr.getJSONObject(i);
-                        Log.e("ServiceProviderAdapter", obj.toString());
+//                        Log.e("ServiceProviderAdapter", obj.toString());
                         holder.providers.add(
                                 new Product(obj.getString("product_name"),
                                         holder.publicServiceData.getTown(),
@@ -114,7 +114,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
                                         // TODO: 10/16/19 -> Insert `procurement_cost`
                                         // TODO: 10/16/19 -> Use ArrayLists where needed
                                 ));
-                        Log.e(TAG, "done: DOCS->"+ get.INSTANCE.get(obj, "requirements.documents", "docs").toString());
+//                        Log.e(TAG, "done: DOCS->"+ get.INSTANCE.get(obj, "requirements.documents", "docs").toString());
                     }
 
                     holder.productAdapter.notifyDataSetChanged();

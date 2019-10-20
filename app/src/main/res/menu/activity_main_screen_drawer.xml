@@ -7,24 +7,24 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_black_24dp"
-            android:title="Home" />
+            android:title="@string/nav_drawer_home" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_account_circle_black_24dp"
-            android:title="My Profile" />
+            android:title="@string/nav_drawer_my_profile" />
         <item
             android:id="@+id/nav_payment_methods"
             android:icon="@drawable/ic_monetization_on_black_24dp"
-            android:title="Payment Methods" />
+            android:title="@string/nav_drawer_payment_methods" />
         <item
             android:id="@+id/nav_service_history"
             android:icon="@drawable/ic_history_black_24dp"
-            android:title="Service History" />
+            android:title="@string/nav_drawer_service_history" />
 
         <item
-            android:id="@+id/nav_delegated_services"
+            android:id="@+id/nav_delegated_service"
             android:icon="@drawable/ic_account_balance_black_24dp"
-            android:title="Delegated Services" />
+            android:title="@string/nav_drawer_delegated_service" />
 
     </group>
 

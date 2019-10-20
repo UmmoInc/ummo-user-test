@@ -25,18 +25,18 @@ public class DelegatedServiceViewModel extends AndroidViewModel {
 
     public void insertDelegatedService(DelegatedServiceEntity delegatedServiceEntity){
         appRepository.insertDelegatedService(delegatedServiceEntity);
-        Log.e(TAG, "insertDelegatedService: SERVICE->"+delegatedServiceEntity.getServiceName());
+        Log.e(TAG, "insertDelegatedService: SERVICE->"+delegatedServiceEntity.getDelegatedProductId());
     }
 
-    public void updateProduct(ProductEntity productEntity){
-        appRepository.updateProduct(productEntity);
+    public void updateDelegatedService(DelegatedServiceEntity delegatedServiceEntity){
+        appRepository.updateDelegatedService(delegatedServiceEntity);
     }
 
-    public void deleteAllProduct(){
-        appRepository.deleteAllProducts();
+    public void deleteAllDelegatedServices(){
+        appRepository.deleteAllDelegatedServices();
     }
 
-    public LiveData<ProductEntity> getProductEntityLiveDataById(String productId){
-        return appRepository.getProductEntityLiveDataById(productId);
+    public LiveData<DelegatedServiceEntity> getDelegatedServiceByProductId(String productId){
+        return appRepository.getDelegatedServiceByProductId(productId);
     }
 }

@@ -4,15 +4,22 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import xyz.ummo.user.R;
+import xyz.ummo.user.data.entity.DelegatedServiceEntity;
+import xyz.ummo.user.ui.detailedService.DetailedProductViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,15 +36,24 @@ public class DelegatedServiceFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mParam1, mParam2;
+    private String serviceId, serviceAgentId, delegatedProductId;
 
     private TextView agentName, agentContact, agentStatus,
-            delegatedProductName, delegatedProductDescription,
-            delegatedProductCost, delegatedProductDuration;
-    private LinearLayout delegatedProductDocs, delegatedProductSteps;
+            delegatedProductNameTextView, delegatedProductDescriptionTextView,
+            delegatedProductCostTextView, delegatedProductDurationTextView,
+            delegatedServiceDocsTextView, delegatedServiceStepsTextView;
+
+    ArrayList<String> stepsList;
+    ArrayList<String> docsList;
+
+    private LinearLayout delegatedProductDocsLayout, delegatedProductStepsLayout;
 
     private OnFragmentInteractionListener mListener;
+    private static final String TAG = "DelegatedServiceFragmen";
+    private DelegatedServiceViewModel delegatedServiceViewModel;
+    private DetailedProductViewModel detailedProductViewModel;
+    private DelegatedServiceEntity delegatedServiceEntity = new DelegatedServiceEntity();
 
     public DelegatedServiceFragment() {
         // Required empty public constructor
@@ -64,10 +80,30 @@ public class DelegatedServiceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        /*if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+        }*/
+        if (getArguments() != null) {
+            serviceId = getArguments().getString("SERVICE_ID");
+            serviceAgentId = getArguments().getString("SERVICE_AGENT_ID");
+            delegatedProductId = getArguments().getString("DELEGATED_PRODUCT_ID");
+
+            delegatedServiceEntity.setServiceId(serviceId);
+            delegatedServiceEntity.setServiceAgentId(serviceAgentId);
+            delegatedServiceEntity.setDelegatedProductId(delegatedProductId);
+
+            delegatedServiceViewModel = ViewModelProviders.of(this)
+                    .get(DelegatedServiceViewModel.class);
+            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity);
+
+            detailedProductViewModel = ViewModelProviders.of(this)
+                    .get(DetailedProductViewModel.class);
         }
+
+        Log.e(TAG, "onCreate: arguments: SERVICE-ID->"+serviceId);
+        Log.e(TAG, "onCreate: arguments: SERVICE-AGENT-ID->"+serviceAgentId);
+        Log.e(TAG, "onCreate: arguments: DELEGATED-PRODUCT-ID->"+delegatedProductId);
     }
 
     @Override
@@ -79,16 +115,54 @@ public class DelegatedServiceFragment extends Fragment {
         agentContact = view.findViewById(R.id.delegated_agent_contact_text_view);
         agentStatus = view.findViewById(R.id.delegated_agent_status_text_view);
 
-        delegatedProductName = view.findViewById(R.id.delegated_service_header_name);
-        delegatedProductDescription = view.findViewById(R.id.description_text_view);
-        delegatedProductCost = view.findViewById(R.id.service_cost_text_view);
-        delegatedProductDuration = view.findViewById(R.id.service_duration_text_view);
+        delegatedProductNameTextView = view.findViewById(R.id.delegated_service_header_name);
+        delegatedProductDescriptionTextView = view.findViewById(R.id.description_text_view);
+        delegatedProductCostTextView = view.findViewById(R.id.service_cost_text_view);
+        delegatedProductDurationTextView = view.findViewById(R.id.service_duration_text_view);
 
-        delegatedProductDocs = view.findViewById(R.id.service_docs_linear_layout);
-        delegatedProductSteps = view.findViewById(R.id.service_steps_layout);
+        delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
+        delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout);
+
+        delegatedServiceViewModel
+                .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
+            Log.e(TAG, "onCreateView: DelegatedService"+delegatedServiceEntity1.getServiceAgentId());
+        });
+
+        detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(this, delegatedProductEntity -> {
+
+            Log.e(TAG, "onCreateView: DELEGATED PRODUCT->"+delegatedProductEntity.getProductName());
+            delegatedProductNameTextView.setText(delegatedProductEntity.getProductName());
+            delegatedProductDescriptionTextView.setText(delegatedProductEntity.getProductDescription());
+            delegatedProductCostTextView.setText(delegatedProductEntity.getProductCost());
+            delegatedProductDurationTextView.setText(delegatedProductEntity.getProductDuration());
+
+            docsList = new ArrayList<>(delegatedProductEntity.getProductDocuments());
+            stepsList = new ArrayList<>(delegatedProductEntity.getProductSteps());
+            if (!docsList.isEmpty()){
+
+                for (int i = 0; i < docsList.size(); i++){
+                    delegatedServiceDocsTextView = new TextView(getContext());
+                    delegatedServiceDocsTextView.setId(i);
+                    delegatedServiceDocsTextView.setText(delegatedProductEntity.getProductDocuments().get(i));
+                    delegatedServiceDocsTextView.setTextSize(14);
+                    delegatedProductDocsLayout.addView(delegatedServiceDocsTextView);
+                }
+            }
+
+            if (!stepsList.isEmpty()){
+
+                for (int i = 0; i < stepsList.size(); i++){
+                    delegatedServiceStepsTextView = new TextView(getContext());
+                    delegatedServiceStepsTextView.setId(i);
+                    delegatedServiceStepsTextView.setText(delegatedProductEntity.getProductSteps().get(i));
+                    delegatedServiceDocsTextView.setTextSize(14);
+                    delegatedProductStepsLayout.addView(delegatedServiceStepsTextView);
+                }
+            }
+        });
+
         return view;
     }
-
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -97,14 +171,15 @@ public class DelegatedServiceFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
+        /*if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
+            Log.e(TAG, "onAttach: LISTENER->"+mListener);
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
+        }*/
     }
 
     @Override

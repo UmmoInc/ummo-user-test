@@ -373,7 +373,9 @@
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
                                     android:layout_toEndOf="@id/service_progress_image_view"
-                                    android:layout_toRightOf="@id/service_progress_image_view">
+                                    android:layout_toRightOf="@id/service_progress_image_view"
+                                    android:id="@+id/service_progress_layout_inner_layout"
+                                    android:padding="8dp">
                                     <TextView
                                         android:id="@+id/progress_header_text_view"
                                         android:layout_width="wrap_content"
@@ -389,6 +391,23 @@
                                         android:layout_marginEnd="16dp"
                                         android:layout_marginRight="16dp"
                                         android:layout_below="@id/progress_header_text_view"/>
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_toEndOf="@id/service_progress_image_view"
+                                    android:layout_toRightOf="@id/service_progress_image_view"
+                                    android:layout_below="@+id/service_progress_layout_inner_layout">
+                                    <LinearLayout
+                                        android:id="@+id/delegated_service_steps_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:padding="8dp">
+
+                                    </LinearLayout>
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -447,7 +466,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/delegated_service_collapsible_layout"
                                 android:clickable="true"
-                                android:focusable="true">
+                                android:focusable="true"
+                                android:visibility="gone">
 
                                 <View
                                     android:id="@+id/divider"

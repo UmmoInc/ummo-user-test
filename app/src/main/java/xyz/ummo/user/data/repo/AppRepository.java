@@ -65,7 +65,13 @@ public class AppRepository {
 
     public LiveData<DelegatedServiceEntity> getDelegatedServiceById(String delegatedServiceId){
         delegatedServiceEntityLiveData = delegatedServiceDao.getDelegatedServiceById(delegatedServiceId);
-        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getServiceName());
+        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getDelegatedProductId());
+        return delegatedServiceEntityLiveData;
+    }
+
+    public LiveData<DelegatedServiceEntity> getDelegatedServiceByProductId(String delegatedProductId){
+        delegatedServiceEntityLiveData = delegatedServiceDao.getDelegatedServiceByProductId(delegatedProductId);
+//        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getDelegatedProductId());
         return delegatedServiceEntityLiveData;
     }
 

@@ -114,5 +114,10 @@
     <string name="search">Search</string>
     <string name="description_default_string">Default Product Description</string>
     <string name="no_delegated_service">No Delegated Service Found</string>
+    <string name="nav_drawer_delegated_service">Delegated Service</string>
+    <string name="nav_drawer_service_history">Service History</string>
+    <string name="nav_drawer_payment_methods">Payment Methods</string>
+    <string name="nav_drawer_my_profile">My Profile</string>
+    <string name="nav_drawer_home">Home</string>
 
 </resources>

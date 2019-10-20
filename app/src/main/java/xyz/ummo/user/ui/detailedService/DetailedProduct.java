@@ -1,6 +1,8 @@
 package xyz.ummo.user.ui.detailedService;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -16,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -26,6 +29,8 @@ import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.delegate.DelegateService;
 import xyz.ummo.user.delegate.SocketIO;
 import xyz.ummo.user.delegate.User;
+import xyz.ummo.user.ui.MainScreen;
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment;
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel;
 
 import android.preference.PreferenceManager;
@@ -108,8 +113,7 @@ public class DetailedProduct extends AppCompatActivity {
 
         detailedProductViewModel = ViewModelProviders.of(this)
                 .get(DetailedProductViewModel.class);
-        delegatedServiceViewModel = ViewModelProviders.of(this)
-                .get(DelegatedServiceViewModel.class);
+        delegatedServiceViewModel = ViewModelProviders.of(this).get(DelegatedServiceViewModel.class);
 
         String _productId = getIntent().getStringExtra("product_id");
         String _serviceId = getIntent().getStringExtra("_id");
@@ -117,7 +121,7 @@ public class DetailedProduct extends AppCompatActivity {
         if (_productId != null){
             detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(this, productEntity1 -> {
             _serviceName = productEntity1.getProductName();
-            Log.e(TAG, "onCreate: Within ProductVM: Product Name->"+_serviceName);
+            Log.e(TAG, "onCreate: Within ProductVM: Product ID->"+_productId);
             _description = productEntity1.getProductDescription();
             _cost = productEntity1.getProductCost();
             _duration = productEntity1.getProductDuration();
@@ -177,6 +181,7 @@ public class DetailedProduct extends AppCompatActivity {
         requestAgentBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 progress.setTitle("Agent Request");
                 progress.setMessage(agentRequestStatus);
                 progress.show();

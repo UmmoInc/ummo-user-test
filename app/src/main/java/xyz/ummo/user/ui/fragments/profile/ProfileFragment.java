@@ -78,7 +78,7 @@ public class ProfileFragment extends Fragment {
                 .get(ProfileViewModel.class);
 
 
-        profileName.setText(profileViewModel.getProfileEntityLiveData().getValue().getProfileName());
+//        profileName.setText(profileViewModel.getProfileEntityLiveData().getValue().getProfileName());
 
         return view;
     }

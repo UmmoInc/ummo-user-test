@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 import xyz.ummo.user.data.model.DelegatedService;
@@ -17,13 +19,13 @@ public class DelegatedServiceEntity implements DelegatedService {
     @ColumnInfo(name = "service_id")
     private String serviceId;
 
-    @NonNull
+    /*@NonNull
     @ColumnInfo(name = "service_name")
-    private String serviceName;
+    private String serviceName;*/
 
-    @NonNull
+    /*@NonNull
     @ColumnInfo(name = "service_progress")
-    private String serviceProgress;
+    private ArrayList serviceProgress;*/
 
     @NonNull
     @ColumnInfo(name = "delegated_product_id")
@@ -34,14 +36,14 @@ public class DelegatedServiceEntity implements DelegatedService {
     private String serviceAgentId;
 
     public DelegatedServiceEntity(@NonNull String _serviceId,
-                                  @NonNull String _serviceName,
+//                                  @NonNull String _serviceName,
                                   @NonNull String _delegatedProductId,
-                                  @NonNull String _serviceProgress,
+//                                  @NonNull ArrayList _serviceProgress,
                                   @NonNull String _serviceAgentId){
         this.serviceId = _serviceId;
-        this.serviceName = _serviceName;
+//        this.serviceName = _serviceName;
         this.delegatedProductId = _delegatedProductId;
-        this.serviceProgress = _serviceProgress;
+//        this.serviceProgress = _serviceProgress;
         this.serviceAgentId = _serviceAgentId;
     }
 
@@ -57,25 +59,25 @@ public class DelegatedServiceEntity implements DelegatedService {
         this.serviceId = serviceId;
     }
 
-    @Override
+    /*@Override
     @NonNull
     public String getServiceName() {
         return serviceName;
-    }
+    }*/
 
-    public void setServiceName(@NonNull String serviceName) {
-        this.serviceName = serviceName;
-    }
+//    public void setServiceName(@NonNull String serviceName) {
+//        this.serviceName = serviceName;
+//    }
 
-    @Override
+   /* @Override
     @NonNull
-    public String getServiceProgress() {
+    public ArrayList getServiceProgress() {
         return serviceProgress;
     }
 
-    public void setServiceProgress(@NonNull String serviceProgress) {
+    public void setServiceProgress(@NonNull ArrayList serviceProgress) {
         this.serviceProgress = serviceProgress;
-    }
+    }*/
 
     @Override
     @NonNull

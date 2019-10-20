@@ -22,6 +22,9 @@ public interface DelegatedServiceDao {
     @Query("SELECT * FROM delegated_service WHERE service_id = :serviceId")
     LiveData<DelegatedServiceEntity> getDelegatedServiceById(String serviceId);
 
+    @Query("SELECT * FROM delegated_service WHERE delegated_product_id = :delegatedProductId")
+    LiveData<DelegatedServiceEntity> getDelegatedServiceByProductId(String delegatedProductId);
+
     @Update
     void updateDelegatedService(DelegatedServiceEntity delegatedServiceEntity);
 
