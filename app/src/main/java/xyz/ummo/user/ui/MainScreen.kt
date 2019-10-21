@@ -31,6 +31,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 
@@ -117,6 +118,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             CURRENT_TAG = TAG_HOME
 
         }
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
     override fun onBackPressed() {
@@ -285,6 +289,33 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState()
+    }
+
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                val homeFragment = HomeFragment()
+                openFragment(homeFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_get_agent -> {
+                val albumsFragment = ProfileFragment()
+                openFragment(albumsFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_chats-> {
+                val delegatedServiceFragment = DelegatedServicesFragment()
+                openFragment(delegatedServiceFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
+    private fun openFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame, fragment)
+        transaction.commit()
     }
 
     fun setAnyServiceInProgress(anyServiceInProgress: Boolean) {
