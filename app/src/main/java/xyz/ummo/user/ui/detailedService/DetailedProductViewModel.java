@@ -40,4 +40,8 @@ public class DetailedProductViewModel extends AndroidViewModel {
     public LiveData<ProductEntity> getProductEntityLiveDataById(String productId){
         return appRepository.getProductEntityLiveDataById(productId);
     }
+
+    public LiveData<ProductEntity> getDelegatedProduct(Boolean isDelegated){
+        return appRepository.getDelegatedProduct(isDelegated);
+    }
 }

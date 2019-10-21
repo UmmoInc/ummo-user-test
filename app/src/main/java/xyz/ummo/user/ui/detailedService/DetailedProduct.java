@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -63,9 +64,9 @@ public class DetailedProduct extends AppCompatActivity {
     private DelegatedServiceViewModel delegatedServiceViewModel;
     private ProductEntity productEntity = new ProductEntity();
     private DelegatedServiceEntity delegatedServiceEntity = new DelegatedServiceEntity();
-//    String serviceId = "";
 
-//    ListView stepsList;
+    private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
+    private final int mode = Activity.MODE_PRIVATE;
 
     ArrayList<String> stepsList;
     ArrayList<String> docsList;
@@ -75,6 +76,7 @@ public class DetailedProduct extends AppCompatActivity {
     private String agentName, serviceId, delegatedProductId, serviceProgress;
     private String _serviceName, _description, _cost, _duration, _steps, _docs;
     private ProgressDialog progress;
+    AlertDialog.Builder agentRequestDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class DetailedProduct extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         progress = new ProgressDialog(this);
+        agentRequestDialog = new AlertDialog.Builder(DetailedProduct.this);
 
         nestedScrollView = findViewById(R.id.nested_scrollview);
         requestAgentBtn = findViewById(R.id.request_agent_btn);
@@ -110,6 +113,10 @@ public class DetailedProduct extends AppCompatActivity {
                 }
             }
         });
+
+        SharedPreferences detailedProductPrefs = getSharedPreferences(ummoUserPreferences, mode);
+        SharedPreferences.Editor editor;
+        editor = detailedProductPrefs.edit();
 
         detailedProductViewModel = ViewModelProviders.of(this)
                 .get(DetailedProductViewModel.class);
@@ -209,7 +216,6 @@ public class DetailedProduct extends AppCompatActivity {
 
                                 Log.e(TAG, "done: agentName->"+agentName);
 
-                                AlertDialog.Builder agentRequestDialog = new AlertDialog.Builder(DetailedProduct.this);
                                 agentRequestDialog.setTitle("Agent Delegate");
 //                                agentRequestDialog.setIcon()
                                 agentRequestDialog.setMessage(agentName+ " is available...");
@@ -221,12 +227,17 @@ public class DetailedProduct extends AppCompatActivity {
                                         progress.setTitle("Agent Request");
                                         progress.setMessage(agentRequestStatus);
                                         progress.show();
+
+                                        editor.putString("DELEGATED_AGENT", agentName);
+                                        editor.putString("DELEGATED_PRODUCT", _productId);
+                                        editor.apply();
                                     }
                                 });
                                 agentRequestDialog.show();
 
                                 detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(DetailedProduct.this, productEntity1 ->{
                                     productEntity1.setIsDelegated(true);
+                                    Log.e(TAG, "done: isDelegated-> TRUE");
                                 });
 
                             } catch (JSONException e) {
@@ -263,7 +274,16 @@ public class DetailedProduct extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
         progress.dismiss();
+
+        agentRequestDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Log.e(TAG, "onPause: onDialogDismiss!");
+            }
+        });
+        finish();
     }
 
     @Override

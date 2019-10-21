@@ -303,6 +303,11 @@ public class AppRepository {
         return productEntityLiveData;
     }
 
+    public LiveData<ProductEntity> getDelegatedProduct(Boolean isDelegated){
+        productEntityLiveData = productDao.getDelegatedProduct(isDelegated);
+        return productEntityLiveData;
+    }
+
     public void deleteAllProducts(){
         new deleteAllProductsAsyncTask(productDao).execute();
     }

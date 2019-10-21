@@ -1,6 +1,8 @@
 package xyz.ummo.user.ui.fragments.delegatedService;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,10 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
@@ -37,9 +41,9 @@ public class DelegatedServiceFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String mParam1, mParam2;
-    private String serviceId, serviceAgentId, delegatedProductId;
+    private String agentName, productId, serviceId, serviceAgentId, delegatedProductId;
 
-    private TextView agentName, agentContact, agentStatus,
+    private TextView agentNameTextView, agentStatusTextView,
             delegatedProductNameTextView, delegatedProductDescriptionTextView,
             delegatedProductCostTextView, delegatedProductDurationTextView,
             delegatedServiceDocsTextView, delegatedServiceStepsTextView;
@@ -48,6 +52,11 @@ public class DelegatedServiceFragment extends Fragment {
     ArrayList<String> docsList;
 
     private LinearLayout delegatedProductDocsLayout, delegatedProductStepsLayout;
+
+    private ImageView openChat;
+
+    private final int mode = Activity.MODE_PRIVATE;
+    private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
 
     private OnFragmentInteractionListener mListener;
     private static final String TAG = "DelegatedServiceFragmen";
@@ -85,6 +94,9 @@ public class DelegatedServiceFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }*/
         if (getArguments() != null) {
+
+            SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
+            agentName = sharedPreferences.getString("DELEGATED_AGENT","");
             serviceId = getArguments().getString("SERVICE_ID");
             serviceAgentId = getArguments().getString("SERVICE_AGENT_ID");
             delegatedProductId = getArguments().getString("DELEGATED_PRODUCT_ID");
@@ -111,9 +123,18 @@ public class DelegatedServiceFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflating the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_delegated, container, false);
-        agentName = view.findViewById(R.id.delegated_agent_name_text_view);
-        agentContact = view.findViewById(R.id.delegated_agent_contact_text_view);
-        agentStatus = view.findViewById(R.id.delegated_agent_status_text_view);
+        agentNameTextView = view.findViewById(R.id.delegated_agent_name_text_view);
+        agentStatusTextView = view.findViewById(R.id.delegated_agent_status_text_view);
+        openChat = view.findViewById(R.id.open_chat_button);
+
+        openChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: 10/21/19 -> launch chatActivity
+            }
+        });
+
+        agentNameTextView.setText(agentName);
 
         delegatedProductNameTextView = view.findViewById(R.id.delegated_service_header_name);
         delegatedProductDescriptionTextView = view.findViewById(R.id.description_text_view);
@@ -122,6 +143,10 @@ public class DelegatedServiceFragment extends Fragment {
 
         delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
         delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout);
+
+        detailedProductViewModel.getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
+            Log.e(TAG, "onCreateView: DELEGATED_ID->"+delegatedProductEntity.getProductName());
+        });
 
         delegatedServiceViewModel
                 .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
@@ -155,7 +180,7 @@ public class DelegatedServiceFragment extends Fragment {
                     delegatedServiceStepsTextView = new TextView(getContext());
                     delegatedServiceStepsTextView.setId(i);
                     delegatedServiceStepsTextView.setText(delegatedProductEntity.getProductSteps().get(i));
-                    delegatedServiceDocsTextView.setTextSize(14);
+                    delegatedServiceStepsTextView.setTextSize(14);
                     delegatedProductStepsLayout.addView(delegatedServiceStepsTextView);
                 }
             }
