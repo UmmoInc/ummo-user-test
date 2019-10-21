@@ -1,6 +1,5 @@
 package xyz.ummo.user.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
@@ -14,28 +13,28 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
 import xyz.ummo.user.AgentRequest;
-import xyz.ummo.user.DetailedService;
+import xyz.ummo.user.ui.detailedService.DetailedProduct;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Service;
 import xyz.ummo.user.delegate.DelegateService;
 import xyz.ummo.user.delegate.User;
 
-public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyViewHolder>  {
+public class ServicesAdapter extends RecyclerView.Adapter<ServicesAdapter.MyViewHolder>  {
 
     private List<Service> services;
     Context context;
     private String departmentName;
-
+    private static final String TAG = "ServicesAdapter";
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-
-        public TextView serviceTitle, serviceDescription, serviceForm, servicePersonalDocs,
+        TextView serviceTitle, serviceDescription, serviceForm, servicePersonalDocs,
                 serviceCost, serviceDuration, moreButton;
         String steps = "";
 
@@ -43,8 +42,7 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
 
         public RelativeLayout departmentGround;
 
-
-        public MyViewHolder(View view) {
+        MyViewHolder(View view) {
             super(view);
             //departmentGround = view.findViewById(R.id.department_ground);
             serviceTitle= view.findViewById(R.id.service_title);
@@ -61,31 +59,32 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     }
 
 
-    public servicesAdapter(Context context, List<Service>  services, String departmentName) {
+    public ServicesAdapter(Context context, List<Service>  services, String departmentName) {
         this.services = services;
         this.context = context;
         this.departmentName = departmentName;
     }
 
+    @NonNull
     @Override
-    public servicesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ServicesAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.service_content, parent, false);
 
         Log.e("Adapter","create vh");
-        return new servicesAdapter.MyViewHolder(itemView);
+        return new ServicesAdapter.MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(servicesAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ServicesAdapter.MyViewHolder holder, int position) {
         Service service = services.get(position);
 
-        String steps ="";
+        StringBuilder steps = new StringBuilder();
 
-        for (int i = 0; i< service.getSteps().size(); i++){
-            steps += service.getSteps().get(i)+" ";
+        for (int i = 0; i < service.getSteps().size(); i++){
+            steps.append(service.getSteps().get(i)).append(" ");
         }
-        holder.steps = steps;
+        holder.steps = steps.toString();
 
         holder.serviceTitle.setText(service.getServiceName());
         holder.serviceDescription.setText(service.getServiceDescription());
@@ -118,8 +117,8 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
                 i.putExtra("cost", cost);
                 i.putExtra("steps",holder.steps);
                 i.putExtra("duration", duration);
-                 String jwt = PreferenceManager.getDefaultSharedPreferences(servicesAdapter.this.context).getString("jwt", "");
-                new DelegateService(servicesAdapter.this.context, User.Companion.getUserId(jwt),service.getId()){
+                 String jwt = PreferenceManager.getDefaultSharedPreferences(ServicesAdapter.this.context).getString("jwt", "");
+                new DelegateService(ServicesAdapter.this.context, User.Companion.getUserId(jwt),service.getId()){
                     @Override
                     public void done(@NotNull byte[] data, int code) {
                         Log.e("Done",new String(data));
@@ -131,19 +130,18 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
 
         holder.moreButton.setOnClickListener(new View.OnClickListener(){
 
-
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(context, DetailedService.class);
+                Intent intent = new Intent(context, DetailedProduct.class);
                 intent.putExtra("serviceName", serviceName);
                 intent.putExtra("description", description);
                 intent.putExtra("cost", cost);
                 intent.putExtra("steps",holder.steps);
                 intent.putExtra("duration", duration);
                 intent.putExtra("docs",personalDocs);
+                Log.e(TAG, "onClick: MORE-BUTTON clicked!");
                 context.startActivity(intent);
-
             }
         });
     }
@@ -151,6 +149,5 @@ public class servicesAdapter extends RecyclerView.Adapter<servicesAdapter.MyView
     @Override
     public int getItemCount() {
         return services.size();
-
     }
 }

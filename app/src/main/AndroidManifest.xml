@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailedService"
+            android:name=".ui.detailedService.DetailedProduct"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -64,6 +64,7 @@
             android:name=".DelegationProgress"
             android:label="@string/title_activity_delegation_progress"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".DelegationChat"
             android:label="@string/title_activity_delegation_chat"

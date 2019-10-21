@@ -3,6 +3,7 @@ package xyz.ummo.user.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -11,6 +12,8 @@ import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.UserBuilder;
 import xyz.ummo.user.MainActivity;
+import xyz.ummo.user.data.entity.ProfileEntity;
+import xyz.ummo.user.ui.fragments.profile.ProfileViewModel;
 import xyz.ummo.user.utilities.PrefManager;
 import xyz.ummo.user.R;
 import xyz.ummo.user.delegate.Login;
@@ -94,6 +97,8 @@ public class SlideIntro extends AppCompatActivity {
     private final int mode = Activity.MODE_PRIVATE;
     private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
     private TextView resendCodeButton;
+    private ProfileViewModel profileViewModel;
+    private ProfileEntity profileEntity = new ProfileEntity();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -110,6 +115,9 @@ public class SlideIntro extends AppCompatActivity {
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
+
+        //Init ProfileViewModel
+        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
 
         //Init firebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -261,6 +269,13 @@ public class SlideIntro extends AppCompatActivity {
                             editor.putString("USER_PID",onePlayerId);
                             editor.apply();
                             progress.dismiss();
+
+                            //Inserting Profile info into ProfileEntity, then ProfileViewModel
+                            profileEntity.setProfileName(userName);
+                            profileEntity.setProfileContact(userContact);
+                            profileEntity.setProfileEmail(userEmail);
+                            profileViewModel.insertProfile(profileEntity);
+
                             //startActivity();
                             Log.e(TAG + " onLogin-2", "successfully logging in->" + new String(data));
                         } else {

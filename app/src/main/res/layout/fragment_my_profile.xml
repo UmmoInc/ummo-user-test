@@ -4,7 +4,7 @@
     android:id="@+id/fragment_my_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.ProfileFragment">
+    tools:context=".ui.fragments.profile.ProfileFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,21 +28,16 @@
                 android:src="@drawable/profile_pic"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp" />
+                android:layout_marginStart="20dp"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:background="@drawable/ic_camera_alt_black_24dp"
-            />
-
+                android:background="@drawable/ic_camera_alt_black_24dp"/>
 
         </FrameLayout>
-
-
-
 
         <TextView
             android:id="@+id/full_name_title"
@@ -57,9 +52,8 @@
             android:layout_below="@id/profile_pic_box"
             android:layout_marginStart="20dp" />
 
-
         <TextView
-            android:id="@+id/full_name"
+            android:id="@+id/profile_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -83,7 +77,7 @@
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:background="@color/Grey"
-            android:layout_below="@id/full_name"
+            android:layout_below="@id/profile_name"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
@@ -151,7 +145,7 @@
 
 
         <TextView
-            android:id="@+id/contact"
+            android:id="@+id/profile_contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -159,6 +153,7 @@
             android:text="(+268) 76872520"
             android:background="@color/White"
             android:drawableRight="@drawable/ic_edit_black_24dp"
+            android:drawableEnd="@drawable/ic_edit_black_24dp"
             android:padding="5dp"
             android:layout_below="@id/contact_title"
             android:layout_marginLeft="20dp"
@@ -172,11 +167,10 @@
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:background="@color/Grey"
-            android:layout_below="@id/contact"
+            android:layout_below="@id/profile_contact"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"/>
-
 
         <TextView
             android:id="@+id/email_title"
@@ -192,7 +186,7 @@
             android:layout_marginStart="20dp" />
 
         <TextView
-            android:id="@+id/email"
+            android:id="@+id/profile_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
@@ -215,7 +209,7 @@
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:background="@color/Grey"
-            android:layout_below="@id/email"
+            android:layout_below="@id/profile_email"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"/>
@@ -241,7 +235,7 @@
             android:textSize="16sp"
             android:background="@color/White"
             android:padding="5dp"
-            android:text="Uyaphapha"
+            android:text="Rating"
             android:layout_below="@id/rating_title"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"

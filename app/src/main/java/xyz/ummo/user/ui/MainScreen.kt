@@ -19,7 +19,7 @@ import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
 import xyz.ummo.user.ui.fragments.HomeFragment
 import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
-import xyz.ummo.user.ui.fragments.ProfileFragment
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
@@ -31,9 +31,11 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,6 +69,32 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         setSupportActionBar(toolbar)
         title = "Ummo"
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
+
+
+        /*
+        * Starting DelegatedServiceFragment
+        * */
+
+        val startFragmentExtra : Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG",0)
+
+        Log.e(TAG, "StartingFragment->$startFragmentExtra")
+
+        if(startFragmentExtra == 1){
+            Log.e(TAG, "Starting DelegatedServiceFrag!")
+            val delegatedServiceFragment = DelegatedServiceFragment()
+            val bundle = Bundle()
+            bundle.putString("SERVICE_ID", intent.extras!!.getString("SERVICE_ID"))
+            bundle.putString("SERVICE_AGENT_ID", intent.extras!!.getString("SERVICE_AGENT_ID"))
+            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+            delegatedServiceFragment.arguments = bundle
+
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+            fragmentTransaction.commit()
+            return
+        }
+
         object : xyz.ummo.user.delegate.PublicService(this) {
             override fun done(data: List<PublicServiceData>, code: Number) {
                 loadHomeFragment(data)
@@ -142,7 +170,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             R.id.nav_profile -> selectedFragment = ProfileFragment()
             R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
             R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_delegated_services -> selectedFragment = DelegatedServicesFragment()
+            R.id.nav_delegated_service -> selectedFragment = DelegatedServiceFragment()
         }
 
         if (selectedFragment != null) {
@@ -179,7 +207,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         } else if (id == R.id.nav_service_history) {
 
-        } else if (id == R.id.nav_delegated_services) {
+        } else if (id == R.id.nav_delegated_service) {
 
         }
 
@@ -259,7 +287,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             4 -> {
                 // legal terms fragment
-                return DelegatedServicesFragment()
+                return DelegatedServiceFragment()
             }
 
             else -> return HomeFragment(data)
@@ -335,7 +363,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         when (view.id) {
 
-            R.id.full_name -> {
+            R.id.profile_name -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your full name"
@@ -347,13 +375,13 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 toolBarTitle = "Enter your ID Number"
             }
 
-            R.id.contact -> {
+            R.id.profile_contact -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your phone number"
             }
 
-            R.id.email -> {
+            R.id.profile_email -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your email"

@@ -19,7 +19,7 @@ abstract class PublicService(val activity:Activity) {
                     try {
                         activity.runOnUiThread(Runnable {
 
-//                         ToDo   java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+//                         ToDo: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
                             var array = JSONArray(String(response.data))
                             Log.e(TAG, "Got new service data"+String(response.data))
                             done(fromJSONList(array), response.statusCode)

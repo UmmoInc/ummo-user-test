@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.utilities;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+
+import xyz.ummo.user.R;
 
 public class LinePagerIndicatorDecoration extends RecyclerView.ItemDecoration {
 

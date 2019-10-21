@@ -16,7 +16,7 @@ abstract class DelegateService(context: Context, user:String, product:String) {
         data.put("product_id",product)
 
 
-        Log.e("Dealegate",data.toString())
+        Log.e("Delegate",data.toString())
 
         Fuel.post("${context.getString(R.string.serverUrl)}/api/dispatch")
                 .jsonBody(data.toString())

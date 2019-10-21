@@ -24,7 +24,8 @@ import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.ui.SlideIntro;
 import xyz.ummo.user.ui.fragments.DelegatedServicesFragment;
 import xyz.ummo.user.ui.fragments.HomeFragment;
-import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment;
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment;
 import xyz.ummo.user.ui.fragments.PaymentMethodsFragment;
 import xyz.ummo.user.ui.fragments.ServiceHistoryFragment;
 
@@ -101,6 +102,10 @@ public class MainScreen extends AppCompatActivity
 
         logoutClick();
 
+        DelegatedServiceFragment delegatedServiceFragment = new DelegatedServiceFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("SERVICE_ID", getIntent().getExtras().getString("SERVICE_ID"));
+        delegatedServiceFragment.setArguments(bundle);
         //initialise  the toolbar icons message icon and circular progress bar icon
         messageIconButton = findViewById(R.id.message_icon_button);
         circularProgressBarButton = findViewById(R.id.circular_progressbar_btn);
@@ -178,7 +183,7 @@ public class MainScreen extends AppCompatActivity
                 break;
             case R.id.nav_service_history:
                 break;
-            case R.id.nav_delegated_services:
+            case R.id.nav_delegated_service:
                 break;
 
         }
@@ -300,7 +305,7 @@ public class MainScreen extends AppCompatActivity
                         CURRENT_TAG = TAG_SERVICE_HISTORY;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_HISTORY]->"+menuItem);
                         break;
-                    case R.id.nav_delegated_services:
+                    case R.id.nav_delegated_service:
                         navItemIndex = 4;
                         CURRENT_TAG = TAG_DELEGATED_SERVICES;
                         Log.e(TAG, "onNavigationItemSelected: [NAV_LEGAL]->"+menuItem);
@@ -362,7 +367,7 @@ public class MainScreen extends AppCompatActivity
 
         switch(view.getId()){
 
-            case R.id.full_name:
+            case R.id.profile_name:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your full name";
@@ -376,14 +381,14 @@ public class MainScreen extends AppCompatActivity
 
                 break;
 
-            case R.id.contact:
+            case R.id.profile_contact:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your phone number";
 
                 break;
 
-            case R.id.email:
+            case R.id.profile_email:
                 textViewToEdit = view.findViewById(view.getId());
                 textToEdit = textViewToEdit.getText().toString();
                 toolBarTitle = "Enter your email";

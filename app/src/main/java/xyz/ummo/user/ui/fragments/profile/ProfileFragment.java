@@ -1,10 +1,13 @@
-package xyz.ummo.user.ui.fragments;
+package xyz.ummo.user.ui.fragments.profile;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import xyz.ummo.user.R;
+import xyz.ummo.user.data.entity.ProfileEntity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,16 +30,15 @@ public class ProfileFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private TextView profileName, profileContact, profileEmail;
+    private ProfileViewModel profileViewModel;
+    private ProfileEntity profileEntity = new ProfileEntity();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
-    TextView thisOneNayo;
-
-
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -67,6 +70,15 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
 
         final  View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
+        profileName = view.findViewById(R.id.profile_name);
+        profileContact = view.findViewById(R.id.profile_contact);
+        profileEmail = view.findViewById(R.id.profile_email);
+
+        profileViewModel = ViewModelProviders.of(this)
+                .get(ProfileViewModel.class);
+
+
+//        profileName.setText(profileViewModel.getProfileEntityLiveData().getValue().getProfileName());
 
         return view;
     }
@@ -79,7 +91,7 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         if (context instanceof OnFragmentInteractionListener) {

@@ -1,6 +1,5 @@
 package xyz.ummo.user.ui.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,7 +16,6 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,17 +24,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.jetbrains.annotations.NotNull;
 
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
-import xyz.ummo.user.AllServices;
 import xyz.ummo.user.Department;
-import xyz.ummo.user.DetailedService;
 import xyz.ummo.user.R;
-import xyz.ummo.user.ServiceProvider;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.ServiceProviderAdapter;
 import xyz.ummo.user.adapters.servicesCarouselAdapter;
 import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
-import xyz.ummo.user.delegate.PublicServiceKt;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -103,7 +97,6 @@ public class HomeFragment extends Fragment {
 
         serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 
-
 //        loadDepartments(_data);
         addServiceProviders();
        // serviceProviderAdapter.addProduct();
@@ -114,7 +107,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
-        final FragmentActivity c = getActivity();
+        final FragmentActivity c = getActivity(); // TODO: 10/16/19 -> rename `c`
         final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
 
         //serviceProviderAdapter.addProduct();
