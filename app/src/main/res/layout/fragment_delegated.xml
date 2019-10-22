@@ -97,7 +97,7 @@
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
                                 android:layout_toRightOf="@id/delegated_user_avatar"/>
 
-                            <TextView
+                            <!--<TextView
                                 android:id="@+id/delegated_agent_contact_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                                 android:textSize="12sp"
                                 android:layout_below="@+id/delegated_agent_name_text_view"
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
-                                android:layout_toRightOf="@id/delegated_user_avatar"/>
+                                android:layout_toRightOf="@id/delegated_user_avatar"/>-->
 
                             <TextView
                                 android:id="@+id/delegated_agent_status_text_view"
@@ -117,7 +117,7 @@
                                 android:text="Agent Status"
                                 android:textStyle="normal"
                                 android:textSize="12sp"
-                                android:layout_below="@+id/delegated_agent_contact_text_view"
+                                android:layout_below="@+id/delegated_agent_name_text_view"
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
                                 android:layout_toRightOf="@id/delegated_user_avatar"/>
                         </RelativeLayout>
@@ -374,8 +374,8 @@
                                     android:layout_centerInParent="true"
                                     android:layout_toEndOf="@id/service_progress_image_view"
                                     android:layout_toRightOf="@id/service_progress_image_view"
-                                    android:id="@+id/service_progress_layout_inner_layout"
-                                    android:padding="8dp">
+                                    android:id="@+id/service_progress_inner_layout"
+                                    android:paddingBottom="8dp">
                                     <TextView
                                         android:id="@+id/progress_header_text_view"
                                         android:layout_width="wrap_content"
@@ -391,9 +391,56 @@
                                         android:layout_marginEnd="16dp"
                                         android:layout_marginRight="16dp"
                                         android:layout_below="@id/progress_header_text_view"/>
+
+                                    <TextView
+                                        android:id="@+id/process_description_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Track your Agent's progress below..."
+                                        android:textSize="14sp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:layout_below="@id/service_progress_bar"/>
+                                    <LinearLayout
+                                        android:id="@+id/delegated_service_steps_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:paddingBottom="8dp"
+                                        android:layout_below="@+id/process_description_text_view">
+                                    </LinearLayout>
                                 </RelativeLayout>
 
-                                <RelativeLayout
+                                <!--<RelativeLayout
+                                    android:id="@+id/delegated_service_steps_parent_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="0dp"
+                                    android:layout_marginRight="0dp"
+                                    android:layout_marginBottom="0dp"
+                                    android:layout_below="@id/service_progress_inner_layout">
+
+                                    <TextView
+                                        android:id="@+id/process_description_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Track your Agent's progress below..."
+                                        android:textSize="14sp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"/>
+
+                                    <LinearLayout
+                                        android:id="@+id/delegated_service_steps_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:paddingBottom="8dp"
+                                        android:layout_below="@+id/process_description_text_view">
+                                    </LinearLayout>
+
+                                </RelativeLayout>-->
+
+                                <!--<RelativeLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
@@ -401,121 +448,15 @@
                                     android:layout_toRightOf="@id/service_progress_image_view"
                                     android:layout_below="@+id/service_progress_layout_inner_layout">
                                     <LinearLayout
-                                        android:id="@+id/delegated_service_steps_layout"
+                                        android:id="@+id/service_steps_layout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
                                         android:padding="8dp">
 
                                     </LinearLayout>
-                                </RelativeLayout>
+                                </RelativeLayout>-->
 
-                            </RelativeLayout>
-
-                            <!-- Collapsible Layout-->
-                            <RelativeLayout
-                                android:id="@+id/delegated_service_collapsible_layout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="0dp"
-                                android:layout_marginRight="0dp"
-                                android:layout_marginBottom="0dp"
-                                android:layout_below="@id/service_progress_layout"
-                                android:visibility="gone">
-
-                                <TextView
-                                    android:id="@+id/process_description_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Check off a process once it has been completed."
-                                    android:textSize="14sp"
-                                    android:padding="8dp"
-                                    android:layout_marginStart="8dp"
-                                    android:layout_marginLeft="8dp" />
-
-                                <LinearLayout
-                                    android:id="@+id/service_steps_layout"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:paddingBottom="8dp"
-                                    android:paddingLeft="16dp"
-                                    android:paddingRight="16dp"
-                                    android:paddingStart="16dp"
-                                    android:paddingEnd="16dp"
-                                    android:layout_below="@+id/process_description_text_view">
-                                    <!--<CheckBox
-                                        android:id="@+id/process_check_box_1"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentStart="true"
-                                        android:layout_alignParentLeft="true"
-                                        android:layout_marginStart="16dp"
-                                        android:layout_marginLeft="16dp"
-                                        android:text="Process One"
-                                        android:textSize="14sp"
-                                        android:layout_below="@+id/process_description_text_view"/>-->
-                                </LinearLayout>
-
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/action_layout"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/delegated_service_collapsible_layout"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:visibility="gone">
-
-                                <View
-                                    android:id="@+id/divider"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:background="@color/black"
-                                    android:layout_marginTop="8dp"
-                                    android:layout_gravity="center_horizontal"/>
-
-                                <TextView
-                                    android:id="@+id/action_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="8dp"
-                                    android:padding="8dp"
-                                    android:text="EXPAND"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/ummo_1"
-                                    android:clickable="true"
-                                    android:focusable="true"/>
-
-                                <ImageView
-                                    android:id="@+id/expand_image_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_expand_less"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_centerInParent="true"
-                                    android:paddingRight="8dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingLeft="8dp"
-                                    android:paddingStart="8dp"
-                                    android:visibility="gone"/>
-
-                                <ImageView
-                                    android:id="@+id/collapse_image_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_expand_more"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_centerInParent="true"
-                                    android:paddingRight="8dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingLeft="8dp"
-                                    android:paddingStart="8dp"
-                                    android:visibility="visible"/>
                             </RelativeLayout>
 
                         </RelativeLayout>
