@@ -17,11 +17,7 @@ import androidx.fragment.app.Fragment
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.HomeFragment
-import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
-import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
 import android.os.Handler
 import android.util.Log
@@ -35,6 +31,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
@@ -327,8 +324,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_get_agent -> {
-                val albumsFragment = ProfileFragment()
-                openFragment(albumsFragment)
+                val getAgent = GetAgent()
+                openFragment(getAgent)
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_chats-> {
