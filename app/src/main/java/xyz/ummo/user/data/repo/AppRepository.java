@@ -6,9 +6,18 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import org.jetbrains.annotations.NotNull;
+import com.github.nkzawa.emitter.Emitter;
+import com.google.gson.JsonObject;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.sentry.Sentry;
 import io.sentry.event.BreadcrumbBuilder;
@@ -27,6 +36,8 @@ import xyz.ummo.user.data.entity.ProductEntity;
 //import xyz.ummo.user.delegate.CreateProduct;
 import xyz.ummo.user.data.entity.ProfileEntity;
 import xyz.ummo.user.delegate.GetProducts;
+import xyz.ummo.user.delegate.Service;
+import xyz.ummo.user.delegate.SocketIO;
 
 public class AppRepository {
 
@@ -57,6 +68,60 @@ public class AppRepository {
         productEntityLiveData = productDao.getProductLiveData();
         Log.e("AppRepo", "Product->"+productEntityLiveData);
 
+        new Service(application){
+            @Override
+            public void done(@NotNull byte[] data, @NotNull Number code) {
+                try{
+                    JSONArray myServices = new JSONArray(new String(data));
+                    Log.e(TAG, "done: Services"+myServices.toString() );
+                    //deleteAllDelegatedServices();
+                    for (int i = 0; i <myServices.length() ; i++) {
+                        DelegatedServiceEntity entity = new DelegatedServiceEntity();
+                        JSONObject s = myServices.getJSONObject(i);
+                        JSONObject p = s.getJSONObject("product");
+                        entity.setDelegatedProductId(s.getJSONObject("product").getString("_id"));
+                        entity.setServiceAgentId(s.getJSONObject("agent").getString("_id"));
+                        entity.setServiceId(s.getString("_id"));
+                        entity.setServiceProgress(listFromJSONArray(s.getJSONArray("progress")));
+                        insertDelegatedService(entity);
+
+                        ProductEntity productEntity = new ProductEntity();
+                        productEntity.setIsDelegated(true);
+                        productEntity.setProductCost(p.getJSONObject("requirements").getString("procurement_cost"));
+                        productEntity.setProductDescription(p.getString("product_description"));
+                        productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
+                        productEntity.setProductDuration(p.getString("duration"));
+                        productEntity.setProductId(p.getString("_id"));
+                        productEntity.setProductName(p.getString("product_name"));
+                        productEntity.setProductProvider(p.getString("public_service"));
+                        productEntity.setProductSteps(listFromJSONArray(p.getJSONArray("procurement_process")));
+                        insertProduct(productEntity);
+
+                    }
+                    SocketIO.INSTANCE.getMSocket().on("updated-service", new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            try {
+                                JSONObject s = new JSONObject(args[0].toString());
+                                DelegatedServiceEntity entity = new DelegatedServiceEntity();
+                                entity.setDelegatedProductId(s.getString("product"));
+                                entity.setServiceAgentId(s.getString("agent"));
+                                entity.setServiceId(s.getString("_id"));
+                                entity.setServiceProgress(listFromJSONArray(s.getJSONArray("progress")));
+                                insertDelegatedService(entity);
+                            }catch (JSONException e){
+                                Log.e(TAG, "call: "+ e.toString() );
+                            }
+
+                            //updateDelegatedService();
+                        }
+                    });
+                }catch (JSONException e){
+                    Log.e(TAG, "done: "+e.toString() );
+                }
+            }
+        };
+
 //        serviceProviderDao = agentRoomDatabase.serviceProviderDao();
 //        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
 //        Log.e("AppRepo", "serviceProvider->"+serviceProviderEntityLiveData);
@@ -65,7 +130,7 @@ public class AppRepository {
 
     public LiveData<DelegatedServiceEntity> getDelegatedServiceById(String delegatedServiceId){
         delegatedServiceEntityLiveData = delegatedServiceDao.getDelegatedServiceById(delegatedServiceId);
-        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getDelegatedProductId());
+//        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getDelegatedProductId());
         return delegatedServiceEntityLiveData;
     }
 
@@ -155,12 +220,21 @@ public class AppRepository {
      **/
 
     public void insertDelegatedService(DelegatedServiceEntity delegatedServiceEntity){
+        Log.e(TAG, "insertDelegatedService: INSERTING DELEGATED-SERVICE->"+delegatedServiceEntity.getServiceId());
         new insertDelegatedServiceAsyncTask(delegatedServiceDao).execute(delegatedServiceEntity);
     }
 
     public LiveData<DelegatedServiceEntity> getDelegatedServiceEntityLiveData(){
-        Log.e("AppRepo", "User LiveData->"+ delegatedServiceEntityLiveData);
-        return delegatedServiceEntityLiveData;
+        try {
+//            Log.e(TAG, "getDelegatedServiceEntity: DELEGATED-SERVICE->"+delegatedServiceDao.getDelegatedService().getValue().getServiceId());
+            return new getDelegatedServiceEntityAsyncTask(delegatedServiceDao).execute().get();
+        }catch (ExecutionException exe){
+            Log.e(TAG, "getDelegatedServiceEntity: "+exe.toString() );
+            return null;
+        }catch (InterruptedException i){
+            Log.e(TAG, "getDelegatedServiceEntity: "+i.toString() );
+            return null;
+        }
     }
 
     public void deleteAllDelegatedServices(){
@@ -169,6 +243,22 @@ public class AppRepository {
 
     public void updateDelegatedService(DelegatedServiceEntity delegatedServiceEntity){
         new updateDelegatedServiceAsyncTask(delegatedServiceDao).execute(delegatedServiceEntity);
+    }
+
+    private static class getDelegatedServiceEntityAsyncTask extends AsyncTask<Void, Void, LiveData<DelegatedServiceEntity>>{
+        private DelegatedServiceDao mDelegatedServiceDao;
+
+        private getDelegatedServiceEntityAsyncTask(DelegatedServiceDao delegatedServiceDao){
+            this.mDelegatedServiceDao = delegatedServiceDao;
+        }
+
+        @Override
+        protected LiveData<DelegatedServiceEntity> doInBackground(Void... voids) {
+            mDelegatedServiceDao.getDelegatedService();
+            Log.e("AppRepo", "Getting Delegated Service->");
+//            return delegatedServiceEntities[0];
+            return mDelegatedServiceDao.getDelegatedService();
+        }
     }
 
     private static class insertDelegatedServiceAsyncTask extends AsyncTask<DelegatedServiceEntity, Void, Void>{
@@ -392,6 +482,18 @@ public class AppRepository {
 
     private void unsafeMethod(){
         throw new UnsupportedOperationException("This needs attention!");
+    }
+
+    private ArrayList<String> listFromJSONArray(JSONArray arr){
+        try{
+            ArrayList<String> tbr = new ArrayList<>();
+            for (int i = 0; i < arr.length(); i++) {
+                tbr.add(arr.getString(i));
+            }
+            return tbr;
+        }catch (JSONException e){
+            return new ArrayList<String>();
+        }
     }
 
     /*private void logWithStaticAPI(){

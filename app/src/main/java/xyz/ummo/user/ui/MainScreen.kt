@@ -32,9 +32,12 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -55,6 +58,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
+
     // flag to load home fragment when user presses back key
     private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
@@ -67,6 +71,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         title = "Ummo"
+        supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
 
@@ -166,7 +171,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             R.id.nav_profile -> selectedFragment = ProfileFragment()
             R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
             R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_delegated_service -> selectedFragment = DelegatedServiceFragment()
+            R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
         }
 
         if (selectedFragment != null) {
@@ -283,7 +288,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             4 -> {
                 // legal terms fragment
-                return DelegatedServiceFragment()
+
+                return DelegatedServicesFragment()
             }
 
             else -> return HomeFragment(data)
@@ -403,6 +409,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         // prefManager.unSetFirstTimeLaunch();
     }
 
+
     companion object {
         // tags used to attach the fragments
         private val TAG_HOME = "home"
@@ -411,6 +418,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         private val TAG_SERVICE_HISTORY = "serviceHistory"
         private val TAG_LEGAL_TERMS = "legalTerms"
         var CURRENT_TAG = TAG_HOME
+        lateinit var supportFM : FragmentManager
 
         // index to identify current nav menu item
         var navItemIndex = 0

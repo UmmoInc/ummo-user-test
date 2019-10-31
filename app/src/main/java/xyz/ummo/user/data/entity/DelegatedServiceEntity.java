@@ -23,9 +23,9 @@ public class DelegatedServiceEntity implements DelegatedService {
     @ColumnInfo(name = "service_name")
     private String serviceName;*/
 
-    /*@NonNull
+    @NonNull
     @ColumnInfo(name = "service_progress")
-    private ArrayList serviceProgress;*/
+    private ArrayList serviceProgress;
 
     @NonNull
     @ColumnInfo(name = "delegated_product_id")
@@ -69,7 +69,7 @@ public class DelegatedServiceEntity implements DelegatedService {
 //        this.serviceName = serviceName;
 //    }
 
-   /* @Override
+    @Override
     @NonNull
     public ArrayList getServiceProgress() {
         return serviceProgress;
@@ -77,7 +77,7 @@ public class DelegatedServiceEntity implements DelegatedService {
 
     public void setServiceProgress(@NonNull ArrayList serviceProgress) {
         this.serviceProgress = serviceProgress;
-    }*/
+    }
 
     @Override
     @NonNull

@@ -170,6 +170,7 @@ public class DelegatedServicesFragment extends Fragment {
                         try {
                             JSONArray jsonArray = new JSONArray(new String(data));
                             delegatedServiceArrayList.clear();
+                            Log.e(TAG, "run: "+new String(data));
                             for (int i= 0; i<jsonArray.length();i++){
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                                 JSONObject agentObject = jsonObject.getJSONObject("agent");
@@ -177,8 +178,14 @@ public class DelegatedServicesFragment extends Fragment {
 
                                 Log.e("_ID",jsonObject.getString("_id"));
 
-                                DelegatedService delegatedService = new DelegatedService(productObject.
-                                        getString("product_name"), agentObject.getString("name"), jsonObject.getString("_id"));
+                                DelegatedService delegatedService = new DelegatedService(
+                                        productObject.getString("product_name"),
+                                        agentObject.getString("name"),
+                                        jsonObject.getString("_id"),
+                                        agentObject.getString("_id"),
+                                        jsonObject.getString("user"),
+                                        productObject.getString("_id")
+                                );
                                 delegatedServiceArrayList.add(delegatedService);
 
                                 Log.e("tag", jsonObject.toString());

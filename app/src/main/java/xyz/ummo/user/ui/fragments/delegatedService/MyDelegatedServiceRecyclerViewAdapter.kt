@@ -8,7 +8,7 @@ import android.widget.TextView
 import xyz.ummo.user.R
 
 
-import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment2.OnListFragmentInteractionListener
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServicesFragment.OnListFragmentInteractionListener
 import xyz.ummo.user.ui.fragments.delegatedService.dummy.DummyContent.DummyItem
 
 import kotlinx.android.synthetic.main.fragment_delegatedservice.view.*
