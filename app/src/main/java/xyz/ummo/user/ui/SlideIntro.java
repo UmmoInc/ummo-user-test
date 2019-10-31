@@ -270,7 +270,7 @@ public class SlideIntro extends AppCompatActivity {
                             editor.apply();
                             progress.dismiss();
 
-                            //Inserting Profile info into ProfileEntity, then ProfileViewModel
+                            //Inserting ProfileModel info into ProfileEntity, then ProfileViewModel
                             profileEntity.setProfileName(userName);
                             profileEntity.setProfileContact(userContact);
                             profileEntity.setProfileEmail(userEmail);

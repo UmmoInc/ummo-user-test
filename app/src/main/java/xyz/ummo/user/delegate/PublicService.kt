@@ -19,14 +19,20 @@ abstract class PublicService(val activity:Activity) {
                     try {
                         activity.runOnUiThread(Runnable {
 
+                            if (response.data.isNotEmpty()){
 //                         ToDo: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
-                            var array = JSONArray(String(response.data))
-                            Log.e(TAG, "Got new service data"+String(response.data))
-                            done(fromJSONList(array), response.statusCode)
+                                val array = JSONArray(String(response.data))
+                                Log.e(TAG, "Got new service data"+String(response.data))
+                                done(fromJSONList(array), response.statusCode)
+                            } else{
+                                Log.e(TAG, "No value for Product DATA!")
+                                done(fromJSONList(JSONArray("[]")),200)
+//                                return@Runnable
+                            }
                         })
 
                     } catch (ex: JSONException) {
-                        Log.e(TAG, String(response.data))
+                        Log.e(TAG, "Response-> ${String(response.data)}")
                         Log.e(TAG, "Here  error $ex")
                         done(fromJSONList(JSONArray("[]")),200)
                     }
@@ -43,7 +49,7 @@ abstract class PublicService(val activity:Activity) {
     }
 
     private fun fromJSONObject(obj: JSONObject): PublicServiceData {
-        Log.e(TAG,obj.toString())
+        Log.e(TAG,"fromJSONOBJECT-> $obj")
         val serviceName = get(obj, "service_name", "serviceName") as String
         val province = get(obj, "location.province", "province") as String
         val municipality = get(obj, "location.municipality", "municipality") as String
@@ -61,7 +67,6 @@ abstract class PublicService(val activity:Activity) {
         } catch (ex: JSONException) {
             return default
         }
-
     }
 
     abstract fun done(data: List<PublicServiceData>, code: Number)

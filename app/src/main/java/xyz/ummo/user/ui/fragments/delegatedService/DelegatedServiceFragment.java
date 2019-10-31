@@ -2,6 +2,7 @@ package xyz.ummo.user.ui.fragments.delegatedService;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import xyz.ummo.user.DelegationChat;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel;
@@ -41,7 +43,7 @@ public class DelegatedServiceFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String mParam1, mParam2;
-    private String agentName, productId, serviceId, serviceAgentId, delegatedProductId;
+    private String agentName, productName, serviceId, serviceAgentId, delegatedProductId;
 
     private TextView agentNameTextView, agentStatusTextView,
             delegatedProductNameTextView, delegatedProductDescriptionTextView,
@@ -97,6 +99,7 @@ public class DelegatedServiceFragment extends Fragment {
 
             SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
             agentName = sharedPreferences.getString("DELEGATED_AGENT","");
+
             serviceId = getArguments().getString("SERVICE_ID");
             serviceAgentId = getArguments().getString("SERVICE_AGENT_ID");
             delegatedProductId = getArguments().getString("DELEGATED_PRODUCT_ID");
@@ -127,12 +130,7 @@ public class DelegatedServiceFragment extends Fragment {
         agentStatusTextView = view.findViewById(R.id.delegated_agent_status_text_view);
         openChat = view.findViewById(R.id.open_chat_button);
 
-        openChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: 10/21/19 -> launch chatActivity
-            }
-        });
+        goToDelegationChat(view);
 
         agentNameTextView.setText(agentName);
 
@@ -150,7 +148,7 @@ public class DelegatedServiceFragment extends Fragment {
 
         delegatedServiceViewModel
                 .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
-            Log.e(TAG, "onCreateView: DelegatedService"+delegatedServiceEntity1.getServiceAgentId());
+            Log.e(TAG, "onCreateView: DelegatedServiceModel"+delegatedServiceEntity1.getServiceAgentId());
         });
 
         detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(this, delegatedProductEntity -> {
@@ -187,6 +185,37 @@ public class DelegatedServiceFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void goToDelegationChat(View view){
+        openChat = view.findViewById(R.id.open_chat_button);
+
+        delegatedServiceViewModel
+                .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
+            Log.e(TAG, "goToDelegationChat: DelegatedServiceModel"+delegatedServiceEntity1.getDelegatedProductId());
+            delegatedServiceEntity1.getServiceId();
+        });
+
+        detailedProductViewModel
+                .getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
+            Log.e(TAG, "onCreateView: DELEGATED_ID->"+delegatedProductEntity.getProductName());
+            productName = delegatedProductEntity.getProductName();
+        });
+
+        SharedPreferences delegatedServiceFragPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
+
+        if (getArguments() != null) {
+            serviceId = getArguments().getString("SERVICE_ID");
+            agentName = delegatedServiceFragPrefs.getString("DELEGATED_AGENT","");
+        }
+
+        openChat.setOnClickListener(v -> {
+            Intent chatIntent = new Intent(getActivity(), DelegationChat.class);
+            chatIntent.putExtra("AGENT_NAME", agentName);
+            chatIntent.putExtra("SERVICE_ID", serviceId);
+            chatIntent.putExtra("SERVICE_NAME", productName);
+            startActivity(chatIntent);
+        });
     }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

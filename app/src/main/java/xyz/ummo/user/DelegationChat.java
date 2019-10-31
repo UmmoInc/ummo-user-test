@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import xyz.ummo.user.delegate.GetService;
 import xyz.ummo.user.delegate.Service;
@@ -84,8 +85,8 @@ public class DelegationChat extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        setTitle(intent.getExtras().getString("agentName"));
-        getSupportActionBar().setSubtitle(intent.getExtras().getString("serviceName"));
+        setTitle(Objects.requireNonNull(intent.getExtras()).getString("AGENT_NAME"));
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle(intent.getExtras().getString("SERVICE_NAME"));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -101,7 +102,6 @@ public class DelegationChat extends AppCompatActivity {
 
         confirmInitiationBox = findViewById(R.id.confirm_service_initiation_box);
         confirmInitiationContentBox = findViewById(R.id.confirm_initiation_content_box);
-
 
         getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -254,6 +254,7 @@ public class DelegationChat extends AppCompatActivity {
         arrow.startAnimation(rotateAnim);
     }
 
+    // TODO: 10/22/19 -> Investigate the intended intent of this function
     public void goToDelegateProgress(){
         Intent intent = new Intent(this, DelegationProgress.class);
         finish();

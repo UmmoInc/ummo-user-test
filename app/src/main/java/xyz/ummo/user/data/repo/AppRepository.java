@@ -6,39 +6,37 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import org.jetbrains.annotations.NotNull;
-
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import io.sentry.Sentry;
-import io.sentry.event.BreadcrumbBuilder;
-import io.sentry.event.UserBuilder;
 //import xyz.ummo.user.data.dao.UserDao;
 import xyz.ummo.user.data.dao.DelegatedServiceDao;
 import xyz.ummo.user.data.dao.ProductDao;
 //import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.dao.ProfileDao;
+import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.db.UserRoomDatabase;
 //import xyz.ummo.user.data.entity.UserEntity;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
-//import xyz.ummo.user.data.entity.ServiceProviderEntity;
-//import xyz.ummo.user.data.model.ServiceProvider;
-//import xyz.ummo.user.delegate.CreateProduct;
+import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
-import xyz.ummo.user.delegate.GetProducts;
 
 public class AppRepository {
 
     private ProfileDao profileDao;
     private DelegatedServiceDao delegatedServiceDao;
     private ProductDao productDao;
-//    private ServiceProviderDao serviceProviderDao;
+    private ServiceProviderDao serviceProviderDao;
 
     private LiveData<DelegatedServiceEntity> delegatedServiceEntityLiveData;
     private LiveData<ProfileEntity> profileEntityLiveData;
     private LiveData<ProductEntity> productEntityLiveData;
-//    private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
+    private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
+    private List<ServiceProviderEntity> serviceProviders = new ArrayList<>();
 
     private static final String TAG = "AppRepo";
 
@@ -47,20 +45,20 @@ public class AppRepository {
 
         profileDao = userRoomDatabase.profileDao();
         profileEntityLiveData = profileDao.getProfileLiveData();
-        Log.e("AppRepo", "User->"+ profileEntityLiveData);
+//        Log.e("AppRepo", "User->"+ profileEntityLiveData);
 
         delegatedServiceDao = userRoomDatabase.delegatedServiceDao();
         delegatedServiceEntityLiveData = delegatedServiceDao.getDelegatedService();
-        Log.e("AppRepo", "DelegatedService->"+ delegatedServiceEntityLiveData);
+//        Log.e("AppRepo", "DelegatedServiceModel->"+ delegatedServiceEntityLiveData);
 
         productDao = userRoomDatabase.productDao();
         productEntityLiveData = productDao.getProductLiveData();
-        Log.e("AppRepo", "Product->"+productEntityLiveData);
+//        Log.e("AppRepo", "ProductModel->"+productEntityLiveData);
 
-//        serviceProviderDao = agentRoomDatabase.serviceProviderDao();
-//        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
-//        Log.e("AppRepo", "serviceProvider->"+serviceProviderEntityLiveData);
-
+        serviceProviderDao = userRoomDatabase.serviceProviderDao();
+        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
+//        serviceProviders = serviceProviderDao.getServiceProviders();
+//        Log.e("AppRepo", "ServiceProviders [COUNT]->"+serviceProviders.size());
     }
 
     public LiveData<DelegatedServiceEntity> getDelegatedServiceById(String delegatedServiceId){
@@ -95,7 +93,7 @@ public class AppRepository {
     }
 
     public LiveData<ProfileEntity> getProfileEntityLiveData(){
-        Log.e("AppRepo", "Profile LiveData->"+ profileEntityLiveData);
+        Log.e("AppRepo", "ProfileModel LiveData->"+ profileEntityLiveData);
         return profileEntityLiveData;
     }
 
@@ -113,7 +111,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProfileEntity... profileEntities) {
             mProfileAsyncTaskDao.insertProfile(profileEntities[0]);
-            Log.e("AppRepo", "Inserting Profile->"+ Arrays.toString(profileEntities));
+            Log.e("AppRepo", "Inserting ProfileModel->"+ Arrays.toString(profileEntities));
             return null;
         }
     }
@@ -128,7 +126,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mProfileAsyncTaskDao.deleteProfile();
-            Log.e("AppRepo", "Deleting Profile!");
+            Log.e("AppRepo", "Deleting ProfileModel!");
             return null;
         }
     }
@@ -149,7 +147,7 @@ public class AppRepository {
     }
 
     /**
-     * Repository API call for CRUDING DelegatedService. We use the DAO to abstract the connection to the
+     * Repository API call for CRUDING DelegatedServiceModel. We use the DAO to abstract the connection to the
      * DelegatedEntity. DAO calls implemented are C-InsertDelegatedService; R-LiveData (exempt from AsyncOps); U-UpdateDelegatedService && D-DeleteDelegatedService.
      * Each are done asynchronously because RoomDB does not run on the main thread
      **/
@@ -222,24 +220,44 @@ public class AppRepository {
      * Each are done asynchronously because RoomDB does not run on the main thread
      **/
 
-    /*public void insertServiceProvider(ServiceProviderEntity serviceProviderEntity){
+    public void insertServiceProvider(ServiceProviderEntity serviceProviderEntity){
         new insertServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntity);
-    }*/
+    }
 
-    /*public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveData(){
+    public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveData(){
         Log.e("AppRepo", "Service Provider LiveData->"+ serviceProviderEntityLiveData);
         return serviceProviderEntityLiveData;
-    }*/
+    }
 
-    /*public void deleteServiceProvider(){
+    public List<ServiceProviderEntity> getServiceProviders(){
+        try {
+            return new getServiceProvidersAsyncTask(serviceProviderDao, this).execute().get();
+        } catch (ExecutionException e){
+            return null;
+        } catch (InterruptedException e){
+            return null;
+        }
+    }
+
+    public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveDataById(String serviceId){
+        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderEntityLiveDataById(serviceId);
+        Log.e("AppRepo", "Service Provider LiveData->"+ serviceProviderEntityLiveData.getValue().getServiceProviderId());
+        return serviceProviderEntityLiveData;
+    }
+
+    public void deleteServiceProvider(){
         new deleteServiceProviderAsyncTask(serviceProviderDao).execute();
+    }
+
+    /*public void countServiceProviders(){
+        new countServiceProviderAsyncTask(serviceProviderDao).execute();
     }*/
 
-    /*public void updateServiceProvider(ServiceProviderEntity serviceProviderEntity){
+    public void updateServiceProvider(ServiceProviderEntity serviceProviderEntity){
         new updateServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntity);
-    }*/
+    }
 
-    /*private static class insertServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void>{
+    private static class insertServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void>{
         private ServiceProviderDao mServiceProviderDao;
 
         private insertServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao){
@@ -249,12 +267,12 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
             mServiceProviderDao.insertServiceProvider(serviceProviderEntities[0]);
-            Log.e("AppRepo", "Inserting Service Provider->"+ Arrays.toString(serviceProviderEntities));
+            Log.e("AppRepo", "Inserting Service Provider->"+ serviceProviderEntities[0].getServiceProviderName());
             return null;
         }
-    }*/
+    }
 
-    /*private static class deleteServiceProviderAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class deleteServiceProviderAsyncTask extends AsyncTask<Void, Void, Void>{
         private ServiceProviderDao mServiceProviderAsyncTaskDao;
 
         deleteServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao){
@@ -263,13 +281,58 @@ public class AppRepository {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            mServiceProviderAsyncTaskDao.deleteServiceProvider();
+            mServiceProviderAsyncTaskDao.deleteAllServiceProviders();
             Log.e("AppRepo", "Deleting Service Provider!");
+            return null;
+        }
+    }
+
+    private static class getServiceProvidersAsyncTask extends AsyncTask<Void, Void, List<ServiceProviderEntity>>{
+        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+        private List<ServiceProviderEntity> serviceProviderEntityList = new ArrayList<>();
+        private WeakReference<AppRepository> appRepositoryWeakReference;
+
+        getServiceProvidersAsyncTask(ServiceProviderDao serviceProviderDao, AppRepository appRepository){
+            appRepositoryWeakReference = new WeakReference<>(appRepository);
+            this.mServiceProviderAsyncTaskDao = serviceProviderDao;
+        }
+
+        @Override
+        protected List<ServiceProviderEntity> doInBackground(Void... voids) {
+            serviceProviderEntityList.addAll(mServiceProviderAsyncTaskDao.getServiceProviders());
+            return serviceProviderEntityList;
+        }
+
+        /**
+         * This `onPostExecute does nothing significant, I'm reserving it to refer on how to use
+         * "WeakReferences" to access a class' data-members from within another when one class is
+         * defined as `static`
+         **/
+        @Override
+        protected void onPostExecute(List<ServiceProviderEntity> serviceProviderEntities) {
+            super.onPostExecute(serviceProviderEntities);
+            AppRepository appRepository = appRepositoryWeakReference.get();
+            appRepository.serviceProviders.addAll(serviceProviderEntityList);
+
+        }
+    }
+
+    /*private static class countServiceProviderAsyncTask extends AsyncTask<Void, Void, Void>{
+        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+
+        countServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao){
+            this.mServiceProviderAsyncTaskDao = serviceProviderDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mServiceProviderAsyncTaskDao.getServiceProviderCount();
+            Log.e("AppRepo", "Counting Service Providers...");
             return null;
         }
     }*/
 
-    /*private static class updateServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void>{
+    private static class updateServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void>{
         private ServiceProviderDao mServiceProviderAsyncTaskDao;
 
         updateServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao){
@@ -278,13 +341,13 @@ public class AppRepository {
 
         @Override
         protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
-            mServiceProviderAsyncTaskDao.updateServiceProvider(serviceProviderEntities[0]);
+            mServiceProviderAsyncTaskDao.updateServiceProviders(serviceProviderEntities[0]);
             Log.e("AppRepo", "Updating Service Provider->"+ Arrays.toString(serviceProviderEntities));
             return null;
         }
-    }*/
+    }
     /**
-     * Repository API call for CRUDING Product. We use the DAO to abstract the connection to the
+     * Repository API call for CRUDING ProductModel. We use the DAO to abstract the connection to the
      * ProductEntity. DAO calls implemented are C-InsertProduct; R-LiveData (exempt from AsyncOps); U-UpdateProduct && D-DeleteProduct.
      * Each are done asynchronously because RoomDB does not run on the main thread
      **/
@@ -294,7 +357,7 @@ public class AppRepository {
     }
 
     public LiveData<ProductEntity> getProductEntityLiveData(){
-        Log.e("AppRepo", "Product LiveData->"+productEntityLiveData);
+        Log.e("AppRepo", "ProductModel LiveData->"+productEntityLiveData);
         return productEntityLiveData;
     }
 
@@ -326,7 +389,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProductEntity... productEntities) {
             mProductDao.insertProduct(productEntities[0]);
-            Log.e(TAG, "Inserting Product->"+ productEntities[0].getProductName());
+            Log.e(TAG, "Inserting ProductModel->"+ productEntities[0].getProductName());
 
             /*new CreateProduct(
                     productEntities[0].getProductName()
@@ -340,8 +403,8 @@ public class AppRepository {
 
                 @Override
                 public void done(@NotNull byte[] data, @NotNull Number code) {
-                    Log.e(TAG, "Inserting Product data->"+ Arrays.toString(data));
-                    Log.e(TAG, "Inserting Product code->"+ code);
+                    Log.e(TAG, "Inserting ProductModel data->"+ Arrays.toString(data));
+                    Log.e(TAG, "Inserting ProductModel code->"+ code);
                 }
             };*/
             return null;
@@ -358,7 +421,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mProductAsyncTaskDao.deleteAllProducts();
-            Log.e("AppRepo", "Deleting Product!");
+            Log.e("AppRepo", "Deleting ProductModel!");
             return null;
         }
     }
@@ -373,7 +436,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProductEntity... productEntities) {
             mProductAsyncTaskDao.updateProduct(productEntities[0]);
-            Log.e("AppRepo", "Updating Product->"+ Arrays.toString(productEntities));
+            Log.e("AppRepo", "Updating ProductModel->"+ Arrays.toString(productEntities));
             return null;
         }
     }

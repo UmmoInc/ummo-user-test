@@ -240,12 +240,12 @@ public class MainScreen extends AppCompatActivity
 
                 return homeFragment;
             case 1:
-                // My Profile
+                // My ProfileModel
                 ProfileFragment myProfileFragment = new ProfileFragment();
 
                 messageIconButton.setVisibility(View.GONE);
                 circularProgressBarButton.setVisibility(View.GONE);
-                setTitle("Profile");
+                setTitle("ProfileModel");
 
                 return myProfileFragment;
 

@@ -87,7 +87,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/delegated_service_header_layout">
 
-                            <!--Product Description Layout Start-->
+                            <!--ProductModel Description Layout Start-->
                             <RelativeLayout
                                 android:id="@+id/description_layout"
                                 android:layout_width="match_parent"
@@ -125,9 +125,9 @@
                                 </RelativeLayout>
 
                             </RelativeLayout>
-                            <!--Product Description Layout End-->
+                            <!--ProductModel Description Layout End-->
 
-                            <!--Product Cost Layout Start-->
+                            <!--ProductModel Cost Layout Start-->
                             <RelativeLayout
                                 android:id="@+id/service_cost_layout"
                                 android:layout_width="match_parent"
@@ -164,9 +164,9 @@
                                 </RelativeLayout>
 
                             </RelativeLayout>
-                            <!--Product Cost Layout End-->
+                            <!--ProductModel Cost Layout End-->
 
-                            <!--Product Duration Layout Start-->
+                            <!--ProductModel Duration Layout Start-->
                             <RelativeLayout
                                 android:id="@+id/service_duration_layout"
                                 android:layout_width="match_parent"
@@ -203,9 +203,9 @@
                                 </RelativeLayout>
 
                             </RelativeLayout>
-                            <!--Product Duration Layout End-->
+                            <!--ProductModel Duration Layout End-->
 
-                            <!--Product Docs Layout Start-->
+                            <!--ProductModel Docs Layout Start-->
                             <RelativeLayout
                                 android:id="@+id/service_docs_relative_layout"
                                 android:layout_width="match_parent"
@@ -254,9 +254,9 @@
                                         android:layout_below="@id/docs_header_text_view"/>-->
                                 </RelativeLayout>
                             </RelativeLayout>
-                            <!--Product Docs Layout End-->
+                            <!--ProductModel Docs Layout End-->
 
-                            <!--Product Steps Layout Start-->
+                            <!--ProductModel Steps Layout Start-->
                             <RelativeLayout
                                 android:id="@+id/service_steps_relative_layout"
                                 android:layout_width="match_parent"
@@ -305,7 +305,7 @@
                                         android:layout_below="@id/docs_header_text_view"/>-->
                                 </RelativeLayout>
                             </RelativeLayout>
-                            <!--Product Steps Layout End-->
+                            <!--ProductModel Steps Layout End-->
 
                         </RelativeLayout>
 

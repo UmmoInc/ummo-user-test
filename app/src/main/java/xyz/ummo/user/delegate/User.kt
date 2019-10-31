@@ -5,6 +5,7 @@ import android.content.Intent
 import android.preference.PreferenceManager
 import android.util.Base64
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -31,7 +32,7 @@ class User : Application() {
 
     private fun initializeSocket(_id: String) {
         try {
-            Log.e(TAG, "Trying connection")
+            Log.e(TAG, "Trying connection...")
             SocketIO.mSocket = IO.socket("${getString(serverUrl)}/user-$_id")
             Log.e(TAG, "${getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
@@ -90,18 +91,18 @@ class User : Application() {
                 delegatedServiceEntity.delegatedProductId = delegatedProductId
                 delegatedServiceEntity.serviceAgentId = serviceAgentId
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-                Log.e(TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; Product->${delegatedServiceEntity.delegatedProductId}")
+                Log.e(TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
                 delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)
 
                 startActivity(intent)
             })
 
             SocketIO.mSocket?.on("connect_error", Emitter.Listener {
-                Log.e(TAG, it[0].toString() + SocketIO.mSocket?.io().toString())
+                Log.e(TAG, "Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
             })
 
             SocketIO.mSocket?.on("error", Emitter.Listener {
-                Log.e(TAG, it[0].toString() + SocketIO.mSocket?.io().toString())
+                Log.e(TAG, "Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
             })
 
             /*  SocketIO.mSocket?.on("message", Emitter.Listener {
@@ -110,17 +111,10 @@ class User : Application() {
         }
 
         Log.e(TAG, "Application created - Server URL->${getString(serverUrl)}")
-
-        // OneSignal Initialization
-        /* OneSignal.startInit(this)
-                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-                 .unsubscribeWhenNotificationsAreDisabled(true)
-                 .init()*/
     }
 }
 
 object SocketIO {
     var mSocket: Socket? = null
     var anything = ""
-
 }

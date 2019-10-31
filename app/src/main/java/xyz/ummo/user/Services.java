@@ -126,7 +126,7 @@ public class Services extends AppCompatActivity {
                     servicesArrayList.clear();
                     for (int i = 0; i < productsJsonArray.length(); i++) {
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
-                        Log.e("Product",productJsonObject.toString());
+                        Log.e("ProductModel",productJsonObject.toString());
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
                         // Can we stick to the conventions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one

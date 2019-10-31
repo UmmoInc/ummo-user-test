@@ -2,6 +2,8 @@ package xyz.ummo.user.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,13 +15,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.engineio.client.Socket;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,9 +39,12 @@ import xyz.ummo.user.Department;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.ServiceProviderAdapter;
-import xyz.ummo.user.adapters.servicesCarouselAdapter;
+import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
+import xyz.ummo.user.delegate.SocketIO;
+import xyz.ummo.user.delegate.User;
+import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,12 +72,13 @@ public class HomeFragment extends Fragment {
 
     private Button requestAgent;
 
-    private servicesCarouselAdapter carouselAdapter;
-    ServiceProviderAdapter serviceProviderAdapter;
+    private ServiceProviderAdapter serviceProviderAdapter;
 
-    ArrayList<PublicServiceData> serviceProviderList= new ArrayList<>();
+    private ArrayList<PublicServiceData> serviceProviderList= new ArrayList<>();
 
-
+    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
+    private ServiceProviderViewModel serviceProviderViewModel;
+    private ProgressBar loadServicesProgressBar;
     public HomeFragment(){}
     public HomeFragment(List<PublicServiceData> data) {
         // Required empty public constructor
@@ -95,11 +110,12 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
+        serviceProviderViewModel = ViewModelProviders.of(this).get(ServiceProviderViewModel.class);
 
+        serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 //        loadDepartments(_data);
         addServiceProviders();
-       // serviceProviderAdapter.addProduct();
+//        serviceProviderAdapter.addProduct();
     }
 
     @Override
@@ -109,8 +125,9 @@ public class HomeFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         final FragmentActivity c = getActivity(); // TODO: 10/16/19 -> rename `c`
         final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
+        loadServicesProgressBar = view.findViewById(R.id.load_service_progress_bar);
 
-        //serviceProviderAdapter.addProduct();
+//        serviceProviderAdapter.addProduct();
         LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(serviceProviderAdapter);
@@ -201,20 +218,66 @@ public class HomeFragment extends Fragment {
         startActivity(i);
     }
 
-    public void addServiceProviders(){
+    private void addServiceProviders(){
 
-        new PublicService(getActivity()){
-            @Override
-            public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
-                serviceProviderList.addAll(data);
-                serviceProviderAdapter.notifyDataSetChanged();
+        final String[] serviceProviderName = new String[1];
+        final String[] serviceProviderId = new String[1];
+        final String[] serviceProviderMunicipality = new String[1];
+        final String[] serviceProviderProvince = new String[1];
+        final String[] serviceProviderTown = new String[1];
+        final int[] count = {0};
+
+
+        SocketIO.INSTANCE.getMSocket().on("connect", args -> {
+
+            serviceProviderList.clear();
+
+            new PublicService(Objects.requireNonNull(getActivity())){
+                @Override
+                public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                    for (int i = 0; i < data.size(); i++) {
+                        serviceProviderList.add(data.get(i));
+                        count[0]++;
+                        Log.e(TAG, "done: For-Loop: LIST-COUNT->"+ Arrays.toString(count));
+
+                    }
+
+                    if (count[0] == serviceProviderAdapter.getItemCount()){
+                        serviceProviderAdapter.notifyDataSetChanged();
+                        Log.e(TAG, "done: If-Check: LIST-COUNT->"+ Arrays.toString(count));
+                        Log.e(TAG, "done: ADAPTER-COUNT->"+serviceProviderAdapter.getItemCount());
+
+                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                            loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                            Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection restored", Snackbar.LENGTH_SHORT).show();
+                        });
+                    }
+//                    serviceProviderList.addAll(data);
+                }
+            };
+        });
+
+        SocketIO.INSTANCE.getMSocket().on("connect_error", args -> {
+
+            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                loadServicesProgressBar.setVisibility(View.VISIBLE);
+                Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection lost...", Snackbar.LENGTH_INDEFINITE).show();
+            });
+
+            serviceProviderList.clear();
+
+            for (int i = 0; i < serviceProviderViewModel.getServiceProviders().size(); i++) {
+                serviceProviderId[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderId();
+                serviceProviderName[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderName();
+                serviceProviderProvince[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderProvince();
+                serviceProviderMunicipality[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderMunicipality();
+                serviceProviderTown[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderTown();
+                Log.e(TAG, "addServiceProviders (" + i + ")=>" + serviceProviderName[0]);
+                PublicServiceData publicServiceData = new PublicServiceData(serviceProviderName[0], serviceProviderProvince[0], serviceProviderMunicipality[0], serviceProviderTown[0], serviceProviderId[0]);
+                serviceProviderList.add(publicServiceData);
             }
-        };
+
+        });
 
     }
-
-    public void ViewService(View view){
-
-    }
-
 }

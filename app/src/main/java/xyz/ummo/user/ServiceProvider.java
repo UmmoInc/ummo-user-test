@@ -2,11 +2,12 @@ package xyz.ummo.user;
 
 import android.util.Log;
 
+import androidx.room.Entity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-
 
 public class ServiceProvider {
 
@@ -14,6 +15,7 @@ public class ServiceProvider {
         public String province;
         public String municipality;
         public String town;
+
         public ServiceProvider(String serviceProviderName){
             this.serviceProviderName= serviceProviderName;
         }
@@ -25,7 +27,7 @@ public class ServiceProvider {
                 municipality = jsonObject.getJSONObject("location").getString("municipality");
                 town = jsonObject.getJSONObject("location").getString("town");
             }catch (JSONException jse){
-                Log.e("ServiceProvider.java",jse.toString());
+                Log.e("ServiceProvider",jse.toString());
             }
         }
 

@@ -4,7 +4,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
-public interface DelegatedService {
+public interface DelegatedServiceModel {
 //    String getServiceName();
     String getServiceId();
     String getDelegatedProductId();

@@ -31,10 +31,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.snackbar.Snackbar
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import java.util.*
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -96,7 +99,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         object : xyz.ummo.user.delegate.PublicService(this) {
             override fun done(data: List<PublicServiceData>, code: Number) {
-                loadHomeFragment(data)
+                if (code == 200)
+                    loadHomeFragment(data)
                 //Do something with list of services
             }
         }
@@ -256,12 +260,12 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 return HomeFragment(data)
             }
             1 -> {
-                // My Profile
+                // My ProfileModel
                 val myProfileFragment = ProfileFragment()
 
                 messageIconButton!!.visibility = View.GONE
                 circularProgressBarButton!!.visibility = View.GONE
-                title = "Profile"
+                title = "ProfileModel"
 
                 return myProfileFragment
             }

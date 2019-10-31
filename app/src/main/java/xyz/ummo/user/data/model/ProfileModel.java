@@ -1,6 +1,6 @@
 package xyz.ummo.user.data.model;
 
-public interface Profile {
+public interface ProfileModel {
     int getProfileId();
     String getProfileName();
     String getProfileEmail();

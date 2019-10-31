@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,22 +26,25 @@ import java.util.List;
 
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
+import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.delegate.GetProducts;
 import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.delegate.get;
+import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
 
     private List<PublicServiceData> serviceProviderList;
     private static final String TAG = "ServiceProviderAdapter";
-
+    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
+    private ServiceProviderViewModel serviceProviderViewModel;
 
     Activity context;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView serviceProviderName, moreText;
-        public RelativeLayout serviceProviderBackground;
+        TextView serviceProviderName, moreText;
+        RelativeLayout serviceProviderBackground;
         ProductAdapter productAdapter;
         RecyclerView productsRecyclerView;
         PublicServiceData publicServiceData;
@@ -51,7 +57,6 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
             moreText = view.findViewById(R.id.more);
             serviceProviderBackground = view.findViewById(R.id.service_provider_background);
             productsRecyclerView = view.findViewById(R.id.products_rv);
-
 
             productAdapter = new ProductAdapter(context, providers);
 
@@ -66,8 +71,10 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         context = activity;
         this.serviceProviderList = serviceProviderList;
 
+        serviceProviderViewModel = ViewModelProviders.of((FragmentActivity) context).get(ServiceProviderViewModel.class);
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -81,16 +88,27 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         PublicServiceData serviceProvider = serviceProviderList.get(position);
         holder.publicServiceData = serviceProvider;
         holder.serviceProviderName.setText(serviceProvider.getServiceName());
+
+        /*
+        * Inserting `ServiceProvider` into RoomDB
+        * */
+        serviceProviderEntity.setServiceProviderId(serviceProviderList.get(position).getServiceCode());
+        serviceProviderEntity.setServiceProviderName(serviceProviderList.get(position).getServiceName());
+        serviceProviderEntity.setServiceProviderProvince(serviceProviderList.get(position).getProvince());
+        serviceProviderEntity.setServiceProviderMunicipality(serviceProviderList.get(position).getMunicipality());
+        serviceProviderEntity.setServiceProviderTown(serviceProviderList.get(position).getTown());
+        serviceProviderViewModel.insertServiceProvider(serviceProviderEntity);
+
+        Log.e(TAG, "onBindViewHolder: SERVICE-PROVIDER-LIST->"+serviceProviderList.get(position).getServiceName());
         addProduct(holder);
     }
 
     @Override
     public int getItemCount() {
         return serviceProviderList.size();
-
     }
 
-    private void addProduct(MyViewHolder holder) {
+    public void addProduct(MyViewHolder holder) {
 
         new GetProducts(context, holder.publicServiceData.getServiceCode()) {
             @Override
@@ -125,5 +143,4 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
             }
         };
     }
-
 }

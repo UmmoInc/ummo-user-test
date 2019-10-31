@@ -42,6 +42,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -76,7 +77,7 @@ public class DetailedProduct extends AppCompatActivity {
     private String agentName, serviceId, delegatedProductId, serviceProgress;
     private String _serviceName, _description, _cost, _duration, _steps, _docs;
     private ProgressDialog progress;
-    AlertDialog.Builder agentRequestDialog;
+    AlertDialog.Builder agentRequestDialog, agentNotFoundDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,7 @@ public class DetailedProduct extends AppCompatActivity {
 
         progress = new ProgressDialog(this);
         agentRequestDialog = new AlertDialog.Builder(DetailedProduct.this);
+        agentNotFoundDialog = new AlertDialog.Builder(DetailedProduct.this);
 
         nestedScrollView = findViewById(R.id.nested_scrollview);
         requestAgentBtn = findViewById(R.id.request_agent_btn);
@@ -128,7 +130,7 @@ public class DetailedProduct extends AppCompatActivity {
         if (_productId != null){
             detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(this, productEntity1 -> {
             _serviceName = productEntity1.getProductName();
-            Log.e(TAG, "onCreate: Within ProductVM: Product ID->"+_productId);
+            Log.e(TAG, "onCreate: Within ProductVM: ProductModel ID->"+_productId);
             _description = productEntity1.getProductDescription();
             _cost = productEntity1.getProductCost();
             _duration = productEntity1.getProductDuration();
@@ -185,31 +187,31 @@ public class DetailedProduct extends AppCompatActivity {
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.steps_list, R.id.step, stepsList);
 
-        requestAgentBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        requestAgentBtn.setOnClickListener(v -> {
 
-                progress.setTitle("Agent Request");
-                progress.setMessage(agentRequestStatus);
-                progress.show();
+            progress.setTitle("Agent Request");
+            progress.setMessage(agentRequestStatus);
+            progress.show();
 
-                String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
+            String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
 
-                Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
+            Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
 
-                detailedProductViewModel.getProductEntityLiveDataById("5d8fa2db2af11a001758ca4a")
-                        .observe(DetailedProduct.this, productEntity1 -> {
-                            Log.e(TAG, "onClick: LIVE-DATA:->"+productEntity1.getProductName());
-                        });
+            detailedProductViewModel.getProductEntityLiveDataById("5d8fa2db2af11a001758ca4a") // TODO: 10/23/19 -> replace productID with dynamic val
+                    .observe(DetailedProduct.this, productEntity1 -> {
+//                        Log.e(TAG, "onClick: LIVE-DATA:->"+productEntity1.getProductName());
+                    });
 
-                if (jwt != null) {
-                    new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
-                        @Override
-                        public void done(@NotNull byte[] data, int code) {
-                            greenResponse = true;
-                            Log.e(TAG, "delegateService: Done->"+new String(data));
-                            progress.dismiss();
+            if (jwt != null) {
+                new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
+                    @Override
+                    public void done(@NotNull byte[] data, int code) {
+                        Log.e(TAG, "delegatedService: Done->"+new String(data));
+                        Log.e(TAG, "delegatedService: Status Code->"+code);
 
+                        progress.dismiss();
+
+                        if (code == 200){
                             try {
                                 agentDelegate = new JSONObject(new String(data));
                                 agentName = agentDelegate.getString("name");
@@ -219,19 +221,17 @@ public class DetailedProduct extends AppCompatActivity {
                                 agentRequestDialog.setTitle("Agent Delegate");
 //                                agentRequestDialog.setIcon()
                                 agentRequestDialog.setMessage(agentName+ " is available...");
-                                agentRequestDialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        agentRequestStatus = "Waiting for a response from "+agentName+"...";
-                                        ProgressDialog progress = new ProgressDialog(DetailedProduct.this);
-                                        progress.setTitle("Agent Request");
-                                        progress.setMessage(agentRequestStatus);
-                                        progress.show();
+                                agentRequestDialog.setPositiveButton("Continue", (dialog, which) -> {
+                                    agentRequestStatus = "Waiting for a response from "+agentName+"...";
+                                    ProgressDialog progress = new ProgressDialog(DetailedProduct.this);
+                                    progress.setTitle("Agent Request");
+                                    progress.setMessage(agentRequestStatus);
+                                    progress.show(); // TODO: 10/22/19 -> handle leaking window
+                                    editor.clear(); //Removing old key-values from a previous session
 
-                                        editor.putString("DELEGATED_AGENT", agentName);
-                                        editor.putString("DELEGATED_PRODUCT", _productId);
-                                        editor.apply();
-                                    }
+                                    editor.putString("DELEGATED_AGENT", agentName);
+                                    editor.putString("DELEGATED_PRODUCT", _productId);
+                                    editor.apply();
                                 });
                                 agentRequestDialog.show();
 
@@ -243,27 +243,25 @@ public class DetailedProduct extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-//                            progress.setMessage(getResources().getString(R.string.loading_agent_message));
+                        } else if (code == 500){
+                            Log.e(TAG, "done: Status Code 500!!!");
+
+                            Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
+
+                            agentNotFoundDialog.setTitle("Agent Delegate");
+                            agentNotFoundDialog.setMessage("No Agent currently available.");
+                            agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
+                                Log.e(TAG, "done: Dismissed!");
+                                requestAgentBtn.setText("RETRY AGENT REQUEST");
+                            });
+                            agentNotFoundDialog.show();
+
                         }
-                    };
-                }
+//                            progress.setMessage(getResources().getString(R.string.loading_agent_message));
+                    }
+                };
             }
         });
-
-        /*int totalHeight = 0;
-        for (int i = 0; i < arrayAdapter.getCount(); i++) {
-            View listItem = arrayAdapter.getView(i, null, stepsList);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams lp = stepsList.getLayoutParams();
-        int height = totalHeight;
-
-        lp.height = height;
-        stepsList.setLayoutParams(lp);
-
-        stepsList.setAdapter(arrayAdapter);*/
 
         mCollapsingToolbarLayout.setTitle(_serviceName);
         mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
@@ -277,12 +275,9 @@ public class DetailedProduct extends AppCompatActivity {
 
         progress.dismiss();
 
-        agentRequestDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Log.e(TAG, "onPause: onDialogDismiss!");
-            }
-        });
+        agentRequestDialog.setOnDismissListener(dialog -> Log.e(TAG, "onPause: onDialogDismiss!"));
+
+        agentNotFoundDialog.setOnDismissListener(dialog -> Log.e(TAG, "onPause: onDialogDismiss!"));
         finish();
     }
 

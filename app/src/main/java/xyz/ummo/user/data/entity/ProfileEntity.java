@@ -5,10 +5,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import xyz.ummo.user.data.model.Profile;
+import xyz.ummo.user.data.model.ProfileModel;
 
 @Entity(tableName = "profile")
-public class ProfileEntity implements Profile {
+public class ProfileEntity implements ProfileModel {
     @NonNull
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "profile_id")

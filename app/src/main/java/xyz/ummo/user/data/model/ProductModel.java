@@ -2,7 +2,7 @@ package xyz.ummo.user.data.model;
 
 import java.util.ArrayList;
 
-public interface Product {
+public interface ProductModel {
     String getProductId();
     String getProductName();
     String getProductDescription();

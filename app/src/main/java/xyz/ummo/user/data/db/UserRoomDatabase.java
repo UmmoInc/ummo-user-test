@@ -12,8 +12,10 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import xyz.ummo.user.data.dao.ProfileDao;
+import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
+import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.utils.Converters;
 //import xyz.ummo.user.data.dao.AgentDao;
 import xyz.ummo.user.data.dao.DelegatedServiceDao;
@@ -29,7 +31,8 @@ import static androidx.room.Room.databaseBuilder;
 @Database(entities = {
         DelegatedServiceEntity.class,
         ProductEntity.class,
-        ProfileEntity.class}, version = 1, exportSchema = false)
+        ProfileEntity.class,
+        ServiceProviderEntity.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";
@@ -38,6 +41,7 @@ public abstract class UserRoomDatabase extends RoomDatabase {
     public abstract ProfileDao profileDao();
     public abstract DelegatedServiceDao delegatedServiceDao();
     public abstract ProductDao productDao();
+    public abstract ServiceProviderDao serviceProviderDao();
 //    public abstract ServiceProviderDao serviceProviderDao();
     private static volatile UserRoomDatabase INSTANCE;
 
@@ -101,13 +105,13 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         private final ProfileDao profileDao;
         private DelegatedServiceDao delegatedServiceDao;
         private ProductDao productDao;
-//        private ServiceProviderDao serviceProviderDao;
+        private ServiceProviderDao serviceProviderDao;
 
         private PopulateDbAsync(UserRoomDatabase userRoomDatabase){
             profileDao = userRoomDatabase.profileDao();
             delegatedServiceDao = userRoomDatabase.delegatedServiceDao();
             productDao = userRoomDatabase.productDao();
-//            serviceProviderDao = agentRoomDatabase.serviceProviderDao();
+            serviceProviderDao = userRoomDatabase.serviceProviderDao();
         }
 
         @Override

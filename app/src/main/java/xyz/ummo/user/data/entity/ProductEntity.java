@@ -6,12 +6,11 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import xyz.ummo.user.data.model.Product;
+import xyz.ummo.user.data.model.ProductModel;
 
 @Entity(tableName = "product")
-public class ProductEntity implements Product {
+public class ProductEntity implements ProductModel {
     @NonNull
     @PrimaryKey()
     @ColumnInfo(name = "product_id")

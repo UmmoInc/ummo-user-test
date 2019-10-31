@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import xyz.ummo.user.data.entity.ProductEntity;
-import xyz.ummo.user.data.model.Product;
 import xyz.ummo.user.data.repo.AppRepository;
 
 public class DetailedProductViewModel extends AndroidViewModel {

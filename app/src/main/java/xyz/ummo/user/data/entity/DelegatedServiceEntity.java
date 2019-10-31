@@ -5,14 +5,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-
-import xyz.ummo.user.data.model.DelegatedService;
+import xyz.ummo.user.data.model.DelegatedServiceModel;
 
 @Entity(tableName = "delegated_service")
-public class DelegatedServiceEntity implements DelegatedService {
+public class DelegatedServiceEntity implements DelegatedServiceModel {
 
     @NonNull
     @PrimaryKey()
@@ -30,7 +26,6 @@ public class DelegatedServiceEntity implements DelegatedService {
     @NonNull
     @ColumnInfo(name = "delegated_product_id")
     private String delegatedProductId;
-
 
     @ColumnInfo(name = "service_agent_id")
     private String serviceAgentId;

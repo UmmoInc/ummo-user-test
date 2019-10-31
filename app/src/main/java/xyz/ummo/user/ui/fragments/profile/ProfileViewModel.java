@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import xyz.ummo.user.data.entity.ProfileEntity;
-import xyz.ummo.user.data.model.Profile;
 import xyz.ummo.user.data.repo.AppRepository;
 
 public class ProfileViewModel extends AndroidViewModel {
