@@ -120,4 +120,9 @@
     <string name="nav_drawer_my_profile">My Profile</string>
     <string name="nav_drawer_home">Home</string>
 
+    <!--    Bottom Navigation Title-->
+    <string name="home_title">Home</string>
+    <string name="request_agent_title">Get agent</string>
+    <string name="chats_title">Chats</string>
+
 </resources>

@@ -17,11 +17,7 @@ import androidx.fragment.app.Fragment
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.HomeFragment
-import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
-import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
 import android.os.Handler
 import android.util.Log
@@ -34,8 +30,10 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 
@@ -150,6 +148,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             CURRENT_TAG = TAG_HOME
 
         }
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
     override fun onBackPressed() {
@@ -319,6 +320,33 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState()
+    }
+
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                val homeFragment = HomeFragment()
+                openFragment(homeFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_get_agent -> {
+                val getAgent = GetAgent()
+                openFragment(getAgent)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_chats-> {
+                val delegatedServiceFragment = DelegatedServicesFragment()
+                openFragment(delegatedServiceFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
+    private fun openFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame, fragment)
+        transaction.commit()
     }
 
     fun setAnyServiceInProgress(anyServiceInProgress: Boolean) {
