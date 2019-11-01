@@ -16,6 +16,9 @@ abstract class PublicService(val activity:Activity) {
     init {
         Fuel.get("/public-service")
                 .response { request, response, result ->
+                    if(response.statusCode!=200){
+                        return@response done(fromJSONList(JSONArray("[]")),response.statusCode)
+                    }
                     try {
                         activity.runOnUiThread(Runnable {
 
