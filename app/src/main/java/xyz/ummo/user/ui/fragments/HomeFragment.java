@@ -235,6 +235,8 @@ public class HomeFragment extends Fragment {
             new PublicService(Objects.requireNonNull(getActivity())){
                 @Override
                 public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                    serviceProviderList.clear();
+
                     for (int i = 0; i < data.size(); i++) {
                         serviceProviderList.add(data.get(i));
                         count[0]++;
@@ -277,7 +279,12 @@ public class HomeFragment extends Fragment {
                 serviceProviderList.add(publicServiceData);
             }
 
-        });
+            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                serviceProviderAdapter.notifyDataSetChanged();
+                Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Showing offline data", Snackbar.LENGTH_SHORT).show();
+            });
 
+        });
     }
 }

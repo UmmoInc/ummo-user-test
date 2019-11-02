@@ -17,11 +17,7 @@ import androidx.fragment.app.Fragment
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.HomeFragment
-import xyz.ummo.user.ui.fragments.DelegatedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
-import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
 
 import android.os.Handler
 import android.util.Log
@@ -33,11 +29,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.snackbar.Snackbar
+
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
-import java.util.*
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -58,6 +55,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
+
     // flag to load home fragment when user presses back key
     private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
@@ -70,6 +68,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         title = "Ummo"
+        supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
 
@@ -149,6 +148,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             CURRENT_TAG = TAG_HOME
 
         }
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
     override fun onBackPressed() {
@@ -170,7 +172,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             R.id.nav_profile -> selectedFragment = ProfileFragment()
             R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
             R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_delegated_service -> selectedFragment = DelegatedServiceFragment()
+            R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
         }
 
         if (selectedFragment != null) {
@@ -287,7 +289,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             4 -> {
                 // legal terms fragment
-                return DelegatedServiceFragment()
+
+                return DelegatedServicesFragment()
             }
 
             else -> return HomeFragment(data)
@@ -317,6 +320,33 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState()
+    }
+
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                val homeFragment = HomeFragment()
+                openFragment(homeFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_get_agent -> {
+                val getAgent = GetAgent()
+                openFragment(getAgent)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_chats-> {
+                val delegatedServiceFragment = DelegatedServicesFragment()
+                openFragment(delegatedServiceFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
+    private fun openFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame, fragment)
+        transaction.commit()
     }
 
     fun setAnyServiceInProgress(anyServiceInProgress: Boolean) {
@@ -407,6 +437,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         // prefManager.unSetFirstTimeLaunch();
     }
 
+
     companion object {
         // tags used to attach the fragments
         private val TAG_HOME = "home"
@@ -415,6 +446,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         private val TAG_SERVICE_HISTORY = "serviceHistory"
         private val TAG_LEGAL_TERMS = "legalTerms"
         var CURRENT_TAG = TAG_HOME
+        lateinit var supportFM : FragmentManager
 
         // index to identify current nav menu item
         var navItemIndex = 0

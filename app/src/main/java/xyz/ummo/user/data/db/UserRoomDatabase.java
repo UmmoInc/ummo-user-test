@@ -32,7 +32,7 @@ import static androidx.room.Room.databaseBuilder;
         DelegatedServiceEntity.class,
         ProductEntity.class,
         ProfileEntity.class,
-        ServiceProviderEntity.class}, version = 1, exportSchema = false)
+        ServiceProviderEntity.class}, version = 2, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";
@@ -66,6 +66,7 @@ public abstract class UserRoomDatabase extends RoomDatabase {
                         UserRoomDatabase.class,
                         "user_database")
                         .addCallback(roomDatabaseCallback)
+                        .fallbackToDestructiveMigration()
                         .build();
             }
         }

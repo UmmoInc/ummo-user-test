@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.ArrayList;
+
 import xyz.ummo.user.data.model.DelegatedServiceModel;
 
 @Entity(tableName = "delegated_service")
@@ -19,9 +21,9 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
     @ColumnInfo(name = "service_name")
     private String serviceName;*/
 
-    /*@NonNull
+    @NonNull
     @ColumnInfo(name = "service_progress")
-    private ArrayList serviceProgress;*/
+    private ArrayList serviceProgress;
 
     @NonNull
     @ColumnInfo(name = "delegated_product_id")
@@ -64,7 +66,7 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
 //        this.serviceName = serviceName;
 //    }
 
-   /* @Override
+    @Override
     @NonNull
     public ArrayList getServiceProgress() {
         return serviceProgress;
@@ -72,7 +74,7 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
 
     public void setServiceProgress(@NonNull ArrayList serviceProgress) {
         this.serviceProgress = serviceProgress;
-    }*/
+    }
 
     @Override
     @NonNull

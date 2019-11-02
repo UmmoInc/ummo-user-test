@@ -1,6 +1,7 @@
 package xyz.ummo.user.adapters;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.DelegationChat;
 import xyz.ummo.user.R;
+import xyz.ummo.user.ui.MainScreen;
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment;
 
 public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServiceAdapter.MyViewHolder>{
 
@@ -60,12 +64,19 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
         holder.serviceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(holder.itemView.getContext(), DelegationChat.class);
-                intent.putExtra("agentName", agentName);
-                intent.putExtra("serviceName", serviceName);
-                intent.putExtra("SERVICE_ID", delegatedService.getServiceId());
-                Log.e("SERVICE_ID", delegatedService.getAgentName());
-                holder.itemView.getContext().startActivity(intent);
+                DelegatedServiceFragment delegatedServiceFragment = new DelegatedServiceFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("SERVICE_ID", delegatedService.getServiceId());
+                bundle.putString("SERVICE_AGENT_ID", delegatedService.getAgentId());
+                bundle.putString("DELEGATED_PRODUCT_ID", delegatedService.getProductId());
+//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+                delegatedServiceFragment.setArguments(bundle);
+
+                Log.e("DelegatedServiceAdapter", "onClick: "+ delegatedService.getAgentId()+" "+delegatedService.getProductId());
+
+                FragmentTransaction fragmentTransaction = MainScreen.Companion.getSupportFM().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, delegatedServiceFragment);
+                fragmentTransaction.commit();
             }
         });
 

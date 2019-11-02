@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;

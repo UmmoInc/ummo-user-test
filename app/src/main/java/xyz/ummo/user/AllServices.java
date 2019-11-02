@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import xyz.ummo.user.adapters.ServicesAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;

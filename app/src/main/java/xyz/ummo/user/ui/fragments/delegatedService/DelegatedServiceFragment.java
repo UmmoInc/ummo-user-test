@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -21,10 +23,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
 import xyz.ummo.user.DelegationChat;
+import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
+import xyz.ummo.user.data.repo.AppRepository;
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel;
 
 /**
@@ -49,6 +52,7 @@ public class DelegatedServiceFragment extends Fragment {
             delegatedProductNameTextView, delegatedProductDescriptionTextView,
             delegatedProductCostTextView, delegatedProductDurationTextView,
             delegatedServiceDocsTextView, delegatedServiceStepsTextView;
+    private ArrayList<TextView> stepaTV = new ArrayList<>();
 
     ArrayList<String> stepsList;
     ArrayList<String> docsList;
@@ -66,8 +70,15 @@ public class DelegatedServiceFragment extends Fragment {
     private DetailedProductViewModel detailedProductViewModel;
     private DelegatedServiceEntity delegatedServiceEntity = new DelegatedServiceEntity();
 
-    public DelegatedServiceFragment() {
+    public DelegatedServiceFragment(DelegatedServiceEntity entity) {
+
+            delegatedServiceEntity = entity;
+
         // Required empty public constructor
+    }
+
+    public DelegatedServiceFragment(){
+
     }
 
     /**
@@ -84,6 +95,7 @@ public class DelegatedServiceFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+        Log.e(TAG, "newInstance: Setargument"+args );
         fragment.setArguments(args);
         return fragment;
     }
@@ -104,13 +116,12 @@ public class DelegatedServiceFragment extends Fragment {
             serviceAgentId = getArguments().getString("SERVICE_AGENT_ID");
             delegatedProductId = getArguments().getString("DELEGATED_PRODUCT_ID");
 
-            delegatedServiceEntity.setServiceId(serviceId);
-            delegatedServiceEntity.setServiceAgentId(serviceAgentId);
-            delegatedServiceEntity.setDelegatedProductId(delegatedProductId);
-
             delegatedServiceViewModel = ViewModelProviders.of(this)
                     .get(DelegatedServiceViewModel.class);
-            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity);
+            Log.e(TAG, "onCreate: Service id"+serviceId );
+
+//            delegatedServiceEntity = delegatedServiceViewModel.getDelegatedServiceEntityLiveData();//getDelegatedServiceById(serviceId).getValue();
+
 
             detailedProductViewModel = ViewModelProviders.of(this)
                     .get(DetailedProductViewModel.class);
@@ -142,16 +153,13 @@ public class DelegatedServiceFragment extends Fragment {
         delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
         delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout);
 
-        detailedProductViewModel.getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
+/*        detailedProductViewModel.getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
             Log.e(TAG, "onCreateView: DELEGATED_ID->"+delegatedProductEntity.getProductName());
-        });
-
-        delegatedServiceViewModel
-                .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
-            Log.e(TAG, "onCreateView: DelegatedServiceModel"+delegatedServiceEntity1.getServiceAgentId());
-        });
+        });*/
 
         detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(this, delegatedProductEntity -> {
+
+            productName = delegatedProductEntity.getProductName();
 
             Log.e(TAG, "onCreateView: DELEGATED PRODUCT->"+delegatedProductEntity.getProductName());
             delegatedProductNameTextView.setText(delegatedProductEntity.getProductName());
@@ -162,7 +170,7 @@ public class DelegatedServiceFragment extends Fragment {
             docsList = new ArrayList<>(delegatedProductEntity.getProductDocuments());
             stepsList = new ArrayList<>(delegatedProductEntity.getProductSteps());
             if (!docsList.isEmpty()){
-
+                delegatedProductDocsLayout.removeAllViews();
                 for (int i = 0; i < docsList.size(); i++){
                     delegatedServiceDocsTextView = new TextView(getContext());
                     delegatedServiceDocsTextView.setId(i);
@@ -173,17 +181,44 @@ public class DelegatedServiceFragment extends Fragment {
             }
 
             if (!stepsList.isEmpty()){
-
+                delegatedProductStepsLayout.removeAllViews();
+                stepaTV.clear();
                 for (int i = 0; i < stepsList.size(); i++){
                     delegatedServiceStepsTextView = new TextView(getContext());
                     delegatedServiceStepsTextView.setId(i);
                     delegatedServiceStepsTextView.setText(delegatedProductEntity.getProductSteps().get(i));
                     delegatedServiceStepsTextView.setTextSize(14);
                     delegatedProductStepsLayout.addView(delegatedServiceStepsTextView);
+                    stepaTV.add(delegatedServiceStepsTextView);
+
+                    delegatedServiceViewModel.getDelegatedServiceEntityLiveData().observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
+                        Log.e(TAG, "onCreateView: Steps "+delegatedServiceEntity1.getServiceProgress()+ " "+ delegatedServiceStepsTextView.getText().toString());
+
+                        if (delegatedServiceEntity1.getServiceProgress().contains( delegatedServiceStepsTextView.getText().toString())){
+                            Log.e(TAG, "onCreateView: Cross" );
+                            delegatedServiceStepsTextView.setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        }
+
+                    });
                 }
             }
-        });
 
+            delegatedServiceViewModel.getDelegatedServiceById(serviceId).observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
+                ArrayList<String> progress = delegatedServiceEntity1.getServiceProgress();
+                //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepaTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
+                for (int i = 0; i < stepaTV.size(); i++) {
+                    stepaTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                }
+
+                for (int i = 0; i < progress.size(); i++) {
+                    for (int j = 0; j < stepaTV.size(); j++) {
+                        if(progress.contains(stepaTV.get(j).getText().toString())){
+                            stepaTV.get(j).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        }
+                    }
+                }
+            });
+        });
         return view;
     }
 
@@ -196,10 +231,12 @@ public class DelegatedServiceFragment extends Fragment {
             delegatedServiceEntity1.getServiceId();
         });
 
-        detailedProductViewModel
-                .getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
-            Log.e(TAG, "onCreateView: DELEGATED_ID->"+delegatedProductEntity.getProductName());
-            productName = delegatedProductEntity.getProductName();
+        openChat.setOnClickListener(v -> {
+            Intent chatIntent = new Intent(getActivity(), DelegationChat.class);
+            chatIntent.putExtra("AGENT_NAME", agentName);
+            chatIntent.putExtra("SERVICE_ID", serviceId);
+            chatIntent.putExtra("SERVICE_NAME", productName);
+            startActivity(chatIntent);
         });
 
         SharedPreferences delegatedServiceFragPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
@@ -208,14 +245,6 @@ public class DelegatedServiceFragment extends Fragment {
             serviceId = getArguments().getString("SERVICE_ID");
             agentName = delegatedServiceFragPrefs.getString("DELEGATED_AGENT","");
         }
-
-        openChat.setOnClickListener(v -> {
-            Intent chatIntent = new Intent(getActivity(), DelegationChat.class);
-            chatIntent.putExtra("AGENT_NAME", agentName);
-            chatIntent.putExtra("SERVICE_ID", serviceId);
-            chatIntent.putExtra("SERVICE_NAME", productName);
-            startActivity(chatIntent);
-        });
     }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

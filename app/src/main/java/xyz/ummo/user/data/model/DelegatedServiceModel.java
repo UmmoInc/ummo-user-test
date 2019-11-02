@@ -8,6 +8,7 @@ public interface DelegatedServiceModel {
 //    String getServiceName();
     String getServiceId();
     String getDelegatedProductId();
-//    ArrayList getServiceProgress();
+    ArrayList getServiceProgress();
     String getServiceAgentId();
+
 }

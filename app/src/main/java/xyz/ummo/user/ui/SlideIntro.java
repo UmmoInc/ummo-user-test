@@ -621,6 +621,7 @@ public class SlideIntro extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
+        Log.e(TAG, "launchHomeScreen: No Extras" );
         startActivity(new Intent(SlideIntro.this, MainScreen.class));
         finish();
     }
