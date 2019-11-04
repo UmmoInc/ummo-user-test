@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class DelegatedServiceFragment extends Fragment {
             delegatedProductNameTextView, delegatedProductDescriptionTextView,
             delegatedProductCostTextView, delegatedProductDurationTextView,
             delegatedServiceDocsTextView, delegatedServiceStepsTextView;
+    private ProgressBar progressBar;
     private ArrayList<TextView> stepaTV = new ArrayList<>();
 
     ArrayList<String> stepsList;
@@ -140,6 +142,7 @@ public class DelegatedServiceFragment extends Fragment {
         agentNameTextView = view.findViewById(R.id.delegated_agent_name_text_view);
         agentStatusTextView = view.findViewById(R.id.delegated_agent_status_text_view);
         openChat = view.findViewById(R.id.open_chat_button);
+        progressBar =  view.findViewById(R.id.service_progress_bar);
 
         goToDelegationChat(view);
 
@@ -209,6 +212,10 @@ public class DelegatedServiceFragment extends Fragment {
                 for (int i = 0; i < stepaTV.size(); i++) {
                     stepaTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 }
+
+                progressBar.setProgress((progress.size()*100/stepaTV.size()));
+
+                Log.e(TAG, "onCreateView: "+ (progress.size()/stepaTV.size())*100);
 
                 for (int i = 0; i < progress.size(); i++) {
                     for (int j = 0; j < stepaTV.size(); j++) {
