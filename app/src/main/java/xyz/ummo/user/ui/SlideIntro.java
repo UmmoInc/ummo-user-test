@@ -117,7 +117,7 @@ public class SlideIntro extends AppCompatActivity {
                 .init();
 
         //Init ProfileViewModel
-        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+//        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
 
         //Init firebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();

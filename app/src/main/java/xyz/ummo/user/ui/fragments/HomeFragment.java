@@ -2,20 +2,20 @@ package xyz.ummo.user.ui.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,13 +23,10 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.engineio.client.Socket;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +40,6 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.delegate.PublicServiceData;
 import xyz.ummo.user.delegate.SocketIO;
-import xyz.ummo.user.delegate.User;
 import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 /**
@@ -70,12 +66,16 @@ public class HomeFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private Button requestAgent;
+    private Button requestAgent, reloadServicesButton;
 
     private ServiceProviderAdapter serviceProviderAdapter;
 
     private ArrayList<PublicServiceData> serviceProviderList= new ArrayList<>();
+    private RelativeLayout offlineLayout;
 
+    private volatile boolean stopThread;
+
+    private Handler homeHandler = new Handler();
     private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
     private ServiceProviderViewModel serviceProviderViewModel;
     private ProgressBar loadServicesProgressBar;
@@ -126,7 +126,8 @@ public class HomeFragment extends Fragment {
         final FragmentActivity c = getActivity(); // TODO: 10/16/19 -> rename `c`
         final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
         loadServicesProgressBar = view.findViewById(R.id.load_service_progress_bar);
-
+        reloadServicesButton = view.findViewById(R.id.reloadServicesButton);
+        offlineLayout = view.findViewById(R.id.offlineLayout);
 //        serviceProviderAdapter.addProduct();
         LinearLayoutManager layoutManager = new LinearLayoutManager(c, LinearLayoutManager.VERTICAL, true);
         recyclerView.setLayoutManager(layoutManager);
@@ -227,44 +228,47 @@ public class HomeFragment extends Fragment {
         final String[] serviceProviderTown = new String[1];
         final int[] count = {0};
 
+        Log.e(TAG, "addService: ADAPTER-COUNT [before SOCKET]->"+serviceProviderAdapter.getItemCount());
 
-        SocketIO.INSTANCE.getMSocket().on("connect", args -> {
+        SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
 
-            serviceProviderList.clear();
+            Log.e(TAG, "addService: ADAPTER-COUNT [after SOCKET]->"+serviceProviderAdapter.getItemCount());
 
-            new PublicService(Objects.requireNonNull(getActivity())){
-                @Override
-                public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
-                    serviceProviderList.clear();
+            stopTimerThread();
 
-                    for (int i = 0; i < data.size(); i++) {
-                        serviceProviderList.add(data.get(i));
-                        count[0]++;
-                        Log.e(TAG, "done: For-Loop: LIST-COUNT->"+ Arrays.toString(count));
+                serviceProviderList.clear();
+                new PublicService(Objects.requireNonNull(getActivity())){
+                    @Override
+                    public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                        serviceProviderList.clear();
 
-                    }
+                        for (int i = 0; i < data.size(); i++) {
+                            serviceProviderList.add(data.get(i));
+                            count[0]++;
+                            Log.e(TAG, "done: For-Loop: LIST-COUNT->"+ Arrays.toString(count));
+                        }
 
-                    if (count[0] == serviceProviderAdapter.getItemCount()){
-                        serviceProviderAdapter.notifyDataSetChanged();
-                        Log.e(TAG, "done: If-Check: LIST-COUNT->"+ Arrays.toString(count));
-                        Log.e(TAG, "done: ADAPTER-COUNT->"+serviceProviderAdapter.getItemCount());
+                        if (count[0] == serviceProviderAdapter.getItemCount()){
+                            serviceProviderAdapter.notifyDataSetChanged();
+                            Log.e(TAG, "done: If-Check: LIST-COUNT->"+ Arrays.toString(count));
+                            Log.e(TAG, "done: ADAPTER-COUNT->"+serviceProviderAdapter.getItemCount());
 
-                        Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                            loadServicesProgressBar.setVisibility(View.INVISIBLE);
-                            Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection restored", Snackbar.LENGTH_SHORT).show();
-                        });
-                    }
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                                loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                                Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection restored", Snackbar.LENGTH_SHORT).show();
+                            });
+                        }
 //                    serviceProviderList.addAll(data);
-                }
-            };
+                    }
+                };
+
         });
 
         SocketIO.INSTANCE.getMSocket().on("connect_error", args -> {
 
-            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                loadServicesProgressBar.setVisibility(View.VISIBLE);
-                Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection lost...", Snackbar.LENGTH_INDEFINITE).show();
-            });
+            Log.e(TAG, "addService: ADAPTER-COUNT [after ERR-SOCKET]->"+serviceProviderAdapter.getItemCount());
+
+            startTimerThread();
 
             serviceProviderList.clear();
 
@@ -279,12 +283,96 @@ public class HomeFragment extends Fragment {
                 serviceProviderList.add(publicServiceData);
             }
 
-            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+            (getActivity()).runOnUiThread(() -> {
                 loadServicesProgressBar.setVisibility(View.INVISIBLE);
                 serviceProviderAdapter.notifyDataSetChanged();
                 Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Showing offline data", Snackbar.LENGTH_SHORT).show();
             });
 
         });
+    }
+
+    private void reloadServiceProviders(){
+
+        reloadServicesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadServicesProgressBar.setVisibility(View.VISIBLE);
+                offlineLayout.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void startTimerThread(){
+        Log.e(TAG, "startTimerThread");
+
+        stopThread = false;
+        TimerRunnable timerRunnable = new TimerRunnable(20);
+        new Thread(timerRunnable).start();
+    }
+
+    private void stopTimerThread(){
+        Log.e(TAG, "stopTimerThread");
+
+        homeHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                offlineLayout.setVisibility(View.GONE);
+                loadServicesProgressBar.setVisibility(View.GONE);
+            }
+        });
+        stopThread = true;
+    }
+
+    class TimerRunnable implements Runnable{
+        int seconds;
+
+        TimerRunnable(int seconds){
+            this.seconds = seconds;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < seconds; i++) {
+
+                homeHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        serviceProviderList.clear();
+                        loadServicesProgressBar.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+                if (stopThread)
+                    return;
+
+                if (i == seconds-1){
+                    homeHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                            offlineLayout.setVisibility(View.VISIBLE);
+
+                            Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content),
+                                    "Connection lost...", Snackbar.LENGTH_SHORT).show();
+                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+//                                loadServicesProgressBar.setVisibility(View.VISIBLE);
+
+                            });
+                        }
+                    });
+
+                }
+                Log.e(TAG, "run: seconds->("+i+")");
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

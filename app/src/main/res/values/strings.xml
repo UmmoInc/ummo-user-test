@@ -124,5 +124,6 @@
     <string name="home_title">Home</string>
     <string name="request_agent_title">Get agent</string>
     <string name="chats_title">Chats</string>
+    <string name="retry_button_string">Retry</string>
 
 </resources>

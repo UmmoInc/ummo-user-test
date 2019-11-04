@@ -94,6 +94,7 @@ public class AppRepository {
                         insertProduct(productEntity);
 
                     }
+
                     SocketIO.INSTANCE.getMSocket().on("updated-service", new Emitter.Listener() {
                         @Override
                         public void call(Object... args) {
