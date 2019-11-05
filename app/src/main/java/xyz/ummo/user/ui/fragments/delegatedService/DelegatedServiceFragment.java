@@ -156,9 +156,7 @@ public class DelegatedServiceFragment extends Fragment {
         delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
         delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout);
 
-/*        detailedProductViewModel.getDelegatedProduct(false).observe(this, delegatedProductEntity ->{
-            Log.e(TAG, "onCreateView: DELEGATED_ID->"+delegatedProductEntity.getProductName());
-        });*/
+        Log.e(TAG, "onCreateView: New product id"+delegatedProductId);
 
         detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(this, delegatedProductEntity -> {
 

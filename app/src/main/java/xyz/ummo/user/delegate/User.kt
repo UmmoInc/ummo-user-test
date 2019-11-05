@@ -27,8 +27,6 @@ class User : Application() {
 
     //public var mSocket: Socket? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
-    private var delegatedServiceViewModel: DelegatedServiceViewModel? = null
-    private val delegatedServiceEntity = DelegatedServiceEntity()
 
     private fun initializeSocket(_id: String) {
         try {
@@ -84,15 +82,11 @@ class User : Application() {
                 val serviceId: String = JSONObject(it[0].toString()).getString("_id")
                 val delegatedProductId: String = JSONObject(it[0].toString()).getString("product")
                 val serviceAgentId: String = JSONObject(it[0].toString()).getString("agent")
-                val serviceProgress: ArrayList<String> = arrayListOf()//JSONArray = JSONObject(it[0].toString()).getJSONArray("progress")
+                val arr = JSONObject(it[0].toString()).getJSONArray("progress")
+                intent.putExtra("progress",arr.toString());
 //                val serviceName: String = JSONObject(it[0].toString()).getJSONArray("progress")
 
-                delegatedServiceEntity.serviceId = serviceId
-                delegatedServiceEntity.delegatedProductId = delegatedProductId
-                delegatedServiceEntity.serviceAgentId = serviceAgentId
-//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-                Log.e(TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
-                delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)
+
 
                 startActivity(intent)
             })
