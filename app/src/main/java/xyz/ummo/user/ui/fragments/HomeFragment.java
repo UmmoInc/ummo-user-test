@@ -226,45 +226,30 @@ public class HomeFragment extends Fragment {
         final String[] serviceProviderMunicipality = new String[1];
         final String[] serviceProviderProvince = new String[1];
         final String[] serviceProviderTown = new String[1];
-        final int[] count = {0};
+        reloadData();
 
         Log.e(TAG, "addService: ADAPTER-COUNT [before SOCKET]->"+serviceProviderAdapter.getItemCount());
 
-        SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
+        conectEmitter = SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
 
             Log.e(TAG, "addService: ADAPTER-COUNT [after SOCKET]->"+serviceProviderAdapter.getItemCount());
 
             stopTimerThread();
 
                 serviceProviderList.clear();
-                new PublicService(Objects.requireNonNull(getActivity())){
-                    @Override
-                    public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
-                        serviceProviderList.clear();
+                if(getActivity()==null){
+                    Log.e(TAG, "addServiceProviders: Weird, getAtivity returns null here ");
+                }
 
-                        for (int i = 0; i < data.size(); i++) {
-                            serviceProviderList.add(data.get(i));
-                            count[0]++;
-                            Log.e(TAG, "done: For-Loop: LIST-COUNT->"+ Arrays.toString(count));
-                        }
-
-                        if (count[0] == serviceProviderAdapter.getItemCount()){
-                            serviceProviderAdapter.notifyDataSetChanged();
-                            Log.e(TAG, "done: If-Check: LIST-COUNT->"+ Arrays.toString(count));
-                            Log.e(TAG, "done: ADAPTER-COUNT->"+serviceProviderAdapter.getItemCount());
-
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
-                                loadServicesProgressBar.setVisibility(View.INVISIBLE);
-                                Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content), "Connection restored", Snackbar.LENGTH_SHORT).show();
-                            });
-                        }
-//                    serviceProviderList.addAll(data);
-                    }
-                };
+                reloadData();
 
         });
 
-        SocketIO.INSTANCE.getMSocket().on("connect_error", args -> {
+         disconectEmitter = SocketIO.INSTANCE.getMSocket().on(Socket.EVENT_DISCONNECT, args -> {
+
+            if(getActivity()==null){
+                Log.e(TAG, "addServiceProviders: Weird two, getAtivity returns null here ");
+            }
 
             Log.e(TAG, "addService: ADAPTER-COUNT [after ERR-SOCKET]->"+serviceProviderAdapter.getItemCount());
 
@@ -374,5 +359,23 @@ public class HomeFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void reloadData(){
+        new PublicService(getActivity()){
+            @Override
+            public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
+                serviceProviderList.clear();
+                serviceProviderList.addAll(data);
+                serviceProviderAdapter.notifyDataSetChanged();
+                Log.e(TAG, "done: ADAPTER-COUNT->"+"serviceProviderAdapter.getItemCount()");
+
+                getActivity().runOnUiThread(() -> {
+                    loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                });
+//                    serviceProviderList.addAll(data);
+            }
+        };
+
     }
 }
