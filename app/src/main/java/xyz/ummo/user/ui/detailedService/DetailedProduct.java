@@ -134,14 +134,8 @@ public class DetailedProduct extends AppCompatActivity {
             _description = productEntity1.getProductDescription();
             _cost = productEntity1.getProductCost();
             _duration = productEntity1.getProductDuration();
-//        stepsList = getIntent().getStringArrayListExtra("steps");
-//        docsList = getIntent().getStringArrayListExtra("docs");
 
             stepsList = new ArrayList<>(productEntity1.getProductSteps());
-            /*
-            for (int i = 0; i < productEntity1.getProductDocuments().size(); i++){
-                _docs = productEntity1.getProductDocuments().get(i);
-            }*/
 
             docsList = new ArrayList<>(productEntity1.getProductDocuments());
 
@@ -152,7 +146,7 @@ public class DetailedProduct extends AppCompatActivity {
             serviceDurationTextView.setText(_duration);
 
                 if (!stepsList.isEmpty()){
-
+                    serviceStepsLayout.removeAllViews();
                     for (int i = 0; i<stepsList.size(); i++){
                         Log.e(TAG, "onCreate: stepsList->"+stepsList);
                         serviceStepsTextView = new TextView(getApplicationContext());
@@ -166,7 +160,7 @@ public class DetailedProduct extends AppCompatActivity {
                 }
 
                 if (!docsList.isEmpty()){
-
+                    serviceDocsLayout.removeAllViews();
                     for (int i = 0; i<docsList.size(); i++){
                         Log.e(TAG, "onCreate: docsList->"+docsList);
                         serviceDocsTextView = new TextView(getApplicationContext());
@@ -197,10 +191,6 @@ public class DetailedProduct extends AppCompatActivity {
 
             Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
 
-            detailedProductViewModel.getProductEntityLiveDataById("5d8fa2db2af11a001758ca4a") // TODO: 10/23/19 -> replace productID with dynamic val
-                    .observe(DetailedProduct.this, productEntity1 -> {
-//                        Log.e(TAG, "onClick: LIVE-DATA:->"+productEntity1.getProductName());
-                    });
 
             if (jwt != null) {
                 new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
