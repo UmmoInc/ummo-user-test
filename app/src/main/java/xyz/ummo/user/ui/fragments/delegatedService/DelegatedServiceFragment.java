@@ -234,7 +234,7 @@ public class DelegatedServiceFragment extends Fragment {
 
         delegatedServiceViewModel
                 .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
-            Log.e(TAG, "goToDelegationChat: DelegatedServiceModel"+delegatedServiceEntity1.getDelegatedProductId());
+//            Log.e(TAG, "goToDelegationChat: DelegatedServiceModel"+delegatedServiceEntity1.getDelegatedProductId());
             delegatedServiceEntity1.getServiceId();
         });
 

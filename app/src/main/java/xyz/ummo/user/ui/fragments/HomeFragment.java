@@ -74,6 +74,7 @@ public class HomeFragment extends Fragment {
     private RelativeLayout offlineLayout;
 
     private volatile boolean stopThread;
+    RecyclerView recyclerView;
 
     private Handler homeHandler = new Handler();
     private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
@@ -124,7 +125,7 @@ public class HomeFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         final FragmentActivity c = getActivity(); // TODO: 10/16/19 -> rename `c`
-        final RecyclerView recyclerView = view.findViewById(R.id.service_provider_rv);
+        recyclerView = view.findViewById(R.id.service_provider_rv);
         loadServicesProgressBar = view.findViewById(R.id.load_service_progress_bar);
         reloadServicesButton = view.findViewById(R.id.reloadServicesButton);
         offlineLayout = view.findViewById(R.id.offlineLayout);
@@ -319,6 +320,7 @@ public class HomeFragment extends Fragment {
             public void run() {
                 offlineLayout.setVisibility(View.GONE);
                 loadServicesProgressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
             }
         });
         stopThread = true;
@@ -344,7 +346,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-
                 if (stopThread)
                     return;
 
@@ -354,13 +355,14 @@ public class HomeFragment extends Fragment {
                         public void run() {
                             loadServicesProgressBar.setVisibility(View.INVISIBLE);
                             offlineLayout.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.GONE);
 
                             Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content),
                                     "Connection lost...", Snackbar.LENGTH_SHORT).show();
-                            Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                            /*Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
 //                                loadServicesProgressBar.setVisibility(View.VISIBLE);
 
-                            });
+                            });*/
                         }
                     });
 
