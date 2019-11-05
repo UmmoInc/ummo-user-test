@@ -27,6 +27,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
@@ -74,6 +76,9 @@ public class HomeFragment extends Fragment {
     private RelativeLayout offlineLayout;
 
     private volatile boolean stopThread;
+    Emitter conectEmitter = null;
+    Emitter disconectEmitter = null;
+
 
     private Handler homeHandler = new Handler();
     private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
@@ -133,6 +138,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(serviceProviderAdapter);
 
+
 //        requestAgent = view.findViewById(R.id.request_agent_btn);
 //
 //        requestAgent.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +194,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDetach() {
+        conectEmitter.off();
+        disconectEmitter.off();
         super.onDetach();
         mListener = null;
     }
