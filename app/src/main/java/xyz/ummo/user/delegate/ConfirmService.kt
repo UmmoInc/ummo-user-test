@@ -18,6 +18,6 @@ abstract class ConfirmService(context: Context, service_id:String) {
                         done(response.data,response.statusCode)
                     }
                 }
-    }
+}                                                           
     abstract fun done(data:ByteArray,code:Int)
 }
