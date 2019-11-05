@@ -29,12 +29,19 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import org.json.JSONArray
+import org.json.JSONException
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import java.util.ArrayList
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,6 +67,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
     private val mode = Activity.MODE_PRIVATE
+    private val delegatedServiceEntity = DelegatedServiceEntity()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,12 +93,33 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         if(startFragmentExtra == 1){
             Log.e(TAG, "Starting DelegatedServiceFrag!")
             val delegatedServiceFragment = DelegatedServiceFragment()
+            val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
+            val serviceAgentId =   intent.extras!!.getString("SERVICE_AGENT_ID")
+            var progress = ArrayList<String>();
+            try {
+                progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
+            }catch (jse:JSONException ){
+                Log.e("ISSUE with progress",jse.toString())
+            }
+
             val bundle = Bundle()
-            bundle.putString("SERVICE_ID", intent.extras!!.getString("SERVICE_ID"))
-            bundle.putString("SERVICE_AGENT_ID", intent.extras!!.getString("SERVICE_AGENT_ID"))
-            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+            val serviceId = intent.extras!!.getString("SERVICE_ID")
+            bundle.putString("SERVICE_ID", serviceId)
+            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
+            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
 //            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
             delegatedServiceFragment.arguments = bundle
+            val delegatedServiceViewModel = ViewModelProvider(this).get(DelegatedServiceViewModel::class.java)
+
+            delegatedServiceEntity.serviceId = serviceId!!
+            delegatedServiceEntity.delegatedProductId = delegatedProductId!!
+            delegatedServiceEntity.serviceAgentId = serviceAgentId
+            delegatedServiceEntity.serviceProgress =progress
+
+
+//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
+            Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
             val fragmentTransaction = supportFragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
@@ -152,6 +183,20 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
+
+    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
+        try {
+            val tbr = ArrayList<String>()
+            for (i in 0 until arr.length()) {
+                tbr.add(arr.getString(i))
+            }
+            return tbr
+        } catch (e: JSONException) {
+            return ArrayList()
+        }
+
+    }
+
 
     override fun onBackPressed() {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
