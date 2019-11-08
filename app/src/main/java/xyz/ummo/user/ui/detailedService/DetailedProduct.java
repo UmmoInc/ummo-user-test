@@ -233,7 +233,7 @@ public class DetailedProduct extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        } else if (code == 500){
+                        } else if (code == 404){
                             Log.e(TAG, "done: Status Code 500!!!");
 
                             Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
@@ -246,6 +246,18 @@ public class DetailedProduct extends AppCompatActivity {
                             });
                             agentNotFoundDialog.show();
 
+                        }else{
+                            Log.e(TAG, "done: Status Code 500!!!");
+
+                            Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
+
+                            agentNotFoundDialog.setTitle("Agent Delegate");
+                            agentNotFoundDialog.setMessage("We honestly don't know what happened, please check if there is internet");
+                            agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
+                                Log.e(TAG, "done: Dismissed!");
+                                requestAgentBtn.setText("RETRY AGENT REQUEST");
+                            });
+                            agentNotFoundDialog.show();
                         }
 //                            progress.setMessage(getResources().getString(R.string.loading_agent_message));
                     }
