@@ -80,12 +80,13 @@ public class HomeFragment extends Fragment {
     Emitter disconectEmitter = null;
     RecyclerView recyclerView;
 
-
     private Handler homeHandler = new Handler();
     private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
     private ServiceProviderViewModel serviceProviderViewModel;
     private ProgressBar loadServicesProgressBar;
+
     public HomeFragment(){}
+
     public HomeFragment(List<PublicServiceData> data) {
         // Required empty public constructor
         _data = data;
@@ -139,6 +140,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(serviceProviderAdapter);
 
+        reloadServiceProviders(view);
 
 //        requestAgent = view.findViewById(R.id.request_agent_btn);
 //
@@ -195,8 +197,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        conectEmitter.off();
-        disconectEmitter.off();
+        conectEmitter.off(Socket.EVENT_CONNECT);
+        disconectEmitter.off(Socket.EVENT_DISCONNECT);
         super.onDetach();
         mListener = null;
     }
@@ -251,7 +253,6 @@ public class HomeFragment extends Fragment {
                 }
 
                 reloadData();
-
         });
 
          disconectEmitter = SocketIO.INSTANCE.getMSocket().on(Socket.EVENT_DISCONNECT, args -> {
@@ -286,14 +287,13 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void reloadServiceProviders(){
+    private void reloadServiceProviders(View view){
 
-        reloadServicesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadServicesProgressBar.setVisibility(View.VISIBLE);
-                offlineLayout.setVisibility(View.GONE);
-            }
+        reloadServicesButton = view.findViewById(R.id.reloadServicesButton);
+        reloadServicesButton.setOnClickListener(v -> {
+            loadServicesProgressBar.setVisibility(View.VISIBLE);
+            offlineLayout.setVisibility(View.GONE);
+            reloadData();
         });
     }
 
@@ -386,6 +386,5 @@ public class HomeFragment extends Fragment {
 //                    serviceProviderList.addAll(data);
             }
         };
-
     }
 }

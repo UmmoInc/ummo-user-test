@@ -69,6 +69,7 @@ class User : Application() {
             })
 
             SocketIO.mSocket?.on("service-created", Emitter.Listener {
+                Log.e(TAG, "service-created ENDING HERE!")
                 val intent = Intent(this, MainScreen::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 //                Log.e(TAG, "Service-Created: IT->"+JSONObject(it[0].toString()))

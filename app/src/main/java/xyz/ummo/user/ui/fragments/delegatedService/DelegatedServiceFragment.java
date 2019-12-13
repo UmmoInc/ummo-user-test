@@ -1,16 +1,20 @@
 package xyz.ummo.user.ui.fragments.delegatedService;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -22,14 +26,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import xyz.ummo.user.DelegationChat;
-import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
-import xyz.ummo.user.data.repo.AppRepository;
+import xyz.ummo.user.delegate.ConfirmService;
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel;
+import xyz.ummo.user.ui.serviceFeedback.Feedback;
+import xyz.ummo.user.ui.serviceIssue.ServiceIssue;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,7 +61,7 @@ public class DelegatedServiceFragment extends Fragment {
             delegatedProductCostTextView, delegatedProductDurationTextView,
             delegatedServiceDocsTextView, delegatedServiceStepsTextView;
     private ProgressBar progressBar;
-    private ArrayList<TextView> stepaTV = new ArrayList<>();
+    private ArrayList<TextView> stepsTV = new ArrayList<>();
 
     ArrayList<String> stepsList;
     ArrayList<String> docsList;
@@ -71,6 +78,8 @@ public class DelegatedServiceFragment extends Fragment {
     private DelegatedServiceViewModel delegatedServiceViewModel;
     private DetailedProductViewModel detailedProductViewModel;
     private DelegatedServiceEntity delegatedServiceEntity = new DelegatedServiceEntity();
+    private AlertDialog confirmReceiptDialog;
+    private Boolean hasConfirmed = false;
 
     public DelegatedServiceFragment(DelegatedServiceEntity entity) {
 
@@ -109,6 +118,9 @@ public class DelegatedServiceFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }*/
+
+        confirmReceiptDialog = new AlertDialog.Builder(getContext()).create();
+
         if (getArguments() != null) {
 
             SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
@@ -183,14 +195,14 @@ public class DelegatedServiceFragment extends Fragment {
 
             if (!stepsList.isEmpty()){
                 delegatedProductStepsLayout.removeAllViews();
-                stepaTV.clear();
+                stepsTV.clear();
                 for (int i = 0; i < stepsList.size(); i++){
                     delegatedServiceStepsTextView = new TextView(getContext());
                     delegatedServiceStepsTextView.setId(i);
                     delegatedServiceStepsTextView.setText(delegatedProductEntity.getProductSteps().get(i));
                     delegatedServiceStepsTextView.setTextSize(14);
                     delegatedProductStepsLayout.addView(delegatedServiceStepsTextView);
-                    stepaTV.add(delegatedServiceStepsTextView);
+                    stepsTV.add(delegatedServiceStepsTextView);
 
                     delegatedServiceViewModel.getDelegatedServiceEntityLiveData().observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
                         Log.e(TAG, "onCreateView: Steps "+delegatedServiceEntity1.getServiceProgress()+ " "+ delegatedServiceStepsTextView.getText().toString());
@@ -206,21 +218,74 @@ public class DelegatedServiceFragment extends Fragment {
 
             delegatedServiceViewModel.getDelegatedServiceById(serviceId).observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
                 ArrayList<String> progress = delegatedServiceEntity1.getServiceProgress();
-                //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepaTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
-                for (int i = 0; i < stepaTV.size(); i++) {
-                    stepaTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepsTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
+
+                /*
+                *This below 'for-loop' undoes the striking out of service steps (which should not be a likely scenario to occur)
+                */
+                for (int i = 0; i < stepsTV.size(); i++) {
+                    stepsTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 }
 
-                progressBar.setProgress((progress.size()*100/stepaTV.size()));
+                /*
+                 *This line below correlates the progress with the number of steps checked off
+                 */
 
-                Log.e(TAG, "onCreateView: "+ (progress.size()/stepaTV.size())*100);
+                int progressPercentage = (progress.size()/stepsTV.size())*100;
+                progressBar.setProgress((progress.size()*100/ stepsTV.size()));
 
+                Log.e(TAG, "onCreateView: %->"+ progressPercentage);
+
+                /*
+                 *This below 'for-loop' strikes out service steps (according to the agent's progress)
+                 */
                 for (int i = 0; i < progress.size(); i++) {
-                    for (int j = 0; j < stepaTV.size(); j++) {
-                        if(progress.contains(stepaTV.get(j).getText().toString())){
-                            stepaTV.get(j).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    for (int j = 0; j < stepsTV.size(); j++) {
+                        if(progress.contains(stepsTV.get(j).getText().toString())){
+                            stepsTV.get(j).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         }
+
+                        Log.e(TAG, "onCreateView: StepsTV.SIZE->"+stepsTV.size()+"Progress.SIZE->"+progress.size());
                     }
+                }
+
+                Log.e(TAG, "onCreateView: hasConfirmed->"+hasConfirmed);
+                if (progressPercentage == 100 && !hasConfirmed){
+                    getActivity().runOnUiThread(() -> {
+                        Log.e(TAG, "onCreateView: StepsTV.SIZE->"+stepsTV.size()+"Progress.SIZE->"+progress.size());
+
+                        confirmReceiptDialog.setTitle("Confirm Receipt");
+                        confirmReceiptDialog.setMessage("Please confirm that you have received the product...");
+                        confirmReceiptDialog.setButton(Dialog.BUTTON_POSITIVE, "Confirm", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new ConfirmService(getContext(),serviceId){
+                                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                                    @Override
+                                    public void done(@NotNull byte[] data, int code) {
+
+//                                        Log.e(TAG, "onClick: Confirmation done-1->"+ Arrays.toString(data));
+
+//                                        Log.e(TAG, "onCreateView: hasConfirmed->"+hasConfirmed);
+
+                                       hasConfirmed = true;
+                                       startActivity(new Intent(getContext(), Feedback.class));
+
+                                    }
+                                };
+                                confirmReceiptDialog.dismiss();
+                            }
+                        });
+                        confirmReceiptDialog.setButton(Dialog.BUTTON_NEGATIVE, "REJECT", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(getContext(), ServiceIssue.class));
+
+                                confirmReceiptDialog.dismiss();
+                            }
+                        });
+                        confirmReceiptDialog.show();
+                    });
                 }
             });
         });

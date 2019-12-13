@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,9 +41,9 @@ public class GetAgent extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    AllProductsAdapter allProductsAdapter;
-    RecyclerView productsRecyclerView;
-    ArrayList<Product> products = new ArrayList<>();
+    private AllProductsAdapter allProductsAdapter;
+    private RecyclerView productsRecyclerView;
+    private ArrayList<Product> products = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -96,7 +97,7 @@ public class GetAgent extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 //        if (context instanceof OnFragmentInteractionListener) {
 //            mListener = (OnFragmentInteractionListener) context;
@@ -144,8 +145,5 @@ public class GetAgent extends Fragment {
         product = new Product("Product 4", "Mbabane", "", "",
                 "", "", "", "", "");
         products.add(product);
-
-
-
     }
 }
