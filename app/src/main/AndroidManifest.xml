@@ -30,9 +30,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:overrideLibrary="com.mongodb.stitch.android">
-        <activity android:name=".ui.serviceIssue.ServiceIssue"></activity>
+        <activity android:name=".ui.serviceIssue.ServiceIssue">
+
+        </activity>
         <activity android:name=".ui.serviceFeedback.Feedback" />
-        <activity android:name=".Home" />
+        <!--<activity android:name=".ui.Home" />-->
         <activity
             android:name=".ui.SlideIntro"
             android:theme="@style/AppTheme.NoActionBar">
