@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import xyz.ummo.user.DelegatedService;
+import xyz.ummo.user.Progress;
 import xyz.ummo.user.R;
 import xyz.ummo.user.adapters.DelegatedServiceAdapter;
 import xyz.ummo.user.delegate.Service;
@@ -55,6 +57,7 @@ public class DelegatedServicesFragment extends Fragment {
     DelegatedServiceAdapter delegatedServiceAdapter;
 
     private OnFragmentInteractionListener mListener;
+    private ProgressBar loadDelegatedServicesProgressBar;
 
     public DelegatedServicesFragment() {
         // Required empty public constructor
@@ -97,6 +100,7 @@ public class DelegatedServicesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_delegated_services, container, false);
         recyclerView = view.findViewById(R.id.delegated_services_rv);
+        loadDelegatedServicesProgressBar = view.findViewById(R.id.load_delegated_services_progress_bar);
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getContext());
 
         int[] ATTRS = new int[]{android.R.attr.listDivider};
@@ -108,7 +112,7 @@ public class DelegatedServicesFragment extends Fragment {
         InsetDrawable insetDivider = new InsetDrawable(divider, insetLeft, 0, insetRight, 0);
         a.recycle();
 
-        //Set catergoryRecyclerView
+        //Set categoryRecyclerView
         recyclerView.setAdapter(delegatedServiceAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -192,6 +196,7 @@ public class DelegatedServicesFragment extends Fragment {
 
                             }
 
+                            loadDelegatedServicesProgressBar.setVisibility(View.GONE);
                             delegatedServiceAdapter.notifyDataSetChanged();
 
                         }catch (JSONException e){
