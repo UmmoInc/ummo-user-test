@@ -121,9 +121,15 @@
     <string name="nav_drawer_home">Home</string>
 
     <!--    Bottom Navigation Title-->
-    <string name="home_title">Home</string>
+    <string name="home_nav_title">Home</string>
     <string name="request_agent_title">Get agent</string>
     <string name="chats_title">Chats</string>
     <string name="retry_button_string">Retry</string>
+
+    <!-- Third-party Tokens-->
+    <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
+    <string name="retry_agent_request">RETRY AGENT REQUEST</string>
+    <string name="profile_nav_title">Profile</string>
+    <string name="assigned_nav_title">Assigned</string>
 
 </resources>
