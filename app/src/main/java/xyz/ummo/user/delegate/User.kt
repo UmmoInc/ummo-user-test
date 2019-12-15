@@ -1,32 +1,28 @@
 package xyz.ummo.user.delegate
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.preference.PreferenceManager
 import android.util.Base64
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
-import org.json.JSONArray
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
-
-import xyz.ummo.user.R.string.*
-import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
-import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import java.net.URISyntaxException
+
 
 class User : Application() {
 
     //public var mSocket: Socket? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
+    val MIXPANEL_TOKEN = "d787d12259b1db03ada420ec6bb9e5af"
 
     private fun initializeSocket(_id: String) {
         try {
@@ -54,6 +50,8 @@ class User : Application() {
     override fun onCreate() {
         super.onCreate()
         FuelManager.instance.basePath = getString(serverUrl)
+
+        val mixpanel = MixpanelAPI.getInstance(applicationContext, MIXPANEL_TOKEN)
 
         val jwt: String = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "")
 
@@ -87,8 +85,6 @@ class User : Application() {
                 intent.putExtra("progress",arr.toString());
 //                val serviceName: String = JSONObject(it[0].toString()).getJSONArray("progress")
 
-
-
                 startActivity(intent)
             })
 
@@ -99,10 +95,6 @@ class User : Application() {
             SocketIO.mSocket?.on("error", Emitter.Listener {
                 Log.e(TAG, "Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
             })
-
-            /*  SocketIO.mSocket?.on("message", Emitter.Listener {
-                  Log.e("Message",it[0].toString())
-              })*/
         }
 
         Log.e(TAG, "Application created - Server URL->${getString(serverUrl)}")

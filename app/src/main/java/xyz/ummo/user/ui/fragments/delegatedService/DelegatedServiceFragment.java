@@ -26,7 +26,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -170,7 +174,7 @@ public class DelegatedServiceFragment extends Fragment {
 
         Log.e(TAG, "onCreateView: New product id"+delegatedProductId);
 
-        detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(this, delegatedProductEntity -> {
+        detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(getViewLifecycleOwner(), delegatedProductEntity -> {
 
             productName = delegatedProductEntity.getProductName();
 
@@ -204,7 +208,7 @@ public class DelegatedServiceFragment extends Fragment {
                     delegatedProductStepsLayout.addView(delegatedServiceStepsTextView);
                     stepsTV.add(delegatedServiceStepsTextView);
 
-                    delegatedServiceViewModel.getDelegatedServiceEntityLiveData().observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
+                    delegatedServiceViewModel.getDelegatedServiceEntityLiveData().observe(getViewLifecycleOwner(), delegatedServiceEntity1 -> {
                         Log.e(TAG, "onCreateView: Steps "+delegatedServiceEntity1.getServiceProgress()+ " "+ delegatedServiceStepsTextView.getText().toString());
 
                         if (delegatedServiceEntity1.getServiceProgress().contains( delegatedServiceStepsTextView.getText().toString())){
@@ -216,7 +220,7 @@ public class DelegatedServiceFragment extends Fragment {
                 }
             }
 
-            delegatedServiceViewModel.getDelegatedServiceById(serviceId).observe(DelegatedServiceFragment.this, delegatedServiceEntity1 -> {
+            delegatedServiceViewModel.getDelegatedServiceById(serviceId).observe(getViewLifecycleOwner(), delegatedServiceEntity1 -> {
                 ArrayList<String> progress = delegatedServiceEntity1.getServiceProgress();
                 //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepsTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
 
@@ -296,12 +300,31 @@ public class DelegatedServiceFragment extends Fragment {
         openChat = view.findViewById(R.id.open_chat_button);
 
         delegatedServiceViewModel
-                .getDelegatedServiceByProductId(delegatedProductId).observe(this, delegatedServiceEntity1 -> {
+                .getDelegatedServiceByProductId(delegatedProductId).observe(getViewLifecycleOwner(), delegatedServiceEntity1 -> {
 //            Log.e(TAG, "goToDelegationChat: DelegatedServiceModel"+delegatedServiceEntity1.getDelegatedProductId());
             delegatedServiceEntity1.getServiceId();
         });
 
         openChat.setOnClickListener(v -> {
+
+            MixpanelAPI mixpanel =
+                    MixpanelAPI.getInstance(getContext(),
+                            getResources().getString(R.string.mixpanelToken));
+
+            JSONObject chatObject = new JSONObject();
+            try {
+                chatObject.put("agentName", agentName);
+                chatObject.put("serviceId", serviceId);
+                chatObject.put("serviceName", productName);
+
+                if (mixpanel != null) {
+                    mixpanel.track("openChatTapped", chatObject);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             Intent chatIntent = new Intent(getActivity(), DelegationChat.class);
             chatIntent.putExtra("AGENT_NAME", agentName);
             chatIntent.putExtra("SERVICE_ID", serviceId);

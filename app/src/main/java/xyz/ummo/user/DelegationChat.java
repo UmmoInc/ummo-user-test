@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.github.florent37.viewtooltip.ViewTooltip;
 import com.github.nkzawa.emitter.Emitter;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -62,6 +63,7 @@ public class DelegationChat extends AppCompatActivity {
     boolean myMessage = true;
     private List<ChatBubble> ChatBubbles= new ArrayList<ChatBubble>();
     private ArrayAdapter<ChatBubble> adapter;
+    private static final String TAG = "DelegationChat";
 
     @Override
     protected void onDestroy() {
@@ -74,8 +76,6 @@ public class DelegationChat extends AppCompatActivity {
       //  SocketIO.INSTANCE.getMSocket().off("message");
         super.onPause();
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,16 +107,14 @@ public class DelegationChat extends AppCompatActivity {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mAnimationManager = new ExpandOrCollapse();
-        confirmInitiationBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isVisible) {
+        confirmInitiationBox.setOnClickListener(v -> {
+            if (isVisible) {
 
-                    ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
-                    isVisible = false;
-                    rotate(-180);
+                ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
+                isVisible = false;
+                rotate(-180);
 
-                    if(!hasCheckedServiceInitConfirmation){
+                if(!hasCheckedServiceInitConfirmation){
 
 //                        ViewTooltip
 //                                .on(chatRoom)
@@ -124,18 +122,17 @@ public class DelegationChat extends AppCompatActivity {
 //                                .text(getResources().getString(R.string.follow_up_agent_string))
 //                                .show();
 
-                        hasCheckedServiceInitConfirmation = true;
-                    }
-
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
-
-                } else {
-
-                    ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
-                    isVisible = true;
-                    rotate(360);
+                    hasCheckedServiceInitConfirmation = true;
                 }
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+            } else {
+
+                ExpandOrCollapse.expand(confirmInitiationContentBox, 500);
+                isVisible = true;
+                rotate(360);
             }
         });
 //
@@ -159,26 +156,22 @@ public class DelegationChat extends AppCompatActivity {
         new GetService(this,service_id){
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            JSONObject obj = new JSONObject(new  String(data));
-                            Log.e("OBJ",obj.toString());
-                            JSONArray chatArr = obj.getJSONArray("chat");
-                            for (int i = 0;i<chatArr.length(); i++){
-                                JSONObject message = chatArr.getJSONObject(i);
-                                ChatBubble chatBubble = new ChatBubble(message.getString("message"), message.getString("from").equals("user"));
-                                ChatBubbles.add(chatBubble);
-                            }
-                            adapter.notifyDataSetChanged();
-
-
-                        }catch (JSONException e){
-                            Log.e("JSONE",e.toString());
+                runOnUiThread(() -> {
+                    try {
+                        JSONObject obj = new JSONObject(new  String(data));
+                        Log.e(TAG,obj.toString());
+                        JSONArray chatArr = obj.getJSONArray("chat");
+                        for (int i = 0;i<chatArr.length(); i++){
+                            JSONObject message = chatArr.getJSONObject(i);
+                            ChatBubble chatBubble = new ChatBubble(message.getString("message"), message.getString("from").equals("user"));
+                            ChatBubbles.add(chatBubble);
                         }
+                        adapter.notifyDataSetChanged();
 
+                    }catch (JSONException e){
+                        Log.e(TAG, "JSON-Exc"+e.toString());
                     }
+
                 });
 
             }
@@ -187,43 +180,58 @@ public class DelegationChat extends AppCompatActivity {
         SocketIO.INSTANCE.getMSocket().on("message", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                Log.e("Mess","Received");
+                Log.e(TAG,"Received");
                 try {
                     JSONObject message = new JSONObject(args[0].toString());
-                    Log.e("Mine","Equals"+message.getString("from").equals("agent"));
+                    Log.e(TAG,"Equals"+message.getString("from").equals("agent"));
                     ChatBubble chatBubble = new ChatBubble(message.getString("message"), message.getString("from").equals("user"));
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ChatBubbles.add(chatBubble);
-                            adapter.notifyDataSetChanged();
-                        }
+                    runOnUiThread(() -> {
+                        ChatBubbles.add(chatBubble);
+                        adapter.notifyDataSetChanged();
                     });
 
                 }catch (JSONException e){
-                    Log.e("MESSERR", e.toString());
+                    Log.e(TAG, "MESS-ERR"+ e.toString());
                 }
             }
         });
 
         //event for button SEND
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnSend.setOnClickListener(v -> {
 
-                if (editText.getText().toString().trim().equals("")) {
-                    Toast.makeText(DelegationChat.this, "Please input some text...", Toast.LENGTH_SHORT).show();
-                } else {
-                    new SendChatMessage(editText.getText().toString(),service_id){
-                        @Override
-                        public void done(@NotNull byte[] data, @NotNull Number code) {
-                            Log.e("SENT-MESSAGE",new String(data));
+            MixpanelAPI mixpanel =
+                    MixpanelAPI.getInstance(this,
+                            getResources().getString(R.string.mixpanelToken));
+
+            String message = editText.getText().toString().trim();
+
+            if (message.equals("")) {
+                Toast.makeText(DelegationChat.this, "Please input some text...", Toast.LENGTH_SHORT).show();
+            } else {
+                new SendChatMessage(message, service_id){
+                    @Override
+                    public void done(@NotNull byte[] data, @NotNull Number code) {
+
+                        JSONObject messageObject = new JSONObject();
+
+                        try {
+                            messageObject.put("message", message);
+                            messageObject.put("serviceId", service_id);
+
+                            if (mixpanel != null) {
+                                mixpanel.track("sendMessageTapped", messageObject);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    };
-                }
-                editText.setText("");
+
+                        Log.e(TAG, "SENT-MESSAGE->"+new String(data));
+                    }
+                };
             }
+            editText.setText("");
         });
     }
 

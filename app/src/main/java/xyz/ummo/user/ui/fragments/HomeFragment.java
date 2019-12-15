@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.android.material.snackbar.Snackbar;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -112,6 +113,15 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(getContext(),
+                        getResources().getString(R.string.mixpanelToken));
+
+        if (mixpanel != null) {
+            mixpanel.track("homeFragment");
+        }
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
