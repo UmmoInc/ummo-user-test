@@ -84,7 +84,10 @@ public class AppRepository {
                         ProductEntity productEntity = new ProductEntity();
                         productEntity.setIsDelegated(true);
                         productEntity.setProductCost(p.getJSONObject("requirements").getString("procurement_cost"));
-                        productEntity.setProductDescription(p.getString("product_description"));
+                        productEntity.setProductDescription("");
+                        if(p.has("product_description")){
+                            productEntity.setProductDescription(p.getString("product_description"));
+                        }
                         productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
                         productEntity.setProductDuration(p.getString("duration"));
                         productEntity.setProductId(p.getString("_id"));
