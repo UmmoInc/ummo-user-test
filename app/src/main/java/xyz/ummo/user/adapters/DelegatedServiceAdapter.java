@@ -14,6 +14,7 @@ import java.util.List;
 
 import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.DelegationChat;
+import xyz.ummo.user.Feedback;
 import xyz.ummo.user.R;
 
 public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServiceAdapter.MyViewHolder>{
@@ -60,11 +61,7 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
         holder.serviceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(holder.itemView.getContext(), DelegationChat.class);
-                intent.putExtra("agentName", agentName);
-                intent.putExtra("serviceName", serviceName);
-                intent.putExtra("SERVICE_ID", delegatedService.getServiceId());
-                Log.e("SERVICE_ID", delegatedService.getAgentName());
+                Intent intent = new Intent(holder.itemView.getContext(), Feedback.class);
                 holder.itemView.getContext().startActivity(intent);
             }
         });
