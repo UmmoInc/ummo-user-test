@@ -124,16 +124,18 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             val fragmentTransaction = supportFragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
             fragmentTransaction.commit()
-            return
-        }
+           // return
+        }else{
 
-        object : xyz.ummo.user.delegate.PublicService(this) {
-            override fun done(data: List<PublicServiceData>, code: Number) {
-                if (code == 200)
-                    loadHomeFragment(data)
-                //Do something with list of services
+            object : xyz.ummo.user.delegate.PublicService(this) {
+                override fun done(data: List<PublicServiceData>, code: Number) {
+                    if (code == 200)
+                        loadHomeFragment(data)
+                    //Do something with list of services
+                }
             }
         }
+
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -245,6 +247,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+
+        Log.e(TAG, "Navigation Item Selected: $id")
 
         if (id == R.id.nav_home) {
 
