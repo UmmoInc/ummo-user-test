@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import xyz.ummo.user.adapters.servicesAdapter;
+import xyz.ummo.user.adapters.ServicesAdapter;
 import xyz.ummo.user.delegate.GetProducts;
 import xyz.ummo.user.ui.MainScreen;
 
@@ -36,7 +36,7 @@ public class Services extends AppCompatActivity {
 
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
-    servicesAdapter adapter;
+    ServicesAdapter adapter;
     private ProgressDialog progress;
     private final static String TAG = "Services";
 
@@ -60,7 +60,7 @@ public class Services extends AppCompatActivity {
         Log.e("LOG","Oncreate");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
+        adapter = new ServicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
         recyclerView = findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);
@@ -126,7 +126,7 @@ public class Services extends AppCompatActivity {
                     servicesArrayList.clear();
                     for (int i = 0; i < productsJsonArray.length(); i++) {
                         JSONObject productJsonObject = productsJsonArray.getJSONObject(i);
-                        Log.e("Product",productJsonObject.toString());
+                        Log.e("ProductModel",productJsonObject.toString());
                         //TODO Service should be properly named as a product somewhere. I don't know why it was improperly named
                         // Can we stick to the conventions we had to keep our work simple. PS If anyone will ever read this comment
                         // I think we need to discuss this one
@@ -169,7 +169,7 @@ public class Services extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 }
                 Log.e("Adapter","Should update here");
-              //  adapter = new servicesAdapter(Services.this, servicesArrayList, getIntent().getStringExtra("departmentName"));
+              //  adapter = new ServicesAdapter(Services.this, servicesArrayList, getIntent().getStringExtra("departmentName"));
                 adapter.notifyDataSetChanged();
             }
         };

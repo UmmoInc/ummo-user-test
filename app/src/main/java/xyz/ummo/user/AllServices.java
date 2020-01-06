@@ -11,9 +11,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import xyz.ummo.user.adapters.servicesAdapter;
+import xyz.ummo.user.adapters.ServicesAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ public class AllServices extends AppCompatActivity {
 
     private ArrayList<Service> servicesArrayList = new ArrayList<>();
     private RecyclerView recyclerView;
-    servicesAdapter adapter;
+    ServicesAdapter adapter;
     private final static String TAG = "AllServices";
 
     @Override
@@ -40,7 +41,7 @@ public class AllServices extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
-        adapter = new servicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
+        adapter = new ServicesAdapter(this, servicesArrayList, getIntent().getStringExtra("departmentName"));
 
         recyclerView= findViewById(R.id.services_rv);
         recyclerView.setAdapter(adapter);

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import xyz.ummo.user.ui.fragments.ProfileFragment;
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment;
 
 import android.util.Log;
 import android.view.View;

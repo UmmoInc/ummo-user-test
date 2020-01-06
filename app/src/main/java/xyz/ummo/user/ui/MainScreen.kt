@@ -17,11 +17,7 @@ import androidx.fragment.app.Fragment
 
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.HomeFragment
-import xyz.ummo.user.ui.fragments.LegalTermsFragment
-import xyz.ummo.user.ui.fragments.ProfileFragment
-import xyz.ummo.user.ui.fragments.PaymentMethodsFragment
-import xyz.ummo.user.ui.fragments.ServiceHistoryFragment
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 
 import android.os.Handler
 import android.util.Log
@@ -31,8 +27,21 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import org.json.JSONArray
+import org.json.JSONException
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.ui.fragments.*
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import java.util.ArrayList
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -53,10 +62,14 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
+
     // flag to load home fragment when user presses back key
     private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
     private val mode = Activity.MODE_PRIVATE
+    private val delegatedServiceEntity = DelegatedServiceEntity()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,13 +78,64 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         title = "Ummo"
+        supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
-        object : xyz.ummo.user.delegate.PublicService(this) {
-            override fun done(data: List<PublicServiceData>, code: Number) {
-                loadHomeFragment(data)
-                //Do something with list of services
+
+
+        /*
+        * Starting DelegatedServiceFragment
+        * */
+
+        val startFragmentExtra : Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG",0)
+
+        Log.e(TAG, "StartingFragment->$startFragmentExtra")
+
+        if(startFragmentExtra == 1){
+            Log.e(TAG, "Starting DelegatedServiceFrag!")
+            val delegatedServiceFragment = DelegatedServiceFragment()
+            val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
+            val serviceAgentId =   intent.extras!!.getString("SERVICE_AGENT_ID")
+            var progress = ArrayList<String>();
+            try {
+                progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
+            }catch (jse:JSONException ){
+                Log.e("ISSUE with progress",jse.toString())
+            }
+
+            val bundle = Bundle()
+            val serviceId = intent.extras!!.getString("SERVICE_ID")
+            bundle.putString("SERVICE_ID", serviceId)
+            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
+            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
+//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+            delegatedServiceFragment.arguments = bundle
+            val delegatedServiceViewModel = ViewModelProvider(this).get(DelegatedServiceViewModel::class.java)
+
+            delegatedServiceEntity.serviceId = serviceId!!
+            delegatedServiceEntity.delegatedProductId = delegatedProductId!!
+            delegatedServiceEntity.serviceAgentId = serviceAgentId
+            delegatedServiceEntity.serviceProgress =progress
+
+
+//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
+            Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+            fragmentTransaction.commit()
+           // return
+        }else{
+
+            object : xyz.ummo.user.delegate.PublicService(this) {
+                override fun done(data: List<PublicServiceData>, code: Number) {
+                    if (code == 200)
+                        loadHomeFragment(data)
+                    //Do something with list of services
+                }
             }
         }
+
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -117,7 +181,24 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             CURRENT_TAG = TAG_HOME
 
         }
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
+
+    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
+        try {
+            val tbr = ArrayList<String>()
+            for (i in 0 until arr.length()) {
+                tbr.add(arr.getString(i))
+            }
+            return tbr
+        } catch (e: JSONException) {
+            return ArrayList()
+        }
+
+    }
+
 
     override fun onBackPressed() {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -138,7 +219,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             R.id.nav_profile -> selectedFragment = ProfileFragment()
             R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
             R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_legal_terms -> selectedFragment = LegalTermsFragment()
+            R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
         }
 
         if (selectedFragment != null) {
@@ -167,6 +248,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
+        Log.e(TAG, "Navigation Item Selected: $id")
+
         if (id == R.id.nav_home) {
 
         } else if (id == R.id.nav_profile) {
@@ -175,7 +258,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         } else if (id == R.id.nav_service_history) {
 
-        } else if (id == R.id.nav_legal_terms) {
+        } else if (id == R.id.nav_delegated_service) {
 
         }
 
@@ -228,12 +311,12 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 return HomeFragment(data)
             }
             1 -> {
-                // My Profile
+                // My ProfileModel
                 val myProfileFragment = ProfileFragment()
 
                 messageIconButton!!.visibility = View.GONE
                 circularProgressBarButton!!.visibility = View.GONE
-                title = "Profile"
+                title = "ProfileModel"
 
                 return myProfileFragment
             }
@@ -255,7 +338,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             4 -> {
                 // legal terms fragment
-                return LegalTermsFragment()
+
+                return DelegatedServicesFragment()
             }
 
             else -> return HomeFragment(data)
@@ -287,6 +371,33 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         actionBarDrawerToggle.syncState()
     }
 
+    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when (item.itemId) {
+            R.id.navigation_home -> {
+                val homeFragment = HomeFragment()
+                openFragment(homeFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_get_agent -> {
+                val getAgent = GetAgent()
+                openFragment(getAgent)
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_chats-> {
+                val delegatedServiceFragment = DelegatedServicesFragment()
+                openFragment(delegatedServiceFragment)
+                return@OnNavigationItemSelectedListener true
+            }
+        }
+        false
+    }
+
+    private fun openFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame, fragment)
+        transaction.commit()
+    }
+
     fun setAnyServiceInProgress(anyServiceInProgress: Boolean) {
         this.anyServiceInProgress = anyServiceInProgress
     }
@@ -304,7 +415,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         when (view.id) {
 
-            R.id.full_name -> {
+            R.id.profile_name -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your full name"
@@ -316,13 +427,13 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 toolBarTitle = "Enter your ID Number"
             }
 
-            R.id.contact -> {
+            R.id.profile_contact -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your phone number"
             }
 
-            R.id.email -> {
+            R.id.profile_email -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your email"
@@ -375,6 +486,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         // prefManager.unSetFirstTimeLaunch();
     }
 
+
     companion object {
         // tags used to attach the fragments
         private val TAG_HOME = "home"
@@ -383,6 +495,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         private val TAG_SERVICE_HISTORY = "serviceHistory"
         private val TAG_LEGAL_TERMS = "legalTerms"
         var CURRENT_TAG = TAG_HOME
+        lateinit var supportFM : FragmentManager
 
         // index to identify current nav menu item
         var navItemIndex = 0

@@ -8,45 +8,57 @@
     android:id="@+id/home_fragment"
     android:background="@color/White">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/White">
-
         <RelativeLayout
-            android:id="@+id/recyclerview_box"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/White">
+            android:layout_height="match_parent">
 
-            <it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow
-                android:id="@+id/coverflow"
-                coverflow:coverHeight="150dp"
-                coverflow:coverWidth="200dp"
-                coverflow:maxScaleFactor="1.35"
-                coverflow:reflectionGap="0px"
-                coverflow:rotationThreshold="0.5"
-                coverflow:scalingThreshold="0.5"
-                coverflow:spacing="0.6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/service_provider_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+                </androidx.recyclerview.widget.RecyclerView>
 
+                <ProgressBar
+                    android:id="@+id/load_service_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:visibility="visible">
+                </ProgressBar>
+
+                <RelativeLayout
+                    android:id="@+id/offlineLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/load_service_progress_bar"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                        <TextView
+                            android:id="@+id/offlineTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Connection lost. Tap 'Retry' to reconnect..."
+                            android:textSize="14sp"
+                            android:textColor="@color/quantum_googred"/>
+
+                        <Button
+                            android:id="@+id/reloadServicesButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/offlineTextView"
+                            android:text="@string/retry_button_string"
+                            android:textColor="@color/ummo_1"
+                            android:layout_margin="10dp"
+                            android:background="@color/White"
+                            android:layout_centerInParent="true"/>
+                </RelativeLayout>
         </RelativeLayout>
-
-        <Button
-            android:id="@+id/request_agent_btn"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/recyclerview_box"
-            android:layout_marginTop="50dp"
-            android:text="Request Agent"
-            android:textSize="14sp"
-            android:textColor="@color/White"
-            android:background="@drawable/register_next_button"/>
-
-
-    </RelativeLayout>
-
 
 </FrameLayout>

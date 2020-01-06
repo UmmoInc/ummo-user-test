@@ -3,6 +3,7 @@ package xyz.ummo.user.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -11,6 +12,8 @@ import io.sentry.android.AndroidSentryClientFactory;
 import io.sentry.event.BreadcrumbBuilder;
 import io.sentry.event.UserBuilder;
 import xyz.ummo.user.MainActivity;
+import xyz.ummo.user.data.entity.ProfileEntity;
+import xyz.ummo.user.ui.fragments.profile.ProfileViewModel;
 import xyz.ummo.user.utilities.PrefManager;
 import xyz.ummo.user.R;
 import xyz.ummo.user.delegate.Login;
@@ -55,6 +58,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.hbb20.CountryCodePicker;
+import com.onesignal.OSPermissionState;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OneSignal;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -91,6 +97,8 @@ public class SlideIntro extends AppCompatActivity {
     private final int mode = Activity.MODE_PRIVATE;
     private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
     private TextView resendCodeButton;
+    private ProfileViewModel profileViewModel;
+    private ProfileEntity profileEntity = new ProfileEntity();
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -101,6 +109,15 @@ public class SlideIntro extends AppCompatActivity {
         Context context = this.getApplicationContext();
         String sentryDSN = getString(R.string.sentryDsn);
         Sentry.init(sentryDSN, new AndroidSentryClientFactory(context));
+
+        //OneSignal
+        OneSignal.startInit(this)
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                .init();
+
+        //Init ProfileViewModel
+//        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
 
         //Init firebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -208,10 +225,20 @@ public class SlideIntro extends AppCompatActivity {
 
     public void signUpClick(){
         Log.e(TAG+" signUpClick", "This is inside the buttonClick");
+
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        String oneToken = status.getSubscriptionStatus().getPushToken();
+        String onePlayerId = status.getSubscriptionStatus().getUserId();
+
         signUpButton = findViewById(R.id.sign_up_btn);
         signUpButton.setOnClickListener(v -> {
             userEmailField = findViewById(R.id.userEmailEditText);
             userEmail = myViewPagerAdapter.getUserEmail();
+/*
+            val status = OneSignal.getPermissionSubscriptionState()
+            val oneToken = status.subscriptionStatus.pushToken
+            playerId = status.subscriptionStatus.userId*/
+            Log.e(TAG, "OneSignal PlayerId-> "+onePlayerId);
 
             if (!Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
                 userEmailField.setError("Please use a valid email...");
@@ -227,7 +254,7 @@ public class SlideIntro extends AppCompatActivity {
                 progress.show();
 
                 Log.e(TAG + " userSignUp-2", "This is inside the buttonClick>");
-                new Login(getApplicationContext(), userName, userEmail, userContact) {
+                new Login(getApplicationContext(), userName, userEmail, userContact, onePlayerId) {
                     @Override
                     public void done(@NotNull byte[] data, @NotNull Number code) {
                         if (code.equals(200)) {
@@ -239,12 +266,20 @@ public class SlideIntro extends AppCompatActivity {
                             editor.putString("USER_NAME", userName);
                             editor.putString("USER_CONTACT", userContact);
                             editor.putString("USER_EMAIL", userEmail);
+                            editor.putString("USER_PID",onePlayerId);
                             editor.apply();
                             progress.dismiss();
+
+                            //Inserting ProfileModel info into ProfileEntity, then ProfileViewModel
+                            profileEntity.setProfileName(userName);
+                            profileEntity.setProfileContact(userContact);
+                            profileEntity.setProfileEmail(userEmail);
+                            profileViewModel.insertProfile(profileEntity);
+
                             //startActivity();
                             Log.e(TAG + " onLogin-2", "successfully logging in->" + new String(data));
                         } else {
-                            Log.e(TAG + " Error", "Something happened" + code + " data " + new String(data));
+                            Log.e(TAG + " Error", "Something happened..." + code + " data " + new String(data));
                             Toast.makeText(SlideIntro.this, "Something went Awfully bad", Toast.LENGTH_LONG).show();
                             logWithStaticAPI();
                         }
@@ -586,6 +621,7 @@ public class SlideIntro extends AppCompatActivity {
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
+        Log.e(TAG, "launchHomeScreen: No Extras" );
         startActivity(new Intent(SlideIntro.this, MainScreen.class));
         finish();
     }

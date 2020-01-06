@@ -28,8 +28,8 @@
     <string name="title_activity_services">Services</string>
     <string name="title_activity_agent_request">AgentRequest</string>
 
-    <string name="loading_agent_message">Finding you the nearest agent</string>
     <string name="nearest_agent_string">Nearest Agent</string>
+    <string name="loading_agent_message">Finding you the nearest agent…</string>
     <string name="confirm_agent_string">Confirm Agent</string>
     <string name="get_another_string">Request Another</string>
     <string name="agent_charge_tip">Hourly rate: R25.00 + R2.50</string>
@@ -101,6 +101,7 @@
     <string name="start">Done</string>
 
     <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
+    <!--    <string name="serverUrl">http://localhost:3000</string>-->
 
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
     <string name="sentryDsn">https://c46e9ae28cb847e7ab39746902f6c29a@sentry.io/1485110</string>
@@ -111,5 +112,18 @@
     <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
     <string name="logout">Log out</string>
     <string name="search">Search</string>
+    <string name="description_default_string">Default Product Description</string>
+    <string name="no_delegated_service">No Delegated Service Found</string>
+    <string name="nav_drawer_delegated_service">Delegated Service</string>
+    <string name="nav_drawer_service_history">Service History</string>
+    <string name="nav_drawer_payment_methods">Payment Methods</string>
+    <string name="nav_drawer_my_profile">My Profile</string>
+    <string name="nav_drawer_home">Home</string>
+
+    <!--    Bottom Navigation Title-->
+    <string name="home_title">Home</string>
+    <string name="request_agent_title">Get agent</string>
+    <string name="chats_title">Chats</string>
+    <string name="retry_button_string">Retry</string>
 
 </resources>

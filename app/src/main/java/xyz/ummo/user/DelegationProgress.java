@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,7 +36,6 @@ public class DelegationProgress extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setTitle("Delegation Progress");
 
-
         //load so progresses into the arraylist
         loadProcesses();
 
@@ -60,7 +60,7 @@ public class DelegationProgress extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                goToHome();
+                goHome();
 
             }
         });
@@ -110,7 +110,7 @@ public class DelegationProgress extends AppCompatActivity {
 
     }
 
-    public void goToHome(){
+    public void goHome(){
 
         new MainScreen().setAnyServiceInProgress(true);
 

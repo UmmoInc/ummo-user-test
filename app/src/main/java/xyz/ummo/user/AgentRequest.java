@@ -76,7 +76,6 @@ public class AgentRequest extends AppCompatActivity {
             }
         };
 
-
         agentName = findViewById(R.id.agent_name);
         agentContact = findViewById(R.id.agent_contact);
         publicRating = findViewById(R.id.agent_public_rating);
