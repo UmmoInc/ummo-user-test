@@ -14,6 +14,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,41 +75,54 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(context,
+                        context.getResources().getString(R.string.mixpanelToken));
         Product product = productList.get(position);
 
         holder.providerName.setText(product.getProviderName());
         holder.providerLocation.setText(product.getLocation());
         holder.providerContact.setText(product.getContact());
-        holder.bg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), DetailedProduct.class);
-                Product p = productList.get(position);
+        holder.bg.setOnClickListener(v -> {
 
-                intent.putExtra("product_id",p.getId());
-                v.getContext().startActivity(intent);
-                Log.e(TAG, "onBindViewHolder: onClick->"+intent.getExtras().toString());
-
-                String stepsWithBlocks = p.getSteps();
-                String unpackedSteps = unpackBlockedString(stepsWithBlocks);
-
-                String docsWithBlocks = p.getDocs();
-                String unpackedDocs = unpackBlockedString(docsWithBlocks);
-
-                ArrayList<String> stepsArrayList = new ArrayList<>(Arrays.asList(unpackedSteps.split(",")));
-                ArrayList<String> docsArrayList = new ArrayList<>(Arrays.asList(unpackedDocs.split(",")));
-
-                productEntity.setProductId(p.getId());
-                productEntity.setProductName(p.getProviderName());
-                productEntity.setProductDescription(p.getDescription());
-                productEntity.setProductCost(p.getCost());
-                productEntity.setProductSteps(stepsArrayList);
-                productEntity.setProductDocuments(docsArrayList);
-                productEntity.setProductDuration(p.getDuration());
-                productEntity.setIsDelegated(false);
-                detailedProductViewModel.insertProduct(productEntity);
-                Log.e(TAG, "onClick: DOCS->"+productEntity.getProductDocuments());
+            JSONObject productObject = new JSONObject();
+            try {
+                productObject.put("productId", product.getId());
+                productObject.put("productName", product.getProviderName());
+                //Mixpanel event tracker for `productSelected`
+                if (mixpanel != null) {
+                    mixpanel.track("productSelected", productObject);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
+            Intent intent = new Intent(v.getContext(), DetailedProduct.class);
+            Product p = productList.get(position);
+
+            intent.putExtra("product_id",p.getId());
+            v.getContext().startActivity(intent);
+            Log.e(TAG, "onBindViewHolder: onClick->"+intent.getExtras().toString());
+
+            String stepsWithBlocks = p.getSteps();
+            String unpackedSteps = unpackBlockedString(stepsWithBlocks);
+
+            String docsWithBlocks = p.getDocs();
+            String unpackedDocs = unpackBlockedString(docsWithBlocks);
+
+            ArrayList<String> stepsArrayList = new ArrayList<>(Arrays.asList(unpackedSteps.split(",")));
+            ArrayList<String> docsArrayList = new ArrayList<>(Arrays.asList(unpackedDocs.split(",")));
+
+            productEntity.setProductId(p.getId());
+            productEntity.setProductName(p.getProviderName());
+            productEntity.setProductDescription(p.getDescription());
+            productEntity.setProductCost(p.getCost());
+            productEntity.setProductSteps(stepsArrayList);
+            productEntity.setProductDocuments(docsArrayList);
+            productEntity.setProductDuration(p.getDuration());
+            productEntity.setIsDelegated(false);
+            detailedProductViewModel.insertProduct(productEntity);
+            Log.e(TAG, "onClick: DOCS->"+productEntity.getProductDocuments());
         });
     }
 

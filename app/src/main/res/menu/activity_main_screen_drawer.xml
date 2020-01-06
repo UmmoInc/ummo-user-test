@@ -12,14 +12,14 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_account_circle_black_24dp"
             android:title="@string/nav_drawer_my_profile" />
-        <item
+        <!--<item
             android:id="@+id/nav_payment_methods"
             android:icon="@drawable/ic_monetization_on_black_24dp"
             android:title="@string/nav_drawer_payment_methods" />
         <item
             android:id="@+id/nav_service_history"
             android:icon="@drawable/ic_history_black_24dp"
-            android:title="@string/nav_drawer_service_history" />
+            android:title="@string/nav_drawer_service_history" />-->
 
         <item
             android:id="@+id/nav_delegated_service"

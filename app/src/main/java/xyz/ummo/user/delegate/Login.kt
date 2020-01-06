@@ -95,7 +95,6 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                           })*/
                     }
 
-
                     done(response.data, response.statusCode)
                 }
     }

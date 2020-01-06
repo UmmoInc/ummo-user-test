@@ -13,6 +13,7 @@ import android.os.Bundle;
 import com.github.nkzawa.emitter.Emitter;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -87,6 +88,10 @@ public class DetailedProduct extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(this,
+                        getResources().getString(R.string.mixpanelToken));
 
         progress = new ProgressDialog(this);
         agentRequestDialog = new AlertDialog.Builder(DetailedProduct.this);
@@ -183,6 +188,10 @@ public class DetailedProduct extends AppCompatActivity {
 
         requestAgentBtn.setOnClickListener(v -> {
 
+            if (mixpanel != null) {
+                mixpanel.track("requestAgentTapped");
+            }
+
             progress.setTitle("Agent Request");
             progress.setMessage(agentRequestStatus);
             progress.show();
@@ -190,7 +199,6 @@ public class DetailedProduct extends AppCompatActivity {
             String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
 
             Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
-
 
             if (jwt != null) {
                 new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
@@ -212,6 +220,11 @@ public class DetailedProduct extends AppCompatActivity {
 //                                agentRequestDialog.setIcon()
                                 agentRequestDialog.setMessage(agentName+ " is available...");
                                 agentRequestDialog.setPositiveButton("Continue", (dialog, which) -> {
+
+                                    if (mixpanel != null) {
+                                        mixpanel.track("requestAgentContinue");
+                                    }
+
                                     agentRequestStatus = "Waiting for a response from "+agentName+"...";
                                     ProgressDialog progress = new ProgressDialog(DetailedProduct.this);
                                     progress.setTitle("Agent Request");
@@ -236,13 +249,16 @@ public class DetailedProduct extends AppCompatActivity {
                         } else if (code == 404){
                             Log.e(TAG, "done: Status Code 500!!!");
 
-                            Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
-
                             agentNotFoundDialog.setTitle("Agent Delegate");
                             agentNotFoundDialog.setMessage("No Agent currently available.");
                             agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
+
+                                if (mixpanel != null) {
+                                    mixpanel.track("requestAgentDismiss");
+                                }
+
                                 Log.e(TAG, "done: Dismissed!");
-                                requestAgentBtn.setText("RETRY AGENT REQUEST");
+                                requestAgentBtn.setText(getResources().getString(R.string.retry_agent_request));
                             });
                             agentNotFoundDialog.show();
 
@@ -269,6 +285,11 @@ public class DetailedProduct extends AppCompatActivity {
         mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     @Override
@@ -302,7 +323,7 @@ public class DetailedProduct extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case android.R.id.home:
-                Intent intent = new Intent(this, Services.class);
+                Intent intent = new Intent(this, MainScreen.class);
                 startActivity(intent);
                 finish();
                 return  true;

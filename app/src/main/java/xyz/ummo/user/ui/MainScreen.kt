@@ -5,20 +5,6 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseAuth
-
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-
-import xyz.ummo.user.delegate.Logout
-import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-
 import android.os.Handler
 import android.util.Log
 import android.view.MenuItem
@@ -27,27 +13,36 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONArray
 import org.json.JSONException
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.delegate.Logout
+import xyz.ummo.user.delegate.PublicServiceData
 import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
-import java.util.ArrayList
+import xyz.ummo.user.ui.fragments.profile.ProfileFragment
+import java.util.*
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     private val fragment: Fragment? = null
 
-    private var drawer: DrawerLayout? = null
+//    private var drawer: DrawerLayout? = null
     private var navigationView: NavigationView? = null
     private var navigationHeader: View? = null
     private var navHeaderUserName: TextView? = null
@@ -69,18 +64,18 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private val mode = Activity.MODE_PRIVATE
     private val delegatedServiceEntity = DelegatedServiceEntity()
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_screen)
+
+        var mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         title = "Ummo"
         supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
-
 
         /*
         * Starting DelegatedServiceFragment
@@ -116,7 +111,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             delegatedServiceEntity.serviceAgentId = serviceAgentId
             delegatedServiceEntity.serviceProgress =progress
 
-
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
             Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
             delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
@@ -146,7 +140,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         Log.e(TAG, "Username->" + userNamePref!!)
 
-        logoutClick()
+//        logoutClick() //TODO: to reconsider implementation
 
         //initialise  the toolbar icons message icon and circular progress bar icon
         messageIconButton = findViewById(R.id.message_icon_button)
@@ -156,24 +150,24 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         mHandler = Handler()
 
-        drawer = findViewById(R.id.drawer_layout)
-        val toggle = ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer!!.addDrawerListener(toggle)
-        toggle.syncState()
+//        drawer = findViewById(R.id.drawer_layout)
+//        val toggle = ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+//        drawer!!.addDrawerListener(toggle)
+//        toggle.syncState()
 
-        navigationView = findViewById(R.id.nav_view)
-        navigationView!!.setNavigationItemSelectedListener(this)
+//        navigationView = findViewById(R.id.nav_view)
+//        navigationView!!.setNavigationItemSelectedListener(this)
 
-        navigationHeader = navigationView!!.getHeaderView(0)
-        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
-        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
+//        navigationHeader = navigationView!!.getHeaderView(0)
+//        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
+//        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
 
-        navHeaderUserName!!.text = userNamePref
-        navHeaderUserEmail!!.text = userEmailPref
+//        navHeaderUserName!!.text = userNamePref
+//        navHeaderUserEmail!!.text = userEmailPref
 
         // initializing navigation menu
-        setUpNavigationView()
+//        setUpNavigationView()
 
         if (savedInstanceState == null) {
             navItemIndex = 0
@@ -184,17 +178,18 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        bottomNavigation.selectedItemId = R.id.nav_home
     }
 
     private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
-        try {
+        return try {
             val tbr = ArrayList<String>()
             for (i in 0 until arr.length()) {
                 tbr.add(arr.getString(i))
             }
-            return tbr
+            tbr
         } catch (e: JSONException) {
-            return ArrayList()
+            ArrayList()
         }
 
     }
@@ -217,8 +212,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         when (itemId) {
             R.id.nav_home -> selectedFragment = HomeFragment()
             R.id.nav_profile -> selectedFragment = ProfileFragment()
-            R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
-            R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
+//            R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
+//            R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
             R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
         }
 
@@ -254,11 +249,11 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         } else if (id == R.id.nav_profile) {
 
-        } else if (id == R.id.nav_payment_methods) {
+        } /*else if (id == R.id.nav_payment_methods) {
 
         } else if (id == R.id.nav_service_history) {
 
-        } else if (id == R.id.nav_delegated_service) {
+        }*/ else if (id == R.id.nav_delegated_service) {
 
         }
 
@@ -274,10 +269,10 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private fun loadHomeFragment(data: List<PublicServiceData>) {
         // if user select the current navigation menu again, don't do anything
         // just close the navigation drawer
-        if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
-            drawer!!.closeDrawers()
-            return
-        }
+//        if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
+//            drawer!!.closeDrawers()
+//            return
+//        }
         val mPendingRunnable = Runnable {
             // update the main content by replacing fragments
             val fragment = getHomeFragment(data)
@@ -292,15 +287,18 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         mHandler!!.post(mPendingRunnable)
 
-
         //Closing drawer on item click
-        drawer!!.closeDrawers()
+//        drawer!!.closeDrawers()
 
         // refresh toolbar menu
         invalidateOptionsMenu()
     }
 
     private fun getHomeFragment(data: List<PublicServiceData>): Fragment {
+
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         when (navItemIndex) {
             0 -> {
                 // home
@@ -308,6 +306,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 messageIconButton!!.visibility = View.VISIBLE
                 circularProgressBarButton!!.visibility = View.VISIBLE
 
+                mixpanel?.track("homeTapped_navDrawer")
                 return HomeFragment(data)
             }
             1 -> {
@@ -318,10 +317,15 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 circularProgressBarButton!!.visibility = View.GONE
                 title = "ProfileModel"
 
+                mixpanel?.track("profileTapped_navDrawer")
+
                 return myProfileFragment
             }
 
-            2 -> {
+            /**
+             * Temporarily stashing these items for the time being
+             **/
+            /*2 -> {
                 // payment methods fragment
                 val paymentMethodsFragment = PaymentMethodsFragment()
                 messageIconButton!!.visibility = View.GONE
@@ -334,10 +338,11 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             3 -> {
                 // service history fragment
                 return ServiceHistoryFragment()
-            }
+            }*/
 
             4 -> {
                 // legal terms fragment
+                mixpanel?.track("delegatedServiceTapped_navDrawer")
 
                 return DelegatedServicesFragment()
             }
@@ -346,7 +351,10 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         }
     }
 
-    private fun setUpNavigationView() {
+    /*private fun setUpNavigationView() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView!!.setNavigationItemSelectedListener { menuItem ->
 
@@ -369,23 +377,35 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         //calling sync state is necessary or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState()
-    }
+    }*/
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         when (item.itemId) {
+
             R.id.navigation_home -> {
                 val homeFragment = HomeFragment()
                 openFragment(homeFragment)
+
+                mixpanel?.track("homeTapped_bottomNav")
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_get_agent -> {
-                val getAgent = GetAgent()
-                openFragment(getAgent)
-                return@OnNavigationItemSelectedListener true
-            }
-            R.id.navigation_chats-> {
+            R.id.navigation_assigned -> {
                 val delegatedServiceFragment = DelegatedServicesFragment()
                 openFragment(delegatedServiceFragment)
+
+                mixpanel?.track("getAssigned_bottomNav")
+
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.navigation_profile-> {
+                val profileFragment = ProfileFragment()
+                openFragment(profileFragment)
+
+                mixpanel?.track("profile_bottomNav")
+
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -458,7 +478,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         transaction.commit()
     }
 
-    private fun logoutClick() {
+    /*private fun logoutClick() {
         logoutLayout = findViewById(R.id.logoutLinear)
         logoutLayout!!.setOnClickListener {
             mAuth!!.signOut()
@@ -467,11 +487,16 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             progress.show()
             object : Logout(this@MainScreen) {
                 override fun done() {
+
+                    val mixpanel = MixpanelAPI.getInstance(this@MainScreen,
+                            resources.getString(R.string.mixpanelToken))
+
+                    mixpanel?.track("logoutTapped")
                     startActivity(Intent(applicationContext, SlideIntro::class.java))
                 }
             }
         }
-    }
+    }*/
 
     fun logout(view: View) {
         mAuth!!.signOut()
@@ -485,7 +510,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         }
         // prefManager.unSetFirstTimeLaunch();
     }
-
 
     companion object {
         // tags used to attach the fragments

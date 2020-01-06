@@ -58,11 +58,14 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.hbb20.CountryCodePicker;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.onesignal.OSPermissionState;
 import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OneSignal;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -110,11 +113,16 @@ public class SlideIntro extends AppCompatActivity {
         String sentryDSN = getString(R.string.sentryDsn);
         Sentry.init(sentryDSN, new AndroidSentryClientFactory(context));
 
-        //OneSignal
+        //Init OneSignal
         OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
+
+        //Init Mixpanel
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(context,
+                        getResources().getString(R.string.mixpanelToken));
 
         //Init ProfileViewModel
 //        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
@@ -185,6 +193,7 @@ public class SlideIntro extends AppCompatActivity {
 
                 } else if (viewPager.getCurrentItem() == 2){
                     Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
+
                     handleSlideProgress(2);
                 } else {
                     //Log.e(TAG + " btnNext", "CurrentSlide indexCount->" + viewPager.getCurrentItem());
@@ -226,6 +235,10 @@ public class SlideIntro extends AppCompatActivity {
     public void signUpClick(){
         Log.e(TAG+" signUpClick", "This is inside the buttonClick");
 
+        MixpanelAPI mixpanel =
+                MixpanelAPI.getInstance(this,
+                        getResources().getString(R.string.mixpanelToken));
+
         OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
         String oneToken = status.getSubscriptionStatus().getPushToken();
         String onePlayerId = status.getSubscriptionStatus().getUserId();
@@ -252,6 +265,22 @@ public class SlideIntro extends AppCompatActivity {
                 ProgressDialog progress = new ProgressDialog(SlideIntro.this);
                 progress.setMessage("Signing up...");
                 progress.show();
+
+                JSONObject userObject = new JSONObject();
+                try {
+                    userObject.put("userName", userName);
+                    userObject.put("userContact", userContact);
+                    userObject.put("userEmail", userEmail);
+                    if (mixpanel != null) {
+                        mixpanel.track("completeSignUp", userObject);
+                        mixpanel.getPeople().identify(userContact);
+                        mixpanel.getPeople().set("PID", onePlayerId);
+                        mixpanel.getPeople().set("User-Name",userName);
+                        mixpanel.getPeople().set("User-Contact",userContact);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 Log.e(TAG + " userSignUp-2", "This is inside the buttonClick>");
                 new Login(getApplicationContext(), userName, userEmail, userContact, onePlayerId) {
