@@ -67,6 +67,11 @@ public class AppRepository {
         new Service(application){
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
+
+                Log.e(TAG, "done: "+new String(data) );
+                if(code.intValue() != 200){
+                    return;
+                }
                 try{
                     JSONArray myServices = new JSONArray(new String(data));
                     Log.e(TAG, "done: Services"+myServices.toString() );
