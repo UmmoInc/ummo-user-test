@@ -16,6 +16,7 @@ import java.util.List;
 
 import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.DelegationChat;
+import xyz.ummo.user.Feedback;
 import xyz.ummo.user.R;
 import xyz.ummo.user.ui.MainScreen;
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment;
