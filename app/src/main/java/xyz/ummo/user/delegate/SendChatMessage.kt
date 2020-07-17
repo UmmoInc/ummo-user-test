@@ -1,6 +1,7 @@
 package xyz.ummo.user.delegate
 
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import org.json.JSONObject
 
 abstract class SendChatMessage(message:String, serviceId:String) {

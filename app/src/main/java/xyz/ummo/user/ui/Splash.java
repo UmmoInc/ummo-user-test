@@ -13,10 +13,12 @@ import androidx.annotation.Nullable;
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
+import timber.log.Timber;
 import xyz.ummo.user.R;
+import xyz.ummo.user.Register;
+import xyz.ummo.user.ui.signup.RegisterActivity;
 
 public class Splash extends Activity {
-    private String TAG = "Splash";
     private String splashPrefs = "UMMO_USER_PREFERENCES";
     private int mode = Activity.MODE_PRIVATE;
 
@@ -40,7 +42,7 @@ public class Splash extends Activity {
                 Thread.sleep(1000);
             }
             catch (InterruptedException ie) {
-                Log.e(TAG, " onCreate->"+ie);
+                Timber.e(" onCreate->%s", ie);
             }
             finish();
 
@@ -48,14 +50,13 @@ public class Splash extends Activity {
             boolean signedUp = splashPreferences.getBoolean("SIGNED_UP", false);
 
             if (signedUp){
-                Log.e(TAG, "onCreate - User has already signed up");
+                Timber.e("onCreate - User has already signed up");
                 startActivity(new Intent(Splash.this, MainScreen.class));
-                finish();
             } else {
-                Log.e(TAG, "onCreate - User has not signed up yet!");
-                startActivity(new Intent(Splash.this, SlideIntro.class));
-                finish();
+                Timber.e("onCreate - User has not signed up yet!");
+                startActivity(new Intent(Splash.this, RegisterActivity.class));
             }
+            finish();
         }).start();
     }
 

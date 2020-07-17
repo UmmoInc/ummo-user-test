@@ -6,9 +6,11 @@ import android.preference.PreferenceManager
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import org.json.JSONObject
+import timber.log.Timber
 import xyz.ummo.user.R.string.*
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.ui.MainScreen
@@ -29,13 +31,13 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                 .put("mobile_contact", mobile_contact)
                 .put("user_pid", user_pid)
 
-
         Fuel.post("/user/login")
                 .jsonBody(_user.toString())
                 .response { request, response, result ->
                     if (response.statusCode==200){
-                        val jwt = response.headers.get("Jwt")?.get(0).toString()
-                        Log.e("jwt",jwt)
+                        val jwt = response.headers["Jwt"].elementAt(0).toString()
+                        Timber.e("Jwt -> $jwt")
+
                         FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
 
                         PreferenceManager
@@ -45,14 +47,13 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                                 .putString("user",String(response.data))
                                 .apply()
 
-
                         initializeSocket(User.getUserId(jwt))
                         //SocketIO.mSocket?.connect()
                         SocketIO.mSocket?.on("connect", Emitter.Listener {
-                            Log.e("Socket", "Connected to ")
+                           Timber.e("Connected to ")
                         })
                         SocketIO.mSocket?.on("message1", Emitter.Listener {
-                            Log.e("Message", "it[0].toString()")
+                            Timber.e(it[0].toString())
                         })
 
                         SocketIO.mSocket?.on("service-created", Emitter.Listener {
@@ -64,7 +65,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0].toString()).getString("product"))
 
                             intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG",1)
-                            Log.e(TAG, "service-created with ID->${JSONObject(it[0].toString())}")
+                            Timber.e("SERVICE-created with ID->${JSONObject(it[0].toString())}")
 
                             val serviceId: String = JSONObject(it[0].toString()).getString("_id")
                             val delegatedProductId: String = JSONObject(it[0].toString()).getString("product")
@@ -76,18 +77,18 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             delegatedServiceEntity.delegatedProductId = delegatedProductId
                             delegatedServiceEntity.serviceAgentId = serviceAgentId
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-                            Log.e(TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+                            Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
                             delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)
 
                             context.startActivity(intent)
                         })
 
                         SocketIO.mSocket?.on("connect_error", Emitter.Listener {
-                            Log.e(TAG, "Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
+                            Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
                         })
 
                         SocketIO.mSocket?.on("error", Emitter.Listener {
-                            Log.e(TAG, "Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
+                            Timber.e("Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
                         })
 
                         /*  SocketIO.mSocket?.on("message", Emitter.Listener {
@@ -101,18 +102,18 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
 
     private fun initializeSocket(_id: String) {
         try {
-            Log.e(TAG, "Trying connection...")
+            Timber.e("Trying connection...")
             SocketIO.mSocket = IO.socket("${context.getString(serverUrl)}/user-$_id")
-            Log.e(TAG, "${context.getString(serverUrl)}/user-$_id")
+            Timber.e( "${context.getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {
-                Log.e(TAG, "Probably not connected")
+                Timber.e("Probably not connected")
             } else {
-                Log.e(TAG, "Probably connected")
+                Timber.e("Probably connected")
             }
         } catch (e: URISyntaxException) {
-            Log.e(TAG, e.toString())
+            Timber.e("URI Syntax Exception -> $e")
         }
     }
 

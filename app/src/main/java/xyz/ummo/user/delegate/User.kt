@@ -53,7 +53,7 @@ class User : Application() {
 
         val mixpanel = MixpanelAPI.getInstance(applicationContext, MIXPANEL_TOKEN)
 
-        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "")
+        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "").toString()
 
         if (jwt != "") {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)

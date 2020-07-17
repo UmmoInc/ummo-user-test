@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import xyz.ummo.user.R;
+import xyz.ummo.user.Register;
 import xyz.ummo.user.delegate.Login;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
@@ -85,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void launchSignUpActivity(View view){
-        startActivity(new Intent(LoginActivity.this, SlideIntro.class));
+        startActivity(new Intent(LoginActivity.this, Register.class));
         overridePendingTransition(R.anim.push_left_out, R.anim.push_left_out);
         finish();
     }

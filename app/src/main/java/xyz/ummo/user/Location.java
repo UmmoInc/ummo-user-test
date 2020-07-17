@@ -79,9 +79,6 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-
-
-
     private GoogleMap mMap;
     private static final int MY_LOCATION_REQUEST_CODE = 1;
     SupportMapFragment mapFrag;

@@ -5,6 +5,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import org.json.JSONObject
 import xyz.ummo.user.R
 

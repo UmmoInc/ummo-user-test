@@ -27,10 +27,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONArray
 import org.json.JSONException
+import timber.log.Timber
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
+import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.delegate.Logout
+import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.delegate.PublicServiceData
 import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -81,20 +84,20 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         * Starting DelegatedServiceFragment
         * */
 
-        val startFragmentExtra : Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG",0)
+        val startFragmentExtra: Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
         Log.e(TAG, "StartingFragment->$startFragmentExtra")
 
-        if(startFragmentExtra == 1){
+        if (startFragmentExtra == 1) {
             Log.e(TAG, "Starting DelegatedServiceFrag!")
             val delegatedServiceFragment = DelegatedServiceFragment()
             val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
-            val serviceAgentId =   intent.extras!!.getString("SERVICE_AGENT_ID")
+            val serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")
             var progress = ArrayList<String>();
             try {
                 progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
-            }catch (jse:JSONException ){
-                Log.e("ISSUE with progress",jse.toString())
+            } catch (jse: JSONException) {
+                Log.e("ISSUE with progress", jse.toString())
             }
 
             val bundle = Bundle()
@@ -109,7 +112,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             delegatedServiceEntity.serviceId = serviceId!!
             delegatedServiceEntity.delegatedProductId = delegatedProductId!!
             delegatedServiceEntity.serviceAgentId = serviceAgentId
-            delegatedServiceEntity.serviceProgress =progress
+            delegatedServiceEntity.serviceProgress = progress
 
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
             Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
@@ -118,10 +121,10 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             val fragmentTransaction = supportFragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
             fragmentTransaction.commit()
-           // return
-        }else{
+            // return
+        } else {
 
-            object : xyz.ummo.user.delegate.PublicService(this) {
+            object : PublicService(this) {
                 override fun done(data: List<PublicServiceData>, code: Number) {
                     if (code == 200)
                         loadHomeFragment(data)
@@ -130,7 +133,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             }
         }
 
-
         mAuth = FirebaseAuth.getInstance()
 
         val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
@@ -138,7 +140,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         val userNamePref = mainActPrefs.getString("USER_NAME", "")
         val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
 
-        Log.e(TAG, "Username->" + userNamePref!!)
+        Timber.e("Username-> $userNamePref")
 
 //        logoutClick() //TODO: to reconsider implementation
 
@@ -193,7 +195,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         }
 
     }
-
 
     override fun onBackPressed() {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -505,7 +506,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         progress.show()
         object : Logout(this) {
             override fun done() {
-                startActivity(Intent(this@MainScreen, SlideIntro::class.java))
+                startActivity(Intent(this@MainScreen, Register::class.java))
             }
         }
         // prefManager.unSetFirstTimeLaunch();
