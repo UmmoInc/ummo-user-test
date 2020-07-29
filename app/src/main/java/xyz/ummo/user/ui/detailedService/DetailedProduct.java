@@ -374,4 +374,3 @@ public class DetailedProduct extends AppCompatActivity {
         }
     }
 }
-

@@ -87,7 +87,7 @@
     <string name="more_string">more</string>
     <string name="title_activity_detailed_service">DetailedService</string>
     <string name="service_description_title">Description</string>
-    <string name="servvice_documents_title_string">Documents</string>
+    <string name="service_documents_title_string">Documents</string>
     <string name="service_cost_title_string">Cost</string>
     <string name="service_duration_title">Duration</string>
     <string name="service_processes_title">Steps to follow</string>
