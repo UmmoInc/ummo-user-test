@@ -100,8 +100,8 @@
     <string name="skip">Back</string>
     <string name="start">Done</string>
 
-    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--    <string name="serverUrl">http://localhost:3000</string>-->
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+        <string name="serverUrl">http://192.168.8.100:3000</string>
 
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
     <string name="sentryDsn">https://c46e9ae28cb847e7ab39746902f6c29a@sentry.io/1485110</string>

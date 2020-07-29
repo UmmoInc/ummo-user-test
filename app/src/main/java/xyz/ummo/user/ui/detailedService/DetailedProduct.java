@@ -134,21 +134,21 @@ public class DetailedProduct extends AppCompatActivity {
 
         if (_productId != null){
             detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(this, productEntity1 -> {
-            _serviceName = productEntity1.getProductName();
-            Log.e(TAG, "onCreate: Within ProductVM: ProductModel ID->"+_productId);
-            _description = productEntity1.getProductDescription();
-            _cost = productEntity1.getProductCost();
-            _duration = productEntity1.getProductDuration();
+                _serviceName = productEntity1.getProductName();
+                Log.e(TAG, "onCreate: Within ProductVM: ProductModel ID->"+_productId);
+                _description = productEntity1.getProductDescription();
+                _cost = productEntity1.getProductCost();
+                _duration = productEntity1.getProductDuration();
 
-            stepsList = new ArrayList<>(productEntity1.getProductSteps());
+                stepsList = new ArrayList<>(productEntity1.getProductSteps());
 
-            docsList = new ArrayList<>(productEntity1.getProductDocuments());
+                docsList = new ArrayList<>(productEntity1.getProductDocuments());
 
-            //Filling in UI components
-            toolbar.setTitle(_serviceName);
-            serviceDescriptionTextView.setText(_description);
-            serviceCostTextView.setText(_cost);
-            serviceDurationTextView.setText(_duration);
+                //Filling in UI components
+                toolbar.setTitle(_serviceName);
+                serviceDescriptionTextView.setText(_description);
+                serviceCostTextView.setText(_cost);
+                serviceDurationTextView.setText(_duration);
 
                 if (!stepsList.isEmpty()){
                     serviceStepsLayout.removeAllViews();
@@ -178,8 +178,8 @@ public class DetailedProduct extends AppCompatActivity {
                     Log.e(TAG, "onCreate: docsList is EMPTY!");
                 }
 
-            Log.e(TAG, "onCreate: isDelegated"+productEntity1.getIsDelegated());
-        });
+                Log.e(TAG, "onCreate: isDelegated"+productEntity1.getIsDelegated());
+            });
         } else if (_serviceId != null){
             Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
         }
@@ -334,12 +334,12 @@ public class DetailedProduct extends AppCompatActivity {
     }
 
     private static class DelegateAsyncTask extends AsyncTask<Integer, Void, String> {
-       private WeakReference<DetailedProduct> detailedProductWeakReference;
+        private WeakReference<DetailedProduct> detailedProductWeakReference;
         String newAgentRequestStatus = "";
 
-       DelegateAsyncTask(DetailedProduct activity){
-           detailedProductWeakReference = new WeakReference<>(activity);
-       }
+        DelegateAsyncTask(DetailedProduct activity){
+            detailedProductWeakReference = new WeakReference<>(activity);
+        }
 
         @Override
         protected void onPreExecute() {
