@@ -41,7 +41,7 @@
                         android:paddingRight="10dp"
                         android:paddingTop="10dp">
                         <TextView
-                            android:id="@+id/card_title_text_view"
+                            android:id="@+id/service_centre_title_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Delegated Agent"
@@ -54,7 +54,7 @@
                             android:id="@+id/agent_info_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/card_title_text_view">
+                            android:layout_below="@id/service_centre_title_text_view">
 
                             <ImageView
                                 android:id="@+id/delegated_user_avatar"

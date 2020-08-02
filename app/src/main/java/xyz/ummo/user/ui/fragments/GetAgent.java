@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
 import xyz.ummo.user.adapters.AllProductsAdapter;
-import xyz.ummo.user.adapters.ProductAdapter;
-import xyz.ummo.user.delegate.PublicServiceData;
 
 
 /**

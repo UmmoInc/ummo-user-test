@@ -118,6 +118,8 @@ dependencies {
 
     //OneSignal
     implementation 'com.onesignal:OneSignal:3.15.1'
+    //GroupieAdapter
+    implementation "com.xwray:groupie:2.8.0"
 
     //Mixpanel
     implementation 'com.mixpanel.android:mixpanel-android:5.8.4'

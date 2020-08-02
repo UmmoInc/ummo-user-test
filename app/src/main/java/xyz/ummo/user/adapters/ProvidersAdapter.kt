@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.service_content.view.*
 import xyz.ummo.user.R
-import xyz.ummo.user.delegate.Provider
-import xyz.ummo.user.delegate.PublicServiceData
+import xyz.ummo.user.models.PublicServiceData
 
 class ProvidersAdapter(private val myDataset: List<PublicServiceData>): RecyclerView.Adapter<ProvidersAdapter.ProviderViewHolder>() {
     class ProviderViewHolder(val view:View):RecyclerView.ViewHolder(view){
@@ -40,7 +37,7 @@ class ProvidersAdapter(private val myDataset: List<PublicServiceData>): Recycler
     }
 
     override fun onBindViewHolder(holder: ProviderViewHolder, position: Int) {
-        val item:PublicServiceData = myDataset.get(position)
+        val item: PublicServiceData = myDataset.get(position)
        holder.title.text = item.serviceName
         holder.description.text = "Described"
         holder.details.text = "Details"

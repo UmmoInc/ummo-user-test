@@ -28,7 +28,7 @@ import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.delegate.GetProducts;
-import xyz.ummo.user.delegate.PublicServiceData;
+import xyz.ummo.user.models.PublicServiceData;
 import xyz.ummo.user.delegate.get;
 import xyz.ummo.user.utilities.ServiceProviderViewModel;
 

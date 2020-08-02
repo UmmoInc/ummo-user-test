@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import timber.log.Timber;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
@@ -135,7 +136,7 @@ public class DetailedProduct extends AppCompatActivity {
         if (_productId != null){
             detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(this, productEntity1 -> {
                 _serviceName = productEntity1.getProductName();
-                Log.e(TAG, "onCreate: Within ProductVM: ProductModel ID->"+_productId);
+                Timber.e("onCreate: Within ProductVM: ProductModel ID->%s", _productId);
                 _description = productEntity1.getProductDescription();
                 _cost = productEntity1.getProductCost();
                 _duration = productEntity1.getProductDuration();
@@ -153,7 +154,7 @@ public class DetailedProduct extends AppCompatActivity {
                 if (!stepsList.isEmpty()){
                     serviceStepsLayout.removeAllViews();
                     for (int i = 0; i<stepsList.size(); i++){
-                        Log.e(TAG, "onCreate: stepsList->"+stepsList);
+                        Timber.e("onCreate: stepsList->%s", stepsList);
                         serviceStepsTextView = new TextView(getApplicationContext());
                         serviceStepsTextView.setId(i);
                         serviceStepsTextView.setText(stepsList.get(i));
@@ -161,13 +162,13 @@ public class DetailedProduct extends AppCompatActivity {
                         serviceStepsLayout.addView(serviceStepsTextView);
                     }
                 } else {
-                    Log.e(TAG, "onCreate: stepsList is EMPTY!");
+                    Timber.e("onCreate: stepsList is EMPTY!");
                 }
 
                 if (!docsList.isEmpty()){
                     serviceDocsLayout.removeAllViews();
                     for (int i = 0; i<docsList.size(); i++){
-                        Log.e(TAG, "onCreate: docsList->"+docsList);
+                        Timber.e("onCreate: docsList->%s", docsList);
                         serviceDocsTextView = new TextView(getApplicationContext());
                         serviceDocsTextView.setId(i);
                         serviceDocsTextView.setText(docsList.get(i).replace("\"\"",""));
@@ -175,13 +176,13 @@ public class DetailedProduct extends AppCompatActivity {
                         serviceDocsLayout.addView(serviceDocsTextView);
                     }
                 } else {
-                    Log.e(TAG, "onCreate: docsList is EMPTY!");
+                    Timber.e("onCreate: docsList is EMPTY!");
                 }
 
-                Log.e(TAG, "onCreate: isDelegated"+productEntity1.getIsDelegated());
+                Timber.e("onCreate: isDelegated%s", productEntity1.getIsDelegated());
             });
         } else if (_serviceId != null){
-            Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
+            Timber.e("onCreate: SERVICE-ID->%s", _serviceId);
         }
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.steps_list, R.id.step, stepsList);
@@ -198,14 +199,14 @@ public class DetailedProduct extends AppCompatActivity {
 
             String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
 
-            Log.e(TAG, "onCreate: SERVICE-ID->"+_serviceId);
+            Timber.e("onCreate: SERVICE-ID->%s", _serviceId);
 
             if (jwt != null) {
                 new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
                     @Override
                     public void done(@NotNull byte[] data, int code) {
-                        Log.e(TAG, "delegatedService: Done->"+new String(data));
-                        Log.e(TAG, "delegatedService: Status Code->"+code);
+                        Timber.e("delegatedService: Done->%s", new String(data));
+                        Timber.e("delegatedService: Status Code->%s", code);
 
                         progress.dismiss();
 
@@ -214,7 +215,7 @@ public class DetailedProduct extends AppCompatActivity {
                                 agentDelegate = new JSONObject(new String(data));
                                 agentName = agentDelegate.getString("name");
 
-                                Log.e(TAG, "done: agentName->"+agentName);
+                                Timber.e("done: agentName->%s", agentName);
 
                                 agentRequestDialog.setTitle("Agent Delegate");
 //                                agentRequestDialog.setIcon()
@@ -240,14 +241,14 @@ public class DetailedProduct extends AppCompatActivity {
 
                                 detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(DetailedProduct.this, productEntity1 ->{
                                     productEntity1.setIsDelegated(true);
-                                    Log.e(TAG, "done: isDelegated-> TRUE");
+                                    Timber.e("done: isDelegated-> TRUE");
                                 });
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         } else if (code == 404){
-                            Log.e(TAG, "done: Status Code 500!!!");
+                            Timber.e("done: Status Code 500!!!");
 
                             agentNotFoundDialog.setTitle("Agent Delegate");
                             agentNotFoundDialog.setMessage("No Agent currently available.");
@@ -257,20 +258,20 @@ public class DetailedProduct extends AppCompatActivity {
                                     mixpanel.track("requestAgentDismiss");
                                 }
 
-                                Log.e(TAG, "done: Dismissed!");
+                                Timber.e("done: Dismissed!");
                                 requestAgentBtn.setText(getResources().getString(R.string.retry_agent_request));
                             });
                             agentNotFoundDialog.show();
 
                         }else{
-                            Log.e(TAG, "done: Status Code 500!!!");
+                            Timber.e("done: Status Code 500!!!");
 
                             Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
 
                             agentNotFoundDialog.setTitle("Agent Delegate");
                             agentNotFoundDialog.setMessage("We honestly don't know what happened, please check if there is internet");
                             agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
-                                Log.e(TAG, "done: Dismissed!");
+                                Timber.e("done: Dismissed!");
                                 requestAgentBtn.setText("RETRY AGENT REQUEST");
                             });
                             agentNotFoundDialog.show();
@@ -298,9 +299,9 @@ public class DetailedProduct extends AppCompatActivity {
 
         progress.dismiss();
 
-        agentRequestDialog.setOnDismissListener(dialog -> Log.e(TAG, "onPause: onDialogDismiss!"));
+        agentRequestDialog.setOnDismissListener(dialog -> Timber.e("onPause: onDialogDismiss!"));
 
-        agentNotFoundDialog.setOnDismissListener(dialog -> Log.e(TAG, "onPause: onDialogDismiss!"));
+        agentNotFoundDialog.setOnDismissListener(dialog -> Timber.e("onPause: onDialogDismiss!"));
         finish();
     }
 
@@ -312,25 +313,23 @@ public class DetailedProduct extends AppCompatActivity {
     private void launchDelegatedService(){
         String serviceId = getIntent().getStringExtra("SERVICE_ID");
 
+        assert serviceId != null;
         if (!serviceId.isEmpty()){
-            Log.e(TAG, "newDelegatedService Bundle->"+serviceId);
+            Timber.e("newDelegatedService Bundle->%s", serviceId);
         } else {
-            Log.e(TAG, "newDelegatedService NO Bundle!");
+            Timber.e("newDelegatedService NO Bundle!");
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case android.R.id.home:
-                Intent intent = new Intent(this, MainScreen.class);
-                startActivity(intent);
-                finish();
-                return  true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, MainScreen.class);
+            startActivity(intent);
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private static class DelegateAsyncTask extends AsyncTask<Integer, Void, String> {
@@ -350,11 +349,11 @@ public class DetailedProduct extends AppCompatActivity {
         protected String doInBackground(Integer... integers) {
 
             for (int i = 0; i < integers[0]; i++){
-                Log.e(TAG, "doInBackGround: "+i);
+                Timber.e("doInBackGround: %s", i);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    Log.e(TAG, "doInBackGroundException: "+e);
+                    Timber.e("doInBackGroundException: %s", e);
                     e.printStackTrace();
                 }
             }

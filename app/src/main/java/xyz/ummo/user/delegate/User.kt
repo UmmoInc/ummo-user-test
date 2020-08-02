@@ -12,6 +12,8 @@ import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
+import timber.log.Timber
+import xyz.ummo.user.BuildConfig
 import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
@@ -49,6 +51,12 @@ class User : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        //Planting tree!
+        if(BuildConfig.DEBUG){
+            Timber.plant(Timber.DebugTree())
+        }
+
         FuelManager.instance.basePath = getString(serverUrl)
 
         val mixpanel = MixpanelAPI.getInstance(applicationContext, MIXPANEL_TOKEN)

@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -34,11 +33,12 @@ import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicService
-import xyz.ummo.user.delegate.PublicServiceData
+import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
+import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentres
 import java.util.*
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
@@ -80,24 +80,25 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
-        /*
+        /**
         * Starting DelegatedServiceFragment
-        * */
+        **/
 
         val startFragmentExtra: Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
-        Log.e(TAG, "StartingFragment->$startFragmentExtra")
+        Timber.e("StartingFragment->$startFragmentExtra")
 
         if (startFragmentExtra == 1) {
-            Log.e(TAG, "Starting DelegatedServiceFrag!")
+            Timber.e("Starting DelegatedServiceFrag!")
             val delegatedServiceFragment = DelegatedServiceFragment()
             val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
             val serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")
-            var progress = ArrayList<String>();
+            var progress = ArrayList<String>()
+
             try {
                 progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
             } catch (jse: JSONException) {
-                Log.e("ISSUE with progress", jse.toString())
+                Timber.e("ISSUE with progress -> $jse")
             }
 
             val bundle = Bundle()
@@ -115,7 +116,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             delegatedServiceEntity.serviceProgress = progress
 
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+            Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
             delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
             val fragmentTransaction = supportFragmentManager.beginTransaction()
@@ -128,6 +129,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 override fun done(data: List<PublicServiceData>, code: Number) {
                     if (code == 200)
                         loadHomeFragment(data)
+                    Timber.e("PUBLIC SERVICE DATA -> $data")
                     //Do something with list of services
                 }
             }
@@ -278,8 +280,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             // update the main content by replacing fragments
             val fragment = getHomeFragment(data)
             val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                    android.R.anim.fade_out)
+            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG)
             fragmentTransaction.commitAllowingStateLoss()
         }
@@ -322,24 +323,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
                 return myProfileFragment
             }
-
-            /**
-             * Temporarily stashing these items for the time being
-             **/
-            /*2 -> {
-                // payment methods fragment
-                val paymentMethodsFragment = PaymentMethodsFragment()
-                messageIconButton!!.visibility = View.GONE
-                circularProgressBarButton!!.visibility = View.GONE
-                title = "Payment Method"
-
-                return paymentMethodsFragment
-            }
-
-            3 -> {
-                // service history fragment
-                return ServiceHistoryFragment()
-            }*/
 
             4 -> {
                 // legal terms fragment
@@ -387,8 +370,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         when (item.itemId) {
 
             R.id.navigation_home -> {
-                val homeFragment = HomeFragment()
-                openFragment(homeFragment)
+//                val homeFragment = HomeFragment()
+                val serviceCentreFragment =  ServiceCentres()
+                openFragment(serviceCentreFragment)
 
                 mixpanel?.track("homeTapped_bottomNav")
                 return@OnNavigationItemSelectedListener true
@@ -470,7 +454,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         startActivity(intent)
     }
 
-    fun finishEditProfile(view: View) {
+    fun finishEditProfile() {
 
         val fragment = ProfileFragment()
         val transaction = supportFragmentManager.beginTransaction()
@@ -478,26 +462,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         transaction.addToBackStack(null)
         transaction.commit()
     }
-
-    /*private fun logoutClick() {
-        logoutLayout = findViewById(R.id.logoutLinear)
-        logoutLayout!!.setOnClickListener {
-            mAuth!!.signOut()
-            val progress = ProgressDialog(this@MainScreen)
-            progress.setMessage("Logging out...")
-            progress.show()
-            object : Logout(this@MainScreen) {
-                override fun done() {
-
-                    val mixpanel = MixpanelAPI.getInstance(this@MainScreen,
-                            resources.getString(R.string.mixpanelToken))
-
-                    mixpanel?.track("logoutTapped")
-                    startActivity(Intent(applicationContext, SlideIntro::class.java))
-                }
-            }
-        }
-    }*/
 
     fun logout(view: View) {
         mAuth!!.signOut()

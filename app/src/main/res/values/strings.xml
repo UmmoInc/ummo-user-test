@@ -134,5 +134,11 @@
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
     <string name="assigned_nav_title">Assigned</string>
+    <string name="save_service">Save Service</string>
+    <string name="service_centre_image">Service Centre Image</string>
+    <string name="product_requirements">What you will need:</string>
+    <string name="service_cost">Service will cost:</string>
+    <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
+    <string name="request_ummo_agent">Request an Ummo Agent to renew your Motor Licence</string>
 
 </resources>

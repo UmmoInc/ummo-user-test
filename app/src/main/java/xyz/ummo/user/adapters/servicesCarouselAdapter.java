@@ -14,7 +14,7 @@ import java.util.List;
 
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
-import xyz.ummo.user.delegate.PublicServiceData;
+import xyz.ummo.user.models.PublicServiceData;
 
 public class servicesCarouselAdapter extends BaseAdapter {
 
