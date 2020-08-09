@@ -35,6 +35,7 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import org.jetbrains.annotations.NotNull;
 
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
+import timber.log.Timber;
 import xyz.ummo.user.Department;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
@@ -187,13 +188,6 @@ public class HomeFragment extends Fragment {
         };
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -249,17 +243,17 @@ public class HomeFragment extends Fragment {
         final String[] serviceProviderTown = new String[1];
         reloadData();
 
-        Log.e(TAG, "addService: ADAPTER-COUNT [before SOCKET]->"+serviceProviderAdapter.getItemCount());
+        Timber.e("addService: ADAPTER-COUNT [before SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
         connectEmitter = SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
 
-            Log.e(TAG, "addService: ADAPTER-COUNT [after SOCKET]->"+serviceProviderAdapter.getItemCount());
+            Timber.e("addService: ADAPTER-COUNT [after SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
             stopTimerThread();
 
                 serviceProviderList.clear();
                 if(getActivity()==null){
-                    Log.e(TAG, "addServiceProviders: Weird, getAtivity returns null here ");
+                    Timber.e("addServiceProviders: Weird, getActivity returns null here ");
                 }
 
                 reloadData();
@@ -268,10 +262,10 @@ public class HomeFragment extends Fragment {
          disconnectEmitter = SocketIO.INSTANCE.getMSocket().on(Socket.EVENT_DISCONNECT, args -> {
 
             if(getActivity()==null){
-                Log.e(TAG, "addServiceProviders: Weird two, getAtivity returns null here ");
+                Timber.e("addServiceProviders: Weird two, getActivity returns null here ");
             }
 
-            Log.e(TAG, "addService: ADAPTER-COUNT [after ERR-SOCKET]->"+serviceProviderAdapter.getItemCount());
+             Timber.e("addService: ADAPTER-COUNT [after ERR-SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
             startTimerThread();
 
@@ -367,7 +361,7 @@ public class HomeFragment extends Fragment {
                     });
 
                 }
-                Log.e(TAG, "run: seconds->("+i+")");
+                Timber.e("run: seconds->(" + i + ")");
 
                 try {
                     Thread.sleep(1000);

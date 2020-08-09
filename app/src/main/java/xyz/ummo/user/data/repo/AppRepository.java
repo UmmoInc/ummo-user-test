@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 //import xyz.ummo.user.data.dao.UserDao;
+import timber.log.Timber;
 import xyz.ummo.user.data.dao.DelegatedServiceDao;
 import xyz.ummo.user.data.dao.ProductDao;
 //import xyz.ummo.user.data.dao.ServiceProviderDao;
@@ -93,8 +94,8 @@ public class AppRepository {
                         if(p.has("product_description")){
                             productEntity.setProductDescription(p.getString("product_description"));
                         }
-                        productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
-                        productEntity.setProductDuration(p.getString("duration"));
+                        /*productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
+                        productEntity.setProductDuration(p.getString("duration"));*/
                         productEntity.setProductId(p.getString("_id"));
                         productEntity.setProductName(p.getString("product_name"));
                         productEntity.setProductProvider(p.getString("public_service"));
@@ -229,7 +230,7 @@ public class AppRepository {
      **/
 
     public void insertDelegatedService(DelegatedServiceEntity delegatedServiceEntity){
-        Log.e(TAG, "insertDelegatedService: INSERTING DELEGATED-SERVICE->"+delegatedServiceEntity.getServiceId());
+        Timber.e("insertDelegatedService: INSERTING DELEGATED-SERVICE->%s", delegatedServiceEntity);
         new insertDelegatedServiceAsyncTask(delegatedServiceDao).execute(delegatedServiceEntity);
     }
 
@@ -237,11 +238,8 @@ public class AppRepository {
         try {
 //            Log.e(TAG, "getDelegatedServiceEntity: DELEGATED-SERVICE->"+delegatedServiceDao.getDelegatedService().getValue().getServiceId());
             return new getDelegatedServiceEntityAsyncTask(delegatedServiceDao).execute().get();
-        }catch (ExecutionException exe){
-            Log.e(TAG, "getDelegatedServiceEntity: "+exe.toString() );
-            return null;
-        }catch (InterruptedException i){
-            Log.e(TAG, "getDelegatedServiceEntity: "+i.toString() );
+        }catch (ExecutionException | InterruptedException exe){
+            Timber.e("getDelegatedServiceEntity: %s", exe.toString());
             return null;
         }
     }
@@ -280,7 +278,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final DelegatedServiceEntity... delegatedServiceEntities) {
             mDelegatedServiceDao.insertDelegatedService(delegatedServiceEntities[0]);
-            Log.e("AppRepo", "Inserting Delegated Service->"+ Arrays.toString(delegatedServiceEntities));
+            Timber.e("Inserting Delegated Service->%s", Arrays.toString(delegatedServiceEntities));
             return null;
         }
     }
@@ -295,7 +293,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mDelegatedServiceAsyncTaskDao.deleteAllDelegatedServices();
-            Log.e("AppRepo", "Deleting Delegated Service!");
+            Timber.e("Deleting Delegated Service!");
             return null;
         }
     }
@@ -333,9 +331,7 @@ public class AppRepository {
     public List<ServiceProviderEntity> getServiceProviders(){
         try {
             return new getServiceProvidersAsyncTask(serviceProviderDao, this).execute().get();
-        } catch (ExecutionException e){
-            return null;
-        } catch (InterruptedException e){
+        } catch (ExecutionException | InterruptedException e){
             return null;
         }
     }
@@ -443,7 +439,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
             mServiceProviderAsyncTaskDao.updateServiceProviders(serviceProviderEntities[0]);
-            Log.e("AppRepo", "Updating Service Provider->"+ Arrays.toString(serviceProviderEntities));
+            Timber.e("Updating Service Provider->%s", Arrays.toString(serviceProviderEntities));
             return null;
         }
     }
@@ -458,7 +454,7 @@ public class AppRepository {
     }
 
     public LiveData<ProductEntity> getProductEntityLiveData(){
-        Log.e("AppRepo", "ProductModel LiveData->"+productEntityLiveData);
+        Timber.e("ProductModel LiveData->%s", productEntityLiveData);
         return productEntityLiveData;
     }
 
@@ -490,7 +486,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProductEntity... productEntities) {
             mProductDao.insertProduct(productEntities[0]);
-            Log.e(TAG, "Inserting ProductModel->"+ productEntities[0].getProductName());
+            Timber.e("Inserting ProductModel->%s", productEntities[0].getProductName());
 
             /*new CreateProduct(
                     productEntities[0].getProductName()

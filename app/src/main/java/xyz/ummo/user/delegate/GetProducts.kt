@@ -7,9 +7,9 @@ abstract class GetProducts(activity:Activity, public_service:String) {
     init {
         Fuel.get("/product?public_service=$public_service")
                 .response { request, response, result ->
-                    activity.runOnUiThread(Runnable {
+                    activity.runOnUiThread {
                         done(response.data, response.statusCode)
-                    })
+                    }
                 }
     }
 

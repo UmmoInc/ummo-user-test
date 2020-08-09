@@ -36,8 +36,6 @@ class CompleteSignUp : AppCompatActivity() {
     private var prefManager: PrefManager? = null
     private val profileEntity = ProfileEntity()
     private val profileViewModel: ProfileViewModel? = null
-    private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
-    private val mode = Activity.MODE_PRIVATE
     private var firebaseAuth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +47,7 @@ class CompleteSignUp : AppCompatActivity() {
 
         val intent = intent
         userContact = intent.getStringExtra("USER_CONTACT")!!
-        userName = intent.getStringExtra("USER_CONTACT")!!
+        userName = intent.getStringExtra("USER_NAME")!!
 
         //Hiding the toolbar
         try {
@@ -73,7 +71,7 @@ class CompleteSignUp : AppCompatActivity() {
         // Checking for first time launch - before calling setContentView()
         prefManager = PrefManager(this)
         if (!prefManager!!.isFirstTimeLaunch) {
-            Timber.i("Not first time")
+            Timber.e("Not first time")
             launchHomeScreen()
             finish()
         }
@@ -107,29 +105,38 @@ class CompleteSignUp : AppCompatActivity() {
                     progress.setMessage("Signing up...")
                     progress.show()
 
+                    Timber.e("User Name-> $userName")
+                    Timber.e("User Contact-> $userContact")
+                    Timber.e("User Email-> $userEmail")
+                    Timber.e("Player ID-> $onePlayerId")
+
                     val userObject = JSONObject()
-                    try {
-                        userObject.put("userName", userName)
-                        userObject.put("userContact", userContact)
-                        userObject.put("userEmail", userEmail)
-                        if (mixpanel != null) {
-                            mixpanel.track("completeSignUp", userObject)
-                            mixpanel.people.identify(userContact)
-                            mixpanel.people.set("PID", onePlayerId)
-                            mixpanel.people.set("User-Name", userName)
-                            mixpanel.people.set("User-Contact", userContact)
-                        }
 
-                        if (!onePlayerId.isNullOrEmpty()) {
-                            signUp(userName, userEmail, userContact, onePlayerId)
-                            createUserWithEmailAndPassword(userEmail, userContact)
-                            progress.dismiss()
-                        } else {
-                            Timber.e("OnePlayerID is -> $onePlayerId")
-                        }
+                    /** Retrieving OneSignal PlayerId before signing up **/
+                    OneSignal.idsAvailable {userPID, registrationId ->
+                        if (!userPID.isNullOrEmpty()) {
+                            try {
+                                userObject.put("userName", userName)
+                                userObject.put("userContact", userContact)
+                                userObject.put("userEmail", userEmail)
 
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
+                                /** Logging Mixpanel User profile **/
+                                if (mixpanel != null) {
+                                    mixpanel.track("completeSignUp", userObject)
+                                    mixpanel.people.identify(userContact)
+                                    mixpanel.people.set("PID", userPID)
+                                    mixpanel.people.set("User-Name", userName)
+                                    mixpanel.people.set("User-Contact", userContact)
+                                }
+
+                                signUp(userName, userEmail, userContact, userPID)
+                                createUserWithEmailAndPassword(userEmail, userContact)
+                                progress.dismiss()
+
+                            } catch (e: JSONException) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             }
@@ -215,5 +222,11 @@ class CompleteSignUp : AppCompatActivity() {
         Timber.e("launchHomeScreen: No Extras")
         startActivity(Intent(this, MainScreen::class.java))
         finish()
+    }
+
+    companion object {
+        private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
+        private const val mode = Activity.MODE_PRIVATE
+
     }
 }

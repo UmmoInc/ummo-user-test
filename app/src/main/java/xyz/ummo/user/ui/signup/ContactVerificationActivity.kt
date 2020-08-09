@@ -46,7 +46,7 @@ class ContactVerificationActivity : AppCompatActivity() {
         //Retrieving user's contact from intentExtras
         val intent = intent
         userContact = intent.getStringExtra("USER_CONTACT")!!
-        userName = intent.getStringExtra("USER_CONTACT")!!
+        userName = intent.getStringExtra("USER_NAME")!!
 
         val promptText: String = String.format(resources.getString(R.string.code_prompt_text), userContact)
         viewBinding.codePrompt.text = promptText
@@ -87,6 +87,10 @@ class ContactVerificationActivity : AppCompatActivity() {
                 startActivity(Intent(this, CompleteSignUp::class.java)
                         .putExtra("USER_CONTACT", userContact)
                         .putExtra("USER_NAME", userName))
+
+                Timber.e("User Name -> $userName")
+                Timber.e("User Contact -> $userContact")
+
                 finish()
             } else {
 

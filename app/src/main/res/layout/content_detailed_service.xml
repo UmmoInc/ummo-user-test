@@ -103,8 +103,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/description_image_view"
-                                    android:layout_toRightOf="@+id/description_image_view">
+                                    android:layout_toEndOf="@+id/description_image_view">
                                     <TextView
                                         android:id="@+id/description_header_text_view"
                                         android:layout_width="wrap_content"
@@ -143,8 +142,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_cost_image_view"
-                                    android:layout_toRightOf="@+id/service_cost_image_view">
+                                    android:layout_toEndOf="@+id/service_cost_image_view">
                                     <TextView
                                         android:id="@+id/cost_header_text_view"
                                         android:layout_width="wrap_content"
@@ -182,8 +180,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_duration_image_view"
-                                    android:layout_toRightOf="@+id/service_duration_image_view">
+                                    android:layout_toEndOf="@+id/service_duration_image_view">
                                     <TextView
                                         android:id="@+id/duration_header_text_view"
                                         android:layout_width="wrap_content"
@@ -221,8 +218,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_docs_image_view"
-                                    android:layout_toRightOf="@+id/service_docs_image_view">
+                                    android:layout_toEndOf="@+id/service_docs_image_view">
                                     <TextView
                                         android:id="@+id/docs_header_text_view"
                                         android:layout_width="wrap_content"
@@ -236,8 +232,6 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
                                         android:paddingBottom="8dp"
-                                        android:paddingLeft="8dp"
-                                        android:paddingRight="16dp"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
                                         android:layout_below="@+id/docs_header_text_view">
@@ -272,8 +266,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_steps_image_view"
-                                    android:layout_toRightOf="@+id/service_steps_image_view">
+                                    android:layout_toEndOf="@+id/service_steps_image_view">
                                     <TextView
                                         android:id="@+id/steps_header_text_view"
                                         android:layout_width="wrap_content"
@@ -287,8 +280,6 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
                                         android:paddingBottom="8dp"
-                                        android:paddingLeft="8dp"
-                                        android:paddingRight="16dp"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
                                         android:layout_below="@+id/steps_header_text_view">

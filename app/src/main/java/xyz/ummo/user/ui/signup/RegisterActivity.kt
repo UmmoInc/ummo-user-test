@@ -161,6 +161,10 @@ class RegisterActivity : AppCompatActivity() {
                 startPhoneNumberVerification(fullFormattedPhoneNumber)
 
                 val intent = Intent(this, ContactVerificationActivity::class.java)
+
+                Timber.e("User Name -> $userName")
+                Timber.e("User Contact -> $fullFormattedPhoneNumber")
+
                 intent.putExtra("USER_CONTACT", fullFormattedPhoneNumber)
                 intent.putExtra("USER_NAME", userName)
                 startActivity(intent)

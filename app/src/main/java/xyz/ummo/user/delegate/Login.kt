@@ -73,9 +73,9 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             val serviceProgress: ArrayList<String> = arrayListOf()//JSONArray = JSONObject(it[0].toString()).getJSONArray("progress")
 //                val serviceName: String = JSONObject(it[0].toString()).getJSONArray("progress")
 
-                            delegatedServiceEntity.serviceId = serviceId
+                            /*delegatedServiceEntity.serviceId = serviceId
                             delegatedServiceEntity.delegatedProductId = delegatedProductId
-                            delegatedServiceEntity.serviceAgentId = serviceAgentId
+                            delegatedServiceEntity.serviceAgentId = serviceAgentId*/
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
                             Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
                             delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)

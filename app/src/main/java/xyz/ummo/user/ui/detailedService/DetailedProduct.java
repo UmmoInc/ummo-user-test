@@ -139,11 +139,11 @@ public class DetailedProduct extends AppCompatActivity {
                 Timber.e("onCreate: Within ProductVM: ProductModel ID->%s", _productId);
                 _description = productEntity1.getProductDescription();
                 _cost = productEntity1.getProductCost();
-                _duration = productEntity1.getProductDuration();
+//                _duration = productEntity1.getProductDuration();
 
                 stepsList = new ArrayList<>(productEntity1.getProductSteps());
 
-                docsList = new ArrayList<>(productEntity1.getProductDocuments());
+//                docsList = new ArrayList<>(productEntity1.getProductDocuments());
 
                 //Filling in UI components
                 toolbar.setTitle(_serviceName);
@@ -187,105 +187,109 @@ public class DetailedProduct extends AppCompatActivity {
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.steps_list, R.id.step, stepsList);
 
-        requestAgentBtn.setOnClickListener(v -> {
-
-            if (mixpanel != null) {
-                mixpanel.track("requestAgentTapped");
-            }
-
-            progress.setTitle("Agent Request");
-            progress.setMessage(agentRequestStatus);
-            progress.show();
-
-            String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
-
-            Timber.e("onCreate: SERVICE-ID->%s", _serviceId);
-
-            if (jwt != null) {
-                new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),_productId){
-                    @Override
-                    public void done(@NotNull byte[] data, int code) {
-                        Timber.e("delegatedService: Done->%s", new String(data));
-                        Timber.e("delegatedService: Status Code->%s", code);
-
-                        progress.dismiss();
-
-                        if (code == 200){
-                            try {
-                                agentDelegate = new JSONObject(new String(data));
-                                agentName = agentDelegate.getString("name");
-
-                                Timber.e("done: agentName->%s", agentName);
-
-                                agentRequestDialog.setTitle("Agent Delegate");
-//                                agentRequestDialog.setIcon()
-                                agentRequestDialog.setMessage(agentName+ " is available...");
-                                agentRequestDialog.setPositiveButton("Continue", (dialog, which) -> {
-
-                                    if (mixpanel != null) {
-                                        mixpanel.track("requestAgentContinue");
-                                    }
-
-                                    agentRequestStatus = "Waiting for a response from "+agentName+"...";
-                                    ProgressDialog progress = new ProgressDialog(DetailedProduct.this);
-                                    progress.setTitle("Agent Request");
-                                    progress.setMessage(agentRequestStatus);
-                                    progress.show(); // TODO: 10/22/19 -> handle leaking window
-                                    editor.clear(); //Removing old key-values from a previous session
-
-                                    editor.putString("DELEGATED_AGENT", agentName);
-                                    editor.putString("DELEGATED_PRODUCT", _productId);
-                                    editor.apply();
-                                });
-                                agentRequestDialog.show();
-
-                                detailedProductViewModel.getProductEntityLiveDataById(_productId).observe(DetailedProduct.this, productEntity1 ->{
-                                    productEntity1.setIsDelegated(true);
-                                    Timber.e("done: isDelegated-> TRUE");
-                                });
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (code == 404){
-                            Timber.e("done: Status Code 500!!!");
-
-                            agentNotFoundDialog.setTitle("Agent Delegate");
-                            agentNotFoundDialog.setMessage("No Agent currently available.");
-                            agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
-
-                                if (mixpanel != null) {
-                                    mixpanel.track("requestAgentDismiss");
-                                }
-
-                                Timber.e("done: Dismissed!");
-                                requestAgentBtn.setText(getResources().getString(R.string.retry_agent_request));
-                            });
-                            agentNotFoundDialog.show();
-
-                        }else{
-                            Timber.e("done: Status Code 500!!!");
-
-                            Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
-
-                            agentNotFoundDialog.setTitle("Agent Delegate");
-                            agentNotFoundDialog.setMessage("We honestly don't know what happened, please check if there is internet");
-                            agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
-                                Timber.e("done: Dismissed!");
-                                requestAgentBtn.setText("RETRY AGENT REQUEST");
-                            });
-                            agentNotFoundDialog.show();
-                        }
-//                            progress.setMessage(getResources().getString(R.string.loading_agent_message));
-                    }
-                };
-            }
-        });
+        requestAgentBtn.setOnClickListener(v -> requestAgentDelegate(_productId));
 
         mCollapsingToolbarLayout.setTitle(_serviceName);
         mCollapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         mCollapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
 
+    }
+
+    public void requestAgentDelegate(String mProductId) {
+
+        SharedPreferences detailedProductPrefs = getSharedPreferences(ummoUserPreferences, mode);
+        SharedPreferences.Editor editor;
+        editor = detailedProductPrefs.edit();
+            /*if (mixpanel != null) {
+                mixpanel.track("requestAgentTapped");
+            }*/
+
+        progress.setTitle("Agent Request");
+        progress.setMessage(agentRequestStatus);
+        progress.show();
+
+        String jwt = PreferenceManager.getDefaultSharedPreferences(DetailedProduct.this).getString("jwt", "");
+
+        if (jwt != null) {
+            assert mProductId != null;
+            new DelegateService(DetailedProduct.this, User.Companion.getUserId(jwt),mProductId){
+                @Override
+                public void done(@NotNull byte[] data, int code) {
+                    Timber.e("delegatedService: Done->%s", new String(data));
+                    Timber.e("delegatedService: Status Code->%s", code);
+
+                    progress.dismiss();
+
+                    if (code == 200){
+                        try {
+                            agentDelegate = new JSONObject(new String(data));
+                            agentName = agentDelegate.getString("name");
+
+                            Timber.e("done: agentName->%s", agentName);
+
+                            agentRequestDialog.setTitle("Agent Delegate");
+//                                agentRequestDialog.setIcon()
+                            agentRequestDialog.setMessage(agentName+ " is available...");
+                            agentRequestDialog.setPositiveButton("Continue", (dialog, which) -> {
+
+                                    /*if (mixpanel != null) {
+                                        mixpanel.track("requestAgentContinue");
+                                    }*/
+
+                                agentRequestStatus = "Waiting for a response from "+agentName+"...";
+                                ProgressDialog progress = new ProgressDialog(DetailedProduct.this);
+                                progress.setTitle("Agent Request");
+                                progress.setMessage(agentRequestStatus);
+                                progress.show(); // TODO: 10/22/19 -> handle leaking window
+                                editor.clear(); //Removing old key-values from a previous session
+
+                                editor.putString("DELEGATED_AGENT", agentName);
+                                editor.putString("DELEGATED_PRODUCT", mProductId);
+                                editor.apply();
+                            });
+                            agentRequestDialog.show();
+
+                            detailedProductViewModel.getProductEntityLiveDataById(mProductId).observe(DetailedProduct.this, productEntity1 ->{
+                                productEntity1.setIsDelegated(true);
+                                Timber.e("done: isDelegated-> TRUE");
+                            });
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (code == 404){
+                        Timber.e("done: Status Code 500!!!");
+
+                        agentNotFoundDialog.setTitle("Agent Delegate");
+                        agentNotFoundDialog.setMessage("No Agent currently available.");
+                        agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
+
+                                /*if (mixpanel != null) {
+                                    mixpanel.track("requestAgentDismiss");
+                                }*/
+
+                            Timber.e("done: Dismissed!");
+                            requestAgentBtn.setText(getResources().getString(R.string.retry_agent_request));
+                        });
+                        agentNotFoundDialog.show();
+
+                    }else{
+                        Timber.e("done: Status Code 500!!!");
+
+                        Toast.makeText(DetailedProduct.this, "BOMDAS!", Toast.LENGTH_LONG).show();
+
+                        agentNotFoundDialog.setTitle("Agent Delegate");
+                        agentNotFoundDialog.setMessage("We honestly don't know what happened, please check if there is internet");
+                        agentNotFoundDialog.setPositiveButton("Dismiss", (dialog, which) -> {
+                            Timber.e("done: Dismissed!");
+                            requestAgentBtn.setText("RETRY AGENT REQUEST");
+                        });
+                        agentNotFoundDialog.show();
+                    }
+//                            progress.setMessage(getResources().getString(R.string.loading_agent_message));
+                }
+            };
+        }
     }
 
     @Override

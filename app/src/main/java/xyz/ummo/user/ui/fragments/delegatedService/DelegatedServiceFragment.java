@@ -34,6 +34,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
+import timber.log.Timber;
 import xyz.ummo.user.DelegationChat;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
@@ -62,7 +64,7 @@ public class DelegatedServiceFragment extends Fragment {
 
     private TextView agentNameTextView, agentStatusTextView,
             delegatedProductNameTextView, delegatedProductDescriptionTextView,
-            delegatedProductCostTextView, delegatedProductDurationTextView,
+            delegatedProductCostTextView, /*delegatedProductDurationTextView,*/
             delegatedServiceDocsTextView, delegatedServiceStepsTextView;
     private ProgressBar progressBar;
     private ArrayList<TextView> stepsTV = new ArrayList<>();
@@ -78,7 +80,6 @@ public class DelegatedServiceFragment extends Fragment {
     private final String ummoUserPreferences = "UMMO_USER_PREFERENCES";
 
     private OnFragmentInteractionListener mListener;
-    private static final String TAG = "DelegatedServiceFragmen";
     private DelegatedServiceViewModel delegatedServiceViewModel;
     private DetailedProductViewModel detailedProductViewModel;
     private DelegatedServiceEntity delegatedServiceEntity = new DelegatedServiceEntity();
@@ -87,12 +88,12 @@ public class DelegatedServiceFragment extends Fragment {
 
     public DelegatedServiceFragment(DelegatedServiceEntity entity) {
 
-            delegatedServiceEntity = entity;
+        delegatedServiceEntity = entity;
 
         // Required empty public constructor
     }
 
-    public DelegatedServiceFragment(){
+    public DelegatedServiceFragment() {
 
     }
 
@@ -110,7 +111,7 @@ public class DelegatedServiceFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
-        Log.e(TAG, "newInstance: Setargument"+args );
+        Timber.e("newInstance: SetArgument%s", args);
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,7 +129,7 @@ public class DelegatedServiceFragment extends Fragment {
         if (getArguments() != null) {
 
             SharedPreferences sharedPreferences = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
-            agentName = sharedPreferences.getString("DELEGATED_AGENT","");
+            agentName = sharedPreferences.getString("DELEGATED_AGENT", "");
 
             serviceId = getArguments().getString("SERVICE_ID");
             serviceAgentId = getArguments().getString("SERVICE_AGENT_ID");
@@ -136,7 +137,7 @@ public class DelegatedServiceFragment extends Fragment {
 
             delegatedServiceViewModel = ViewModelProviders.of(this)
                     .get(DelegatedServiceViewModel.class);
-            Log.e(TAG, "onCreate: Service id"+serviceId );
+            Timber.e("onCreate: Service id%s", serviceId);
 
 //            delegatedServiceEntity = delegatedServiceViewModel.getDelegatedServiceEntityLiveData();//getDelegatedServiceById(serviceId).getValue();
 
@@ -145,9 +146,9 @@ public class DelegatedServiceFragment extends Fragment {
                     .get(DetailedProductViewModel.class);
         }
 
-        Log.e(TAG, "onCreate: arguments: SERVICE-ID->"+serviceId);
-        Log.e(TAG, "onCreate: arguments: SERVICE-AGENT-ID->"+serviceAgentId);
-        Log.e(TAG, "onCreate: arguments: DELEGATED-PRODUCT-ID->"+delegatedProductId);
+        Timber.e("onCreate: arguments: SERVICE-ID->%s", serviceId);
+        Timber.e("onCreate: arguments: SERVICE-AGENT-ID->%s", serviceAgentId);
+        Timber.e("onCreate: arguments: DELEGATED-PRODUCT-ID->%s", delegatedProductId);
     }
 
     @Override
@@ -158,7 +159,7 @@ public class DelegatedServiceFragment extends Fragment {
         agentNameTextView = view.findViewById(R.id.delegated_agent_name_text_view);
         agentStatusTextView = view.findViewById(R.id.delegated_agent_status_text_view);
         openChat = view.findViewById(R.id.open_chat_button);
-        progressBar =  view.findViewById(R.id.service_progress_bar);
+        progressBar = view.findViewById(R.id.service_progress_bar);
 
         goToDelegationChat(view);
 
@@ -167,40 +168,41 @@ public class DelegatedServiceFragment extends Fragment {
         delegatedProductNameTextView = view.findViewById(R.id.delegated_service_header_name);
         delegatedProductDescriptionTextView = view.findViewById(R.id.description_text_view);
         delegatedProductCostTextView = view.findViewById(R.id.service_cost_text_view);
-        delegatedProductDurationTextView = view.findViewById(R.id.service_duration_text_view);
+//        delegatedProductDurationTextView = view.findViewById(R.id.service_duration_text_view);
 
-        delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
+//        delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
         delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout);
 
-        Log.e(TAG, "onCreateView: New product id"+delegatedProductId);
+        Timber.e("onCreateView: New product id%s", delegatedProductId);
 
         detailedProductViewModel.getProductEntityLiveDataById(delegatedProductId).observe(getViewLifecycleOwner(), delegatedProductEntity -> {
 
+            //TODO: BUG!
             productName = delegatedProductEntity.getProductName();
 
-            Log.e(TAG, "onCreateView: DELEGATED PRODUCT->"+delegatedProductEntity.getProductName());
+            Timber.e("onCreateView: DELEGATED PRODUCT->%s", delegatedProductEntity.getProductDuration());
             delegatedProductNameTextView.setText(delegatedProductEntity.getProductName());
             delegatedProductDescriptionTextView.setText(delegatedProductEntity.getProductDescription());
             delegatedProductCostTextView.setText(delegatedProductEntity.getProductCost());
-            delegatedProductDurationTextView.setText(delegatedProductEntity.getProductDuration());
+//            delegatedProductDurationTextView.setText(delegatedProductEntity.getProductDuration());
 
-            docsList = new ArrayList<>(delegatedProductEntity.getProductDocuments());
-            stepsList = new ArrayList<>(delegatedProductEntity.getProductSteps());
-            if (!docsList.isEmpty()){
+//            docsList = new ArrayList<>(delegatedProductEntity.getProductDocuments());
+            /*if (!docsList.isEmpty()) {
                 delegatedProductDocsLayout.removeAllViews();
-                for (int i = 0; i < docsList.size(); i++){
+                for (int i = 0; i < docsList.size(); i++) {
                     delegatedServiceDocsTextView = new TextView(getContext());
                     delegatedServiceDocsTextView.setId(i);
                     delegatedServiceDocsTextView.setText(delegatedProductEntity.getProductDocuments().get(i));
                     delegatedServiceDocsTextView.setTextSize(14);
                     delegatedProductDocsLayout.addView(delegatedServiceDocsTextView);
                 }
-            }
+            }*/
 
-            if (!stepsList.isEmpty()){
+            stepsList = new ArrayList<>(delegatedProductEntity.getProductSteps());
+            if (!stepsList.isEmpty()) {
                 delegatedProductStepsLayout.removeAllViews();
                 stepsTV.clear();
-                for (int i = 0; i < stepsList.size(); i++){
+                for (int i = 0; i < stepsList.size(); i++) {
                     delegatedServiceStepsTextView = new TextView(getContext());
                     delegatedServiceStepsTextView.setId(i);
                     delegatedServiceStepsTextView.setText(delegatedProductEntity.getProductSteps().get(i));
@@ -209,10 +211,10 @@ public class DelegatedServiceFragment extends Fragment {
                     stepsTV.add(delegatedServiceStepsTextView);
 
                     delegatedServiceViewModel.getDelegatedServiceEntityLiveData().observe(getViewLifecycleOwner(), delegatedServiceEntity1 -> {
-                        Log.e(TAG, "onCreateView: Steps "+delegatedServiceEntity1.getServiceProgress()+ " "+ delegatedServiceStepsTextView.getText().toString());
+                        Timber.e("onCreateView: Steps " + delegatedServiceEntity1.getServiceProgress() + " " + delegatedServiceStepsTextView.getText().toString());
 
-                        if (delegatedServiceEntity1.getServiceProgress().contains( delegatedServiceStepsTextView.getText().toString())){
-                            Log.e(TAG, "onCreateView: Cross" );
+                        if (delegatedServiceEntity1.getServiceProgress().contains(delegatedServiceStepsTextView.getText().toString())) {
+                            Timber.e("onCreateView: Cross");
                             delegatedServiceStepsTextView.setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         }
 
@@ -225,8 +227,8 @@ public class DelegatedServiceFragment extends Fragment {
                 //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepsTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
 
                 /*
-                *This below 'for-loop' undoes the striking out of service steps (which should not be a likely scenario to occur)
-                */
+                 *This below 'for-loop' undoes the striking out of service steps (which should not be a likely scenario to occur)
+                 */
                 for (int i = 0; i < stepsTV.size(); i++) {
                     stepsTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 }
@@ -235,35 +237,35 @@ public class DelegatedServiceFragment extends Fragment {
                  *This line below correlates the progress with the number of steps checked off
                  */
 
-                int progressPercentage = (progress.size()/stepsTV.size())*100;
-                progressBar.setProgress((progress.size()*100/ stepsTV.size()));
+                int progressPercentage = (progress.size() / stepsTV.size()) * 100;
+                progressBar.setProgress((progress.size() * 100 / stepsTV.size()));
 
-                Log.e(TAG, "onCreateView: %->"+ progressPercentage);
+                Timber.e("onCreateView: ->%s", progressPercentage);
 
                 /*
                  *This below 'for-loop' strikes out service steps (according to the agent's progress)
                  */
                 for (int i = 0; i < progress.size(); i++) {
                     for (int j = 0; j < stepsTV.size(); j++) {
-                        if(progress.contains(stepsTV.get(j).getText().toString())){
+                        if (progress.contains(stepsTV.get(j).getText().toString())) {
                             stepsTV.get(j).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         }
 
-                        Log.e(TAG, "onCreateView: StepsTV.SIZE->"+stepsTV.size()+"Progress.SIZE->"+progress.size());
+                        Timber.e("onCreateView: StepsTV.SIZE->" + stepsTV.size() + "Progress.SIZE->" + progress.size());
                     }
                 }
 
-                Log.e(TAG, "onCreateView: hasConfirmed->"+hasConfirmed);
-                if (progressPercentage == 100 && !hasConfirmed){
+                Timber.e("onCreateView: hasConfirmed->%s", hasConfirmed);
+                if (progressPercentage == 100 && !hasConfirmed) {
                     getActivity().runOnUiThread(() -> {
-                        Log.e(TAG, "onCreateView: StepsTV.SIZE->"+stepsTV.size()+"Progress.SIZE->"+progress.size());
+                        Timber.e("onCreateView: StepsTV.SIZE->" + stepsTV.size() + "Progress.SIZE->" + progress.size());
 
                         confirmReceiptDialog.setTitle("Confirm Receipt");
                         confirmReceiptDialog.setMessage("Please confirm that you have received the product...");
                         confirmReceiptDialog.setButton(Dialog.BUTTON_POSITIVE, "Confirm", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                new ConfirmService(getContext(),serviceId){
+                                new ConfirmService(getContext(), serviceId) {
                                     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
                                     @Override
                                     public void done(@NotNull byte[] data, int code) {
@@ -272,8 +274,8 @@ public class DelegatedServiceFragment extends Fragment {
 
 //                                        Log.e(TAG, "onCreateView: hasConfirmed->"+hasConfirmed);
 
-                                       hasConfirmed = true;
-                                       startActivity(new Intent(getContext(), Feedback.class));
+                                        hasConfirmed = true;
+                                        startActivity(new Intent(getContext(), Feedback.class));
 
                                     }
                                 };
@@ -296,7 +298,7 @@ public class DelegatedServiceFragment extends Fragment {
         return view;
     }
 
-    private void goToDelegationChat(View view){
+    private void goToDelegationChat(View view) {
         openChat = view.findViewById(R.id.open_chat_button);
 
         delegatedServiceViewModel
@@ -332,13 +334,15 @@ public class DelegatedServiceFragment extends Fragment {
             startActivity(chatIntent);
         });
 
-        SharedPreferences delegatedServiceFragPrefs = Objects.requireNonNull(getActivity()).getSharedPreferences(ummoUserPreferences, mode);
+        SharedPreferences delegatedServiceFragPrefs = Objects.requireNonNull(getActivity())
+                .getSharedPreferences(ummoUserPreferences, mode);
 
         if (getArguments() != null) {
             serviceId = getArguments().getString("SERVICE_ID");
-            agentName = delegatedServiceFragPrefs.getString("DELEGATED_AGENT","");
+            agentName = delegatedServiceFragPrefs.getString("DELEGATED_AGENT", "");
         }
     }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

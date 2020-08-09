@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import timber.log.Timber;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.delegate.get;
 import xyz.ummo.user.ui.detailedService.DetailedProduct;
@@ -102,7 +103,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
 
             intent.putExtra("product_id",p.getId());
             v.getContext().startActivity(intent);
-            Log.e(TAG, "onBindViewHolder: onClick->"+intent.getExtras().toString());
+            Timber.e("onBindViewHolder: onClick->%s", intent.getExtras().toString());
 
             String stepsWithBlocks = p.getSteps();
             String unpackedSteps = unpackBlockedString(stepsWithBlocks);
@@ -122,7 +123,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             productEntity.setProductDuration(p.getDuration());
             productEntity.setIsDelegated(false);
             detailedProductViewModel.insertProduct(productEntity);
-            Log.e(TAG, "onClick: DOCS->"+productEntity.getProductDocuments());
         });
     }
 

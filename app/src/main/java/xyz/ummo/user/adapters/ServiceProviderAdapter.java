@@ -1,5 +1,6 @@
 package xyz.ummo.user.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
@@ -35,13 +37,12 @@ import xyz.ummo.user.utilities.ServiceProviderViewModel;
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
 
     private List<PublicServiceData> serviceProviderList;
-    private static final String TAG = "ServiceProviderAdapter";
     private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
     private ServiceProviderViewModel serviceProviderViewModel;
 
     Activity context;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView serviceProviderName, moreText;
         RelativeLayout serviceProviderBackground;
@@ -99,7 +100,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         serviceProviderEntity.setServiceProviderTown(serviceProviderList.get(position).getTown());
         serviceProviderViewModel.insertServiceProvider(serviceProviderEntity);
 
-        Log.e(TAG, "onBindViewHolder: SERVICE-PROVIDER-LIST->"+serviceProviderList.get(position).getServiceName());
+        Timber.e("onBindViewHolder: SERVICE-PROVIDER-LIST->%s", serviceProviderList.get(position).getServiceName());
         addProduct(holder);
     }
 
@@ -111,13 +112,16 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
     public void addProduct(MyViewHolder holder) {
 
         new GetProducts(context, holder.publicServiceData.getServiceCode()) {
+            @SuppressLint("TimberArgCount")
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
                 try {
                     JSONArray arr = new JSONArray(new String(data));
+
+                    Timber.e("PRODUCT JSON-ARRAY ->%s", arr);
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject obj = arr.getJSONObject(i);
-//                        Log.e("ServiceProviderAdapter", obj.toString());
+                        Timber.e("PRODUCT JSON-OBJECT ->%s", obj);
                         holder.providers.add(
                                 new Product(obj.getString("product_name"),
                                         holder.publicServiceData.getTown(),
@@ -138,7 +142,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
                     holder.productAdapter.notifyDataSetChanged();
 
                 } catch (JSONException jse) {
-                    Log.e("ServiceProviderAdapter", jse.toString());
+                    Timber.e("ServiceProviderAdapter", jse.toString());
                 }
             }
         };

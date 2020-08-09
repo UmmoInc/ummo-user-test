@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import timber.log.Timber;
 import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.DelegationChat;
 import xyz.ummo.user.Feedback;
@@ -73,15 +74,13 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
 //            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
                 delegatedServiceFragment.setArguments(bundle);
 
-                Log.e("DelegatedServiceAdapter", "onClick: "+ delegatedService.getAgentId()+" "+delegatedService.getProductId());
+                Timber.e("onClick: " + delegatedService.getAgentId() + " " + delegatedService.getProductId());
 
                 FragmentTransaction fragmentTransaction = MainScreen.Companion.getSupportFM().beginTransaction();
                 fragmentTransaction.replace(R.id.frame, delegatedServiceFragment);
                 fragmentTransaction.commit();
             }
         });
-
-
     }
 
     @Override
@@ -89,5 +88,4 @@ public class DelegatedServiceAdapter extends RecyclerView.Adapter<DelegatedServi
         return delegatedServicesList.size();
 
     }
-
 }

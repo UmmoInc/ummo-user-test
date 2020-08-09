@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
 import xyz.ummo.user.DelegatedService;
 import xyz.ummo.user.Progress;
 import xyz.ummo.user.R;
@@ -168,19 +169,19 @@ public class DelegatedServicesFragment extends Fragment {
         new Service(getActivity()){
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
-                getActivity().runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() { //TODO: BUG
                     @Override
                     public void run() {
                         try {
                             JSONArray jsonArray = new JSONArray(new String(data));
                             delegatedServiceArrayList.clear();
-                            Log.e(TAG, "run: "+new String(data));
+                            Timber.e("run: %s", new String(data));
                             for (int i= 0; i<jsonArray.length();i++){
                                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                                 JSONObject agentObject = jsonObject.getJSONObject("agent");
                                 JSONObject productObject = jsonObject.getJSONObject("product");
 
-                                Log.e("_ID",jsonObject.getString("_id"));
+                                Timber.e(jsonObject.getString("_id"));
 
                                 DelegatedService delegatedService = new DelegatedService(
                                         productObject.getString("product_name"),
@@ -192,7 +193,7 @@ public class DelegatedServicesFragment extends Fragment {
                                 );
                                 delegatedServiceArrayList.add(delegatedService);
 
-                                Log.e("tag", jsonObject.toString());
+                                Timber.e(jsonObject.toString());
 
                             }
 
@@ -200,7 +201,7 @@ public class DelegatedServicesFragment extends Fragment {
                             delegatedServiceAdapter.notifyDataSetChanged();
 
                         }catch (JSONException e){
-                            Log.e(TAG, "addDelegatedServices: newService JSE -> "+e.toString());
+                            Timber.e("addDelegatedServices: newService JSE -> %s", e.toString());
                         }
                     }
                 });

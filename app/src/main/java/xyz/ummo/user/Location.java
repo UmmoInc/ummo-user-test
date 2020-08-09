@@ -560,7 +560,7 @@ public class Location extends FragmentActivity implements OnMyLocationButtonClic
 
 
             String _id = new PrefManager(this).getUserId();
-            new UpdateUserLocation(this,lat,lng,_id){
+            new UpdateUserLocation(lat,lng,_id){
                 @Override
                 public void done(@NotNull byte[] data, @NotNull Number code) {
                     Log.e("Location",""+code);

@@ -135,8 +135,8 @@
 
                 <ImageView
                     android:id="@+id/request_agent_image_view"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@string/save_service"

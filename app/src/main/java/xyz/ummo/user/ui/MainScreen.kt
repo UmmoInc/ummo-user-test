@@ -38,18 +38,14 @@ import xyz.ummo.user.ui.fragments.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentres
+import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
 import java.util.*
 
 class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
 
     private val fragment: Fragment? = null
 
-//    private var drawer: DrawerLayout? = null
-    private var navigationView: NavigationView? = null
-    private var navigationHeader: View? = null
-    private var navHeaderUserName: TextView? = null
-    private var navHeaderUserEmail: TextView? = null
+    private var startFragmentExtra: Int = 0
     private var toolbar: Toolbar? = null
     private var messageIconButton: ImageView? = null
     private var circularProgressBarButton: ProgressBar? = null
@@ -64,7 +60,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     // flag to load home fragment when user presses back key
     private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
-    private val mode = Activity.MODE_PRIVATE
     private val delegatedServiceEntity = DelegatedServiceEntity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,12 +76,46 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
         /**
-        * Starting DelegatedServiceFragment
-        **/
-
-        val startFragmentExtra: Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
+         * Starting DelegatedServiceFragment
+         **/
+        startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
         Timber.e("StartingFragment->$startFragmentExtra")
+        checkForAndLaunchDelegatedFragment()
+
+        mAuth = FirebaseAuth.getInstance()
+
+        val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
+
+        val userNamePref = mainActPrefs.getString("USER_NAME", "")
+        val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
+
+        Timber.e("Username-> $userNamePref")
+
+//        logoutClick() //TODO: to reconsider implementation
+
+        //initialise  the toolbar icons message icon and circular progress bar icon
+        messageIconButton = findViewById(R.id.message_icon_button)
+        circularProgressBarButton = findViewById(R.id.circular_progressbar_btn)
+
+        circularProgressBarButton!!.progress = serviceProgress
+
+        mHandler = Handler()
+
+        if (savedInstanceState == null) {
+            navItemIndex = 0
+
+            CURRENT_TAG = TAG_HOME
+
+        }
+
+        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        bottomNavigation.selectedItemId = R.id.nav_home
+    }
+
+    private fun checkForAndLaunchDelegatedFragment() {
+        Timber.e("StartFragment->$startFragmentExtra")
 
         if (startFragmentExtra == 1) {
             Timber.e("Starting DelegatedServiceFrag!")
@@ -95,11 +124,11 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             val serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")
             var progress = ArrayList<String>()
 
-            try {
+            /*try {
                 progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
             } catch (jse: JSONException) {
                 Timber.e("ISSUE with progress -> $jse")
-            }
+            }*/
 
             val bundle = Bundle()
             val serviceId = intent.extras!!.getString("SERVICE_ID")
@@ -127,62 +156,17 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             object : PublicService(this) {
                 override fun done(data: List<PublicServiceData>, code: Number) {
-                    if (code == 200)
-                        loadHomeFragment(data)
+                    if (code == 200) {
+
+                        val serviceCentreFragment = ServiceCentresFragment()
+                        openFragment(serviceCentreFragment)
+                    }
+//                        loadHomeFragment(data)
                     Timber.e("PUBLIC SERVICE DATA -> $data")
                     //Do something with list of services
                 }
             }
         }
-
-        mAuth = FirebaseAuth.getInstance()
-
-        val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
-
-        val userNamePref = mainActPrefs.getString("USER_NAME", "")
-        val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
-
-        Timber.e("Username-> $userNamePref")
-
-//        logoutClick() //TODO: to reconsider implementation
-
-        //initialise  the toolbar icons message icon and circular progress bar icon
-        messageIconButton = findViewById(R.id.message_icon_button)
-        circularProgressBarButton = findViewById(R.id.circular_progressbar_btn)
-
-        circularProgressBarButton!!.progress = serviceProgress
-
-        mHandler = Handler()
-
-//        drawer = findViewById(R.id.drawer_layout)
-//        val toggle = ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-//        drawer!!.addDrawerListener(toggle)
-//        toggle.syncState()
-
-//        navigationView = findViewById(R.id.nav_view)
-//        navigationView!!.setNavigationItemSelectedListener(this)
-
-//        navigationHeader = navigationView!!.getHeaderView(0)
-//        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
-//        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
-
-//        navHeaderUserName!!.text = userNamePref
-//        navHeaderUserEmail!!.text = userEmailPref
-
-        // initializing navigation menu
-//        setUpNavigationView()
-
-        if (savedInstanceState == null) {
-            navItemIndex = 0
-
-            CURRENT_TAG = TAG_HOME
-
-        }
-
-        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
-        bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        bottomNavigation.selectedItemId = R.id.nav_home
     }
 
     private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
@@ -205,29 +189,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         } else {
             super.onBackPressed()
         }
-    }
-
-    private fun displaySelectedScreen(itemId: Int) {
-        var selectedFragment: Fragment? = null
-
-        var data: List<PublicServiceData>
-
-        when (itemId) {
-            R.id.nav_home -> selectedFragment = HomeFragment()
-            R.id.nav_profile -> selectedFragment = ProfileFragment()
-//            R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
-//            R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
-        }
-
-        if (selectedFragment != null) {
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, selectedFragment)
-            fragmentTransaction.commit()
-        }
-
-        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        drawerLayout.closeDrawers()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -270,12 +231,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     }
 
     private fun loadHomeFragment(data: List<PublicServiceData>) {
-        // if user select the current navigation menu again, don't do anything
-        // just close the navigation drawer
-//        if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
-//            drawer!!.closeDrawers()
-//            return
-//        }
+
         val mPendingRunnable = Runnable {
             // update the main content by replacing fragments
             val fragment = getHomeFragment(data)
@@ -285,14 +241,8 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             fragmentTransaction.commitAllowingStateLoss()
         }
 
-        // If mPendingRunnable is not null, then add to the message queue
-
         mHandler!!.post(mPendingRunnable)
 
-        //Closing drawer on item click
-//        drawer!!.closeDrawers()
-
-        // refresh toolbar menu
         invalidateOptionsMenu()
     }
 
@@ -335,34 +285,6 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         }
     }
 
-    /*private fun setUpNavigationView() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        navigationView!!.setNavigationItemSelectedListener { menuItem ->
-
-            displaySelectedScreen(menuItem.itemId)
-            //Checking if the item is in checked state or not, if not make it in checked state
-            menuItem.isChecked = !menuItem.isChecked
-            menuItem.isChecked = true
-
-            // loadHomeFragment(data);
-
-            true
-        }
-
-        val actionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
-
-        }
-
-        //Setting the actionbarToggle to drawer layout
-        drawer?.setDrawerListener(actionBarDrawerToggle)
-
-        //calling sync state is necessary or else your hamburger icon wont show up
-        actionBarDrawerToggle.syncState()
-    }*/
-
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
@@ -371,7 +293,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
             R.id.navigation_home -> {
 //                val homeFragment = HomeFragment()
-                val serviceCentreFragment =  ServiceCentres()
+                val serviceCentreFragment = ServiceCentresFragment()
                 openFragment(serviceCentreFragment)
 
                 mixpanel?.track("homeTapped_bottomNav")
@@ -385,7 +307,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_profile-> {
+            R.id.navigation_profile -> {
                 val profileFragment = ProfileFragment()
                 openFragment(profileFragment)
 
@@ -478,17 +400,14 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
     companion object {
         // tags used to attach the fragments
-        private val TAG_HOME = "home"
-        private val TAG_PROFILE = "profile"
-        private val TAG_PAYMENTS = "paymentMethods"
-        private val TAG_SERVICE_HISTORY = "serviceHistory"
-        private val TAG_LEGAL_TERMS = "legalTerms"
+        private const val TAG_HOME = "home"
         var CURRENT_TAG = TAG_HOME
-        lateinit var supportFM : FragmentManager
+        lateinit var supportFM: FragmentManager
 
         // index to identify current nav menu item
         var navItemIndex = 0
         private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
+        private const val mode = Activity.MODE_PRIVATE
         private const val TAG = "MainScreen"
     }
 }
