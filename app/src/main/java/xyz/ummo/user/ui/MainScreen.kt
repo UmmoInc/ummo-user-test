@@ -122,7 +122,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             val delegatedServiceFragment = DelegatedServiceFragment()
             val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
             val serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")
-            var progress = ArrayList<String>()
+            val progress = ArrayList<String>()
 
             /*try {
                 progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))

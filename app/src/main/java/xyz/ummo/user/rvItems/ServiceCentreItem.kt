@@ -48,7 +48,7 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     init {
         progress = ProgressDialog(context)
         serviceCentreItemPrefs = context!!.getSharedPreferences(ummoUserPreferences, mode)
-        productId = serviceCentreItemPrefs.getString("PRODUCT_ID","")!!
+        productId = serviceCentreItemPrefs.getString("PRODUCT_ID", "")!!
     }
 
     override fun getLayout(): Int {
@@ -116,17 +116,24 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
 
                     when (code) {
                         200 -> {
+                            alertDialog.dismiss()
+
+                            Timber.e("CODE IS $code")
                             agentRequestDialog.setTitle("Bleh Bleh")
                             agentRequestDialog.setMessage("Blah Blah Blah")
-                            agentRequestDialog.setPositiveButton("Continue...") { dialogInterface: DialogInterface?, i: Int ->
+                            agentRequestDialog.setPositiveButton("Continue...")
+                            { dialogInterface: DialogInterface?, i: Int ->
                                 Timber.e("GOING ON!")
 
                             }
                         }
                         404 -> {
+                            Timber.e("CODE IS $code")
+
                             agentRequestDialog.setTitle("Meh")
                             agentRequestDialog.setMessage("Blah Blah Blah")
-                            agentRequestDialog.setPositiveButton("Continue...") { dialogInterface: DialogInterface?, i: Int ->
+                            agentRequestDialog.setPositiveButton("Continue...")
+                            { dialogInterface: DialogInterface?, i: Int ->
                                 Timber.e("GOING OFF!")
 
                             }
@@ -136,7 +143,7 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
             }
         }
 
-        if (jwt != null) {
+        /*if (jwt != null) {
             object : DelegateService(context, User.getUserId(jwt!!), mProductId) {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
@@ -193,6 +200,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                     }
                 }
             }
-        }
+        }*/
     }
 }

@@ -141,7 +141,6 @@ public class DelegatedServiceFragment extends Fragment {
 
 //            delegatedServiceEntity = delegatedServiceViewModel.getDelegatedServiceEntityLiveData();//getDelegatedServiceById(serviceId).getValue();
 
-
             detailedProductViewModel = ViewModelProviders.of(this)
                     .get(DetailedProductViewModel.class);
         }
@@ -226,9 +225,9 @@ public class DelegatedServiceFragment extends Fragment {
                 ArrayList<String> progress = delegatedServiceEntity1.getServiceProgress();
                 //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepsTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
 
-                /*
+                /**
                  *This below 'for-loop' undoes the striking out of service steps (which should not be a likely scenario to occur)
-                 */
+                 **/
                 for (int i = 0; i < stepsTV.size(); i++) {
                     stepsTV.get(i).setPaintFlags(delegatedServiceStepsTextView.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 }

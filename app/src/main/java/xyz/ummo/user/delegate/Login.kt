@@ -49,12 +49,12 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
 
                         initializeSocket(User.getUserId(jwt))
                         //SocketIO.mSocket?.connect()
-                        SocketIO.mSocket?.on("connect", Emitter.Listener {
-                           Timber.e("Connected to ")
-                        })
-                        SocketIO.mSocket?.on("message1", Emitter.Listener {
+                        SocketIO.mSocket?.on("connect") {
+                            Timber.e("Connected to ")
+                        }
+                        SocketIO.mSocket?.on("message1") {
                             Timber.e(it[0].toString())
-                        })
+                        }
 
                         SocketIO.mSocket?.on("service-created", Emitter.Listener {
                             val intent = Intent(context, MainScreen::class.java)

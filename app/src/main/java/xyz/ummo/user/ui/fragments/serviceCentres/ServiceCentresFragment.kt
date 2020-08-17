@@ -34,6 +34,7 @@ class ServiceCentresFragment : Fragment() {
 
     /** ServiceCentresFragment View Binder **/
     private lateinit var serviceCentresRvBinding: FragmentServiceCentresRvBinding
+
     /** Groupie Adapter - for quickly rendering recycler-views **/
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
     private lateinit var recyclerView: RecyclerView
@@ -104,96 +105,16 @@ class ServiceCentresFragment : Fragment() {
 
         object : PublicService(requireActivity()) {
             override fun done(data: List<PublicServiceData>, code: Number) {
+
+                Timber.e("LENGTH -> ${data.size}")
+
                 if (code == 200) {
                     publicServiceData.addAll(data)
                     Timber.e(" GETTING SERVICE CENTRE DATA ->%s", publicServiceData)
 
                     getProductData(requireActivity(), publicServiceData[0].serviceCode)
 
-                    /*object : GetProducts(requireActivity(), publicServiceData[0].serviceCode) {
-                        override fun done(data: ByteArray, code: Number) {
-                            if (code ==  200) {
-                                try {
-
-                                    val sharedPreferences = requireContext()
-                                            .getSharedPreferences(ummoUserPreferences, mode)
-                                    val editor: SharedPreferences.Editor
-                                    editor = sharedPreferences.edit()
-
-                                    var productId = ""
-                                    var productName = ""
-                                    var productDescription = ""
-                                    var productCost = ""
-                                    var productDuration = ""
-                                    var productStepsJSONArray: JSONArray
-                                    val productStepsArraylist = java.util.ArrayList(listOf<String>())
-                                    var productDocsJSONArray: JSONArray
-                                    val productDocsArrayList = java.util.ArrayList(listOf<String>())
-
-                                    productArray = JSONArray(String(data))
-//                                    Timber.e("Product ->%s", product)
-
-                                    for (i in 0 until productArray.length()) {
-                                        productData = productArray.getJSONObject(i)
-                                    }
-
-                                    for (i in 0 until publicServiceData.size) {
-                                        val singleServiceCentreName = publicServiceData[i].serviceName
-                                        val singleServiceCentreLocation = publicServiceData[i].town
-
-                                        productId = productData.getString("_id")
-                                        productName = productData.getString("product_name")
-                                        productDescription = productData.getString("product_description")
-                                        productCost = productData.getJSONObject("requirements")
-                                                .getString("procurement_cost")
-                                        productDuration = productData.getString("duration")
-                                        productStepsJSONArray = productData.getJSONArray("procurement_process")
-                                        //Assigning JSONArray to Arraylist
-                                        for (j in 0 until productStepsJSONArray.length()) {
-                                            productStepsArraylist.add(productStepsJSONArray.getString(j))
-                                        }
-
-                                        //Assigning JSONArray to ArrayList
-                                        productDocsJSONArray = productData.getJSONObject("requirements").getJSONArray("documents")
-                                        for (k in 0 until productDocsJSONArray.length()) {
-                                            productDocsArrayList.add(productDocsJSONArray.getString(k))
-                                        }
-
-                                        editor.putString("PRODUCT_ID", productData.getString("_id"))
-                                        editor.apply()
-
-                                        val singleServiceCentre = ServiceCentre(singleServiceCentreName,
-                                                singleServiceCentreLocation, productName,
-                                                productDescription)
-
-                                        Timber.e(" Single Service Centre -> $singleServiceCentre")
-                                        gAdapter.add(ServiceCentreItem(singleServiceCentre, context))
-                                    }
-                                    recyclerView.adapter = gAdapter
-
-                                    Timber.e("Product Data->%s", productData)
-
-                                    *//** Inserting Product into Room **//*
-                                    Timber.e("Product Steps -> $productStepsArraylist")
-                                    Timber.e("Product DOCS -> $productDocsArrayList")
-                                    Timber.e("Product Duration -> $productDuration")
-                                    Timber.e("Product Docs -> ${productData.getJSONObject("requirements").getJSONArray("documents")}")
-                                    productEntity.productId = productId
-                                    productEntity.productName = productName
-                                    productEntity.productDescription = productDescription
-                                    productEntity.productCost = productCost
-                                    productEntity.productSteps = productStepsArraylist
-                                    productEntity.productDocuments = productDocsArrayList
-                                    productEntity.productDuration = productDuration
-                                    productEntity.isDelegated = false
-                                    detailedProductViewModel!!.insertProduct(productEntity)
-
-                                } catch (jse: JSONException) {
-                                    Timber.e("JSE -> $jse")
-                                }
-                            }
-                        }
-                    }*/
+                    serviceCentresRvBinding.loadProgressBar.visibility = View.GONE
                 }
                 //TODO: handle incident when response code is not 200
             }
