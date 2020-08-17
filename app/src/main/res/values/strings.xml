@@ -141,6 +141,6 @@
     <string name="product_cost">Product Cost</string>
 
     <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--<string name="serverUrl">http://192.168.8.101:3000</string>-->
+    <!--<string name="serverUrl">http://192.168.8.100:3000</string>-->
 
 </resources>

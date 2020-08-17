@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import timber.log.Timber;
 import xyz.ummo.user.AgentRequest;
 import xyz.ummo.user.ui.detailedService.DetailedProduct;
 import xyz.ummo.user.R;
@@ -103,29 +104,26 @@ public class ServicesAdapter extends RecyclerView.Adapter<ServicesAdapter.MyView
         cost = holder.serviceCost.getText().toString();
         duration = holder.serviceDuration.getText().toString();
 
-        holder.requestAgentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        holder.requestAgentButton.setOnClickListener(view -> {
 
-                Intent i= new Intent(context, AgentRequest.class);
-                i.putExtra("departmentName", departmentName);
-              //  i.putExtra("serviceId",service)
-                i.putExtra("serviceName", serviceName);
-                i.putExtra("form", form);
-                i.putExtra("id",service.getId());
-                i.putExtra("docs", personalDocs);
-                i.putExtra("cost", cost);
-                i.putExtra("steps",holder.steps);
-                i.putExtra("duration", duration);
-                 String jwt = PreferenceManager.getDefaultSharedPreferences(ServicesAdapter.this.context).getString("jwt", "");
-                new DelegateService(ServicesAdapter.this.context, User.Companion.getUserId(jwt),service.getId()){
-                    @Override
-                    public void done(@NotNull byte[] data, int code) {
-                        Log.e("Done",new String(data));
-                    }
-                };
-               // context.startActivity(i);
-            }
+            Intent i= new Intent(context, AgentRequest.class);
+            i.putExtra("departmentName", departmentName);
+          //  i.putExtra("serviceId",service)
+            i.putExtra("serviceName", serviceName);
+            i.putExtra("form", form);
+            i.putExtra("id",service.getId());
+            i.putExtra("docs", personalDocs);
+            i.putExtra("cost", cost);
+            i.putExtra("steps",holder.steps);
+            i.putExtra("duration", duration);
+             String jwt = PreferenceManager.getDefaultSharedPreferences(ServicesAdapter.this.context).getString("jwt", "");
+            new DelegateService(ServicesAdapter.this.context, User.Companion.getUserId(jwt),service.getId()){
+                @Override
+                public void done(@NotNull byte[] data, int code) {
+                    Timber.e(new String(data));
+                }
+            };
+           // context.startActivity(i);
         });
 
         holder.moreButton.setOnClickListener(new View.OnClickListener(){
@@ -140,7 +138,7 @@ public class ServicesAdapter extends RecyclerView.Adapter<ServicesAdapter.MyView
                 intent.putExtra("steps",holder.steps);
                 intent.putExtra("duration", duration);
                 intent.putExtra("docs",personalDocs);
-                Log.e(TAG, "onClick: MORE-BUTTON clicked!");
+                Timber.e("onClick: MORE-BUTTON clicked!");
                 context.startActivity(intent);
             }
         });

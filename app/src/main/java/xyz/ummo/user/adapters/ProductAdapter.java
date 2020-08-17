@@ -2,7 +2,6 @@ package xyz.ummo.user.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import java.util.List;
 
 import timber.log.Timber;
 import xyz.ummo.user.data.entity.ProductEntity;
-import xyz.ummo.user.delegate.get;
 import xyz.ummo.user.ui.detailedService.DetailedProduct;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;

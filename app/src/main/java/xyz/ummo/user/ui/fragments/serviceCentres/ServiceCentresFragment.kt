@@ -97,7 +97,7 @@ class ServiceCentresFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Timber.e("PAUSING...............")
+        Timber.e("PAUSING...")
     }
 
     private fun getServiceCentreData() {
@@ -220,7 +220,7 @@ class ServiceCentresFragment : Fragment() {
                         var productDocsJSONArray: JSONArray
                         val productDocsArrayList = java.util.ArrayList(listOf<String>())
 
-                        /**Assigning the DATA we receive from the server to #product (JSON Array)**/
+                        /**Assigning the DATA we receive from the server to #productArray (JSON Array)**/
                         productArray = JSONArray(String(data))
 
                         for (i in 0 until publicServiceData.size) {

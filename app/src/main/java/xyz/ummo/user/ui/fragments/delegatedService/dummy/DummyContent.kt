@@ -36,13 +36,13 @@ object DummyContent {
     }
 
     private fun createDummyItem(position: Int): DummyItem {
-        return DummyItem(position.toString(), "Item " + position, makeDetails(position))
+        return DummyItem(position.toString(), "Item $position", makeDetails(position))
     }
 
     private fun makeDetails(position: Int): String {
         val builder = StringBuilder()
         builder.append("Details about Item: ").append(position)
-        for (i in 0..position - 1) {
+        for (i in 0 until position) {
             builder.append("\nMore details information here.")
         }
         return builder.toString()

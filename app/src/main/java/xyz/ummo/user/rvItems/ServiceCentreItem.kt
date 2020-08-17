@@ -8,7 +8,9 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_centre_card.view.*
@@ -17,6 +19,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.delegate.DelegateService
+import xyz.ummo.user.delegate.RequestService
 import xyz.ummo.user.delegate.User
 import xyz.ummo.user.models.ServiceCentre
 import xyz.ummo.user.ui.detailedService.DetailedProduct
@@ -79,7 +82,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                 Timber.e("Clicked Confirm!")
 //                detailedProduct.requestAgentDelegate(productId)
 
-
                 requestAgentDelegate(productId)
             }
 
@@ -105,6 +107,34 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
         var agentName: String?
 
         Timber.e("PRODUCT_ID->%s", mProductId)
+
+        if (jwt != null) {
+            object : RequestService(context, User.getUserId(jwt!!), mProductId) {
+                override fun done(data: ByteArray, code: Int) {
+                    Timber.e("delegatedService: Done->%s", String(data))
+                    Timber.e("delegatedService: Status Code->%s", code)
+
+                    when (code) {
+                        200 -> {
+                            agentRequestDialog.setTitle("Bleh Bleh")
+                            agentRequestDialog.setMessage("Blah Blah Blah")
+                            agentRequestDialog.setPositiveButton("Continue...") { dialogInterface: DialogInterface?, i: Int ->
+                                Timber.e("GOING ON!")
+
+                            }
+                        }
+                        404 -> {
+                            agentRequestDialog.setTitle("Meh")
+                            agentRequestDialog.setMessage("Blah Blah Blah")
+                            agentRequestDialog.setPositiveButton("Continue...") { dialogInterface: DialogInterface?, i: Int ->
+                                Timber.e("GOING OFF!")
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (jwt != null) {
             object : DelegateService(context, User.getUserId(jwt!!), mProductId) {

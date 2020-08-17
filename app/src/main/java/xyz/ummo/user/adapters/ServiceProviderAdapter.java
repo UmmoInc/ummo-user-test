@@ -3,7 +3,6 @@ package xyz.ummo.user.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,7 @@ import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.delegate.GetProducts;
 import xyz.ummo.user.models.PublicServiceData;
-import xyz.ummo.user.delegate.get;
+import xyz.ummo.user.delegate.Get;
 import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
@@ -127,11 +126,11 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
                                         holder.publicServiceData.getTown(),
                                         holder.publicServiceData.getProvince(),
                                         obj.getString("_id"),
-                                        get.INSTANCE.get(obj, "product_description", "description").toString(),
-                                        get.INSTANCE.get(obj, "procurement_process", "procurement_process").toString(),
-                                        get.INSTANCE.get(obj, "duration", "duration").toString(),
-                                        get.INSTANCE.get(obj, "requirements.documents", "docs").toString(),
-                                        get.INSTANCE.get(obj, "requirements.procurement_cost", "cost").toString()
+                                        Get.INSTANCE.get(obj, "product_description", "description").toString(),
+                                        Get.INSTANCE.get(obj, "procurement_process", "procurement_process").toString(),
+                                        Get.INSTANCE.get(obj, "duration", "duration").toString(),
+                                        Get.INSTANCE.get(obj, "requirements.documents", "docs").toString(),
+                                        Get.INSTANCE.get(obj, "requirements.procurement_cost", "cost").toString()
 //                                        get.INSTANCE.get(obj, "")
                                         // TODO: 10/16/19 -> Insert `procurement_cost`
                                         // TODO: 10/16/19 -> Use ArrayLists where needed
