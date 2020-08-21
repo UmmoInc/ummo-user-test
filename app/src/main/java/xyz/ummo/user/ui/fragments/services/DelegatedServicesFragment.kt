@@ -1,139 +1,88 @@
-package xyz.ummo.user.ui.fragments;
+package xyz.ummo.user.ui.fragments.services
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
-import android.net.Uri;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import timber.log.Timber;
-import xyz.ummo.user.DelegatedService;
-import xyz.ummo.user.Progress;
-import xyz.ummo.user.R;
-import xyz.ummo.user.adapters.DelegatedServiceAdapter;
-import xyz.ummo.user.delegate.Service;
+import android.content.Context
+import android.graphics.drawable.InsetDrawable
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import org.json.JSONArray
+import org.json.JSONException
+import timber.log.Timber
+import xyz.ummo.user.DelegatedService
+import xyz.ummo.user.R
+import xyz.ummo.user.delegate.Service
+import java.util.*
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * {@link DelegatedServicesFragment.OnFragmentInteractionListener} interface
+ * [DelegatedServicesFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the {@link DelegatedServicesFragment#newInstance} factory method to
+ * Use the [DelegatedServicesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-public class DelegatedServicesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+class DelegatedServicesFragment : Fragment() {
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private ArrayList<DelegatedService> delegatedServiceArrayList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    DelegatedServiceAdapter delegatedServiceAdapter;
-
-    private OnFragmentInteractionListener mListener;
-    private ProgressBar loadDelegatedServicesProgressBar;
-
-    public DelegatedServicesFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DelegatedServicesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    private static DelegatedServicesFragment newInstance(String param1, String param2) {
-        DelegatedServicesFragment fragment = new DelegatedServicesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private var mParam1: String? = null
+    private var mParam2: String? = null
+    private val delegatedServiceArrayList = ArrayList<DelegatedService>()
+    private var recyclerView: RecyclerView? = null
+    var delegatedServiceAdapter: DelegatedServiceAdapter? = null
+    private var mListener: OnFragmentInteractionListener? = null
+    private var loadDelegatedServicesProgressBar: ProgressBar? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            mParam1 = arguments!!.getString(ARG_PARAM1)
+            mParam2 = arguments!!.getString(ARG_PARAM2)
         }
-
-        addDelegatedServices();
-        delegatedServiceAdapter = new DelegatedServiceAdapter(delegatedServiceArrayList);
-
+        addDelegatedServices()
+        delegatedServiceAdapter = DelegatedServiceAdapter(delegatedServiceArrayList)
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_delegated_services, container, false);
-        recyclerView = view.findViewById(R.id.delegated_services_rv);
-        loadDelegatedServicesProgressBar = view.findViewById(R.id.load_delegated_services_progress_bar);
-        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getContext());
-
-        int[] ATTRS = new int[]{android.R.attr.listDivider};
-
-        TypedArray a = getContext().obtainStyledAttributes(ATTRS);
-        Drawable divider = a.getDrawable(0);
-        int insetRight = getResources().getDimensionPixelSize(R.dimen.divider_item_right);
-        int insetLeft = getResources().getDimensionPixelSize(R.dimen.divider_item_left);
-        InsetDrawable insetDivider = new InsetDrawable(divider, insetLeft, 0, insetRight, 0);
-        a.recycle();
+        val view = inflater.inflate(R.layout.fragment_delegated_services, container, false)
+        recyclerView = view.findViewById(R.id.delegated_services_rv)
+        loadDelegatedServicesProgressBar = view.findViewById(R.id.load_delegated_services_progress_bar)
+        val linearLayoutManager = LinearLayoutManager(context)
+        val ATTRS = intArrayOf(android.R.attr.listDivider)
+        val a = context!!.obtainStyledAttributes(ATTRS)
+        val divider = a.getDrawable(0)
+        val insetRight = resources.getDimensionPixelSize(R.dimen.divider_item_right)
+        val insetLeft = resources.getDimensionPixelSize(R.dimen.divider_item_left)
+        val insetDivider = InsetDrawable(divider, insetLeft, 0, insetRight, 0)
+        a.recycle()
 
         //Set categoryRecyclerView
-        recyclerView.setAdapter(delegatedServiceAdapter);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                linearLayoutManager.getOrientation());
-        dividerItemDecoration.setDrawable(insetDivider  );
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        return  view;
+        recyclerView?.adapter = delegatedServiceAdapter
+        recyclerView?.layoutManager = linearLayoutManager
+        recyclerView?.itemAnimator = DefaultItemAnimator()
+        val dividerItemDecoration = DividerItemDecoration(recyclerView?.context,
+                linearLayoutManager.orientation)
+        dividerItemDecoration.setDrawable(insetDivider)
+        recyclerView?.addItemDecoration(dividerItemDecoration)
+        return view
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    fun onButtonPressed(uri: Uri?) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener!!.onFragmentInteraction(uri)
         }
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         //if (context instanceof OnFragmentInteractionListener) {
         //  mListener = (OnFragmentInteractionListener) context;
         //} else {
@@ -142,10 +91,9 @@ public class DelegatedServicesFragment extends Fragment {
         //}
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
     }
 
     /**
@@ -153,60 +101,71 @@ public class DelegatedServicesFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *
+     *
+     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        fun onFragmentInteraction(uri: Uri?)
     }
 
-    private void addDelegatedServices(){
-
-        new Service(getActivity()){
-            @Override
-            public void done(@NotNull byte[] data, @NotNull Number code) {
-                getActivity().runOnUiThread(new Runnable() { //TODO: BUG
-                    @Override
-                    public void run() {
-                        try {
-                            JSONArray jsonArray = new JSONArray(new String(data));
-                            delegatedServiceArrayList.clear();
-                            Timber.e("run: %s", new String(data));
-                            for (int i= 0; i<jsonArray.length();i++){
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                JSONObject agentObject = jsonObject.getJSONObject("agent");
-                                JSONObject productObject = jsonObject.getJSONObject("product");
-
-                                Timber.e(jsonObject.getString("_id"));
-
-                                DelegatedService delegatedService = new DelegatedService(
-                                        productObject.getString("product_name"),
-                                        agentObject.getString("name"),
-                                        jsonObject.getString("_id"),
-                                        agentObject.getString("_id"),
-                                        jsonObject.getString("user"),
-                                        productObject.getString("_id")
-                                );
-                                delegatedServiceArrayList.add(delegatedService);
-
-                                Timber.e(jsonObject.toString());
-
-                            }
-
-                            loadDelegatedServicesProgressBar.setVisibility(View.GONE);
-                            delegatedServiceAdapter.notifyDataSetChanged();
-
-                        }catch (JSONException e){
-                            Timber.e("addDelegatedServices: newService JSE -> %s", e.toString());
+    private fun addDelegatedServices() {
+        object : Service(activity!!) {
+            override fun done(data: ByteArray, code: Number) {
+                activity!!.runOnUiThread {
+                    try {
+                        val jsonArray = JSONArray(String(data))
+                        delegatedServiceArrayList.clear()
+                        Timber.e("run: %s", String(data))
+                        for (i in 0 until jsonArray.length()) {
+                            val jsonObject = jsonArray.getJSONObject(i)
+                            val agentObject = jsonObject.getJSONObject("agent")
+                            val productObject = jsonObject.getJSONObject("product")
+                            Timber.e(jsonObject.getString("_id"))
+                            val delegatedService = DelegatedService(
+                                    productObject.getString("product_name"),
+                                    agentObject.getString("name"),
+                                    jsonObject.getString("_id"),
+                                    agentObject.getString("_id"),
+                                    jsonObject.getString("user"),
+                                    productObject.getString("_id")
+                            )
+                            delegatedServiceArrayList.add(delegatedService)
+                            Timber.e(jsonObject.toString())
                         }
+                        loadDelegatedServicesProgressBar!!.visibility = View.GONE
+                        delegatedServiceAdapter!!.notifyDataSetChanged()
+                    } catch (e: JSONException) {
+                        Timber.e("addDelegatedServices: newService JSE -> %s", e.toString())
                     }
-                });
+                }
             }
-        };
-
+        }
     }
 
+    companion object {
+        // TODO: Rename parameter arguments, choose names that match
+        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+        private const val ARG_PARAM1 = "param1"
+        private const val ARG_PARAM2 = "param2"
+
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param param1 Parameter 1.
+         * @param param2 Parameter 2.
+         * @return A new instance of fragment DelegatedServicesFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        private fun newInstance(param1: String, param2: String): DelegatedServicesFragment {
+            val fragment = DelegatedServicesFragment()
+            val args = Bundle()
+            args.putString(ARG_PARAM1, param1)
+            args.putString(ARG_PARAM2, param2)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }

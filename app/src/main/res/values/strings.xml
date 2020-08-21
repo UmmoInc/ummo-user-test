@@ -130,7 +130,7 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="assigned_nav_title">Assigned</string>
+    <string name="service_nav_title">Service</string>
     <string name="save_service">Save Service</string>
     <string name="service_centre_image">Service Centre Image</string>
     <string name="product_requirements">What you will need:</string>
@@ -140,7 +140,7 @@
 
     <string name="product_cost">Product Cost</string>
 
-    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--<string name="serverUrl">http://192.168.8.100:3000</string>-->
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.8.101:3000</string>
 
 </resources>

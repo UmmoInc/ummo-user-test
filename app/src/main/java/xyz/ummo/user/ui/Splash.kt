@@ -3,11 +3,9 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.signup.RegisterActivity
 
 class Splash : Activity() {
@@ -20,11 +18,11 @@ class Splash : Activity() {
         val mixpanel = MixpanelAPI.getInstance(context,
                 resources.getString(R.string.mixpanelToken))
         mixpanel?.track("appLaunched")
-        Thread(Runnable {
+        Thread {
             try {
                 Thread.sleep(1000)
             } catch (ie: InterruptedException) {
-                Timber.e(" onCreate->%s", ie)
+                Timber.e(" onCreate-> $ie")
             }
             finish()
 
@@ -47,7 +45,7 @@ class Splash : Activity() {
                 startActivity(Intent(this@Splash, RegisterActivity::class.java))
             }
             finish()
-        }).start()
+        }.start()
     }
 
     override fun onDestroy() {
@@ -57,7 +55,4 @@ class Splash : Activity() {
         super.onDestroy()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        return super.onCreateOptionsMenu(menu)
-    }
 }

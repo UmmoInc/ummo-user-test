@@ -12,37 +12,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <include
-        layout="@layout/app_bar_main_screen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <include
+            layout="@layout/app_bar_main_screen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:id="@+id/rootLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="100dp"
-        android:paddingBottom="100dp"
-        android:orientation="vertical">
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/rootLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="100dp"
+            android:orientation="vertical"
+            android:paddingBottom="100dp" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/ummo_2"
-        app:itemBackground="@color/ummo_2"
-        android:foreground="?attr/selectableItemBackground"
-        app:itemIconTint="@android:color/white"
-        app:itemTextColor="@android:color/white"
-        app:menu="@menu/navigation"
-        app:itemTextAppearanceActive="@style/BottomNavigationView.Active"
-        app:itemTextAppearanceInactive="@style/BottomNavigationView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:paddingTop="10dp"/>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/ummo_2"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingTop="10dp"
+            app:itemIconTint="@android:color/white"
+            app:itemRippleColor="@color/ummo_1"
+            app:itemTextAppearanceActive="@style/BottomNavigationView.Active"
+            app:itemTextAppearanceInactive="@style/BottomNavigationView"
+            app:itemTextColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:menu="@menu/navigation" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -90,7 +90,6 @@ class CompleteSignUp : AppCompatActivity() {
             val emailField: EditText = viewBinding.userEmailEditText
             val userEmail: String = viewBinding.userEmailEditText.text.toString()
 
-            Timber.e("Button pressed!")
             when {
                 Patterns.EMAIL_ADDRESS.matcher(userEmail).matches().not() -> {
                     emailField.error = "Please use a valid email..."

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/delegated_service"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,14 +10,14 @@
         android:id="@+id/service_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/circular_purple_backgorund"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:background="@drawable/circular_purple_backgorund">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_product"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/ic_product" />
 
     </RelativeLayout>
 
@@ -24,47 +25,47 @@
         android:id="@+id/service_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@color/black"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/service_icon"/>
+        android:layout_toEndOf="@id/service_icon"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/agent_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_toRightOf="@id/service_icon"
         android:layout_below="@id/service_name"
-        android:layout_marginLeft="5dp"
-        android:layout_marginBottom="5dp"/>
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toEndOf="@id/service_icon"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/num_of_messages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:background="@drawable/purple_round_corner"
-        android:textColor="@color/White"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:text="1"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"/>
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/purple_round_corner"
+        android:paddingLeft="5dp"
+        android:paddingTop="2dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="2dp"
+        android:text="1"
+        android:textColor="@color/White"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/time_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="08:24"
-        android:layout_alignParentRight="true"
         android:layout_below="@id/num_of_messages"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"/>
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:text="08:24"
+        android:textSize="14sp" />
 
 </RelativeLayout>

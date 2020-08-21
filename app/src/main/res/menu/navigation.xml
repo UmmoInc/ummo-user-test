@@ -8,9 +8,9 @@
         android:title="@string/home_nav_title" />
 
     <item
-        android:id="@+id/navigation_assigned"
+        android:id="@+id/navigation_service"
         android:icon="@drawable/ic_action_assigned"
-        android:title="@string/assigned_nav_title" />
+        android:title="@string/service_nav_title" />
 
     <item
         android:id="@+id/navigation_profile"

@@ -6,23 +6,27 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_centre_card.view.*
-import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.delegate.DelegateService
+import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.delegate.RequestService
 import xyz.ummo.user.delegate.User
 import xyz.ummo.user.models.ServiceCentre
 import xyz.ummo.user.ui.detailedService.DetailedProduct
+import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import java.util.ArrayList
 
 class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: Context?) : Item<GroupieViewHolder>() {
 
@@ -40,10 +44,11 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     private var progress: ProgressDialog? = null
     private val serviceCentreItemPrefs: SharedPreferences
 
-
     private lateinit var alertDialog: AlertDialog
-    private val alertDialogView = LayoutInflater.from(context).inflate(R.layout.delegate_agent_dialog, null)
+    private val alertDialogView = LayoutInflater.from(context)
+            .inflate(R.layout.delegate_agent_dialog, null)
     var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
+    //TODO: Update preferences
 
     init {
         progress = ProgressDialog(context)
@@ -89,10 +94,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                 Timber.e("Clicked Cancel!")
             }
 
-            alertDialogBuilder.setOnDismissListener {
-                alertDialogBuilder.setView(null)
-            }
-
             alertDialog = alertDialogBuilder.show()
 //            alertDialog.dismiss()
             //TODO: attend to bug with alertDialog
@@ -102,9 +103,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     private fun requestAgentDelegate(mProductId: String) {
 
         val editor: SharedPreferences.Editor = serviceCentreItemPrefs.edit()
-
-        var agentDelegate: JSONObject
-        var agentName: String?
 
         Timber.e("PRODUCT_ID->%s", mProductId)
 
@@ -119,13 +117,20 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                             alertDialog.dismiss()
 
                             Timber.e("CODE IS $code")
-                            agentRequestDialog.setTitle("Bleh Bleh")
-                            agentRequestDialog.setMessage("Blah Blah Blah")
-                            agentRequestDialog.setPositiveButton("Continue...")
-                            { dialogInterface: DialogInterface?, i: Int ->
-                                Timber.e("GOING ON!")
 
-                            }
+                            val service = JSONObject(String(data))
+                            Timber.e("SERVICE OBJ -> $service")
+                            val serviceId = service.getString("_id")
+                            val serviceProduct = service.getString("product")
+                            val serviceAgent = service.getString("agent")
+
+                            editor.putString("SERVICE_ID", serviceId)
+                            editor.putString("DELEGATED_PRODUCT_ID", productId)
+                            editor.putString("SERVICE_AGENT_ID", serviceAgent)
+                            editor.apply()
+
+                            launchDelegatedService(context, serviceId, serviceAgent, serviceProduct)
+
                         }
                         404 -> {
                             Timber.e("CODE IS $code")
@@ -142,64 +147,31 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                 }
             }
         }
+    }
 
-        /*if (jwt != null) {
-            object : DelegateService(context, User.getUserId(jwt!!), mProductId) {
-                override fun done(data: ByteArray, code: Int) {
-                    Timber.e("delegatedService: Done->%s", String(data))
-                    Timber.e("delegatedService: Status Code->%s", code)
-                    progress?.dismiss()
+    private fun launchDelegatedService(context: Context?, serviceId: String, agentId: String, productId: String) {
+        val bundle = Bundle()
+        bundle.putString("SERVICE_ID", serviceId)
+        bundle.putString("DELEGATED_PRODUCT_ID", productId)
+        bundle.putString("SERVICE_AGENT_ID", agentId)
 
-                    when (code) {
-                        200 -> {
-                            try {
-                                agentDelegate = JSONObject(String(data))
-                                agentName = agentDelegate.getString("name")
-                                Timber.e("done: agentName->%s", agentName)
-                                agentRequestDialog.setTitle("Agent Delegate")
-                                //                                agentRequestDialog.setIcon()
-                                agentRequestDialog.setMessage("$agentName is available...")
-                                agentRequestDialog.setPositiveButton("Continue") { dialog: DialogInterface?, which: Int ->
-                                    agentRequestStatus = "Waiting for a response from $agentName..."
+        val progress = ArrayList<String>()
+        val delegatedServiceEntity = DelegatedServiceEntity()
+        val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
+                .get(DelegatedServiceViewModel::class.java)
 
-                                    val progress = ProgressDialog(context)
-                                    progress.setTitle("Agent Request")
-                                    progress.setMessage(agentRequestStatus)
-                                    progress.show() // TODO: 10/22/19 -> handle leaking window
+        delegatedServiceEntity.serviceId = serviceId
+        delegatedServiceEntity.delegatedProductId = productId
+        delegatedServiceEntity.serviceAgentId = agentId
+        delegatedServiceEntity.serviceProgress = progress
+        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
-                                    editor.putString("DELEGATED_AGENT", agentName)
-                                    editor.putString("DELEGATED_PRODUCT", mProductId)
-                                    editor.apply()
-                                }
-                                agentRequestDialog.show()
-
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
-                            }
-                        }
-                        404 -> {
-                            Timber.e("done: Status Code 500!!!")
-                            agentNotFoundDialog.setTitle("Agent Delegate")
-                            agentNotFoundDialog.setMessage("No Agent currently available.")
-                            agentNotFoundDialog.setPositiveButton("Dismiss") { dialog: DialogInterface?, which: Int ->
-                                Toast.makeText(context, "OOPS!", Toast.LENGTH_LONG).show()
-                            }
-                            agentNotFoundDialog.show()
-                        }
-                        else -> {
-                            Timber.e("done: Status Code 500!!!")
-                            Toast.makeText(context, "OOPS!", Toast.LENGTH_LONG).show()
-                            agentNotFoundDialog.setTitle("Agent Delegate")
-                            agentNotFoundDialog.setMessage("We honestly don't know what happened, please check if there is internet")
-                            agentNotFoundDialog.setPositiveButton("Dismiss") { dialog: DialogInterface?, which: Int ->
-                                Timber.e("done: Dismissed!")
-                                //                                requestAgentBtn.setText("RETRY AGENT REQUEST")
-                            }
-                            agentNotFoundDialog.show()
-                        }
-                    }
-                }
-            }
-        }*/
+        val fragmentActivity = context as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
     }
 }
