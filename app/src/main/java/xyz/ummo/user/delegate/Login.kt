@@ -34,7 +34,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
         Fuel.post("/user/login")
                 .jsonBody(_user.toString())
                 .response { request, response, result ->
-                    if (response.statusCode==200){
+                    if (response.statusCode == 200) {
                         val jwt = response.headers["Jwt"].elementAt(0).toString()
                         Timber.e("Jwt -> $jwt")
 
@@ -43,8 +43,8 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                         PreferenceManager
                                 .getDefaultSharedPreferences(context)
                                 .edit()
-                                .putString("jwt",jwt)
-                                .putString("user",String(response.data))
+                                .putString("jwt", jwt)
+                                .putString("user", String(response.data))
                                 .apply()
 
                         initializeSocket(User.getUserId(jwt))
@@ -56,7 +56,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             Timber.e(it[0].toString())
                         }
 
-                        SocketIO.mSocket?.on("service-created", Emitter.Listener {
+                        SocketIO.mSocket?.on("service-created") {
                             val intent = Intent(context, MainScreen::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 //                Log.e(TAG, "Service-Created: IT->"+JSONObject(it[0].toString()))
@@ -64,7 +64,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString()).getString("agent"))
                             intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0].toString()).getString("product"))
 
-                            intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG",1)
+                            intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG", 1)
                             Timber.e("SERVICE-created with ID->${JSONObject(it[0].toString())}")
 
                             val serviceId: String = JSONObject(it[0].toString()).getString("_id")
@@ -81,15 +81,15 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)
 
                             context.startActivity(intent)
-                        })
+                        }
 
-                        SocketIO.mSocket?.on("connect_error", Emitter.Listener {
+                        SocketIO.mSocket?.on("connect_error") {
                             Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-                        })
+                        }
 
-                        SocketIO.mSocket?.on("error", Emitter.Listener {
+                        SocketIO.mSocket?.on("error") {
                             Timber.e("Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-                        })
+                        }
 
                         /*  SocketIO.mSocket?.on("message", Emitter.Listener {
                               Log.e("Message",it[0].toString())
@@ -104,7 +104,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
         try {
             Timber.e("Trying connection...")
             SocketIO.mSocket = IO.socket("${context.getString(serverUrl)}/user-$_id")
-            Timber.e( "${context.getString(serverUrl)}/user-$_id")
+            Timber.e("${context.getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {
@@ -117,6 +117,6 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
         }
     }
 
-    abstract fun done(data:ByteArray,code:Number)
+    abstract fun done(data: ByteArray, code: Number)
 
 }

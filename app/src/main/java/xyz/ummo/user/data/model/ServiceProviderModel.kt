@@ -1,12 +1,10 @@
-package xyz.ummo.user.data.model;
+package xyz.ummo.user.data.model
 
-import java.util.ArrayList;
-
-public interface ServiceProviderModel {
-    String getServiceProviderId();
-    String getServiceProviderName();
-    String getServiceProviderProvince();
-    String getServiceProviderMunicipality();
-    String getServiceProviderTown();
-//    ArrayList<String> getServiceProviderLocation();
+interface ServiceProviderModel {
+    val serviceProviderId: String?
+    val serviceProviderName: String?
+    val serviceProviderProvince: String?
+    val serviceProviderMunicipality: String?
+    //    ArrayList<String> getServiceProviderLocation();
+    val serviceProviderTown: String?
 }

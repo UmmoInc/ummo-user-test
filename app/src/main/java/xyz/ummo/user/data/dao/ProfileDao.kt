@@ -1,30 +1,23 @@
-package xyz.ummo.user.data.dao;
+package xyz.ummo.user.data.dao
 
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-import androidx.room.Update;
-
-import xyz.ummo.user.data.entity.ProductEntity;
-import xyz.ummo.user.data.entity.ProfileEntity;
+import androidx.lifecycle.LiveData
+import androidx.room.*
+import xyz.ummo.user.data.entity.ProfileEntity
 
 @Dao
-public interface ProfileDao {
-
+interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertProfile(ProfileEntity profileEntity);
+    fun insertProfile(profileEntity: ProfileEntity?)
 
-    @Query("SELECT * FROM profile")
-    LiveData<ProfileEntity> getProfileLiveData();
+    @get:Query("SELECT * FROM profile")
+    val profileLiveData: LiveData<ProfileEntity?>?
 
-    @Query("SELECT * FROM profile")
-    LiveData<ProfileEntity> getProfileEntityLiveDataById();
+    @get:Query("SELECT * FROM profile")
+    val profileEntityLiveDataById: LiveData<ProfileEntity?>?
 
     @Update
-    void updateProfile(ProfileEntity profileEntity);
+    fun updateProfile(profileEntity: ProfileEntity?)
 
     @Query("DELETE FROM profile")
-    void deleteProfile();
+    fun deleteProfile()
 }

@@ -1,12 +1,12 @@
 package xyz.ummo.user.ui.fragments.profile;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import timber.log.Timber;
 import xyz.ummo.user.data.entity.ProfileEntity;
 import xyz.ummo.user.data.repo.AppRepository;
 
@@ -14,7 +14,6 @@ public class ProfileViewModel extends AndroidViewModel {
 
     private AppRepository appRepository;
     private LiveData<ProfileEntity> profileEntityLiveData;
-    private static final String TAG = "ProfileViewModel";
 
     public ProfileViewModel(@NonNull Application application) {
         super(application);
@@ -25,7 +24,7 @@ public class ProfileViewModel extends AndroidViewModel {
 
     public void insertProfile(ProfileEntity profileEntity){
         appRepository.insertProfile(profileEntity);
-        Log.e(TAG, "insertProfile: PROFILE->"+profileEntity.getProfileName());
+        Timber.e("insertProfile: PROFILE->%s", profileEntity.getProfileName());
     }
 
     public void updateProfile(ProfileEntity profileEntity){

@@ -24,7 +24,6 @@ import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import java.net.URISyntaxException
 
-
 class User : Application() {
 
     //public var mSocket: Socket? = null
@@ -123,13 +122,14 @@ class User : Application() {
                 startActivity(intent)
             }
 
-            SocketIO.mSocket?.on("connect_error", Emitter.Listener {
+            SocketIO.mSocket?.on("connect_error") {
                 Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-            })
+                //TODO: Display a warning
+            }
 
-            SocketIO.mSocket?.on("error", Emitter.Listener {
+            SocketIO.mSocket?.on("error") {
                 Timber.e("Socket ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-            })
+            }
         }
 
         Timber.e("Application created - Server URL->${getString(serverUrl)}")

@@ -2,27 +2,26 @@ package xyz.ummo.user.ui
 
 import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONArray
@@ -32,17 +31,20 @@ import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.models.PublicServiceData
-import xyz.ummo.user.ui.fragments.*
+import xyz.ummo.user.ui.fragments.HomeFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
+import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
+import java.util.*
 import kotlin.collections.ArrayList
 
-class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+class MainScreen : AppCompatActivity(), /*ProfileFragment.OnFragmentInteractionListener,*/ NavigationView.OnNavigationItemSelectedListener {
 
     private var startFragmentExtra: Int = 0
     private var toolbar: Toolbar? = null
@@ -65,6 +67,12 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
     private var sharedPrefServiceId: String = ""
     private var sharedPrefAgentId: String = ""
     private var sharedPrefProductId: String = ""
+    /** User Preferences & VM **/
+    private var sharedPrefUserName: String = ""
+    private var sharedPrefUserContact: String = ""
+    private var sharedPrefUserEmail: String = ""
+    private val profileEntity = ProfileEntity()
+    private var profileViewModel: ProfileViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +87,17 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         supportFM = supportFragmentManager
         //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
+        mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+
         /**
          * Starting DelegatedServiceFragment
          **/
         startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
         checkForAndLaunchDelegatedFragment()
+
+        getAndStoreUserInfoLocally()
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -138,8 +151,10 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             delegatedServiceEntity.serviceProgress = progress
 
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity
-                    .serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+            Timber.e("Populating ServiceEntity: Agent->${
+                delegatedServiceEntity
+                        .serviceAgentId
+            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
 
             delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
@@ -221,9 +236,9 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         return true
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
+    /*override fun onFragmentInteraction(uri: Uri) {
         //you can leave it empty
-    }
+    }*/
 
     private fun loadHomeFragment(data: List<PublicServiceData>) {
 
@@ -299,16 +314,24 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_service -> {
-                mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
+
                 sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
                 sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
                 sharedPrefProductId = mainScreenPrefs.getString("DELEGATED_PRODUCT_ID", "")!!
 
+                sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
+                sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
+                sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
+
                 if (sharedPrefServiceId.isEmpty()) {
-                    Timber.e("SHARED_SERVICE EMPTY")
-                    //TODO: Display empty view
+//                    launchDelegatedServiceWithoutArgs() TODO: figure out what causes the null
+                    val bottomNav = findViewById<View>(R.id.bottom_nav)
+                    val snackbar = Snackbar.make(this.findViewById(android.R.id.content), "No Services yet...", Snackbar.LENGTH_LONG)
+                    snackbar.anchorView = bottomNav
+                    snackbar.show()
+
                 } else {
-                    launchDelegatedService(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
+                    launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
                 }
 
                 mixpanel?.track("getService_bottomNav")
@@ -327,7 +350,21 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         false
     }
 
-    private fun launchDelegatedService(serviceId: String, agentId: String, productId: String) {
+    private fun getAndStoreUserInfoLocally() {
+        /** Getting User info from SharedPreferences **/
+        sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
+        sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
+        sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
+
+        /** Inserting ProfileModel info into ProfileEntity, then ProfileViewModel **/
+        profileEntity.profileName = sharedPrefUserName
+        profileEntity.profileContact = sharedPrefUserContact
+        profileEntity.profileEmail = sharedPrefUserEmail
+        profileViewModel?.insertProfile(profileEntity)
+        Timber.e("PROFILE ENTITY -> $profileEntity")
+    }
+
+    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
         val bundle = Bundle()
         bundle.putString("SERVICE_ID", serviceId)
         bundle.putString("DELEGATED_PRODUCT_ID", productId)
@@ -344,6 +381,16 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         delegatedServiceEntity.serviceProgress = progress
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
+        val fragmentActivity = this as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
+    }
+
+    private fun launchDelegatedServiceWithoutArgs() {
         val fragmentActivity = this as FragmentActivity
         val fragmentManager = fragmentActivity.supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -382,11 +429,11 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 toolBarTitle = "Enter your full name"
             }
 
-            R.id.id_number -> {
+            /*R.id.id_number -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your ID Number"
-            }
+            }*/
 
             R.id.profile_contact -> {
                 textViewToEdit = view.findViewById(view.id)

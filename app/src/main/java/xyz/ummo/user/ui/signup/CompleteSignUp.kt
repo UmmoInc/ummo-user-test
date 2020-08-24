@@ -9,6 +9,9 @@ import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -34,8 +37,6 @@ class CompleteSignUp : AppCompatActivity() {
     private var userName: String = ""
     private var userContact: String = ""
     private var prefManager: PrefManager? = null
-    private val profileEntity = ProfileEntity()
-    private val profileViewModel: ProfileViewModel? = null
     private var firebaseAuth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,9 +62,6 @@ class CompleteSignUp : AppCompatActivity() {
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init()
-
-        //Init ProfileViewModel
-//        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
 
         //Init firebaseAuth
         firebaseAuth = FirebaseAuth.getInstance()
@@ -112,7 +110,7 @@ class CompleteSignUp : AppCompatActivity() {
                     val userObject = JSONObject()
 
                     /** Retrieving OneSignal PlayerId before signing up **/
-                    OneSignal.idsAvailable {userPID, registrationId ->
+                    OneSignal.idsAvailable { userPID, registrationId ->
                         if (!userPID.isNullOrEmpty()) {
                             try {
                                 userObject.put("userName", userName)
@@ -156,12 +154,6 @@ class CompleteSignUp : AppCompatActivity() {
                     editor.putString("USER_EMAIL", email)
                     editor.putString("USER_PID", playerId)
                     editor.apply()
-
-                    //Inserting ProfileModel info into ProfileEntity, then ProfileViewModel
-                    profileEntity.profileName = name
-                    profileEntity.profileContact = contact
-                    profileEntity.profileEmail = email
-                    profileViewModel?.insertProfile(profileEntity)
 
                     Timber.e("successfully logging in-> ${String(data)}")
                 } else {

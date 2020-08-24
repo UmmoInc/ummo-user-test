@@ -3,7 +3,6 @@ package xyz.ummo.user.ui.fragments.delegatedService
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Paint
@@ -19,11 +18,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONException
 import org.json.JSONObject
@@ -32,7 +29,7 @@ import xyz.ummo.user.DelegationChat
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
-import xyz.ummo.user.databinding.FragmentDelegatedserviceBinding
+import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.delegate.ConfirmService
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.serviceFeedback.Feedback
@@ -80,7 +77,7 @@ class DelegatedServiceFragment : Fragment {
     private var confirmReceiptDialog: AlertDialog? = null
     private var hasConfirmed = false
 
-    private lateinit var viewBinding: FragmentDelegatedserviceBinding
+    private lateinit var viewBinding: FragmentDelegatedBinding
 
     constructor(entity: DelegatedServiceEntity) {
         delegatedServiceEntity = entity
@@ -108,7 +105,11 @@ class DelegatedServiceFragment : Fragment {
 //            delegatedServiceEntity = delegatedServiceViewModel.getDelegatedServiceEntityLiveData();//getDelegatedServiceById(serviceId).getValue();
             detailedProductViewModel = ViewModelProvider(this)
                     .get(DetailedProductViewModel::class.java)
+        } else {
+            viewBinding.noDelegationLayout.visibility = View.VISIBLE
+            viewBinding.delegationLayout.visibility = View.GONE
         }
+
         Timber.e("onCreate: arguments: SERVICE-ID->%s", serviceId)
         Timber.e("onCreate: arguments: SERVICE-AGENT-ID->%s", serviceAgentId)
         Timber.e("onCreate: arguments: DELEGATED-PRODUCT-ID->%s", delegatedProductId)
@@ -119,22 +120,26 @@ class DelegatedServiceFragment : Fragment {
         // Inflating the layout for this fragment
 
         //viewBinding = inflater.inflate(inflater, R.layout.fragment_delegated, container, false)
+        viewBinding = DataBindingUtil
+                .inflate(inflater, R.layout.fragment_delegated, container, false)
 
-        val view = inflater.inflate(R.layout.fragment_delegated, container, false)
-        agentNameTextView = view.findViewById(R.id.delegated_agent_name_text_view)
-        agentStatusTextView = view.findViewById(R.id.delegated_agent_status_text_view)
-        openChat = view.findViewById(R.id.open_chat_button)
-        progressBar = view.findViewById(R.id.service_progress_bar)
-        goToDelegationChat(view)
+        val view = viewBinding.root
+
+        agentNameTextView = viewBinding.delegatedAgentNameTextView
+        agentStatusTextView = viewBinding.delegatedAgentStatusTextView
+        openChat = viewBinding.openChatButton
+        progressBar = viewBinding.serviceProgressBar
+
+        delegatedProductNameTextView = viewBinding.delegatedAgentNameTextView
+        delegatedProductDescriptionTextView = viewBinding.descriptionTextView
+        delegatedProductCostTextView = viewBinding.serviceCostTextView
+        delegatedProductStepsLayout = viewBinding.delegatedServiceStepsLayout
+
         agentNameTextView?.text = agentName
-        delegatedProductNameTextView = view.findViewById(R.id.delegated_service_header_name)
-        delegatedProductDescriptionTextView = view.findViewById(R.id.description_text_view)
-        delegatedProductCostTextView = view.findViewById(R.id.service_cost_text_view)
-        //        delegatedProductDurationTextView = view.findViewById(R.id.service_duration_text_view);
+        goToDelegationChat()
 
-//        delegatedProductDocsLayout = view.findViewById(R.id.service_docs_linear_layout);
-        delegatedProductStepsLayout = view.findViewById(R.id.delegated_service_steps_layout)
         Timber.e("onCreateView: New product id%s", delegatedProductId)
+
         detailedProductViewModel!!.getProductEntityLiveDataById(delegatedProductId)
                 .observe(viewLifecycleOwner, Observer { delegatedProductEntity: ProductEntity ->
 
@@ -239,8 +244,8 @@ class DelegatedServiceFragment : Fragment {
         return view
     }
 
-    private fun goToDelegationChat(view: View) {
-        openChat = view.findViewById(R.id.open_chat_button)
+    private fun goToDelegationChat() {
+        openChat = viewBinding.openChatButton
         delegatedServiceViewModel
                 ?.getDelegatedServiceByProductId(delegatedProductId)?.observe(viewLifecycleOwner, Observer { delegatedServiceEntity1: DelegatedServiceEntity ->
 //            Log.e(TAG, "goToDelegationChat: DelegatedServiceModel"+delegatedServiceEntity1.getDelegatedProductId());

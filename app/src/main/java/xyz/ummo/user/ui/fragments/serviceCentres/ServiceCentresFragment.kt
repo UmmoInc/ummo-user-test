@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -50,7 +50,6 @@ class ServiceCentresFragment : Fragment() {
     private val productEntity = ProductEntity()
     private var detailedProductViewModel: DetailedProductViewModel? = null
 
-
     companion object {
         fun newInstance() = ServiceCentresFragment()
     }
@@ -71,7 +70,7 @@ class ServiceCentresFragment : Fragment() {
 
         getServiceCentreData()
         Timber.e("GOT SERVICE CENTRE DATA ->%s", publicServiceData)
-        detailedProductViewModel = ViewModelProviders.of((context as FragmentActivity?)!!).get(DetailedProductViewModel::class.java)
+        detailedProductViewModel = ViewModelProvider((context as FragmentActivity?)!!).get(DetailedProductViewModel::class.java)
 
         //Init GroupAdapter
         gAdapter = GroupAdapter()
@@ -200,8 +199,10 @@ class ServiceCentresFragment : Fragment() {
                         Timber.e("Product Steps -> $productStepsArrayList")
                         Timber.e("Product DOCS -> $productDocsArrayList")
                         Timber.e("Product Duration -> $productDuration")
-                        Timber.e("Product Docs -> ${productData
-                                .getJSONObject("requirements").getJSONArray("documents")}")
+                        Timber.e("Product Docs -> ${
+                            productData
+                                    .getJSONObject("requirements").getJSONArray("documents")
+                        }")
                         productEntity.productId = productId
                         productEntity.productName = productName
                         productEntity.productDescription = productDescription

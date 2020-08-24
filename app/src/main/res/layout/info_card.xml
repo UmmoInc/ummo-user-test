@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0.7dp"
+        app:cardMaxElevation="1dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingTop="4dp">
+
+        <RelativeLayout
+            android:id="@+id/info_card_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <ImageView
+                android:id="@+id/info_eco_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/info_image"
+                app:srcCompat="@drawable/ic_eco_24" />
+
+            <TextView
+                android:id="@+id/info_title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/info_eco_image_view"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/info_eco_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Tips"
+                android:textColor="@color/black" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/info_eco_image_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/info_body_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_margin="5dp"
+                android:text="@string/info_body_text"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

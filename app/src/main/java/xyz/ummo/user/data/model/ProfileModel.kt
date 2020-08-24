@@ -1,11 +1,8 @@
-package xyz.ummo.user.data.model;
+package xyz.ummo.user.data.model
 
-public interface ProfileModel {
-    int getProfileId();
-    String getProfileName();
-    String getProfileEmail();
-    String getProfileContact();
-   /* String getProfileLocation();
-    String getProfileRating();
-    String getProfilePic();*/
+interface ProfileModel {
+    var profileId: Int
+    var profileName: String?
+    var profileEmail: String?
+    var profileContact: String?
 }
