@@ -107,18 +107,23 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/register_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryDark"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/ummo_3"
         android:enabled="true"
         android:text="@string/next"
         android:textColor="@color/White"
+        app:icon="@drawable/ic_done_white_24"
+        app:iconGravity="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:targetApi="lollipop" />
 
 </RelativeLayout><!--</layout>-->

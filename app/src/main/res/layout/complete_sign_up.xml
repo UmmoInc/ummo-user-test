@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/sign_up_slide"
-    tools:context=".ui.signup.CompleteSignUp">-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sign_up_slide"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -73,18 +71,19 @@
         android:layout_centerVertical="true"
         android:visibility="gone" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/sign_up_btn"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"
-        android:background="@drawable/register_next_button"
+        android:layout_marginBottom="10dp"
+        app:icon="@drawable/ic_send_white_24"
+        app:iconGravity="textEnd"
+        android:backgroundTint="@color/ummo_1"
         android:text="@string/sign_up_button"
         android:textColor="@color/White"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:targetApi="lollipop" />
 
 </RelativeLayout>
-
-    <!--</layout>-->

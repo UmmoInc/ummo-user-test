@@ -11,9 +11,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
+import xyz.ummo.user.databinding.InfoCardBinding
 
 class ProfileFragment : Fragment() {
     private var profileName: TextView? = null
@@ -29,6 +31,7 @@ class ProfileFragment : Fragment() {
 
     //ViewBinding
     private lateinit var profileViewBinding: FragmentMyProfileBinding
+    private lateinit var profileInfoCard: InfoCardBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,9 @@ class ProfileFragment : Fragment() {
         profileViewBinding = DataBindingUtil
                 .inflate(inflater, R.layout.fragment_my_profile, container, false)
 
+        profileInfoCard = DataBindingUtil
+                .inflate(inflater, R.layout.info_card, container, false)
+
         val view = profileViewBinding.root
 
         profileName = profileViewBinding.profileName
@@ -57,7 +63,16 @@ class ProfileFragment : Fragment() {
             profileContact!!.text = profileEntity1.profileContact
             profileEmail!!.text = profileEntity1.profileEmail
         })
+
+        dismissInfoCard()
+
         return view
+    }
+
+    private fun dismissInfoCard() {
+        profileInfoCard.infoCancelImageView.setOnClickListener {
+            Timber.e("CARD DISMISSED!")
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

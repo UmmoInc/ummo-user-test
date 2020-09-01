@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/White">
@@ -91,13 +92,18 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/verify_contact"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Continue"
-        android:textColor="@color/White"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/ummo_2" />
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/ummo_2"
+        android:text="@string/registration_continue"
+        android:textColor="@color/White"
+        app:icon="@drawable/ic_done_all_24"
+        app:iconGravity="textEnd"
+        tools:targetApi="lollipop" />
 
 </RelativeLayout>

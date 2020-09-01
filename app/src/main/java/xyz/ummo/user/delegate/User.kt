@@ -2,12 +2,10 @@ package xyz.ummo.user.delegate
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Base64
-import android.util.Log
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO

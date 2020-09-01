@@ -11,7 +11,7 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_centre_card.view.*
@@ -23,7 +23,6 @@ import xyz.ummo.user.delegate.RequestService
 import xyz.ummo.user.delegate.User
 import xyz.ummo.user.models.ServiceCentre
 import xyz.ummo.user.ui.detailedService.DetailedProduct
-import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import java.util.ArrayList
@@ -37,16 +36,14 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     /**  **/
     private val detailedProduct: DetailedProduct = DetailedProduct()
     private val productId: String
-    private val alertDialogBuilder = AlertDialog.Builder(context)
-    private val agentRequestDialog = AlertDialog.Builder(context)
+    private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
     private val agentNotFoundDialog = AlertDialog.Builder(context)
     private var agentRequestStatus = "Requesting agent..."
     private var progress: ProgressDialog? = null
     private val serviceCentreItemPrefs: SharedPreferences
 
     private lateinit var alertDialog: AlertDialog
-    private val alertDialogView = LayoutInflater.from(context)
-            .inflate(R.layout.delegate_agent_dialog, null)
+
     var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
     //TODO: Update preferences
 
@@ -77,27 +74,47 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
             //TODO: handle intent transaction to ProductDetail
         }
 
+        viewHolder.itemView.product_info_relative_layout.setOnClickListener {
+            makeRequest()
+        }
+
         viewHolder.itemView.request_agent_image_view.setOnClickListener {
+            makeRequest()
+        }
 
-            alertDialogBuilder.setTitle("Request Agent")
-                    .setIcon(R.drawable.logo)
-                    .setView(alertDialogView)
+        viewHolder.itemView.product_image.setOnClickListener {
+            makeRequest()
+        }
 
-            alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
-                Timber.e("Clicked Confirm!")
+        viewHolder.itemView.product_title.setOnClickListener {
+            makeRequest()
+        }
+    }
+
+    private fun makeRequest() {
+        val alertDialogBuilder =  MaterialAlertDialogBuilder(context!!)
+
+        val alertDialogView = LayoutInflater.from(context)
+                .inflate(R.layout.delegate_agent_dialog, null)
+
+        alertDialogBuilder.setTitle("Request Agent")
+                .setIcon(R.drawable.logo)
+                .setView(alertDialogView)
+
+        alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
+            Timber.e("Clicked Confirm!")
 //                detailedProduct.requestAgentDelegate(productId)
 
-                requestAgentDelegate(productId)
-            }
-
-            alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
-                Timber.e("Clicked Cancel!")
-            }
-
-            alertDialog = alertDialogBuilder.show()
-//            alertDialog.dismiss()
-            //TODO: attend to bug with alertDialog
+            requestAgentDelegate(productId)
         }
+
+        alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
+            Timber.e("Clicked Cancel!")
+        }
+
+        alertDialogBuilder.show() //TODO: BIG BUG!!!
+//            alertDialog.dismiss()
+        //TODO: attend to bug with alertDialog
     }
 
     private fun requestAgentDelegate(mProductId: String) {
@@ -114,7 +131,7 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
 
                     when (code) {
                         200 -> {
-                            alertDialog.dismiss()
+//                            alertDialogBuilder.dismiss()
 
                             Timber.e("CODE IS $code")
 
@@ -171,6 +188,7 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
         val fragmentTransaction = fragmentManager.beginTransaction()
         val delegatedServiceFragment = DelegatedServiceFragment()
         delegatedServiceFragment.arguments = bundle
+//        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
         fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
         fragmentTransaction.commit()
     }

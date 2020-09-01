@@ -48,7 +48,7 @@ class DelegatedServiceAdapter(private val delegatedServicesList: List<DelegatedS
             Timber.e("onClick: AGENT_ID ${delegatedService.agentId} | PRODUCT_ID ${delegatedService.productId}")
 
             val fragmentTransaction = supportFM.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+            fragmentTransaction.replace(R.id.rootLayout, delegatedServiceFragment)
             fragmentTransaction.commit()
         }
     }

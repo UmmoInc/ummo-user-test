@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
     app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="0.7dp"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="1dp"
     app:cardMaxElevation="1dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
     app:contentPaddingBottom="4dp"
     app:contentPaddingTop="4dp"
-    tools:context=".MainActivity">
+    app:strokeColor="@color/Grey"
+    app:strokeWidth="1dp"
+    tools:context=".ui.MainScreen">
 
     <RelativeLayout
         android:id="@+id/root_relative_layout"
@@ -25,7 +26,7 @@
             android:id="@+id/card_header_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:padding="4dp">
 
             <ImageView
                 android:id="@+id/card_avatar_image_view"
@@ -87,7 +88,7 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:contentDescription="@string/service_centre_image"
-                android:src="@drawable/esw_gov"/>
+                android:src="@drawable/esw_gov" />
 
             <View
                 android:id="@+id/divider_2"
@@ -101,8 +102,8 @@
                 android:id="@+id/product_info_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:layout_below="@id/divider_2">
+                android:layout_below="@id/divider_2"
+                android:padding="8dp">
 
                 <ImageView
                     android:id="@+id/product_image"
@@ -141,7 +142,6 @@
                     android:layout_centerVertical="true"
                     android:contentDescription="@string/save_service"
                     android:padding="4dp"
-                    android:background="@drawable/rounded_button_transparent_blue"
                     app:srcCompat="@drawable/ic_agent_purple_24" />
 
             </RelativeLayout>
@@ -149,4 +149,4 @@
         </RelativeLayout>
 
     </RelativeLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

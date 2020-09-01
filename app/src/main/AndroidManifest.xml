@@ -121,19 +121,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Location"
-            android:label="@string/title_activity_location" />
+
         <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignUp" />
+
         <activity
             android:name=".Register"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".MainActivity" />
+
     </application>
 
 </manifest>

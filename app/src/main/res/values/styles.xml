@@ -1,7 +1,8 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/White</item>
         <!--<item name="pinViewStyle">@style/PinWidget.PinView</item>-->
@@ -13,7 +14,29 @@
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back_black_24dp</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:textColorSecondary">@android:color/black</item>
+        <!-- AlertDialog -->
+        <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
+        <!-- Material Button-->
     </style>
+
+    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Negative</item>
+    </style>
+
+    <style name="Alert.Button.Positive" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/ummo_1</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Alert.Button.Negative" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/Grey</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog" />
 
     <style name="CollapsedAppBar" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">18sp</item>

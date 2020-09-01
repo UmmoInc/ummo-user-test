@@ -9,9 +9,6 @@ import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -21,13 +18,10 @@ import io.sentry.core.protocol.User
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.MainActivity
 import xyz.ummo.user.R
-import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.delegate.Login
 import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.utilities.PrefManager
 import java.util.*
 
@@ -171,7 +165,7 @@ class CompleteSignUp : AppCompatActivity() {
                 Toast.makeText(applicationContext,
                         "Registered Successfully!",
                         Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, MainScreen::class.java))
                 finish()
             } else {
                 if (task.exception is FirebaseAuthUserCollisionException) {

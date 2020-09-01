@@ -125,18 +125,20 @@ class DelegatedServiceFragment : Fragment {
 
         val view = viewBinding.root
 
-        agentNameTextView = viewBinding.delegatedAgentNameTextView
+        /** The commented block below will be used in a later version of the app **/
+        /*agentNameTextView = viewBinding.delegatedAgentNameTextView
         agentStatusTextView = viewBinding.delegatedAgentStatusTextView
         openChat = viewBinding.openChatButton
         progressBar = viewBinding.serviceProgressBar
 
-        delegatedProductNameTextView = viewBinding.delegatedAgentNameTextView
+        delegatedProductNameTextView = viewBinding.delegatedAgentNameTextView*/
         delegatedProductDescriptionTextView = viewBinding.descriptionTextView
         delegatedProductCostTextView = viewBinding.serviceCostTextView
         delegatedProductStepsLayout = viewBinding.delegatedServiceStepsLayout
 
         agentNameTextView?.text = agentName
-        goToDelegationChat()
+
+//        goToDelegationChat()
 
         Timber.e("onCreateView: New product id%s", delegatedProductId)
 
@@ -244,7 +246,8 @@ class DelegatedServiceFragment : Fragment {
         return view
     }
 
-    private fun goToDelegationChat() {
+    /** The function below will be used for a later version of the app **/
+    /*private fun goToDelegationChat() {
         openChat = viewBinding.openChatButton
         delegatedServiceViewModel
                 ?.getDelegatedServiceByProductId(delegatedProductId)?.observe(viewLifecycleOwner, Observer { delegatedServiceEntity1: DelegatedServiceEntity ->
@@ -277,7 +280,7 @@ class DelegatedServiceFragment : Fragment {
             serviceId = arguments!!.getString("SERVICE_ID")
             agentName = delegatedServiceFragPrefs?.getString("DELEGATED_AGENT", "")
         }
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri?) {

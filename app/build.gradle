@@ -124,6 +124,9 @@ dependencies {
     //Mixpanel
     implementation 'com.mixpanel.android:mixpanel-android:5.8.4'
 
+    //Doorbell
+    implementation 'io.doorbell:android-sdk:0.4.3@aar'
+
     //tooltip
     implementation 'com.github.florent37:viewtooltip:1.2.2'
 

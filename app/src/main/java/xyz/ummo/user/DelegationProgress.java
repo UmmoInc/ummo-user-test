@@ -2,14 +2,15 @@ package xyz.ummo.user;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import xyz.ummo.user.adapters.CustomAdapter;
 import xyz.ummo.user.ui.MainScreen;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ public class DelegationProgress extends AppCompatActivity {
     CustomAdapter customAdapter;
     ImageView messageIcon, homeIcon;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +42,7 @@ public class DelegationProgress extends AppCompatActivity {
         loadProcesses();
 
         //initialise the messageIcon and homeIcon imageview
-        messageIcon = findViewById(R.id.message_icon_button);
+        messageIcon = findViewById(R.id.feedback_icon);
         homeIcon = findViewById(R.id.home_icon_button);
 
 
@@ -68,7 +70,7 @@ public class DelegationProgress extends AppCompatActivity {
 
         //Initialise the progressbar and set the progress color
         progressBar = findViewById(R.id.delegation_progress_bar);
-        progressBar.setProgressTintList(ColorStateList.valueOf(R.color.ummo_4));
+        progressBar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.ummo_4)));
 
         //initialie the progress listview adapter
         customAdapter = new CustomAdapter(this, progresses, progressBar);

@@ -141,9 +141,15 @@
     <string name="product_cost">Product Cost</string>
 
     <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--<string name="serverUrl">http://192.168.8.106:3000</string>-->
+    <!--<string name="serverUrl">http://192.168.8.101:3000</string>-->
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>
     <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
+    <string name="dismiss_info">Dismiss Info</string>
+    <string name="feedback">Feedback</string>
+    <string name="request_message">This might take a few seconds…</string>
+    <string name="request_error_image_description">Request Error</string>
+    <string name="call_for_bug_assistance">Please try again, or help us fix it by reporting the issue in Feedback.</string>
+    <string name="registration_continue">Continue</string>
 
 </resources>
