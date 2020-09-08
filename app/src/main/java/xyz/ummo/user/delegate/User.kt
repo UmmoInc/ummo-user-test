@@ -90,12 +90,13 @@ class User : Application() {
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
             initializeSocket(getUserId(jwt))
             //SocketIO.mSocket?.connect()
-            SocketIO.mSocket?.on("connect", Emitter.Listener {
+            SocketIO.mSocket?.on("connect") {
                 Timber.e("Connected to ")
-            })
-            SocketIO.mSocket?.on("message1", Emitter.Listener {
+            }
+
+            SocketIO.mSocket?.on("message1") {
                 Timber.e("it[0].toString()")
-            })
+            }
 
             SocketIO.mSocket?.on("service-created") {
                 Timber.e("service-created!")

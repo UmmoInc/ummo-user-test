@@ -142,6 +142,7 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
                             val serviceAgent = service.getString("agent")
 
                             editor.putString("SERVICE_ID", serviceId)
+                            //TODO: remove after service is done
                             editor.putString("DELEGATED_PRODUCT_ID", productId)
                             editor.putString("SERVICE_AGENT_ID", serviceAgent)
                             editor.apply()

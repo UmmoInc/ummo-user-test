@@ -60,7 +60,7 @@
                 android:layout_margin="5dp"
                 android:layout_toEndOf="@+id/info_eco_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="@{info.title, default = Tip}"
+                android:text="Ummo Tip"
                 android:textColor="@color/black" />
 
             <View
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider2"
                 android:layout_margin="8dp"
-                android:text="@{info.text, default = Body}"
+                android:text="We will share quick tips on how to get the best of Ummo and Government Services."
                 android:textSize="14sp" />
 
         </RelativeLayout>

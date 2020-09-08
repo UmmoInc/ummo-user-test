@@ -43,6 +43,7 @@ import xyz.ummo.user.delegate.Feedback
 //import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicService
+import xyz.ummo.user.delegate.SocketIO
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -156,6 +157,8 @@ class MainScreen : AppCompatActivity() {
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+        checkForSocketConnection()
+
     }
 
     override fun onPause() {
@@ -185,7 +188,7 @@ class MainScreen : AppCompatActivity() {
             if (feedbackText.isNotEmpty()) {
                 submitFeedback(feedbackText, sharedPrefUserContact)
             } else {
-                showSnackbar("You forgot your feedback :)")
+                showSnackbarRed("You forgot your feedback", -1)
             }
 
         }
@@ -197,6 +200,19 @@ class MainScreen : AppCompatActivity() {
         feedbackDialogBuilder.show()
     }
 
+    private fun checkForSocketConnection() {
+        SocketIO.mSocket!!.on("connect") {
+            showSnackbarBlue("Connecting...", 0)
+
+            val serviceCentreFragment = ServiceCentresFragment()
+            openFragment(serviceCentreFragment)
+        }
+
+        SocketIO.mSocket!!.on("connect_error") {
+            showSnackbarRed("Connection lost...", -2)
+        }
+    }
+
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
     private fun submitFeedback(feedbackString: String, userContact: String) {
@@ -205,7 +221,7 @@ class MainScreen : AppCompatActivity() {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     Timber.e("Feedback Submitted -> ${String(data)}")
-                    showSnackbar("Thank you for your feedback :)")
+                    showSnackbarBlue("Thank you for your feedback :)", 0)
                 } else {
                     Timber.e("Feedback Error: Code -> $code")
                     Timber.e("Feedback Error: Data -> ${String()}")
@@ -214,9 +230,21 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private fun showSnackbar(message: String) {
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
         val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
         snackbar.anchorView = bottomNav
         snackbar.show()
     }

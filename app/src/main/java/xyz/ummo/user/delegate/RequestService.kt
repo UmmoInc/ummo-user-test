@@ -3,14 +3,17 @@ package xyz.ummo.user.delegate
 import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.ui.MainScreen
 
+/** This abstract function takes a User (contact) && Product (ID); then a request
+ *  is made with Fuel (HTTP POST) **/
 abstract class RequestService(context: Context?, user: String, product: String) {
 
     private lateinit var alertDialog: MaterialAlertDialogBuilder
@@ -43,7 +46,11 @@ abstract class RequestService(context: Context?, user: String, product: String) 
                                     .setIcon(R.drawable.logo)
                                     .setView(completingAlertDialogView)
                                     .setPositiveButton("Got It") { dialogInterface, i ->
-
+                                        val bottomNavigationView = context.findViewById<View>(R.id.bottom_nav)
+                                        val snackbar = Snackbar.make(context.findViewById(android.R.id.content), "Your request was successful!", Snackbar.LENGTH_LONG)
+                                        snackbar.setTextColor(context.resources.getColor(R.color.ummo_4))
+                                        snackbar.anchorView = bottomNavigationView
+                                        snackbar.show()
                                     }
 
                             alertDialogBuilder.show()

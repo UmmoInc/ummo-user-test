@@ -140,8 +140,8 @@
 
     <string name="product_cost">Product Cost</string>
 
-    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--<string name="serverUrl">http://192.168.8.101:3000</string>-->
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.8.100:3000</string>
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>
     <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
