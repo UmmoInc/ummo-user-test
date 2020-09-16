@@ -3,18 +3,23 @@ package xyz.ummo.user.ui.signup
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import io.sentry.core.Sentry
 import io.sentry.core.protocol.User
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
@@ -22,7 +27,9 @@ import xyz.ummo.user.R
 import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.delegate.Login
 import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.utilities.NetworkStateEvent
 import xyz.ummo.user.utilities.PrefManager
+import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import java.util.*
 
 class CompleteSignUp : AppCompatActivity() {
@@ -32,6 +39,7 @@ class CompleteSignUp : AppCompatActivity() {
     private var userContact: String = ""
     private var prefManager: PrefManager? = null
     private var firebaseAuth: FirebaseAuth? = null
+    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,20 +52,23 @@ class CompleteSignUp : AppCompatActivity() {
         userContact = intent.getStringExtra("USER_CONTACT")!!
         userName = intent.getStringExtra("USER_NAME")!!
 
-        //Hiding the toolbar
+        /** Hiding the toolbar **/
         try {
             this.supportActionBar?.hide()
         } catch (npe: NullPointerException) {
             Timber.e("NPE-> $npe")
         }
 
-        //Init OneSignal
+        /**[NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
+
+        /** Init OneSignal **/
         OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init()
 
-        //Init firebaseAuth
+        /** Init firebaseAuth **/
         firebaseAuth = FirebaseAuth.getInstance()
 
         // Checking for first time launch - before calling setContentView()
@@ -69,6 +80,33 @@ class CompleteSignUp : AppCompatActivity() {
         }
 
         completeSignUp()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
+    @Subscribe
+    fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
+        Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
+
+        /** Toggling between network states && displaying an appropriate Snackbar **/
+        if (networkStateEvent.noConnectivity!!) {
+            showSnackbarRed("Please check connection...", -2)
+        } /*else {
+            showSnackbarBlue("Connecting...", -1)
+        }*/
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+         * so we don't need to stay online (for NOW) **/
+        unregisterReceiver(connectivityReceiver)
     }
 
     private fun completeSignUp() {
@@ -179,6 +217,18 @@ class CompleteSignUp : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.show()
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.show()
     }
 
     private fun logWithStaticAPI() {

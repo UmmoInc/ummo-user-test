@@ -1,8 +1,10 @@
 package xyz.ummo.user.ui.signup
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -10,8 +12,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
+import xyz.ummo.user.R
 import xyz.ummo.user.databinding.RegisterBinding
+import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.NetworkStateEvent
 import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {
@@ -26,6 +33,8 @@ class RegisterActivity : AppCompatActivity() {
     private var mResendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var mVerificationId: String? = "default"
     private var mVerificationInProgress = false
+    private var snackbar: Snackbar? = null
+    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +54,44 @@ class RegisterActivity : AppCompatActivity() {
         val view = registerBinding.root
         setContentView(view)
 
+        /**[NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
+
         initCallback()
         register()
     }
+
+    override fun onStart() {
+        super.onStart()
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
+    @Subscribe
+    fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
+        Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
+
+        /** Toggling between network states && displaying an appropriate Snackbar **/
+        if (networkStateEvent.noConnectivity!!) {
+            showSnackbarRed("Please check connection...", -2)
+        } else {
+            showSnackbarBlue("Connecting...", -1)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+         * so we don't need to stay online (for NOW) **/
+        unregisterReceiver(connectivityReceiver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
 
     /** Begin Phone Number Verification with PhoneAuthProvider from Firebase **/
     private fun startPhoneNumberVerification(phoneNumber: String) {
@@ -62,16 +106,16 @@ class RegisterActivity : AppCompatActivity() {
     private fun signUpWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                showSnackbar("Successfully signing in...", -1)
+                showSnackbarBlue("Successfully signing in...", -1)
             } else {
-                showSnackbar("Try again!", 0)
+                showSnackbarRed("Try again!", 0)
 
                 if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                    showSnackbar("Invalid code...", 0)
+                    showSnackbarRed("Invalid code...", 0)
                 }
 
                 Timber.i("Sign in failed -> ${task.exception}")
-                showSnackbar("Sign in failed!", -2)
+                showSnackbarRed("Sign in failed!", -2)
             }
         }
     }
@@ -177,7 +221,20 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    //TODO: Deprecate
     private fun showSnackbar(message: String, duration: Int) {
         Snackbar.make(findViewById(android.R.id.content), message, duration).show() //LENGTH_SHORT
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.show()
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.show()
     }
 }

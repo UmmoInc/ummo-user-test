@@ -42,8 +42,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     private var progress: ProgressDialog? = null
     private val serviceCentreItemPrefs: SharedPreferences
 
-    private lateinit var alertDialog: AlertDialog
-
     var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
     //TODO: Update preferences
 

@@ -3,7 +3,9 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -28,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import io.doorbell.android.Doorbell
 import io.doorbell.android.shake.ShakeDetector
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
 import timber.log.Timber
@@ -51,6 +55,8 @@ import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
+import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 
 class MainScreen : AppCompatActivity() {
 
@@ -94,6 +100,7 @@ class MainScreen : AppCompatActivity() {
     private lateinit var doorbellDialog: Doorbell
     private val appId = 11867
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
+    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,6 +136,9 @@ class MainScreen : AppCompatActivity() {
 
         mAuth = FirebaseAuth.getInstance()
 
+        /**[NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
+
 //        logoutClick() //TODO: to reconsider implementation
 
         mHandler = Handler()
@@ -157,8 +167,38 @@ class MainScreen : AppCompatActivity() {
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        checkForSocketConnection()
+//        checkForSocketConnection()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
+    @Subscribe
+    fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
+        Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
+
+        /** Toggling between network states && displaying an appropriate Snackbar **/
+        if (networkStateEvent.noConnectivity!!) {
+            showSnackbarRed("Please check connection...", -2)
+        } else {
+            showSnackbarBlue("Connecting...", -1)
+            /** Reloading Service Centre Fragment **/
+            val serviceCentreFragment = ServiceCentresFragment()
+            //openFragment(serviceCentreFragment)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+         * so we don't need to stay online (for NOW) **/
+        unregisterReceiver(connectivityReceiver)
     }
 
     override fun onPause() {
@@ -200,7 +240,9 @@ class MainScreen : AppCompatActivity() {
         feedbackDialogBuilder.show()
     }
 
-    private fun checkForSocketConnection() {
+    /** Using a Socket instance, we're checking if our connection to the server is successful or not
+     * then handling that appropriately for the user to be aware of what to do with it #UX **/
+    /*private fun checkForSocketConnection() {
         SocketIO.mSocket!!.on("connect") {
             showSnackbarBlue("Connecting...", 0)
 
@@ -211,7 +253,7 @@ class MainScreen : AppCompatActivity() {
         SocketIO.mSocket!!.on("connect_error") {
             showSnackbarRed("Connection lost...", -2)
         }
-    }
+    }*/
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/

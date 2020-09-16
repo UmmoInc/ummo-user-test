@@ -1,6 +1,8 @@
 package xyz.ummo.user.ui.signup
 
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -11,9 +13,13 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.android.synthetic.main.contact_verification.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.ContactVerificationBinding
+import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import java.util.concurrent.TimeUnit
 
 class ContactVerificationActivity : AppCompatActivity() {
@@ -28,6 +34,7 @@ class ContactVerificationActivity : AppCompatActivity() {
     private var mResendToken: PhoneAuthProvider.ForceResendingToken? = null
     private var mVerificationId: String? = "default"
     private var mVerificationInProgress = false
+    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +43,11 @@ class ContactVerificationActivity : AppCompatActivity() {
         val view = viewBinding.root
         setContentView(view)
 
+        /** [NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
+
         mAuth = FirebaseAuth.getInstance()
-        //Hiding the toolbar
+        /** Hiding the toolbar **/
         try {
             this.supportActionBar?.hide()
         } catch (npe: NullPointerException) {
@@ -54,6 +64,33 @@ class ContactVerificationActivity : AppCompatActivity() {
         initCallback()
         startPhoneNumberVerification(userContact)
         verifyCode()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /**[NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
+    @Subscribe
+    fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
+        Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
+
+        /** Toggling between network states && displaying an appropriate Snackbar **/
+        if (networkStateEvent.noConnectivity!!) {
+            showSnackbarRed("Please check connection...", -2)
+        } /*else {
+            showSnackbarBlue("Connecting...", -1)
+        }*/
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+         * so we don't need to stay online (for NOW) **/
+        unregisterReceiver(connectivityReceiver)
     }
 
     private fun verifyCode() {
@@ -171,7 +208,24 @@ class ContactVerificationActivity : AppCompatActivity() {
         // [END phone_auth_callbacks]
     }
 
+    override fun onBackPressed() {
+
+    }
+
+    //TODO: Deprecate
     private fun showSnackbar(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.show()
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.show()
     }
 }

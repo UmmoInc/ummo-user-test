@@ -68,12 +68,12 @@ class ServiceCentresFragment : Fragment() {
 
         progress = ProgressDialog(requireContext())
 
-        getServiceCentreData()
         Timber.e("GOT SERVICE CENTRE DATA ->%s", publicServiceData)
         detailedProductViewModel = ViewModelProvider((context as FragmentActivity?)!!).get(DetailedProductViewModel::class.java)
 
         //Init GroupAdapter
         gAdapter = GroupAdapter()
+        getServiceCentreData()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -193,16 +193,16 @@ class ServiceCentresFragment : Fragment() {
                         }
                         recyclerView.adapter = gAdapter
 
-                        Timber.e("Product Data->%s", productData)
+//                        Timber.e("Product Data->%s", productData)
 
                         /** Inserting Product into Room **/
-                        Timber.e("Product Steps -> $productStepsArrayList")
+                        /*Timber.e("Product Steps -> $productStepsArrayList")
                         Timber.e("Product DOCS -> $productDocsArrayList")
                         Timber.e("Product Duration -> $productDuration")
                         Timber.e("Product Docs -> ${
                             productData
                                     .getJSONObject("requirements").getJSONArray("documents")
-                        }")
+                        }")*/
                         productEntity.productId = productId
                         productEntity.productName = productName
                         productEntity.productDescription = productDescription
