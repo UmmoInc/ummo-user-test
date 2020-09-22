@@ -1,7 +1,6 @@
 package xyz.ummo.user.ui
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
@@ -37,17 +36,13 @@ import org.json.JSONException
 import timber.log.Timber
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
-import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.delegate.Feedback
-//import xyz.ummo.user.databinding.AppBarMainScreenBinding
-import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.delegate.PublicService
-import xyz.ummo.user.delegate.SocketIO
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -55,8 +50,9 @@ import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
-import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 
 class MainScreen : AppCompatActivity() {
 
@@ -194,6 +190,17 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
+    @Subscribe
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
+        Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
+
+        if (!socketStateEvent.socketConnected!!) {
+            showSnackbarRed("Can't reach Ummo network", -2)
+        } else {
+            showSnackbarBlue("Ummo network found...", -1)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
@@ -239,21 +246,6 @@ class MainScreen : AppCompatActivity() {
 
         feedbackDialogBuilder.show()
     }
-
-    /** Using a Socket instance, we're checking if our connection to the server is successful or not
-     * then handling that appropriately for the user to be aware of what to do with it #UX **/
-    /*private fun checkForSocketConnection() {
-        SocketIO.mSocket!!.on("connect") {
-            showSnackbarBlue("Connecting...", 0)
-
-            val serviceCentreFragment = ServiceCentresFragment()
-            openFragment(serviceCentreFragment)
-        }
-
-        SocketIO.mSocket!!.on("connect_error") {
-            showSnackbarRed("Connection lost...", -2)
-        }
-    }*/
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
@@ -547,19 +539,6 @@ class MainScreen : AppCompatActivity() {
         transaction.replace(R.id.frame, fragment, "TAG_PROFILE")
         transaction.addToBackStack(null)
         transaction.commit()
-    }
-
-    fun logout(view: View) {
-        mAuth!!.signOut()
-        val progress = ProgressDialog(this@MainScreen)
-        progress.setMessage("Logging out...")
-        progress.show()
-        object : Logout(this) {
-            override fun done() {
-                startActivity(Intent(this@MainScreen, Register::class.java))
-            }
-        }
-        // prefManager.unSetFirstTimeLaunch();
     }
 
     companion object {

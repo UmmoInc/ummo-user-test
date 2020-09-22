@@ -1,196 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_my_profile"
     tools:context=".ui.fragments.profile.ProfileFragment">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:background="@color/White">
+        android:layout_height="match_parent">
 
-        <!--<include
-            android:id="@+id/profile_info_card"
-            layout="@layout/info_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>-->
-
-        <FrameLayout
-            android:id="@+id/profile_pic_box"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true">
+            android:background="@color/White"
+            android:paddingBottom="10dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:src="@drawable/ic_profile_face"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"/>
+            <!--<include
+                android:id="@+id/profile_info_card"
+                layout="@layout/info_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>-->
 
-            <!--<de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/iv_camera"
+            <FrameLayout
+                android:id="@+id/profile_pic_box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/ic_camera_alt_black_24dp"/>-->
-        </FrameLayout>
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp">
 
-        <TextView
-            android:id="@+id/full_name_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyProfile"
-            android:text="@string/full_name_title_string"
-            android:textSize="12sp"
-            android:layout_marginTop="20dp"
-            android:textStyle="bold"
-            android:layout_below="@id/profile_pic_box"
-            android:layout_marginStart="20dp" />
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ic_profile_face" />
 
-        <TextView
-            android:id="@+id/profile_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:drawablePadding="4dp"
-            android:background="@color/White"
-            android:padding="5dp"
-            android:text="@string/user_name_placeholder"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_below="@id/full_name_title"
-            android:layout_marginTop="2dp"/>
+                <!--<de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/iv_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/ic_camera_alt_black_24dp"/>-->
+            </FrameLayout>
 
-        <View
-            android:id="@+id/view1"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/Grey"
-            android:layout_below="@id/profile_name"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="20dp" />
+            <TextView
+                android:id="@+id/full_name_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_pic_box"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/full_name_title_string"
+                android:textColor="@color/greyProfile"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-        <!--<TextView
-            android:id="@+id/id_number_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyProfile"
-            android:text="@string/id_number_title_string"
-            android:textSize="12sp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:layout_below="@id/view1"
-            android:layout_marginStart="20dp" />
+            <TextView
+                android:id="@+id/profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/full_name_title"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/White"
+                android:drawablePadding="4dp"
+                android:padding="5dp"
+                android:text="@string/user_name_placeholder"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/id_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:drawablePadding="4dp"
-            android:background="@color/White"
-            android:padding="5dp"
-            android:text="Enter Your ID number here"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_below="@id/id_number_title"
-            android:layout_marginTop="2dp"
-            android:clickable="true"
-            android:onClick="goToEditProfile"
-            android:focusable="true"
-            app:drawableRightCompat="@drawable/ic_edit_black_24dp"
-            app:drawableEndCompat="@drawable/ic_edit_black_24dp" />-->
+            <View
+                android:id="@+id/view1"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profile_name"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/Grey" />
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/Grey"
-            android:layout_below="@id/profile_name"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="10dp" />
+            <!--<TextView
+                android:id="@+id/id_number_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/greyProfile"
+                android:text="@string/id_number_title_string"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:layout_below="@id/view1"
+                android:layout_marginStart="20dp" />
 
-        <TextView
-            android:id="@+id/contact_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyProfile"
-            android:text="@string/contact_title_string"
-            android:textSize="12sp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:layout_below="@id/view2"
-            android:layout_marginStart="20dp" />
+            <TextView
+                android:id="@+id/id_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:drawablePadding="4dp"
+                android:background="@color/White"
+                android:padding="5dp"
+                android:text="Enter Your ID number here"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_below="@id/id_number_title"
+                android:layout_marginTop="2dp"
+                android:clickable="true"
+                android:onClick="goToEditProfile"
+                android:focusable="true"
+                app:drawableRightCompat="@drawable/ic_edit_black_24dp"
+                app:drawableEndCompat="@drawable/ic_edit_black_24dp" />-->
 
-        <TextView
-            android:id="@+id/profile_contact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:text="(+268) 76872520"
-            android:background="@color/White"
-            android:padding="5dp"
-            android:layout_below="@id/contact_title"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="2dp" />
+            <View
+                android:id="@+id/view2"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profile_name"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@color/Grey" />
 
-        <View
-            android:id="@+id/view3"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/Grey"
-            android:layout_below="@id/profile_contact"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"/>
+            <TextView
+                android:id="@+id/contact_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/view2"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/contact_title_string"
+                android:textColor="@color/greyProfile"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/email_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyProfile"
-            android:text="@string/email_title_string"
-            android:textSize="12sp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:layout_below="@id/view3"
-            android:layout_marginStart="20dp" />
+            <TextView
+                android:id="@+id/profile_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/contact_title"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/White"
+                android:padding="5dp"
+                android:text="(+268) 76872520"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/profile_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:background="@color/White"
-            android:padding="5dp"
-            android:text="email@gmail.com"
-            android:layout_below="@id/email_title"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp" />
+            <View
+                android:id="@+id/view3"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profile_contact"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
 
-        <View
-            android:id="@+id/view4"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@color/Grey"
-            android:layout_below="@id/profile_email"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"/>
+            <TextView
+                android:id="@+id/email_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/view3"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/email_title_string"
+                android:textColor="@color/greyProfile"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/profile_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/email_title"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/White"
+                android:padding="5dp"
+                android:text="email@gmail.com"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
 
+            <View
+                android:id="@+id/view4"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/profile_email"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_below="@id/view4"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:backgroundTint="@color/quantum_googred"
+                android:enabled="true"
+                android:text="Log out"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_log_out_24"
+                app:iconGravity="textEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+
+
+    </ScrollView>
 </layout>

@@ -18,7 +18,8 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.RegisterBinding
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
-import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {
@@ -57,6 +58,7 @@ class RegisterActivity : AppCompatActivity() {
         /**[NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
 
+
         initCallback()
         register()
     }
@@ -66,6 +68,7 @@ class RegisterActivity : AppCompatActivity() {
         /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
+
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
@@ -81,17 +84,29 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    @Subscribe
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
+        Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
+
+        if (!socketStateEvent.socketConnected!!) {
+            showSnackbarRed("Can't reach Ummo network", -2)
+        } else {
+            showSnackbarBlue("Ummo network found...", -1)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
          * so we don't need to stay online (for NOW) **/
         unregisterReceiver(connectivityReceiver)
+
+        Timber.e("onSTOP")
     }
 
     override fun onResume() {
         super.onResume()
     }
-
 
     /** Begin Phone Number Verification with PhoneAuthProvider from Firebase **/
     private fun startPhoneNumberVerification(phoneNumber: String) {

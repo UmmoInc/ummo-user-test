@@ -1,103 +1,69 @@
-package xyz.ummo.user.ui.fragments;
+package xyz.ummo.user.ui.fragments
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.ArrayList;
-
-import xyz.ummo.user.Product;
-import xyz.ummo.user.R;
-import xyz.ummo.user.adapters.AllProductsAdapter;
-
+import android.content.Context
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import xyz.ummo.user.Product
+import xyz.ummo.user.R
+import xyz.ummo.user.adapters.AllProductsAdapter
+import java.util.*
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * {@link GetAgent.OnFragmentInteractionListener} interface
+ * [GetAgent.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the {@link GetAgent#newInstance} factory method to
+ * Use the [GetAgent.newInstance] factory method to
  * create an instance of this fragment.
  */
-public class GetAgent extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+class GetAgent : Fragment() {
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private AllProductsAdapter allProductsAdapter;
-    private RecyclerView productsRecyclerView;
-    private ArrayList<Product> products = new ArrayList<>();
-
-    private OnFragmentInteractionListener mListener;
-
-    public GetAgent() {
-        // Required empty public constructor
-    }
-
-    public static GetAgent newInstance(String param1, String param2) {
-        GetAgent fragment = new GetAgent();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    private var mParam1: String? = null
+    private var mParam2: String? = null
+    private var allProductsAdapter: AllProductsAdapter? = null
+    private var productsRecyclerView: RecyclerView? = null
+    private val products = ArrayList<Product>()
+    private var mListener: OnFragmentInteractionListener? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (arguments != null) {
+            mParam1 = arguments!!.getString(ARG_PARAM1)
+            mParam2 = arguments!!.getString(ARG_PARAM2)
         }
-
-        addProducts();
-
-        allProductsAdapter = new AllProductsAdapter(getContext(), products);
+        addProducts()
+        allProductsAdapter = AllProductsAdapter(context, products)
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_get_agent, container, false);
-
-        productsRecyclerView = view.findViewById(R.id.all_products_rv);
+        val view = inflater.inflate(R.layout.fragment_get_agent, container, false)
+        productsRecyclerView = view.findViewById(R.id.all_products_rv)
 
         //Set productsRecyclerView
-        productsRecyclerView.setAdapter(allProductsAdapter);
-        productsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        productsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        return view;
+        productsRecyclerView?.adapter = allProductsAdapter
+        productsRecyclerView?.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        productsRecyclerView?.itemAnimator = DefaultItemAnimator()
+        return view
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    fun onButtonPressed(uri: Uri?) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener!!.onFragmentInteraction(uri)
         }
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        //        if (context instanceof OnFragmentInteractionListener) {
 //            mListener = (OnFragmentInteractionListener) context;
 //        } else {
 //            throw new RuntimeException(context.toString()
@@ -105,10 +71,9 @@ public class GetAgent extends Fragment {
 //        }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
     }
 
     /**
@@ -116,32 +81,42 @@ public class GetAgent extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *
+     *
+     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    public interface OnFragmentInteractionListener {
+    interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        fun onFragmentInteraction(uri: Uri?)
     }
 
-    public void addProducts(){
+    private fun addProducts() {
+        var product = Product("Product 1", "Mbabane", "", "",
+                "", "", "", "", "")
+        products.add(product)
+        product = Product("Product 2", "Mbabane", "", "",
+                "", "", "", "", "")
+        products.add(product)
+        product = Product("Product 3", "Mbabane", "", "",
+                "", "", "", "", "")
+        products.add(product)
+        product = Product("Product 4", "Mbabane", "", "",
+                "", "", "", "", "")
+        products.add(product)
+    }
 
-        Product product = new Product("Product 1", "Mbabane", "", "",
-        "", "", "", "", "");
-        products.add(product);
-
-        product = new Product("Product 2", "Mbabane", "", "",
-                "", "", "", "", "");
-        products.add(product);
-
-        product = new Product("Product 3", "Mbabane", "", "",
-                "", "", "", "", "");
-        products.add(product);
-
-        product = new Product("Product 4", "Mbabane", "", "",
-                "", "", "", "", "");
-        products.add(product);
+    companion object {
+        // TODO: Rename parameter arguments, choose names that match
+        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+        private const val ARG_PARAM1 = "param1"
+        private const val ARG_PARAM2 = "param2"
+        fun newInstance(param1: String?, param2: String?): GetAgent {
+            val fragment = GetAgent()
+            val args = Bundle()
+            args.putString(ARG_PARAM1, param1)
+            args.putString(ARG_PARAM2, param2)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

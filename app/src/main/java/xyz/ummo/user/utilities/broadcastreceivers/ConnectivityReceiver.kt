@@ -6,7 +6,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
-import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 
 class ConnectivityReceiver : BroadcastReceiver() {
     var noConnectivity: Boolean = false

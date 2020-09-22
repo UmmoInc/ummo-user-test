@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
             android:contentDescription="@string/ummo_logo_descriptor"
@@ -75,7 +75,7 @@
             android:textCursorDrawable="@drawable/cursor"
             tools:targetApi="o" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/textViewLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp" />-->
 
     </RelativeLayout>
 

@@ -1,5 +1,7 @@
 package xyz.ummo.user.ui.fragments.profile
 
+import android.app.ProgressDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,12 +12,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.auth.FirebaseAuth
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
 import xyz.ummo.user.databinding.InfoCardBinding
+import xyz.ummo.user.delegate.Logout
+import xyz.ummo.user.ui.signup.RegisterActivity
 
 class ProfileFragment : Fragment() {
     private var profileName: TextView? = null
@@ -33,12 +38,17 @@ class ProfileFragment : Fragment() {
     private lateinit var profileViewBinding: FragmentMyProfileBinding
     private lateinit var profileInfoCard: InfoCardBinding
 
+    private var mAuth: FirebaseAuth? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
             mParam1 = arguments!!.getString(ARG_PARAM1)
             mParam2 = arguments!!.getString(ARG_PARAM2)
         }
+
+        mAuth = FirebaseAuth.getInstance()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +74,26 @@ class ProfileFragment : Fragment() {
             profileEmail!!.text = profileEntity1.profileEmail
         })
 
+        profileViewBinding.logoutButton.setOnClickListener {
+            logout()
+        }
+
         dismissInfoCard()
 
         return view
+    }
+
+    private fun logout() {
+        mAuth!!.signOut()
+        val progress = ProgressDialog(requireContext())
+        progress.setMessage("Logging out...")
+        progress.show()
+        object : Logout(requireContext()) {
+            override fun done() {
+                startActivity(Intent(requireContext(), RegisterActivity::class.java))
+            }
+        }
+        // prefManager.unSetFirstTimeLaunch();
     }
 
     private fun dismissInfoCard() {

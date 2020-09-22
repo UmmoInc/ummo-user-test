@@ -17,8 +17,7 @@ import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import java.net.URISyntaxException
 
-abstract class Login(context: Context, name: String, email: String, mobile_contact: String, user_pid: String) {
-    var context: Context = context
+abstract class Login(var context: Context, name: String, email: String, mobile_contact: String, user_pid: String) {
 
     private var delegatedServiceViewModel: DelegatedServiceViewModel? = null
     private val delegatedServiceEntity = DelegatedServiceEntity()
@@ -36,6 +35,7 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                 .response { request, response, result ->
                     if (response.statusCode == 200) {
                         val jwt = response.headers["Jwt"].elementAt(0).toString()
+
                         Timber.e("Jwt -> $jwt")
 
                         FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
@@ -60,9 +60,12 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             val intent = Intent(context, MainScreen::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 //                Log.e(TAG, "Service-Created: IT->"+JSONObject(it[0].toString()))
-                            intent.putExtra("SERVICE_ID", JSONObject(it[0].toString()).getString("_id"))
-                            intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString()).getString("agent"))
-                            intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0].toString()).getString("product"))
+                            intent.putExtra("SERVICE_ID", JSONObject(it[0].toString())
+                                    .getString("_id"))
+                            intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString())
+                                    .getString("agent"))
+                            intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0]
+                                    .toString()).getString("product"))
 
                             intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG", 1)
                             Timber.e("SERVICE-created with ID->${JSONObject(it[0].toString())}")
@@ -77,7 +80,8 @@ abstract class Login(context: Context, name: String, email: String, mobile_conta
                             delegatedServiceEntity.delegatedProductId = delegatedProductId
                             delegatedServiceEntity.serviceAgentId = serviceAgentId*/
 //                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-                            Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+                            Timber.e("Populating ServiceEntity: Agent->${delegatedServiceEntity
+                                    .serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
                             delegatedServiceViewModel?.insertDelegatedService(delegatedServiceEntity)
 
                             context.startActivity(intent)

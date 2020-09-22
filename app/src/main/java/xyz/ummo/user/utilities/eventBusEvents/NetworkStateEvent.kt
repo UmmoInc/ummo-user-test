@@ -1,4 +1,4 @@
-package xyz.ummo.user.utilities
+package xyz.ummo.user.utilities.eventBusEvents
 
 /** This class is used by EventBus for updating the network state **/
 class NetworkStateEvent {

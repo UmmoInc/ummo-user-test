@@ -12,13 +12,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
-import kotlinx.android.synthetic.main.contact_verification.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.ContactVerificationBinding
-import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import java.util.concurrent.TimeUnit
 
@@ -191,7 +190,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
                 // by combining the code with a verification ID.
-                showSnackbar("onCodeSent:$verificationId")
+                showSnackbar("Verification SMS on the way")
                 Timber.e("onCodeSent: $verificationId")
 
                 // Save verification ID and resending token so we can use them later
@@ -201,7 +200,7 @@ class ContactVerificationActivity : AppCompatActivity() {
 
             override fun onCodeAutoRetrievalTimeOut(verificationId: String) {
                 super.onCodeAutoRetrievalTimeOut(verificationId)
-                showSnackbar("Code timeout")
+                showSnackbarBlue("Please re-enter your contact", -1)
                 Timber.e("onCodeAutoRetrievalTimeOut: $verificationId")
             }
         }

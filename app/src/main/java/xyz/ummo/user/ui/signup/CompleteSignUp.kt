@@ -26,14 +26,17 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.delegate.Login
+import xyz.ummo.user.delegate.SocketIO
 import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.utilities.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.util.*
 
 class CompleteSignUp : AppCompatActivity() {
 
+    private var readyToSignUp: Boolean = false
     private lateinit var viewBinding: CompleteSignUpBinding
     private var userName: String = ""
     private var userContact: String = ""
@@ -79,12 +82,15 @@ class CompleteSignUp : AppCompatActivity() {
             finish()
         }
 
+//        checkForSocketConnection()
+
         completeSignUp()
     }
 
     override fun onStart() {
         super.onStart()
-        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver
+         * - to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
     }
@@ -102,9 +108,19 @@ class CompleteSignUp : AppCompatActivity() {
         }*/
     }
 
+    @Subscribe
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
+        if (!socketStateEvent.socketConnected!!) {
+            showSnackbarRed("Can't reach Ummo network", -2)
+        } else {
+            showSnackbarBlue("Ummo network found...", -1)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
-        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver
+         * - app is in the background,
          * so we don't need to stay online (for NOW) **/
         unregisterReceiver(connectivityReceiver)
     }
@@ -169,6 +185,22 @@ class CompleteSignUp : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    /** Using a Socket instance, we're checking if our connection to the server is successful or not
+     * then handling that appropriately for the user to be aware of what to do with it #UX **/
+    private fun checkForSocketConnection() {
+        SocketIO.mSocket!!.on("connect") {
+            showSnackbarBlue("LET'S GO", 0)
+            readyToSignUp = true
+            Timber.e("READY TO SIGN-UP [TRUE]-> $readyToSignUp")
+        }
+
+        SocketIO.mSocket!!.on("connect_error") {
+            showSnackbarRed("GIVE US A SEC", -2)
+            readyToSignUp = false
+            Timber.e("READY TO SIGN-UP [FALSE]-> $readyToSignUp")
         }
     }
 
