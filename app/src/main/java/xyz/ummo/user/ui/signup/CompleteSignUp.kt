@@ -155,6 +155,7 @@ class CompleteSignUp : AppCompatActivity() {
                     Timber.e("User Email-> $userEmail")
                     Timber.e("Player ID-> $onePlayerId")
 
+                    /** UserObject used to store values to be passed onto Mixpanel**/
                     val userObject = JSONObject()
 
                     /** Retrieving OneSignal PlayerId before signing up **/

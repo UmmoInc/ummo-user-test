@@ -17,17 +17,19 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@color/ummo_3"
                 app:menu="@menu/top_app_bar"
                 app:subtitle="Test Version"
-                app:title="Ummo">
+                app:subtitleTextColor="@color/White"
+                app:title="Ummo"
+                app:titleTextColor="@color/White">
 
             </com.google.android.material.appbar.MaterialToolbar>
 
-            <View
+            <!--<View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/black" />
+                android:background="@color/black" />-->
 
         </com.google.android.material.appbar.AppBarLayout>
 

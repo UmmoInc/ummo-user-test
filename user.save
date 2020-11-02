@@ -1,0 +1,23 @@
+{
+        "_id" : ObjectId("5f2b0627d0f3242a31c05cc7"),
+        "confirmed" : false,
+        "name" : "José",
+        "email" : "jay.rego.14@gmail.com",
+        "mobile_contact" : "+26876157688",
+        "user_pid" : "18086644-0a82-4a10-a4f2-4ba79e5d17ea",
+        "created_at" : ISODate("2020-08-05T19:19:03.762Z"),
+        "last_modified_at" : ISODate("2020-08-05T19:19:03.762Z"),
+        "__v" : 0
+}
+
+{
+        "_id" : ObjectId("5f2b0627d0f3242a31c05cc7"),
+        "confirmed" : false,
+        "name" : "José",
+        "email" : "jay.rego.14@gmail.com",
+        "mobile_contact" : "+26876157688",
+        "user_pid" : "18086644-0a82-4a10-a4f2-4ba79e5d17ea",
+        "created_at" : ISODate("2020-08-05T19:19:03.762Z"),
+        "last_modified_at" : ISODate("2020-08-05T19:19:03.762Z"),
+        "__v" : 0
+}

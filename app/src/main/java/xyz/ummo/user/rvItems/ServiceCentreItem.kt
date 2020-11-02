@@ -33,7 +33,6 @@ class ServiceCentreItem(private val serviceCentre: ServiceCentre, val context: C
     private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private val mode = Activity.MODE_PRIVATE
 
-    /**  **/
     private val detailedProduct: DetailedProduct = DetailedProduct()
     private val productId: String
     private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)

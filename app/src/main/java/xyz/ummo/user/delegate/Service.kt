@@ -13,7 +13,7 @@ abstract class Service(context: Context) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
         Fuel.get("/service?user=${User.getUserId(jwt!!)}&status=IN-PROGRESS")
                 .response { request, response, result ->
-                    Timber.e("Services->%s",String(response.data))
+                    //Timber.e("Services->%s",String(response.data))
                     done(response.data,response.statusCode)
                 }
     }

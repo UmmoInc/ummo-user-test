@@ -3,10 +3,12 @@ package xyz.ummo.user.ui.fragments.serviceCentres
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.SharedPreferences
+import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -22,18 +24,21 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.databinding.FragmentServiceCentresRvBinding
+import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.delegate.GetProducts
 import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.models.ServiceCentre
 import xyz.ummo.user.rvItems.ServiceCentreItem
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
+import java.sql.Time
 import kotlin.collections.ArrayList
 
 class ServiceCentresFragment : Fragment() {
 
     /** ServiceCentresFragment View Binder **/
     private lateinit var serviceCentresRvBinding: FragmentServiceCentresRvBinding
+    private lateinit var infoCardBinding: InfoCardBinding
 
     /** Groupie Adapter - for quickly rendering recycler-views **/
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
@@ -69,11 +74,13 @@ class ServiceCentresFragment : Fragment() {
         progress = ProgressDialog(requireContext())
 
         Timber.e("GOT SERVICE CENTRE DATA ->%s", publicServiceData)
-        detailedProductViewModel = ViewModelProvider((context as FragmentActivity?)!!).get(DetailedProductViewModel::class.java)
+        detailedProductViewModel = ViewModelProvider((context as FragmentActivity?)!!)
+                .get(DetailedProductViewModel::class.java)
 
         //Init GroupAdapter
         gAdapter = GroupAdapter()
         getServiceCentreData()
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -82,6 +89,11 @@ class ServiceCentresFragment : Fragment() {
         serviceCentresRvBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_service_centres_rv,
                 container, false)
+
+        infoCardBinding = DataBindingUtil.inflate(inflater,
+                R.layout.info_card,
+                container,
+                 false)
 
         val view = serviceCentresRvBinding.root
         val layoutManager = view.service_centre_recycler_view.layoutManager
@@ -92,12 +104,25 @@ class ServiceCentresFragment : Fragment() {
         recyclerView.adapter = gAdapter
         //TODO: handle empty adapter instances (i.e., no views available)
 
+        dismissInfoCard(view)
+
         return view
     }
 
     override fun onPause() {
         super.onPause()
         Timber.e("PAUSING...")
+    }
+
+    private fun dismissInfoCard(view: View) {
+        infoCardBinding.infoCancelImageView.setOnClickListener {
+            Timber.e("CANCEL TAPPED!")
+        }
+
+        /*val imageViewCancel: ImageView = view.findViewById(R.id.info_cancel_image_view)
+        imageViewCancel.setOnClickListener {
+            Timber.e("CANCEL TAPPED!")
+        }*/
     }
 
     private fun getServiceCentreData() {
@@ -111,11 +136,23 @@ class ServiceCentresFragment : Fragment() {
                     publicServiceData.addAll(data)
                     Timber.e(" GETTING SERVICE CENTRE DATA ->%s", publicServiceData)
 
-                    getProductData(requireActivity(), publicServiceData[0].serviceCode)
+                    if (isAdded) {
+                        /** TODO: BUG!!!
+                         * Potentially fixed this bug by checking if the frag is added to
+                         * an activity before getting Product Data...**/
+
+                        /** BUG returns when there's no data being received from the method below
+                         * TODO: catch this condition with a returned value check statement**/
+                        getProductData(requireActivity(), publicServiceData[0].serviceCode)
+                        Timber.e("ADDED!!!")
+                    } else {
+                        Timber.e("STILL NOT ADDED!!!!")
+                    }
 
                     serviceCentresRvBinding.loadProgressBar.visibility = View.GONE
+                } else {
+                    Timber.e("No PublicService READY!")
                 }
-                //TODO: handle incident when response code is not 200
             }
         }
     }

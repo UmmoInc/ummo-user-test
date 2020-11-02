@@ -27,8 +27,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import io.doorbell.android.Doorbell
-import io.doorbell.android.shake.ShakeDetector
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
@@ -47,6 +45,7 @@ import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
@@ -93,7 +92,6 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarBinding: AppBarMainScreenBinding
     private lateinit var infoCardBinding: InfoCardBinding
 
-    private lateinit var doorbellDialog: Doorbell
     private val appId = 11867
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
     private val connectivityReceiver = ConnectivityReceiver()
@@ -120,10 +118,6 @@ class MainScreen : AppCompatActivity() {
 
         mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
-
-        /** Initializing Doorbell & ShakeActivation **/
-        doorbellDialog = Doorbell(this, appId.toLong(), apiKey, MaterialAlertDialogBuilder(this))
-        doorbellDialog.setShakeSensitivity(ShakeDetector.SENSITIVITY_LIGHT)
 
         /** Starting DelegatedServiceFragment **/
         startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
@@ -169,7 +163,8 @@ class MainScreen : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver -
+         * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
     }
@@ -190,6 +185,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
+    /** DO NOT DELETE!!!**/
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
         Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
@@ -198,6 +194,8 @@ class MainScreen : AppCompatActivity() {
             showSnackbarRed("Can't reach Ummo network", -2)
         } else {
             showSnackbarBlue("Ummo network found...", -1)
+            val pagesFragment = PagesFragment()
+            openFragment(pagesFragment)
         }
     }
 
@@ -328,7 +326,7 @@ class MainScreen : AppCompatActivity() {
                     if (code == 200) {
 
                         val serviceCentreFragment = ServiceCentresFragment()
-                        openFragment(serviceCentreFragment)
+                        //openFragment(serviceCentreFragment)
                     }
 
                     Timber.e("PUBLIC SERVICE DATA -> $data")
@@ -386,8 +384,10 @@ class MainScreen : AppCompatActivity() {
 //                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
                 infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
 //                val homeFragment = HomeFragment()
-                val serviceCentreFragment = ServiceCentresFragment()
-                openFragment(serviceCentreFragment)
+                Timber.e("Going to SERVICE-CENTRES FRAG")
+//                val serviceCentreFragment = ServiceCentresFragment()
+                val pagesFragment = PagesFragment()
+                openFragment(pagesFragment)
 
                 mixpanel?.track("homeTapped_bottomNav")
                 return@OnNavigationItemSelectedListener true

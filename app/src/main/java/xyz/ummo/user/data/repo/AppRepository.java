@@ -64,19 +64,19 @@ public class AppRepository {
 
         productDao = userRoomDatabase.productDao();
         productEntityLiveData = productDao.getProductLiveData();
-        Timber.e("Product->%s", productEntityLiveData);
+//        Timber.e("Product->%s", productEntityLiveData);
 
         new Service(application) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
 
-                Timber.e("done: %s", new String(data));
+//                Timber.e("done: %s", new String(data));
                 if (code.intValue() != 200) {
                     return;
                 }
                 try {
                     JSONArray myServices = new JSONArray(new String(data));
-                    Timber.e("done: Services%s", myServices.toString());
+//                    Timber.e("done: Services%s", myServices.toString());
                     //deleteAllDelegatedServices();
                     for (int i = 0; i < myServices.length(); i++) {
                         DelegatedServiceEntity entity = new DelegatedServiceEntity();
@@ -117,14 +117,14 @@ public class AppRepository {
                                 entity.setServiceProgress(listFromJSONArray(s.getJSONArray("progress")));
                                 insertDelegatedService(entity);
                             } catch (JSONException e) {
-                                Timber.e("call: %s", e.toString());
+//                                Timber.e("call: %s", e.toString());
                             }
 
                             //updateDelegatedService();
                         }
                     });
                 } catch (JSONException e) {
-                    Timber.e("done: %s", e.toString());
+//                    Timber.e("done: %s", e.toString());
                 }
             }
         };
@@ -171,7 +171,7 @@ public class AppRepository {
     }
 
     public LiveData<ProfileEntity> getProfileEntityLiveData() {
-        Timber.e("ProfileModel LiveData->%s", profileEntityLiveData);
+//        Timber.e("ProfileModel LiveData->%s", profileEntityLiveData);
         return profileEntityLiveData;
     }
 
@@ -189,7 +189,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProfileEntity... profileEntities) {
             mProfileAsyncTaskDao.insertProfile(profileEntities[0]);
-            Timber.e("Inserting ProfileModel->%s", Arrays.toString(profileEntities));
+//            Timber.e("Inserting ProfileModel->%s", Arrays.toString(profileEntities));
             return null;
         }
     }
@@ -204,7 +204,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mProfileAsyncTaskDao.deleteProfile();
-            Timber.e("Deleting ProfileModel!");
+//            Timber.e("Deleting ProfileModel!");
             return null;
         }
     }
@@ -219,7 +219,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProfileEntity... profileEntities) {
             mProfileAsyncTaskDao.updateProfile(profileEntities[0]);
-            Timber.e("Updating profile->%s", Arrays.toString(profileEntities));
+//            Timber.e("Updating profile->%s", Arrays.toString(profileEntities));
             return null;
         }
     }
@@ -231,7 +231,7 @@ public class AppRepository {
      **/
 
     public void insertDelegatedService(DelegatedServiceEntity delegatedServiceEntity) {
-        Timber.e("insertDelegatedService: INSERTING DELEGATED-SERVICE->%s", delegatedServiceEntity);
+//        Timber.e("insertDelegatedService: INSERTING DELEGATED-SERVICE->%s", delegatedServiceEntity);
         new insertDelegatedServiceAsyncTask(delegatedServiceDao).execute(delegatedServiceEntity);
     }
 
@@ -240,7 +240,7 @@ public class AppRepository {
 //            Log.e(TAG, "getDelegatedServiceEntity: DELEGATED-SERVICE->"+delegatedServiceDao.getDelegatedService().getValue().getServiceId());
             return new getDelegatedServiceEntityAsyncTask(delegatedServiceDao).execute().get();
         } catch (ExecutionException | InterruptedException exe) {
-            Timber.e("getDelegatedServiceEntity: %s", exe.toString());
+//            Timber.e("getDelegatedServiceEntity: %s", exe.toString());
             return null;
         }
     }
@@ -263,7 +263,7 @@ public class AppRepository {
         @Override
         protected LiveData<DelegatedServiceEntity> doInBackground(Void... voids) {
             mDelegatedServiceDao.getDelegatedService();
-            Timber.e("Getting Delegated Service->");
+//            Timber.e("Getting Delegated Service->");
 //            return delegatedServiceEntities[0];
             return mDelegatedServiceDao.getDelegatedService();
         }
@@ -279,7 +279,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final DelegatedServiceEntity... delegatedServiceEntities) {
             mDelegatedServiceDao.insertDelegatedService(delegatedServiceEntities[0]);
-            Timber.e("Inserting Delegated Service->%s", Arrays.toString(delegatedServiceEntities));
+//            Timber.e("Inserting Delegated Service->%s", Arrays.toString(delegatedServiceEntities));
             return null;
         }
     }
@@ -294,7 +294,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mDelegatedServiceAsyncTaskDao.deleteAllDelegatedServices();
-            Timber.e("Deleting Delegated Service!");
+//            Timber.e("Deleting Delegated Service!");
             return null;
         }
     }
@@ -309,7 +309,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final DelegatedServiceEntity... delegatedServiceEntities) {
             mDelegatedServiceAsyncTaskDao.updateDelegatedService(delegatedServiceEntities[0]);
-            Timber.e("Updating Delegated Service->%s", Arrays.toString(delegatedServiceEntities));
+//            Timber.e("Updating Delegated Service->%s", Arrays.toString(delegatedServiceEntities));
             return null;
         }
     }
@@ -325,7 +325,7 @@ public class AppRepository {
     }
 
     public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveData() {
-        Timber.e("Service Provider LiveData->%s", serviceProviderEntityLiveData);
+//        Timber.e("Service Provider LiveData->%s", serviceProviderEntityLiveData);
         return serviceProviderEntityLiveData;
     }
 
@@ -339,7 +339,7 @@ public class AppRepository {
 
     public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveDataById(String serviceId) {
         serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderEntityLiveDataById(serviceId);
-        Timber.e("Service Provider LiveData->%s", serviceProviderEntityLiveData.getValue().getServiceProviderId());
+//        Timber.e("Service Provider LiveData->%s", serviceProviderEntityLiveData.getValue().getServiceProviderId());
         return serviceProviderEntityLiveData;
     }
 
@@ -365,7 +365,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
             mServiceProviderDao.insertServiceProvider(serviceProviderEntities[0]);
-            Timber.e("Inserting Service Provider->%s", serviceProviderEntities[0].getServiceProviderName());
+//            Timber.e("Inserting Service Provider->%s", serviceProviderEntities[0].getServiceProviderName());
             return null;
         }
     }
@@ -380,7 +380,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mServiceProviderAsyncTaskDao.deleteAllServiceProviders();
-            Timber.e("Deleting Service Provider!");
+//            Timber.e("Deleting Service Provider!");
             return null;
         }
     }
@@ -440,7 +440,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
             mServiceProviderAsyncTaskDao.updateServiceProviders(serviceProviderEntities[0]);
-            Timber.e("Updating Service Provider->%s", Arrays.toString(serviceProviderEntities));
+//            Timber.e("Updating Service Provider->%s", Arrays.toString(serviceProviderEntities));
             return null;
         }
     }
@@ -456,7 +456,7 @@ public class AppRepository {
     }
 
     public LiveData<ProductEntity> getProductEntityLiveData() {
-        Timber.e("ProductModel LiveData->%s", productEntityLiveData);
+//        Timber.e("ProductModel LiveData->%s", productEntityLiveData);
         return productEntityLiveData;
     }
 
@@ -488,7 +488,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProductEntity... productEntities) {
             mProductDao.insertProduct(productEntities[0]);
-            Timber.e("Inserting ProductModel->%s", productEntities[0].getProductName());
+//            Timber.e("Inserting ProductModel->%s", productEntities[0].getProductName());
 
             /*new CreateProduct(
                     productEntities[0].getProductName()
@@ -520,7 +520,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             mProductAsyncTaskDao.deleteAllProducts();
-            Timber.e("Deleting ProductModel!");
+//            Timber.e("Deleting ProductModel!");
             return null;
         }
     }
@@ -535,7 +535,7 @@ public class AppRepository {
         @Override
         protected Void doInBackground(final ProductEntity... productEntities) {
             mProductAsyncTaskDao.updateProduct(productEntities[0]);
-            Timber.e("Updating ProductModel->%s", Arrays.toString(productEntities));
+//            Timber.e("Updating ProductModel->%s", Arrays.toString(productEntities));
             return null;
         }
     }

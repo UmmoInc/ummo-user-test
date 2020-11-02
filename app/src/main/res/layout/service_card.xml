@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="1dp"
+    app:cardMaxElevation="1dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:contentPaddingBottom="4dp"
+    app:contentPaddingTop="4dp"
+    app:strokeColor="@color/Grey"
+    app:strokeWidth="1dp"
+    tools:context=".ui.MainScreen">
+
+    <RelativeLayout
+        android:id="@+id/root_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/card_header_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <RelativeLayout
+                android:id="@+id/service_info_title_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp">
+
+                <ImageView
+                    android:id="@+id/card_avatar_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    app:srcCompat="@drawable/logo" />
+
+                <TextView
+                    android:id="@+id/service_title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/card_avatar_image_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="Service Name"
+                    android:textSize="21sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/rubik" />
+
+                <TextView
+                    android:id="@+id/service_description_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/service_title_text_view"
+                    android:layout_toEndOf="@+id/card_avatar_image_view"
+                    android:text="Service Description"
+                    android:textSize="14sp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="0dp"
+                    app:fontFamily="@font/rubik" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/service_info_icon_relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/info_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/save_service"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_outline_info_blue_24" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/card_header_relative_layout"
+            android:background="?android:attr/listDivider"
+            android:padding="20dp" />
+
+        <RelativeLayout
+            android:id="@+id/card_content_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/divider_1">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/service_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <RelativeLayout
+                    android:id="@+id/delegated_service_main_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Header Layout-->
+                    <RelativeLayout
+                        android:id="@+id/service_header_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/delegated_service_header_image_view"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_margin="8dp"
+                            app:srcCompat="@drawable/ic_stat_service_avatar" />
+
+                        <TextView
+                            android:id="@+id/service_eligibility_title_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignTop="@+id/delegated_service_header_image_view"
+                            android:layout_toEndOf="@id/delegated_service_header_image_view"
+                            android:text="Service Eligibility"
+                            android:textColor="@color/Grey"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/service_eligibility_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/service_eligibility_title_text_view"
+                            android:layout_toEndOf="@id/delegated_service_header_image_view"
+                            android:text="Who is eligible to receive this service?"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                    </RelativeLayout>
+
+                    <!-- Body Layout -->
+                    <RelativeLayout
+                        android:id="@+id/service_body_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/service_header_layout">
+
+                        <RelativeLayout
+                            android:id="@+id/service_centre_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/service_centre_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_service_centre_24" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_centre_image_view">
+
+                                <TextView
+                                    android:id="@+id/service_centre_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Service Centres"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:id="@+id/service_centre_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/service_centre_header_text_view"
+                                    android:text="Service Centre"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_cost_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/service_centre_layout">
+
+                            <ImageView
+                                android:id="@+id/service_cost_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_stat_cost_icon" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_cost_image_view">
+
+                                <TextView
+                                    android:id="@+id/service_cost_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Service Cost"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:id="@+id/service_cost_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/service_cost_header_text_view"
+                                    android:text="Free"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_duration_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/service_cost_layout">
+
+                            <ImageView
+                                android:id="@+id/service_duration_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_stat_duration_icon" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_duration_image_view">
+
+                                <TextView
+                                    android:id="@+id/service_duration_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Service Duration"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="16sp" />
+
+                                <TextView
+                                    android:id="@+id/service_duration_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/service_duration_header_text_view"
+                                    android:text="Service Duration"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp" />
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_requirements_relative_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/service_duration_layout">
+
+                            <ImageView
+                                android:id="@+id/service_requirements_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="8dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_stat_docs_icon" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_requirements_image_view">
+
+                                <TextView
+                                    android:id="@+id/service_requirements_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Service Requirements"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="16sp" />
+
+                                <LinearLayout
+                                    android:id="@+id/service_requirements_linear_layout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_requirements_header_text_view"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="16dp"
+                                    android:paddingBottom="8dp">
+
+                                </LinearLayout>
+                                <TextView
+                                    android:id="@+id/service_requirements_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Requirements"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/black"
+                                    android:layout_below="@id/service_requirements_header_text_view"/>
+                            </RelativeLayout>
+                        </RelativeLayout>
+
+                        <!--<RelativeLayout
+                            android:id="@+id/service_progress_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/service_docs_relative_layout">
+                            <ImageView
+                                android:id="@+id/service_progress_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_stat_progress_icon"
+                                android:layout_margin="8dp"
+                                android:padding="8dp"/>
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@id/service_progress_image_view">
+                                <TextView
+                                    android:id="@+id/progress_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Service Progress"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/black"/>
+                                <ProgressBar
+                                    android:id="@+id/service_progress_bar"
+                                    style="?android:attr/progressBarStyleHorizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="16dp"
+                                    android:layout_below="@id/progress_header_text_view"/>
+                            </RelativeLayout>
+
+                        </RelativeLayout>-->
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/service_scrollview"
+                android:background="?android:attr/listDivider"
+                android:padding="20dp" />
+
+            <!-- The layout below is for service actions: thumbs-up, thumbs-down, comment, share -->
+            <RelativeLayout
+                android:id="@+id/service_actions_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_2"
+                android:padding="8dp">
+
+                <LinearLayout
+                    android:id="@+id/service_actions_linear_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <RelativeLayout
+                        android:id="@+id/disapprove_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/disapprove_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_thumb_down_blue_24" />
+
+                        <TextView
+                            android:id="@+id/disapprove_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/disapprove_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="2"
+                            android:textSize="18sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/approve_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/approve_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_thumb_up_blue_24" />
+
+                        <TextView
+                            android:id="@+id/approve_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/approve_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="2"
+                            android:textSize="18sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/service_comments_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/service_comments_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_marginStart="4dp"
+                            app:srcCompat="@drawable/ic_outline_chat_bubble_blue_24" />
+
+                        <TextView
+                            android:id="@+id/service_comments_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/service_comments_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="2"
+                            android:textSize="18sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/share_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/share_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_share_blue_24" />
+
+                        <TextView
+                            android:id="@+id/share_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/share_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="2"
+                            android:textSize="18sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

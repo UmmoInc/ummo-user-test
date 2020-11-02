@@ -118,7 +118,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                 //Sign user in, update UI
                 showSnackbar("Successfully signing in")
                 val user = task.result?.user
-                Timber.i("Signing in, user -> $user")
+                Timber.e("Signing in, user -> $user")
 
                 startActivity(Intent(this, CompleteSignUp::class.java)
                         .putExtra("USER_CONTACT", userContact)
@@ -129,13 +129,23 @@ class ContactVerificationActivity : AppCompatActivity() {
 
                 finish()
             } else {
+                showSnackbar("[FIX] Illegally signing in")
+                startActivity(Intent(this, CompleteSignUp::class.java)
+                        .putExtra("USER_CONTACT", userContact)
+                        .putExtra("USER_NAME", userName))
 
-                if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                Timber.e("User Name -> $userName")
+                Timber.e("User Contact -> $userContact")
+
+                finish()
+
+                //TODO: Revive this integrity check to filter out fake numbers
+                /*if (task.exception is FirebaseAuthInvalidCredentialsException) {
                     showSnackbar("Invalid code!")
                 }
-                Timber.i("Sign in failed! -> ${task.exception}")
+                Timber.e("Sign in failed! -> ${task.exception}")
 
-                showSnackbar("Sign in failed! ${task.exception}")
+                showSnackbar("Sign in failed! ${task.exception}")*/
             }
         }
     }

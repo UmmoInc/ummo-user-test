@@ -9,19 +9,21 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.models.PublicServiceData
 
-const val TAG = "PublicService.kt"
-
 abstract class PublicService(val activity: Activity) {
     init {
         Fuel.get("/public-service")
                 .response { request, response, result ->
-                    if (response.statusCode != 200) {
+                    /*if (response.statusCode != 200) {
+                        Timber.e("RESPONSE STATUS-CODE -> ${response.statusCode}")
                         Timber.e("Retrieving PUBLIC-SERVICE -> ${response.data}")
                         return@response done(fromJSONList(JSONArray("[]")), response.statusCode)
-                    }
+                    } else {
+                        Timber.e("RESPONSE STATUS-CODE -> ${response.statusCode}")
+                        Timber.e("RETRIEVING PS-DATA -> ${response.data}")
+                    }*/
 
                     try {
-                        activity.runOnUiThread(Runnable {
+                        activity.runOnUiThread {
 
                             if (response.data.isNotEmpty()) {
 //                         ToDo: java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
@@ -33,7 +35,7 @@ abstract class PublicService(val activity: Activity) {
                                 done(fromJSONList(JSONArray("[]")), 200)
 //                                return@Runnable
                             }
-                        })
+                        }
 
                     } catch (ex: JSONException) {
                         Timber.e("Response-> ${String(response.data)}")

@@ -113,6 +113,14 @@ class User : Application() {
             //SocketIO.mSocket?.connect()
             SocketIO.mSocket?.on("connect") {
                 Timber.e("Connected to ")
+                socketStateEvent.socketConnected = true
+                EventBus.getDefault().post(socketStateEvent)
+            }
+
+            SocketIO.mSocket?.on("connect_error") {
+                Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
+                socketStateEvent.socketConnected = false
+                EventBus.getDefault().post(socketStateEvent)
             }
 
             SocketIO.mSocket?.on("message1") {
@@ -146,11 +154,6 @@ class User : Application() {
                 //                val serviceName: String = JSONObject(it[0].toString()).getJSONArray("progress")
 
                 startActivity(intent)
-            }
-
-            SocketIO.mSocket?.on("connect_error") {
-                Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-                //TODO: Display a warning
             }
 
             SocketIO.mSocket?.on("error") {
