@@ -75,7 +75,7 @@ class MainScreen : AppCompatActivity() {
     var serviceAgentId = ""
     var progress: ArrayList<String> = ArrayList()
 
-    /** Shared Prefs**/
+    /** Shared Prefs **/
     private var sharedPrefServiceId: String = ""
     private var sharedPrefAgentId: String = ""
     private var sharedPrefProductId: String = ""
