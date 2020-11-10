@@ -43,6 +43,7 @@ import xyz.ummo.user.delegate.Feedback
 import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
+import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment

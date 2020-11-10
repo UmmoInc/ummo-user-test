@@ -12,9 +12,11 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import xyz.ummo.user.data.dao.ProfileDao;
+//import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.utils.Converters;
 //import xyz.ummo.user.data.dao.AgentDao;

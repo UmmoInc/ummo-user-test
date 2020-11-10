@@ -2,14 +2,12 @@ package xyz.ummo.user.data.repo;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
 import java.lang.ref.WeakReference;
 
 import com.github.nkzawa.emitter.Emitter;
-import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -17,7 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -27,6 +25,7 @@ import xyz.ummo.user.data.dao.DelegatedServiceDao;
 import xyz.ummo.user.data.dao.ProductDao;
 //import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.dao.ProfileDao;
+//import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.db.UserRoomDatabase;
 //import xyz.ummo.user.data.entity.UserEntity;
@@ -34,7 +33,6 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
-import xyz.ummo.user.delegate.GetProducts;
 import xyz.ummo.user.delegate.Service;
 import xyz.ummo.user.delegate.SocketIO;
 
@@ -49,7 +47,7 @@ public class AppRepository {
     private LiveData<ProfileEntity> profileEntityLiveData;
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
-    private List<ServiceProviderEntity> serviceProviders = new ArrayList<>();
+//    private List<ServiceProviderEntityOld> serviceProviders = new ArrayList<>();
 
     public AppRepository(Application application) {
         UserRoomDatabase userRoomDatabase = UserRoomDatabase.getUserDatabase(application);
@@ -66,7 +64,11 @@ public class AppRepository {
         productEntityLiveData = productDao.getProductLiveData();
 //        Timber.e("Product->%s", productEntityLiveData);
 
-        new Service(application) {
+        serviceProviderDao = userRoomDatabase.serviceProviderDao();
+        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
+        Timber.e("Service Provider ->%s", serviceProviderEntityLiveData);
+
+        /*new Service(application) {
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
 
@@ -95,8 +97,12 @@ public class AppRepository {
                         if (p.has("product_description")) {
                             productEntity.setProductDescription(p.getString("product_description"));
                         }
-                        /*productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
+                        */
+
+        /*productEntity.setProductDocuments(listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents")));
                         productEntity.setProductDuration(p.getString("duration"));*/
+
+        /*
                         productEntity.setProductId(p.getString("_id"));
                         productEntity.setProductName(p.getString("product_name"));
                         productEntity.setProductProvider(p.getString("public_service"));
@@ -127,14 +133,10 @@ public class AppRepository {
 //                    Timber.e("done: %s", e.toString());
                 }
             }
-        };
+        };*/
 
-//        serviceProviderDao = agentRoomDatabase.serviceProviderDao();
-//        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
-//        Log.e("AppRepo", "serviceProvider->"+serviceProviderEntityLiveData);
-
-        serviceProviderDao = userRoomDatabase.serviceProviderDao();
-        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();
+        /*serviceProviderDao = userRoomDatabase.serviceProviderDao();
+        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveData();*/
 //        serviceProviders = serviceProviderDao.getServiceProviders();
 //        Log.e("AppRepo", "ServiceProviders [COUNT]->"+serviceProviders.size());
     }
@@ -150,11 +152,6 @@ public class AppRepository {
 //        Log.e(TAG, "getDelegatedServiceById: "+delegatedServiceEntityLiveData.getValue().getDelegatedProductId());
         return delegatedServiceEntityLiveData;
     }
-
-    /*private AppRepository(final AgentRoomDatabase agentRoomDatabase){
-        database = agentRoomDatabase;
-
-    }*/
 
     /**
      * Repository API call for CRUDING Agent. We use the DAO to abstract the connection to the
@@ -320,8 +317,8 @@ public class AppRepository {
      * Each are done asynchronously because RoomDB does not run on the main thread
      **/
 
-    public void insertServiceProvider(ServiceProviderEntity serviceProviderEntity) {
-        new insertServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntity);
+    public void insertServiceProvider(ServiceProviderEntity serviceProviderEntityOld) {
+        new insertServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntityOld);
     }
 
     public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveData() {
@@ -338,7 +335,7 @@ public class AppRepository {
     }
 
     public LiveData<ServiceProviderEntity> getServiceProviderEntityLiveDataById(String serviceId) {
-        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderEntityLiveDataById(serviceId);
+        serviceProviderEntityLiveData = serviceProviderDao.getServiceProviderLiveDataById(serviceId);
 //        Timber.e("Service Provider LiveData->%s", serviceProviderEntityLiveData.getValue().getServiceProviderId());
         return serviceProviderEntityLiveData;
     }
@@ -347,13 +344,13 @@ public class AppRepository {
         new deleteServiceProviderAsyncTask(serviceProviderDao).execute();
     }
 
-    /*public void countServiceProviders(){
-        new countServiceProviderAsyncTask(serviceProviderDao).execute();
+    /*public void countServiceProviders() {
+        new getServiceProvidersAsyncTask.countServiceProviderAsyncTask(serviceProviderDao).execute();
     }*/
 
-    public void updateServiceProvider(ServiceProviderEntity serviceProviderEntity) {
-        new updateServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntity);
-    }
+    /*public void updateServiceProvider(ServiceProviderEntity serviceProviderEntityOld) {
+        new getServiceProvidersAsyncTask.updateServiceProviderAsyncTask(serviceProviderDao).execute(serviceProviderEntityOld);
+    }*/
 
     private static class insertServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void> {
         private ServiceProviderDao mServiceProviderDao;
@@ -386,8 +383,8 @@ public class AppRepository {
     }
 
     private static class getServiceProvidersAsyncTask extends AsyncTask<Void, Void, List<ServiceProviderEntity>> {
-        private ServiceProviderDao mServiceProviderAsyncTaskDao;
-        private List<ServiceProviderEntity> serviceProviderEntityList = new ArrayList<>();
+        private final ServiceProviderDao mServiceProviderAsyncTaskDao;
+        private final List<ServiceProviderEntity> serviceProviderEntityList = new ArrayList<>();
         private WeakReference<AppRepository> appRepositoryWeakReference;
 
         getServiceProvidersAsyncTask(ServiceProviderDao serviceProviderDao, AppRepository appRepository) {
@@ -397,7 +394,7 @@ public class AppRepository {
 
         @Override
         protected List<ServiceProviderEntity> doInBackground(Void... voids) {
-            serviceProviderEntityList.addAll(mServiceProviderAsyncTaskDao.getServiceProviders());
+            serviceProviderEntityList.addAll((Collection<? extends ServiceProviderEntity>) mServiceProviderAsyncTaskDao.getServiceProviderLiveData());
             return serviceProviderEntityList;
         }
 
@@ -405,89 +402,89 @@ public class AppRepository {
          * This `onPostExecute does nothing significant, I'm reserving it to refer on how to use
          * "WeakReferences" to access a class' data-members from within another when one class is
          * defined as `static`
-         **/
+         **//*
         @Override
-        protected void onPostExecute(List<ServiceProviderEntity> serviceProviderEntities) {
+        protected void onPostExecute(List<ServiceProviderEntityOld> serviceProviderEntities) {
             super.onPostExecute(serviceProviderEntities);
             AppRepository appRepository = appRepositoryWeakReference.get();
-            appRepository.serviceProviders.addAll(serviceProviderEntityList);
+            appRepository.serviceProviders.addAll(serviceProviderEntityOldList);
 
-        }
+        }*/
     }
 
-    /*private static class countServiceProviderAsyncTask extends AsyncTask<Void, Void, Void>{
-        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+        /*private static class countServiceProviderAsyncTask extends AsyncTask<Void, Void, Void> {
+            private final ServiceProviderDao mServiceProviderAsyncTaskDao;
 
-        countServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao){
-            this.mServiceProviderAsyncTaskDao = serviceProviderDao;
-        }
+            countServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao) {
+                this.mServiceProviderAsyncTaskDao = serviceProviderDao;
+            }
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            mServiceProviderAsyncTaskDao.getServiceProviderCount();
-            Log.e("AppRepo", "Counting Service Providers...");
-            return null;
-        }
-    }*/
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mServiceProviderAsyncTaskDao.getServiceProviderCount();
+                Timber.e("Counting Service Providers...");
+                return null;
+            }
+        }*/
 
-    private static class updateServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void> {
-        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+        private static class updateServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void> {
+            private ServiceProviderDao mServiceProviderAsyncTaskDao;
 
-        updateServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao) {
-            mServiceProviderAsyncTaskDao = serviceProviderDao;
-        }
+            updateServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao) {
+                mServiceProviderAsyncTaskDao = serviceProviderDao;
+            }
 
-        @Override
-        protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
-            mServiceProviderAsyncTaskDao.updateServiceProviders(serviceProviderEntities[0]);
+            @Override
+            protected Void doInBackground(final ServiceProviderEntity... serviceProviderEntities) {
+                mServiceProviderAsyncTaskDao.updateServiceProviders(serviceProviderEntities[0]);
 //            Timber.e("Updating Service Provider->%s", Arrays.toString(serviceProviderEntities));
-            return null;
+                return null;
+            }
         }
-    }
 
-    /**
-     * Repository API call for CRUDING ProductModel. We use the DAO to abstract the connection to the
-     * ProductEntity. DAO calls implemented are C-InsertProduct; R-LiveData (exempt from AsyncOps); U-UpdateProduct && D-DeleteProduct.
-     * Each are done asynchronously because RoomDB does not run on the main thread
-     **/
+        /**
+         * Repository API call for CRUDING ProductModel. We use the DAO to abstract the connection to the
+         * ProductEntity. DAO calls implemented are C-InsertProduct; R-LiveData (exempt from AsyncOps); U-UpdateProduct && D-DeleteProduct.
+         * Each are done asynchronously because RoomDB does not run on the main thread
+         **/
 
-    public void insertProduct(ProductEntity productEntity) {
-        new insertProductAsyncTask(productDao).execute(productEntity);
-    }
+        public void insertProduct(ProductEntity productEntity) {
+            new insertProductAsyncTask(productDao).execute(productEntity);
+        }
 
-    public LiveData<ProductEntity> getProductEntityLiveData() {
+        public LiveData<ProductEntity> getProductEntityLiveData() {
 //        Timber.e("ProductModel LiveData->%s", productEntityLiveData);
-        return productEntityLiveData;
-    }
-
-    public LiveData<ProductEntity> getProductEntityLiveDataById(String productId) {
-        productEntityLiveData = productDao.getProductEntityLiveDataById(productId);
-        return productEntityLiveData;
-    }
-
-    public LiveData<ProductEntity> getDelegatedProduct(Boolean isDelegated) {
-        productEntityLiveData = productDao.getDelegatedProduct(isDelegated);
-        return productEntityLiveData;
-    }
-
-    public void deleteAllProducts() {
-        new deleteAllProductsAsyncTask(productDao).execute();
-    }
-
-    public void updateProduct(ProductEntity productEntity) {
-        new updateProductAsyncTask(productDao).execute(productEntity);
-    }
-
-    private static class insertProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
-        private ProductDao mProductDao;
-
-        private insertProductAsyncTask(ProductDao productDao) {
-            this.mProductDao = productDao;
+            return productEntityLiveData;
         }
 
-        @Override
-        protected Void doInBackground(final ProductEntity... productEntities) {
-            mProductDao.insertProduct(productEntities[0]);
+        public LiveData<ProductEntity> getProductEntityLiveDataById(String productId) {
+            productEntityLiveData = productDao.getProductEntityLiveDataById(productId);
+            return productEntityLiveData;
+        }
+
+        public LiveData<ProductEntity> getDelegatedProduct(Boolean isDelegated) {
+            productEntityLiveData = productDao.getDelegatedProduct(isDelegated);
+            return productEntityLiveData;
+        }
+
+        public void deleteAllProducts() {
+            new deleteAllProductsAsyncTask(productDao).execute();
+        }
+
+        public void updateProduct(ProductEntity productEntity) {
+            new updateProductAsyncTask(productDao).execute(productEntity);
+        }
+
+        private static class insertProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
+            private ProductDao mProductDao;
+
+            private insertProductAsyncTask(ProductDao productDao) {
+                this.mProductDao = productDao;
+            }
+
+            @Override
+            protected Void doInBackground(final ProductEntity... productEntities) {
+                mProductDao.insertProduct(productEntities[0]);
 //            Timber.e("Inserting ProductModel->%s", productEntities[0].getProductName());
 
             /*new CreateProduct(
@@ -506,39 +503,39 @@ public class AppRepository {
                     Log.e(TAG, "Inserting ProductModel code->"+ code);
                 }
             };*/
-            return null;
-        }
-    }
-
-    private static class deleteAllProductsAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ProductDao mProductAsyncTaskDao;
-
-        deleteAllProductsAsyncTask(ProductDao productDao) {
-            this.mProductAsyncTaskDao = productDao;
+                return null;
+            }
         }
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            mProductAsyncTaskDao.deleteAllProducts();
+        private static class deleteAllProductsAsyncTask extends AsyncTask<Void, Void, Void> {
+            private ProductDao mProductAsyncTaskDao;
+
+            deleteAllProductsAsyncTask(ProductDao productDao) {
+                this.mProductAsyncTaskDao = productDao;
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProductAsyncTaskDao.deleteAllProducts();
 //            Timber.e("Deleting ProductModel!");
-            return null;
-        }
-    }
-
-    private static class updateProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
-        private ProductDao mProductAsyncTaskDao;
-
-        updateProductAsyncTask(ProductDao productDao) {
-            mProductAsyncTaskDao = productDao;
+                return null;
+            }
         }
 
-        @Override
-        protected Void doInBackground(final ProductEntity... productEntities) {
-            mProductAsyncTaskDao.updateProduct(productEntities[0]);
+        private static class updateProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
+            private ProductDao mProductAsyncTaskDao;
+
+            updateProductAsyncTask(ProductDao productDao) {
+                mProductAsyncTaskDao = productDao;
+            }
+
+            @Override
+            protected Void doInBackground(final ProductEntity... productEntities) {
+                mProductAsyncTaskDao.updateProduct(productEntities[0]);
 //            Timber.e("Updating ProductModel->%s", Arrays.toString(productEntities));
-            return null;
+                return null;
+            }
         }
-    }
 
     /*GetProducts getProducts = new GetProducts() {
         @Override
@@ -552,21 +549,21 @@ public class AppRepository {
         }
     };*/
 
-    private void unsafeMethod() {
-        throw new UnsupportedOperationException("This needs attention!");
-    }
-
-    private ArrayList<String> listFromJSONArray(JSONArray arr) {
-        try {
-            ArrayList<String> tbr = new ArrayList<>();
-            for (int i = 0; i < arr.length(); i++) {
-                tbr.add(arr.getString(i));
-            }
-            return tbr;
-        } catch (JSONException e) {
-            return new ArrayList<String>();
+        private void unsafeMethod() {
+            throw new UnsupportedOperationException("This needs attention!");
         }
-    }
+
+        private ArrayList<String> listFromJSONArray(JSONArray arr) {
+            try {
+                ArrayList<String> tbr = new ArrayList<>();
+                for (int i = 0; i < arr.length(); i++) {
+                    tbr.add(arr.getString(i));
+                }
+                return tbr;
+            } catch (JSONException e) {
+                return new ArrayList<String>();
+            }
+        }
 
     /*private void logWithStaticAPI(){
 

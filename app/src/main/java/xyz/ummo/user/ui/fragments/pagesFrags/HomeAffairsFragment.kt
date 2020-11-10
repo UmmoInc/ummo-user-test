@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
+import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.Service
+import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentHomeAffairsBinding
 import xyz.ummo.user.rvItems.ServiceItem
+import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 
 class HomeAffairsFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -24,16 +29,23 @@ class HomeAffairsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
 
+    /** ServiceProvider ViewModel && Entity Declarations **/
+    private val serviceProviderEntity = ServiceProviderEntity()
+    private var serviceProviderViewModel: ServiceProviderViewModel? = null
+    var serviceProviderName: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
 
+        unpackAndGrabHomeAffairsServiceProvider()
+
+        Timber.e("SERVICE-PROVIDER-NAME [1]-> $serviceProviderName")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
 
         homeAffairsBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_home_affairs,
@@ -50,6 +62,22 @@ class HomeAffairsFragment : Fragment() {
         generateHomeAffairsServices()
 
         return view
+    }
+
+    /** TODO:
+     * 1) Unzip ServiceProviderViewModel;
+     * 2) Inspect ServiceProviderEntities;
+     * 3) Check for all ServiceProviderEntity names & grab all that have "*Home Affairs*" **/
+    private fun unpackAndGrabHomeAffairsServiceProvider() {
+
+        serviceProviderViewModel?.serviceProviderEntityLiveData
+                ?.observe(viewLifecycleOwner, Observer { serviceProviderEntity: ServiceProviderEntity ->
+                    serviceProviderName = serviceProviderEntity.serviceProviderName
+                    Timber.e("SERVICE-PROVIDER-NAME [2]-> $serviceProviderName")
+                    showSnackbarBlue(serviceProviderName.toString(), 0)
+                })
+        Timber.e("SERVICE-PROVIDER-NAME [3]-> $serviceProviderName")
+
     }
 
     private fun generateHomeAffairsServices() {
@@ -84,6 +112,17 @@ class HomeAffairsFragment : Fragment() {
         homeAffairsBinding.loadProgressBar.visibility = View.GONE
 
         recyclerView.adapter = gAdapter
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {
