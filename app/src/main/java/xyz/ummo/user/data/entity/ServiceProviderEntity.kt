@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import xyz.ummo.user.data.model.ServiceProviderModel
 
 @Entity(tableName = "service_provider")
-class ServiceProviderEntity() : ServiceProviderModel {
+class ServiceProviderEntity : ServiceProviderModel {
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "service_provider_id")

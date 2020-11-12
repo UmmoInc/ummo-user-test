@@ -1,48 +1,40 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
-import android.app.Activity
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
+import kotlinx.android.synthetic.main.fragment_commerce.view.*
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
-import xyz.ummo.user.databinding.FragmentHomeAffairsBinding
+import xyz.ummo.user.databinding.FragmentRevenueBinding
 import xyz.ummo.user.models.Service
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 
-class HomeAffairsFragment : Fragment() {
+class RevenueFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var homeAffairsBinding: FragmentHomeAffairsBinding
+    private lateinit var revenueBinding: FragmentRevenueBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
 
     /** ServiceProvider ViewModel && Entity Declarations **/
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
-
-    /** Service ViewModel && Entity Declarations **/
     private var serviceViewModel: ServiceViewModel? = null
 
-    /** HomeAffairs Service instance && Service ID **/
-    private lateinit var homeAffairsServiceId: String
-    private lateinit var homeAffairsService: Service
+    private lateinit var financeServiceId: String
+    private lateinit var revenueService: Service
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +52,11 @@ class HomeAffairsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        homeAffairsBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_home_affairs,
+        revenueBinding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_revenue,
                 container, false)
 
-        val view = homeAffairsBinding.root
+        val view = revenueBinding.root
         val layoutManager = view.services_recycler_view.layoutManager
 
         recyclerView = view.services_recycler_view
@@ -72,13 +64,14 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        getHomeAffairsServiceProviderId()
-        getHomeAffairsServices(homeAffairsServiceId)
+        //displayRevenueServices()
+        getRevenueServiceProviderId()
+        getRevenueServices(financeServiceId)
 
         return view
     }
 
-    private fun getHomeAffairsServiceProviderId() {
+    private fun getRevenueServiceProviderId() {
         val serviceProviders: List<ServiceProviderEntity>? = serviceProviderViewModel
                 ?.getServiceProviderList()
 
@@ -86,16 +79,16 @@ class HomeAffairsFragment : Fragment() {
             Timber.e("SERVICE-PROVIDERS [2]=> ${serviceProviders[i].serviceProviderId}")
             when {
                 serviceProviders[i].serviceProviderName
-                        .equals("ministry of home affairs", true) -> {
+                        .equals("ministry of finance", true) -> {
 
-                    homeAffairsServiceId = serviceProviders[i].serviceProviderId.toString()
-                    Timber.e("Home Affairs ID [2] -> $homeAffairsServiceId")
+                    financeServiceId = serviceProviders[i].serviceProviderId.toString()
+                    Timber.e("Revenue ID [2] -> $financeServiceId")
                 }
             }
         }
     }
 
-    private fun getHomeAffairsServices(homeAffairsId: String) {
+    private fun getRevenueServices(revenueId: String) {
         var serviceId: String
         var serviceName: String
         var serviceDescription: String
@@ -113,8 +106,8 @@ class HomeAffairsFragment : Fragment() {
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
-            if (servicesList[i].serviceProvider == homeAffairsId) {
-                Timber.e("HOME AFFAIRS SERVICE [3] -> ${servicesList[i].serviceName}")
+            if (servicesList[i].serviceProvider == revenueId) {
+                Timber.e("REVENUE SERVICE [3] -> ${servicesList[i].serviceName}")
                 serviceId = servicesList[i].serviceId.toString() //0
                 serviceName = servicesList[i].serviceName.toString() //1
                 serviceDescription = servicesList[i].serviceDescription.toString() //2
@@ -130,39 +123,36 @@ class HomeAffairsFragment : Fragment() {
                 shareCount = servicesList[i].serviceShares!! //12
                 viewCount = servicesList[i].serviceViews!! //13
 
-                homeAffairsService = Service(serviceId, serviceName, serviceDescription,
+                revenueService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentre, presenceRequired, serviceCost,
                         serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
                         commentCount, shareCount, viewCount)
-                Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")
+                Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
 
-                gAdapter.add(ServiceItem(homeAffairsService, context))
+                gAdapter.add(ServiceItem(revenueService, context))
 
-                homeAffairsBinding.loadProgressBar.visibility = View.GONE
+                revenueBinding.loadProgressBar.visibility = View.GONE
 
                 recyclerView.adapter = gAdapter
             }
         }
     }
 
-    private fun showSnackbarBlue(message: String, length: Int) {
-        /** Length is 0 for Snackbar.LENGTH_LONG
-         *  Length is -1 for Snackbar.LENGTH_SHORT
-         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
-        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
-        snackbar.anchorView = bottomNav
-        snackbar.show()
+    private fun displayRevenueServices() {
+        gAdapter.add(ServiceItem(revenueService, context))
+
+        revenueBinding.loadProgressBar.visibility = View.GONE
+
+        recyclerView.adapter = gAdapter
     }
 
     companion object {
 
-        fun newInstance() = HomeAffairsFragment()
+        fun newInstance() = RevenueFragment()
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                HomeAffairsFragment().apply {
+                RevenueFragment().apply {
 
                 }
     }

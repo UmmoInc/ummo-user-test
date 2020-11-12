@@ -14,6 +14,9 @@ interface ServiceProviderDao {
     @get:Query("SELECT * FROM service_provider")
     val serviceProviderLiveData: LiveData<ServiceProviderEntity>
 
+    @get:Query("SELECT * FROM service_provider")
+    val serviceProviderListData: List<ServiceProviderEntity>
+
     @Query("SELECT * FROM service_provider WHERE service_provider_id = :serviceProviderId")
     fun getServiceProviderLiveDataById(serviceProviderId: String?): LiveData<ServiceProviderEntity>
 
