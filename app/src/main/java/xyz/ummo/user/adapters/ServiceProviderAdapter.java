@@ -1,8 +1,8 @@
 package xyz.ummo.user.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,24 +24,24 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
-import xyz.ummo.user.data.entity.ServiceProviderEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
 import xyz.ummo.user.delegate.GetProducts;
-import xyz.ummo.user.delegate.PublicServiceData;
-import xyz.ummo.user.delegate.get;
-import xyz.ummo.user.utilities.ServiceProviderViewModel;
+import xyz.ummo.user.models.PublicServiceData;
+import xyz.ummo.user.delegate.Get;
+//import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
 
     private List<PublicServiceData> serviceProviderList;
-    private static final String TAG = "ServiceProviderAdapter";
-    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
-    private ServiceProviderViewModel serviceProviderViewModel;
+//    private ServiceProviderEntityOld serviceProviderEntityOld = new ServiceProviderEntityOld();
+//    private ServiceProviderViewModel serviceProviderViewModel;
 
     Activity context;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView serviceProviderName, moreText;
         RelativeLayout serviceProviderBackground;
@@ -71,7 +71,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         context = activity;
         this.serviceProviderList = serviceProviderList;
 
-        serviceProviderViewModel = ViewModelProviders.of((FragmentActivity) context).get(ServiceProviderViewModel.class);
+//        serviceProviderViewModel = ViewModelProviders.of((FragmentActivity) context).get(ServiceProviderViewModel.class);
     }
 
     @NonNull
@@ -92,14 +92,14 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         /*
         * Inserting `ServiceProvider` into RoomDB
         * */
-        serviceProviderEntity.setServiceProviderId(serviceProviderList.get(position).getServiceCode());
-        serviceProviderEntity.setServiceProviderName(serviceProviderList.get(position).getServiceName());
-        serviceProviderEntity.setServiceProviderProvince(serviceProviderList.get(position).getProvince());
-        serviceProviderEntity.setServiceProviderMunicipality(serviceProviderList.get(position).getMunicipality());
-        serviceProviderEntity.setServiceProviderTown(serviceProviderList.get(position).getTown());
-        serviceProviderViewModel.insertServiceProvider(serviceProviderEntity);
+//        serviceProviderEntityOld.setServiceProviderId(serviceProviderList.get(position).getServiceCode());
+//        serviceProviderEntityOld.setServiceProviderName(serviceProviderList.get(position).getServiceName());
+//        serviceProviderEntityOld.setServiceProviderProvince(serviceProviderList.get(position).getProvince());
+//        serviceProviderEntityOld.setServiceProviderMunicipality(serviceProviderList.get(position).getMunicipality());
+//        serviceProviderEntityOld.setServiceProviderTown(serviceProviderList.get(position).getTown());
+//        serviceProviderViewModel.insertServiceProvider(serviceProviderEntityOld);
 
-        Log.e(TAG, "onBindViewHolder: SERVICE-PROVIDER-LIST->"+serviceProviderList.get(position).getServiceName());
+        Timber.e("onBindViewHolder: SERVICE-PROVIDER-LIST->%s", serviceProviderList.get(position).getServiceName());
         addProduct(holder);
     }
 
@@ -111,23 +111,26 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
     public void addProduct(MyViewHolder holder) {
 
         new GetProducts(context, holder.publicServiceData.getServiceCode()) {
+            @SuppressLint("TimberArgCount")
             @Override
             public void done(@NotNull byte[] data, @NotNull Number code) {
                 try {
                     JSONArray arr = new JSONArray(new String(data));
+
+                    Timber.e("PRODUCT JSON-ARRAY ->%s", arr);
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject obj = arr.getJSONObject(i);
-//                        Log.e("ServiceProviderAdapter", obj.toString());
+                        Timber.e("PRODUCT JSON-OBJECT ->%s", obj);
                         holder.providers.add(
                                 new Product(obj.getString("product_name"),
                                         holder.publicServiceData.getTown(),
                                         holder.publicServiceData.getProvince(),
                                         obj.getString("_id"),
-                                        get.INSTANCE.get(obj, "product_description", "description").toString(),
-                                        get.INSTANCE.get(obj, "procurement_process", "procurement_process").toString(),
-                                        get.INSTANCE.get(obj, "duration", "duration").toString(),
-                                        get.INSTANCE.get(obj, "requirements.documents", "docs").toString(),
-                                        get.INSTANCE.get(obj, "requirements.procurement_cost", "cost").toString()
+                                        Get.INSTANCE.get(obj, "product_description", "description").toString(),
+                                        Get.INSTANCE.get(obj, "procurement_process", "procurement_process").toString(),
+                                        Get.INSTANCE.get(obj, "duration", "duration").toString(),
+                                        Get.INSTANCE.get(obj, "requirements.documents", "docs").toString(),
+                                        Get.INSTANCE.get(obj, "requirements.procurement_cost", "cost").toString()
 //                                        get.INSTANCE.get(obj, "")
                                         // TODO: 10/16/19 -> Insert `procurement_cost`
                                         // TODO: 10/16/19 -> Use ArrayLists where needed
@@ -138,7 +141,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
                     holder.productAdapter.notifyDataSetChanged();
 
                 } catch (JSONException jse) {
-                    Log.e("ServiceProviderAdapter", jse.toString());
+                    Timber.e("ServiceProviderAdapter", jse.toString());
                 }
             }
         };

@@ -22,7 +22,6 @@
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
 
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_services">Services</string>
@@ -87,7 +86,7 @@
     <string name="more_string">more</string>
     <string name="title_activity_detailed_service">DetailedService</string>
     <string name="service_description_title">Description</string>
-    <string name="servvice_documents_title_string">Documents</string>
+    <string name="service_documents_title_string">Documents</string>
     <string name="service_cost_title_string">Cost</string>
     <string name="service_duration_title">Duration</string>
     <string name="service_processes_title">Steps to follow</string>
@@ -100,18 +99,18 @@
     <string name="skip">Back</string>
     <string name="start">Done</string>
 
-    <string name="serverUrl">https://ummo-delegate.herokuapp.com</string>
-    <!--    <string name="serverUrl">http://localhost:3000</string>-->
-
     <string name="place_details">&lt;b&gt;%1$s&lt;/b&gt;&lt;br/&gt;&lt;i&gt;Place Id: %2$s&lt;/i&gt;&lt;br/&gt;Address: %3$s&lt;br/&gt;Phone: %4$s&lt;br/&gt;Website: %5$s</string>
     <string name="sentryDsn">https://c46e9ae28cb847e7ab39746902f6c29a@sentry.io/1485110</string>
     <string name="passcode_screen_title_string">Verify phone number</string>
+    <string name="code_prompt_text">Enter the 6 digit code sent to you at %1$s</string>
     <string name="passcode_prompt_string">Enter the 6 digit code which we have just sent to the phone number you registered with.</string>
     <string name="resend_btn_string">Resend Code</string>
     <string name="already_have_an_account_log_in">Already have an account? Log-in here</string>
     <string name="verifyUserInfo">Unverified Account (tap to verify)</string>
     <string name="logout">Log out</string>
     <string name="search">Search</string>
+    <string name="code_prompt_title">Let\'s verify your phone</string>
+    <string name="resend_code">Resend code in</string>
     <string name="description_default_string">Default Product Description</string>
     <string name="no_delegated_service">No Delegated Service Found</string>
     <string name="nav_drawer_delegated_service">Delegated Service</string>
@@ -130,6 +129,43 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="assigned_nav_title">Assigned</string>
+    <string name="service_nav_title">Service</string>
+    <string name="save_service">Save Service</string>
+    <string name="service_centre_image">Service Centre Image</string>
+    <string name="product_requirements">What you will need:</string>
+    <string name="service_cost">Service will cost:</string>
+    <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
+    <string name="request_ummo_agent">Request an Ummo Agent to renew your Motor Licence</string>
+
+    <string name="product_cost">Product Cost</string>
+
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.43.125:3000</string>
+    <string name="user_name_placeholder">User Name</string>
+    <string name="info_image">Info Image</string>
+    <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
+    <string name="dismiss_info">Dismiss Info</string>
+    <string name="feedback">Feedback</string>
+    <string name="request_message">This might take a few seconds…</string>
+    <string name="request_error_image_description">Request Error</string>
+    <string name="call_for_bug_assistance">Please try again, or help us fix it by reporting the issue in Feedback.</string>
+    <string name="registration_continue">Continue</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_description">Service Description</string>
+    <string name="service_eligibility">Service Eligibility</string>
+    <string name="service_eligibility_placeholder">Who is eligible to receive this service?</string>
+    <string name="service_centres">Service Centres</string>
+    <string name="service_centre_placeholder">Service Centre</string>
+    <string name="service_cost_string">Service Cost</string>
+    <string name="service_cost_placeholder">Free</string>
+    <string name="service_duration">Service Duration</string>
+    <string name="service_duration_placeholder">Service Duration</string>
+    <string name="service_requirements">Service Requirements</string>
+    <string name="service_requirements_placeholder">Requirements</string>
+    <string name="disapproval_placeholder">2</string>
+    <string name="approval_placeholder">2</string>
+    <string name="comments_placeholder">2</string>
+    <string name="shares_placeholder">2</string>
+    <string name="more_info">MORE INFO</string>
 
 </resources>

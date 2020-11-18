@@ -9,6 +9,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import timber.log.Timber
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.repo.AppRepository
@@ -37,31 +38,33 @@ class SelfDelegateActivity : AppCompatActivity() {
                         deepLink = pendingDynamicLinkData.link
                     }
 
-                    Log.e(TAG,"Deeplink ${deepLink}")
+                    Log.e(TAG, "Deeplink ${deepLink}")
 
-                    if(PrefManager(this).isFirstTimeLaunch){
+                    if (PrefManager(this).isFirstTimeLaunch) {
                         // Finish sign up and load service  and forward to service
-                        object : NewlyDelegated(this,deepLink!!.toString().split("?")[1]){
-                            override fun done(data: ByteArray, code:Number){
-                                Log.e(TAG,String(data))
+                        object : NewlyDelegated(this, deepLink!!.toString().split("?")[1]) {
+                            override fun done(data: ByteArray, code: Number) {
+                                Log.e(TAG, String(data))
                             }
                         }
-                    }else{
+                    } else {
                         val service_id = deepLink!!
                                 .toString()
                                 .split("?")[1]
                                 .split("&")[1]
                                 .split("=")[1]
 
-                        Log.e(TAG,service_id)
-                        object : GetService(this, service_id){
-                            override fun done(data:ByteArray, code:Number){
+                        Log.e(TAG, service_id)
+                        object : GetService(this, service_id) {
+                            override fun done(data: ByteArray, code: Number) {
                                 val intent = Intent(applicationContext, MainScreen::class.java)
-                                if(code!=200){
+                                if (code != 200) {
                                     return
                                 }
-                                Log.e(TAG,"Done: ${String(data)}")
-                                try {
+                                Timber.e("Done: ${String(data)}")
+
+                                //TODO: To FIX!
+                                /*try {
                                     val repo = AppRepository(application)
                                     val entity = DelegatedServiceEntity()
                                     val obj = JSONObject(String(data))
@@ -77,11 +80,11 @@ class SelfDelegateActivity : AppCompatActivity() {
                                     productEntity.isDelegated = true
                                     productEntity.productCost = p.getJSONObject("requirements").getString("procurement_cost")
                                     productEntity.productDescription = "";
-                                    if(p.has("product_description")) {
+                                    if (p.has("product_description")) {
                                         productEntity.productDescription = p.getString("product_description")
                                     }
-                                    productEntity.productDocuments = listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents"))
-                                    productEntity.productDuration = p.getString("duration")
+                                    *//*productEntity.productDocuments = listFromJSONArray(p.getJSONObject("requirements").getJSONArray("documents"))
+                                    productEntity.productDuration = p.getString("duration")*//*
                                     productEntity.productId = p.getString("_id")
                                     productEntity.productName = p.getString("product_name")
                                     productEntity.productProvider = p.getString("public_service")
@@ -93,21 +96,21 @@ class SelfDelegateActivity : AppCompatActivity() {
                                     intent.putExtra("SERVICE_ID", obj.getString("_id"))
                                     intent.putExtra("SERVICE_AGENT_ID", obj.getString("agent"))
                                     intent.putExtra("DELEGATED_PRODUCT_ID", obj.getJSONObject("product").getString("_id"))
-                                    intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG",1)
-                                    intent.putExtra("progress",arr.toString())
+                                    intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG", 1)
+                                    intent.putExtra("progress", arr.toString())
                                     startActivity(intent)
-                                }catch (err: JSONException){
-                                    Log.e(TAG,err.toString())
-                                }
+                                } catch (err: JSONException) {
+                                    Timber.e(err.toString())
+                                }*/
 
                             }
                         }
                     }
-                    Log.e(TAG, " onSuccess Deep Link ->" + deepLink!!.toString().split("?")[1])
+                    Timber.e(" onSuccess Deep Link ->%s", deepLink!!.toString().split("?")[1])
 
 
                 }
-                .addOnFailureListener(this) { e -> Log.e(TAG, " onFailure ->$e") }
+                .addOnFailureListener(this) { e -> Timber.e(" onFailure ->$e") }
     }
 
     private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {

@@ -13,10 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import io.sentry.Sentry;
-import io.sentry.android.AndroidSentryClientFactory;
-import io.sentry.event.BreadcrumbBuilder;
-import io.sentry.event.UserBuilder;
+import io.sentry.core.Sentry;
+import io.sentry.core.protocol.User;
 
 //import com.parse.ParseException;
 //import com.parse.ParseUser;
@@ -37,8 +35,12 @@ public class Register extends AppCompatActivity {
 
         //Init Sentry
         Context context = this.getApplicationContext();
-        String sentryDSN = getString(R.string.sentryDsn);
-        Sentry.init(sentryDSN, new AndroidSentryClientFactory(context));
+
+        try {
+            throw new Exception("This is a test");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+        }
         logWithStaticAPI();
     }
 
@@ -80,25 +82,21 @@ public class Register extends AppCompatActivity {
 
     private void logWithStaticAPI(){
 
-        SharedPreferences registerPreferences = getSharedPreferences(registerPrefs, mode);
-        String userName = registerPreferences.getString("USER_NAME","");
-        String userEmail = registerPreferences.getString("USER_EMAIL", "");
+        SharedPreferences mainActPreferences = getSharedPreferences(registerPrefs, mode);
+        String userName = mainActPreferences.getString("USER_NAME","");
+        String userEmail = mainActPreferences.getString("USER_EMAIL", "");
 
-        Sentry.getContext().recordBreadcrumb(
-                new BreadcrumbBuilder().setMessage("User made an action")
-                        .build());
-
-        Sentry.getContext().setUser(
-                new UserBuilder().setUsername(userName).setEmail(userEmail)
-                        .build());
-
-        Sentry.capture("Mic check...1,2!");
+        Sentry.addBreadcrumb("User made an action");
+        User user = new User();
+        user.setEmail(userEmail);
+        user.setUsername(userName);
+        Sentry.setUser(user);
 
         try {
             unsafeMethod();
             Log.e(TAG, "logWithStaticAPI, unsafeMethod");
         } catch (Exception e){
-            Sentry.capture(e);
+            Sentry.captureException(e);
         }
     }
 }

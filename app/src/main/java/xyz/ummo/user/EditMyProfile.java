@@ -15,7 +15,6 @@ import android.widget.EditText;
 public class EditMyProfile extends AppCompatActivity
         implements  ProfileFragment.OnFragmentInteractionListener{
 
-
     EditText editText;
     String textToEdit, toolBarTitle;
 
@@ -23,7 +22,6 @@ public class EditMyProfile extends AppCompatActivity
 
     private String mParam1;
     private String mParam2;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

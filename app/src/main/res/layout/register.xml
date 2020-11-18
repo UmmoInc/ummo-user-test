@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?><!--<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.signup.Register">-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.signup.RegisterActivity">
+
+    <RelativeLayout
+        android:id="@+id/registration_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:contentDescription="@string/ummo_logo_descriptor"
+            android:src="@drawable/logo" />
+
+        <EditText
+            android:id="@+id/userNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:autofillHints="Enter your full name..."
+            android:backgroundTint="@color/black"
+            android:ems="10"
+            android:hint="@string/name_prompt_hint"
+            android:inputType="textCapWords"
+            android:textColor="@color/black"
+            android:textColorHint="@color/Grey"
+            android:textCursorDrawable="@drawable/cursor"
+            tools:targetApi="o" />
+
+        <com.hbb20.CountryCodePicker
+            android:id="@+id/registration_ccp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/userContactEditText"
+            android:layout_marginStart="40dp"
+            app:ccp_autoDetectCountry="true"
+            app:ccp_showFullName="false"
+            app:ccp_showNameCode="false"
+            app:ccp_showPhoneCode="true" />
+
+        <EditText
+            android:id="@+id/userContactEditText"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userNameEditText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="40dp"
+            android:layout_toEndOf="@id/registration_ccp"
+            android:autofillHints="Enter your mobile contact..."
+            android:backgroundTint="@color/black"
+            android:ems="10"
+            android:hint="@string/contact_prompt_hint"
+            android:inputType="phone"
+            android:textColor="@color/black"
+            android:textColorHint="@color/Grey"
+            android:textCursorDrawable="@drawable/cursor"
+            tools:targetApi="o" />
+
+        <!--<TextView
+            android:id="@+id/textViewLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userContactEditText"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:padding="8dp"
+            android:text="@string/already_have_an_account_log_in"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@color/black"
+            android:textSize="14sp" />-->
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/progress_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/registration_relative_layout">
+
+        <ProgressBar
+            android:id="@+id/registration_loader"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/register_button"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/ummo_3"
+        android:enabled="true"
+        android:text="@string/next"
+        android:textColor="@color/White"
+        app:icon="@drawable/ic_done_white_24"
+        app:iconGravity="textEnd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:targetApi="lollipop" />
+
+</RelativeLayout><!--</layout>-->

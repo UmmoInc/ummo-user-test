@@ -6,11 +6,11 @@ import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
 import xyz.ummo.user.R
 
-abstract class GetAgents(context:Context) {
+abstract class GetAgents(context: Context) {
     init {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
         Fuel.get("${context.getString(R.string.serverUrl)}/agent")
-                .header("Jwt" to jwt)
+                //.header("Jwt" to jwt) //TODO: replace .header with an equivalent
                 .response { request, response, result ->
                     if(response.statusCode == 200){
                         ( context as Activity).runOnUiThread {

@@ -49,14 +49,14 @@ public class ProductEntity implements ProductModel {
     private Boolean isDelegated = false;
 
     public ProductEntity(@NonNull String _productId,
-                         @NonNull String _productName,
-                         @NonNull String _productDescription,
-                         @NonNull String _productProvider,
-                         @NonNull ArrayList<String> _productDocuments,
-                         @NonNull String _productCost,
-                         @NonNull String _productDuration,
-                         @NonNull ArrayList<String> _productSteps,
-                         @NonNull Boolean _isDelegated){
+    @NonNull String _productName,
+    @NonNull String _productDescription,
+    @NonNull String _productProvider,
+    @NonNull ArrayList<String> _productDocuments,
+    @NonNull String _productCost,
+    @NonNull String _productDuration,
+    @NonNull ArrayList<String> _productSteps,
+    @NonNull Boolean _isDelegated){
         this.productId = _productId;
         this.productName = _productName;
         this.productDescription = _productDescription;
@@ -70,11 +70,12 @@ public class ProductEntity implements ProductModel {
 
     public ProductEntity(){}
 
+    @NonNull
     public String getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(@NonNull String productId) {
         this.productId = productId;
     }
 

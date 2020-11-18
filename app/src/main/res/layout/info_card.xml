@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/info_card">
+
+    <data>
+        <variable
+            name="info"
+            type="xyz.ummo.user.models.Info" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="1dp"
+        app:cardMaxElevation="1dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingTop="4dp"
+        app:strokeColor="@color/ummo_2"
+        app:strokeWidth="1dp">
+
+        <RelativeLayout
+            android:id="@+id/info_card_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp">
+
+            <ImageView
+                android:id="@+id/info_eco_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/info_image"
+                app:srcCompat="@drawable/ic_eco_24" />
+
+            <ImageView
+                android:id="@+id/info_cancel_image_view"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/dismiss_info"
+                app:srcCompat="@drawable/ic_cancel_24"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <TextView
+                android:id="@+id/info_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/info_eco_image_view"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/info_eco_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Ummo Tip"
+                android:textColor="@color/black" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/info_eco_image_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/info_body_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_margin="8dp"
+                android:text="We will share quick tips on how to get the best of Ummo and Government Services."
+                android:textSize="14sp" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

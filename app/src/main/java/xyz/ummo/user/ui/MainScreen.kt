@@ -1,173 +1,138 @@
 package xyz.ummo.user.ui
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
-import android.net.Uri
+import android.content.IntentFilter
+import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
+import timber.log.Timber
 import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.delegate.Logout
-import xyz.ummo.user.delegate.PublicServiceData
-import xyz.ummo.user.ui.fragments.*
+import xyz.ummo.user.data.entity.ProfileEntity
+import xyz.ummo.user.databinding.ActivityMainScreenBinding
+import xyz.ummo.user.databinding.AppBarMainScreenBinding
+import xyz.ummo.user.databinding.InfoCardBinding
+import xyz.ummo.user.delegate.Feedback
+import xyz.ummo.user.delegate.PublicService
+import xyz.ummo.user.models.Info
+import xyz.ummo.user.models.PublicServiceData
+import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
-import java.util.*
+import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
+import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
+import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 
-class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionListener, NavigationView.OnNavigationItemSelectedListener {
+class MainScreen : AppCompatActivity() {
 
-    private val fragment: Fragment? = null
-
-//    private var drawer: DrawerLayout? = null
-    private var navigationView: NavigationView? = null
-    private var navigationHeader: View? = null
-    private var navHeaderUserName: TextView? = null
-    private var navHeaderUserEmail: TextView? = null
+    private var startFragmentExtra: Int = 0
     private var toolbar: Toolbar? = null
-    private var messageIconButton: ImageView? = null
-    private var circularProgressBarButton: ProgressBar? = null
-    var logoutLayout: LinearLayout? = null
-        private set
+
+    private var feedbackIcon: ImageView? = null
+//    private var circularProgressBarButton: ProgressBar? = null
 
     private var anyServiceInProgress = false
     private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
-
-    // flag to load home fragment when user presses back key
-    private val shouldLoadHomeFragOnBackPress = true
     private var mHandler: Handler? = null
-    private val mode = Activity.MODE_PRIVATE
     private val delegatedServiceEntity = DelegatedServiceEntity()
+
+    /**Values for launching DelegatedServiceFragment**/
+    val bundle = Bundle()
+    var serviceId = ""
+    var delegatedProductId = ""
+    var serviceAgentId = ""
+    var progress: ArrayList<String> = ArrayList()
+
+    /** Shared Prefs **/
+    private var sharedPrefServiceId: String = ""
+    private var sharedPrefAgentId: String = ""
+    private var sharedPrefProductId: String = ""
+
+    /** User Preferences & VM **/
+    private var sharedPrefUserName: String = ""
+    private var sharedPrefUserContact: String = ""
+    private var sharedPrefUserEmail: String = ""
+    private val profileEntity = ProfileEntity()
+    private var profileViewModel: ProfileViewModel? = null
+
+    /** View Binding for Main Screen and App Bar **/
+    private lateinit var mainScreenBinding: ActivityMainScreenBinding
+    private lateinit var appBarBinding: AppBarMainScreenBinding
+    private lateinit var infoCardBinding: InfoCardBinding
+
+    private val appId = 11867
+    private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
+    private val connectivityReceiver = ConnectivityReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_screen)
+
+        /** Initializing view binders **/
+        mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
+        appBarBinding = AppBarMainScreenBinding.inflate(layoutInflater)
+        infoCardBinding = DataBindingUtil.setContentView(this, R.layout.info_card)
+
+        val view = mainScreenBinding.root
+
+        setContentView(view)
 
         var mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
-        toolbar = findViewById(R.id.toolbar)
+        toolbar = appBarBinding.toolbar
         setSupportActionBar(toolbar)
-        title = "Ummo"
+        supportActionBar?.title = "Ummo"
         supportFM = supportFragmentManager
-        //Log.e(TAG,"Getting USER_ID->"+new PrefManager(this).getUserId());
 
-        /*
-        * Starting DelegatedServiceFragment
-        * */
+        mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
-        val startFragmentExtra : Int = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG",0)
+        /** Starting DelegatedServiceFragment **/
+        startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
-        Log.e(TAG, "StartingFragment->$startFragmentExtra")
-
-        if(startFragmentExtra == 1){
-            Log.e(TAG, "Starting DelegatedServiceFrag!")
-            val delegatedServiceFragment = DelegatedServiceFragment()
-            val delegatedProductId = intent.extras!!.getString("DELEGATED_PRODUCT_ID")
-            val serviceAgentId =   intent.extras!!.getString("SERVICE_AGENT_ID")
-            var progress = ArrayList<String>();
-            try {
-                progress = listFromJSONArray(JSONArray(intent.extras!!.getString("progress")))
-            }catch (jse:JSONException ){
-                Log.e("ISSUE with progress",jse.toString())
-            }
-
-            val bundle = Bundle()
-            val serviceId = intent.extras!!.getString("SERVICE_ID")
-            bundle.putString("SERVICE_ID", serviceId)
-            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
-            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
-//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
-            delegatedServiceFragment.arguments = bundle
-            val delegatedServiceViewModel = ViewModelProvider(this).get(DelegatedServiceViewModel::class.java)
-
-            delegatedServiceEntity.serviceId = serviceId!!
-            delegatedServiceEntity.delegatedProductId = delegatedProductId!!
-            delegatedServiceEntity.serviceAgentId = serviceAgentId
-            delegatedServiceEntity.serviceProgress =progress
-
-//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Log.e(xyz.ummo.user.delegate.TAG, "Populating ServiceEntity: Agent->${delegatedServiceEntity.serviceAgentId}; ProductModel->${delegatedServiceEntity.delegatedProductId}")
-            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-            fragmentTransaction.commit()
-           // return
-        }else{
-
-            object : xyz.ummo.user.delegate.PublicService(this) {
-                override fun done(data: List<PublicServiceData>, code: Number) {
-                    if (code == 200)
-                        loadHomeFragment(data)
-                    //Do something with list of services
-                }
-            }
-        }
-
+        checkForAndLaunchDelegatedFragment()
 
         mAuth = FirebaseAuth.getInstance()
 
-        val mainActPrefs = getSharedPreferences(ummoUserPreferences, mode)
-
-        val userNamePref = mainActPrefs.getString("USER_NAME", "")
-        val userEmailPref = mainActPrefs.getString("USER_EMAIL", "")
-
-        Log.e(TAG, "Username->" + userNamePref!!)
+        /**[NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
 
 //        logoutClick() //TODO: to reconsider implementation
 
-        //initialise  the toolbar icons message icon and circular progress bar icon
-        messageIconButton = findViewById(R.id.message_icon_button)
-        circularProgressBarButton = findViewById(R.id.circular_progressbar_btn)
-
-        circularProgressBarButton!!.progress = serviceProgress
-
         mHandler = Handler()
-
-//        drawer = findViewById(R.id.drawer_layout)
-//        val toggle = ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-//        drawer!!.addDrawerListener(toggle)
-//        toggle.syncState()
-
-//        navigationView = findViewById(R.id.nav_view)
-//        navigationView!!.setNavigationItemSelectedListener(this)
-
-//        navigationHeader = navigationView!!.getHeaderView(0)
-//        navHeaderUserName = navigationHeader!!.findViewById(R.id.navHeaderUsername)
-//        navHeaderUserEmail = navigationHeader!!.findViewById(R.id.navHeaderEmail)
-
-//        navHeaderUserName!!.text = userNamePref
-//        navHeaderUserEmail!!.text = userEmailPref
-
-        // initializing navigation menu
-//        setUpNavigationView()
 
         if (savedInstanceState == null) {
             navItemIndex = 0
@@ -176,9 +141,200 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
         }
 
-        val bottomNavigation: BottomNavigationView = findViewById(R.id.bottom_nav)
+        /** Getting Shared Pref Values for the user - to use in various scenarios to follow **/
+        sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
+        sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
+        sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
+
+        getAndStoreUserInfoLocally()
+
+        /** Instantiating the Feedback function from the `feedback_icon`**/
+        val feedbackIcon = findViewById<ActionMenuItemView>(R.id.feedback_icon)
+        feedbackIcon.setOnClickListener {
+            feedback()
+        }
+
+        /** Instantiating the Bottom Navigation View **/
+        val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        bottomNavigation.selectedItemId = R.id.nav_home
+
+//        checkForSocketConnection()
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver -
+         * to monitor the network state **/
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
+    @Subscribe
+    fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
+        Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
+
+        /** Toggling between network states && displaying an appropriate Snackbar **/
+        if (networkStateEvent.noConnectivity!!) {
+            showSnackbarRed("Please check connection...", -2)
+        } else {
+            showSnackbarBlue("Connecting...", -1)
+            /** Reloading Service Centre Fragment **/
+            val serviceCentreFragment = ServiceCentresFragment()
+            //openFragment(serviceCentreFragment)
+        }
+    }
+
+    /** DO NOT DELETE!!!**/
+    @Subscribe
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
+        Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
+
+        if (!socketStateEvent.socketConnected!!) {
+            showSnackbarRed("Can't reach Ummo network", -2)
+        } else {
+            showSnackbarBlue("Ummo network found...", -1)
+            val pagesFragment = PagesFragment()
+            openFragment(pagesFragment)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
+         * so we don't need to stay online (for NOW) **/
+        unregisterReceiver(connectivityReceiver)
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    fun feedback() {
+
+        val feedbackDialogView = LayoutInflater.from(this)
+                .inflate(R.layout.feedback_dialog, null)
+
+        val feedbackDialogBuilder = MaterialAlertDialogBuilder(this)
+
+        feedbackDialogBuilder.setTitle("Feedback")
+                .setIcon(R.drawable.logo)
+                .setView(feedbackDialogView)
+
+        feedbackDialogBuilder.setPositiveButton("Submit") { dialogInterface, i ->
+            val feedbackEditText = feedbackDialogView.findViewById<TextInputEditText>(R.id.feedbackEditText)
+            val feedbackText = feedbackEditText.text?.trim().toString()
+
+            Timber.e("Feedback Submitted-> $feedbackText")
+            if (feedbackText.isNotEmpty()) {
+                submitFeedback(feedbackText, sharedPrefUserContact)
+            } else {
+                showSnackbarRed("You forgot your feedback", -1)
+            }
+
+        }
+
+        feedbackDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
+            Timber.e("Feedback Cancelled")
+        }
+
+        feedbackDialogBuilder.show()
+    }
+
+    /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
+     * It's used by #feedback **/
+    private fun submitFeedback(feedbackString: String, userContact: String) {
+
+        object : Feedback(this, feedbackString, userContact) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("Feedback Submitted -> ${String(data)}")
+                    showSnackbarBlue("Thank you for your feedback :)", 0)
+                } else {
+                    Timber.e("Feedback Error: Code -> $code")
+                    Timber.e("Feedback Error: Data -> ${String()}")
+                }
+            }
+        }
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun checkForAndLaunchDelegatedFragment() {
+        Timber.e("StartFragment->$startFragmentExtra")
+
+        if (startFragmentExtra == 1) {
+            Timber.e("Starting DelegatedServiceFrag!")
+            val delegatedServiceFragment = DelegatedServiceFragment()
+
+            delegatedProductId = intent.extras?.getString("DELEGATED_PRODUCT_ID")!!
+            serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")!!
+            serviceId = intent.extras!!.getString("SERVICE_ID")!!
+            Timber.e("SERVICE-ID -> $serviceId")
+
+            bundle.putString("SERVICE_ID", serviceId)
+            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
+            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
+
+//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+            delegatedServiceFragment.arguments = bundle
+            val delegatedServiceViewModel = ViewModelProvider(this)
+                    .get(DelegatedServiceViewModel::class.java)
+
+            delegatedServiceEntity.serviceId = serviceId
+            delegatedServiceEntity.delegatedProductId = delegatedProductId
+            delegatedServiceEntity.serviceAgentId = serviceAgentId
+            delegatedServiceEntity.serviceProgress = progress
+
+//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
+            Timber.e("Populating ServiceEntity: Agent->${
+                delegatedServiceEntity
+                        .serviceAgentId
+            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+
+            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+            fragmentTransaction.commit()
+            // return
+        } else {
+
+            object : PublicService(this) {
+                override fun done(data: List<PublicServiceData>, code: Number) {
+                    if (code == 200) {
+
+                        val serviceCentreFragment = ServiceCentresFragment()
+                        //openFragment(serviceCentreFragment)
+                    }
+
+                    Timber.e("PUBLIC SERVICE DATA -> $data")
+                    //Do something with list of services
+                }
+            }
+        }
     }
 
     private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
@@ -194,213 +350,76 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.top_app_bar, menu)
 
-    override fun onBackPressed() {
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    private fun displaySelectedScreen(itemId: Int) {
-        var selectedFragment: Fragment? = null
-
-        var data: List<PublicServiceData>
-
-        when (itemId) {
-            R.id.nav_home -> selectedFragment = HomeFragment()
-            R.id.nav_profile -> selectedFragment = ProfileFragment()
-//            R.id.nav_payment_methods -> selectedFragment = PaymentMethodsFragment()
-//            R.id.nav_service_history -> selectedFragment = ServiceHistoryFragment()
-            R.id.nav_delegated_service -> selectedFragment = DelegatedServicesFragment()
-        }
-
-        if (selectedFragment != null) {
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, selectedFragment)
-            fragmentTransaction.commit()
-        }
-
-        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        drawerLayout.closeDrawers()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-
-        return if (id == R.id.action_settings) {
-            true
-        } else super.onOptionsItemSelected(item)
-
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-
-        Log.e(TAG, "Navigation Item Selected: $id")
-
-        if (id == R.id.nav_home) {
-
-        } else if (id == R.id.nav_profile) {
-
-        } /*else if (id == R.id.nav_payment_methods) {
-
-        } else if (id == R.id.nav_service_history) {
-
-        }*/ else if (id == R.id.nav_delegated_service) {
-
-        }
-
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        drawer.closeDrawer(GravityCompat.START)
         return true
     }
 
-    override fun onFragmentInteraction(uri: Uri) {
-        //you can leave it empty
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-    private fun loadHomeFragment(data: List<PublicServiceData>) {
-        // if user select the current navigation menu again, don't do anything
-        // just close the navigation drawer
-//        if (supportFragmentManager.findFragmentByTag(CURRENT_TAG) != null) {
-//            drawer!!.closeDrawers()
-//            return
-//        }
-        val mPendingRunnable = Runnable {
-            // update the main content by replacing fragments
-            val fragment = getHomeFragment(data)
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
-                    android.R.anim.fade_out)
-            fragmentTransaction.replace(R.id.frame, fragment, CURRENT_TAG)
-            fragmentTransaction.commitAllowingStateLoss()
-        }
-
-        // If mPendingRunnable is not null, then add to the message queue
-
-        mHandler!!.post(mPendingRunnable)
-
-        //Closing drawer on item click
-//        drawer!!.closeDrawers()
-
-        // refresh toolbar menu
-        invalidateOptionsMenu()
-    }
-
-    private fun getHomeFragment(data: List<PublicServiceData>): Fragment {
-
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
-        when (navItemIndex) {
-            0 -> {
-                // home
-                title = "Ummo"
-                messageIconButton!!.visibility = View.VISIBLE
-                circularProgressBarButton!!.visibility = View.VISIBLE
-
-                mixpanel?.track("homeTapped_navDrawer")
-                return HomeFragment(data)
-            }
-            1 -> {
-                // My ProfileModel
-                val myProfileFragment = ProfileFragment()
-
-                messageIconButton!!.visibility = View.GONE
-                circularProgressBarButton!!.visibility = View.GONE
-                title = "ProfileModel"
-
-                mixpanel?.track("profileTapped_navDrawer")
-
-                return myProfileFragment
+        return when (item.itemId) {
+            R.id.feedback_icon -> {
+                Timber.e("FEEDBACK TAPPED!")
+                true
             }
 
-            /**
-             * Temporarily stashing these items for the time being
-             **/
-            /*2 -> {
-                // payment methods fragment
-                val paymentMethodsFragment = PaymentMethodsFragment()
-                messageIconButton!!.visibility = View.GONE
-                circularProgressBarButton!!.visibility = View.GONE
-                title = "Payment Method"
-
-                return paymentMethodsFragment
-            }
-
-            3 -> {
-                // service history fragment
-                return ServiceHistoryFragment()
-            }*/
-
-            4 -> {
-                // legal terms fragment
-                mixpanel?.track("delegatedServiceTapped_navDrawer")
-
-                return DelegatedServicesFragment()
-            }
-
-            else -> return HomeFragment(data)
+            else -> super.onOptionsItemSelected(item)
         }
     }
-
-    /*private fun setUpNavigationView() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        navigationView!!.setNavigationItemSelectedListener { menuItem ->
-
-            displaySelectedScreen(menuItem.itemId)
-            //Checking if the item is in checked state or not, if not make it in checked state
-            menuItem.isChecked = !menuItem.isChecked
-            menuItem.isChecked = true
-
-            // loadHomeFragment(data);
-
-            true
-        }
-
-        val actionBarDrawerToggle = object : ActionBarDrawerToggle(this, drawer, toolbar, R.string.openDrawer, R.string.closeDrawer) {
-
-        }
-
-        //Setting the actionbarToggle to drawer layout
-        drawer?.setDrawerListener(actionBarDrawerToggle)
-
-        //calling sync state is necessary or else your hamburger icon wont show up
-        actionBarDrawerToggle.syncState()
-    }*/
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
+        val delegatedServiceViewModel = ViewModelProvider(this)
+                .get(DelegatedServiceViewModel::class.java)
+
         when (item.itemId) {
 
-            R.id.navigation_home -> {
-                val homeFragment = HomeFragment()
-                openFragment(homeFragment)
+            R.id.bottom_navigation_home -> {
+                supportActionBar?.title = "Ummo"
+
+                /** Modify info card **/
+//                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
+                infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
+//                val homeFragment = HomeFragment()
+                Timber.e("Going to SERVICE-PROVIDERS FRAG")
+//                val serviceCentreFragment = ServiceCentresFragment()
+                val pagesFragment = PagesFragment()
+                openFragment(pagesFragment)
 
                 mixpanel?.track("homeTapped_bottomNav")
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_assigned -> {
-                val delegatedServiceFragment = DelegatedServicesFragment()
-                openFragment(delegatedServiceFragment)
 
-                mixpanel?.track("getAssigned_bottomNav")
+            R.id.bottom_navigation_service -> {
+
+                /** Modify info card **/
+                infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
+
+                sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
+                sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
+                sharedPrefProductId = mainScreenPrefs.getString("DELEGATED_PRODUCT_ID", "")!!
+
+                if (sharedPrefServiceId.isEmpty()) {
+//                    launchDelegatedServiceWithoutArgs() TODO: figure out what causes the null
+                    val bottomNav = findViewById<View>(R.id.bottom_nav)
+                    val snackbar = Snackbar.make(this.findViewById(android.R.id.content), "No Services yet...", Snackbar.LENGTH_LONG)
+                    snackbar.anchorView = bottomNav
+                    snackbar.show()
+
+                } else {
+                    launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
+                }
+
+                mixpanel?.track("getService_bottomNav")
 
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.navigation_profile-> {
+
+            R.id.bottom_navigation_profile -> {
                 val profileFragment = ProfileFragment()
                 openFragment(profileFragment)
 
@@ -410,6 +429,51 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
             }
         }
         false
+    }
+
+    private fun getAndStoreUserInfoLocally() {
+        /** Inserting ProfileModel info into ProfileEntity, then ProfileViewModel **/
+        profileEntity.profileName = sharedPrefUserName
+        profileEntity.profileContact = sharedPrefUserContact
+        profileEntity.profileEmail = sharedPrefUserEmail
+        profileViewModel?.insertProfile(profileEntity)
+        Timber.e("PROFILE ENTITY -> $profileEntity")
+    }
+
+    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
+        val bundle = Bundle()
+        bundle.putString("SERVICE_ID", serviceId)
+        bundle.putString("DELEGATED_PRODUCT_ID", productId)
+        bundle.putString("SERVICE_AGENT_ID", agentId)
+
+        val progress = java.util.ArrayList<String>()
+        val delegatedServiceEntity = DelegatedServiceEntity()
+        val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
+                .get(DelegatedServiceViewModel::class.java)
+
+        delegatedServiceEntity.serviceId = serviceId
+        delegatedServiceEntity.delegatedProductId = productId
+        delegatedServiceEntity.serviceAgentId = agentId
+        delegatedServiceEntity.serviceProgress = progress
+        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+        val fragmentActivity = this as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
+    }
+
+    private fun launchDelegatedServiceWithoutArgs() {
+        val fragmentActivity = this as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
     }
 
     private fun openFragment(fragment: Fragment) {
@@ -441,11 +505,11 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
                 toolBarTitle = "Enter your full name"
             }
 
-            R.id.id_number -> {
+            /*R.id.id_number -> {
                 textViewToEdit = view.findViewById(view.id)
                 textToEdit = textViewToEdit.text.toString()
                 toolBarTitle = "Enter your ID Number"
-            }
+            }*/
 
             R.id.profile_contact -> {
                 textViewToEdit = view.findViewById(view.id)
@@ -469,7 +533,7 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         startActivity(intent)
     }
 
-    fun finishEditProfile(view: View) {
+    fun finishEditProfile() {
 
         val fragment = ProfileFragment()
         val transaction = supportFragmentManager.beginTransaction()
@@ -478,52 +542,20 @@ class MainScreen : AppCompatActivity(), ProfileFragment.OnFragmentInteractionLis
         transaction.commit()
     }
 
-    /*private fun logoutClick() {
-        logoutLayout = findViewById(R.id.logoutLinear)
-        logoutLayout!!.setOnClickListener {
-            mAuth!!.signOut()
-            val progress = ProgressDialog(this@MainScreen)
-            progress.setMessage("Logging out...")
-            progress.show()
-            object : Logout(this@MainScreen) {
-                override fun done() {
-
-                    val mixpanel = MixpanelAPI.getInstance(this@MainScreen,
-                            resources.getString(R.string.mixpanelToken))
-
-                    mixpanel?.track("logoutTapped")
-                    startActivity(Intent(applicationContext, SlideIntro::class.java))
-                }
-            }
-        }
-    }*/
-
-    fun logout(view: View) {
-        mAuth!!.signOut()
-        val progress = ProgressDialog(this@MainScreen)
-        progress.setMessage("Logging out...")
-        progress.show()
-        object : Logout(this) {
-            override fun done() {
-                startActivity(Intent(this@MainScreen, SlideIntro::class.java))
-            }
-        }
-        // prefManager.unSetFirstTimeLaunch();
-    }
-
     companion object {
         // tags used to attach the fragments
-        private val TAG_HOME = "home"
-        private val TAG_PROFILE = "profile"
-        private val TAG_PAYMENTS = "paymentMethods"
-        private val TAG_SERVICE_HISTORY = "serviceHistory"
-        private val TAG_LEGAL_TERMS = "legalTerms"
+        private const val TAG_HOME = "home"
         var CURRENT_TAG = TAG_HOME
-        lateinit var supportFM : FragmentManager
+        lateinit var supportFM: FragmentManager
 
         // index to identify current nav menu item
         var navItemIndex = 0
-        private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
-        private const val TAG = "MainScreen"
+        private lateinit var mainScreenPrefs: SharedPreferences
+        private const val mode = Activity.MODE_PRIVATE
+        private const val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
+    }
+
+    init {
+
     }
 }

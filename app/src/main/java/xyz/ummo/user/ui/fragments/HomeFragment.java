@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,15 +35,16 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import org.jetbrains.annotations.NotNull;
 
 import it.moondroid.coverflow.components.ui.containers.FeatureCoverFlow;
+import timber.log.Timber;
 import xyz.ummo.user.Department;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.ServiceProviderAdapter;
-import xyz.ummo.user.data.entity.ServiceProviderEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
 import xyz.ummo.user.delegate.PublicService;
-import xyz.ummo.user.delegate.PublicServiceData;
+import xyz.ummo.user.models.PublicServiceData;
 import xyz.ummo.user.delegate.SocketIO;
-import xyz.ummo.user.utilities.ServiceProviderViewModel;
+//import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,13 +78,13 @@ public class HomeFragment extends Fragment {
     private RelativeLayout offlineLayout;
 
     private volatile boolean stopThread;
-    Emitter conectEmitter = null;
-    Emitter disconectEmitter = null;
+    Emitter connectEmitter = null;
+    Emitter disconnectEmitter = null;
     RecyclerView recyclerView;
 
     private Handler homeHandler = new Handler();
-    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
-    private ServiceProviderViewModel serviceProviderViewModel;
+//    private ServiceProviderEntityOld serviceProviderEntityOld = new ServiceProviderEntityOld();
+//    private ServiceProviderViewModel serviceProviderViewModel;
     private ProgressBar loadServicesProgressBar;
 
     public HomeFragment(){}
@@ -127,7 +128,7 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        serviceProviderViewModel = ViewModelProviders.of(this).get(ServiceProviderViewModel.class);
+//        serviceProviderViewModel = ViewModelProviders.of(this).get(ServiceProviderViewModel.class);
 
         serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 //        loadDepartments(_data);
@@ -187,13 +188,6 @@ public class HomeFragment extends Fragment {
         };
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -207,8 +201,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        conectEmitter.off(Socket.EVENT_CONNECT);
-        disconectEmitter.off(Socket.EVENT_DISCONNECT);
+        connectEmitter.off(Socket.EVENT_CONNECT);
+        disconnectEmitter.off(Socket.EVENT_DISCONNECT);
         super.onDetach();
         mListener = null;
     }
@@ -249,44 +243,44 @@ public class HomeFragment extends Fragment {
         final String[] serviceProviderTown = new String[1];
         reloadData();
 
-        Log.e(TAG, "addService: ADAPTER-COUNT [before SOCKET]->"+serviceProviderAdapter.getItemCount());
+        Timber.e("addService: ADAPTER-COUNT [before SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
-        conectEmitter = SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
+        connectEmitter = SocketIO.INSTANCE.getMSocket().on("connect", args -> { // TODO: 11/3/19 -> NullObjectReference on appInit
 
-            Log.e(TAG, "addService: ADAPTER-COUNT [after SOCKET]->"+serviceProviderAdapter.getItemCount());
+            Timber.e("addService: ADAPTER-COUNT [after SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
             stopTimerThread();
 
                 serviceProviderList.clear();
                 if(getActivity()==null){
-                    Log.e(TAG, "addServiceProviders: Weird, getAtivity returns null here ");
+                    Timber.e("addServiceProviders: Weird, getActivity returns null here ");
                 }
 
                 reloadData();
         });
 
-         disconectEmitter = SocketIO.INSTANCE.getMSocket().on(Socket.EVENT_DISCONNECT, args -> {
+         disconnectEmitter = SocketIO.INSTANCE.getMSocket().on(Socket.EVENT_DISCONNECT, args -> {
 
             if(getActivity()==null){
-                Log.e(TAG, "addServiceProviders: Weird two, getAtivity returns null here ");
+                Timber.e("addServiceProviders: Weird two, getActivity returns null here ");
             }
 
-            Log.e(TAG, "addService: ADAPTER-COUNT [after ERR-SOCKET]->"+serviceProviderAdapter.getItemCount());
+             Timber.e("addService: ADAPTER-COUNT [after ERR-SOCKET]->%s", serviceProviderAdapter.getItemCount());
 
             startTimerThread();
 
             serviceProviderList.clear();
 
-            for (int i = 0; i < serviceProviderViewModel.getServiceProviders().size(); i++) {
-                serviceProviderId[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderId();
-                serviceProviderName[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderName();
-                serviceProviderProvince[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderProvince();
-                serviceProviderMunicipality[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderMunicipality();
-                serviceProviderTown[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderTown();
+            /*for (int i = 0; i < serviceProviderViewModel.getServiceProviders().size(); i++) {
+//                serviceProviderId[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderId();
+//                serviceProviderName[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderName();
+//                serviceProviderProvince[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderProvince();
+//                serviceProviderMunicipality[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderMunicipality();
+//                serviceProviderTown[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderTown();
                 Log.e(TAG, "addServiceProviders (" + i + ")=>" + serviceProviderName[0]);
                 PublicServiceData publicServiceData = new PublicServiceData(serviceProviderName[0], serviceProviderProvince[0], serviceProviderMunicipality[0], serviceProviderTown[0], serviceProviderId[0]);
                 serviceProviderList.add(publicServiceData);
-            }
+            }*/
 
             (getActivity()).runOnUiThread(() -> {
                 loadServicesProgressBar.setVisibility(View.INVISIBLE);
@@ -353,24 +347,21 @@ public class HomeFragment extends Fragment {
                     return;
 
                 if (i == seconds-1){
-                    homeHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadServicesProgressBar.setVisibility(View.INVISIBLE);
-                            offlineLayout.setVisibility(View.VISIBLE);
-                            recyclerView.setVisibility(View.GONE);
+                    homeHandler.post(() -> {
+                        loadServicesProgressBar.setVisibility(View.INVISIBLE);
+                        offlineLayout.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
 
-                            Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content),
-                                    "Connection lost...", Snackbar.LENGTH_SHORT).show();
-                            /*Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                        Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(android.R.id.content),
+                                "Connection lost...", Snackbar.LENGTH_SHORT).show();
+                        /*Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
 //                                loadServicesProgressBar.setVisibility(View.VISIBLE);
 
-                            });*/
-                        }
+                        });*/
                     });
 
                 }
-                Log.e(TAG, "run: seconds->("+i+")");
+                Timber.e("run: seconds->(" + i + ")");
 
                 try {
                     Thread.sleep(1000);
@@ -383,16 +374,17 @@ public class HomeFragment extends Fragment {
 
     private void reloadData(){
         new PublicService(getActivity()){
+
+            @SuppressLint("LogNotTimber")
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {
                 serviceProviderList.clear();
                 serviceProviderList.addAll(data);
                 serviceProviderAdapter.notifyDataSetChanged();
-                Log.e(TAG, "done: ADAPTER-COUNT->"+"serviceProviderAdapter.getItemCount()");
+//                Log.e(TAG, "done: ADAPTER-COUNT->"+"serviceProviderAdapter.getItemCount()");
+                Log.e(TAG, "PUBLIC SERVICE DATA -> "+ data);
 
-                getActivity().runOnUiThread(() -> {
-                    loadServicesProgressBar.setVisibility(View.INVISIBLE);
-                });
+                getActivity().runOnUiThread(() -> loadServicesProgressBar.setVisibility(View.INVISIBLE));
 //                    serviceProviderList.addAll(data);
             }
         };

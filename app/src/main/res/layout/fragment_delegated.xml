@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.fragments.delegatedService.DelegatedServiceFragment">
 
     <RelativeLayout
@@ -14,67 +12,71 @@
             android:id="@+id/delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
-            <androidx.cardview.widget.CardView
+            android:visibility="visible"
+            android:padding="4dp">
+
+            <!-- TODO: The view below will be used in a later version of the app -->
+            <!--<com.google.android.material.card.MaterialCardView
                 android:id="@+id/delegated_user_card_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                app:cardBackgroundColor="@color/White"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="8dp"
-                app:cardBackgroundColor="@color/White"
-                android:layout_margin="5dp">
+                app:strokeColor="@color/Grey"
+                app:strokeWidth="1dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <RelativeLayout
                         android:id="@+id/delegated_user_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
                         android:layout_marginEnd="0dp"
-                        android:layout_marginRight="0dp"
                         android:layout_marginBottom="5dp"
                         android:gravity="center"
                         android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:paddingTop="10dp">
+                        android:paddingTop="10dp"
+                        android:paddingRight="10dp">
+
                         <TextView
-                            android:id="@+id/card_title_text_view"
+                            android:id="@+id/service_centre_title_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Delegated Agent"
-                            android:layout_marginLeft="40dp"
                             android:layout_marginStart="40dp"
-                            android:textStyle="bold"
+                            android:text="Delegated Agent"
                             android:textColor="@color/black"
-                            android:textSize="20sp"/>
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
                         <RelativeLayout
                             android:id="@+id/agent_info_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/card_title_text_view">
+                            android:layout_below="@id/service_centre_title_text_view">
 
                             <ImageView
                                 android:id="@+id/delegated_user_avatar"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
-                                app:srcCompat="@drawable/ic_stat_blue_avatar"
+                                android:layout_centerVertical="true"
                                 android:layout_margin="5dp"
-                                android:layout_centerVertical="true"/>
+                                app:srcCompat="@drawable/ic_stat_blue_avatar" />
 
                             <ImageView
+                                android:id="@+id/open_chat_button"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:id="@+id/open_chat_button"
-                                app:srcCompat="@drawable/ic_stat_chat"
                                 android:layout_alignParentEnd="true"
-                                android:layout_alignParentRight="true"
                                 android:layout_centerInParent="true"
-                                android:layout_centerVertical="true"/>
+                                android:layout_centerVertical="true"
+                                app:srcCompat="@drawable/ic_stat_chat" />
 
-                            <!--<TextView
+                            &lt;!&ndash;<TextView
                                 android:id="@+id/delegated_user_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -84,20 +86,19 @@
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
                                 android:layout_toRightOf="@+id/delegated_user_avatar"
                                 android:text="Serving: "
-                                android:layout_below="@+id/card_title_text_view"/>-->
+                                android:layout_below="@+id/card_title_text_view"/>&ndash;&gt;
 
                             <TextView
                                 android:id="@+id/delegated_agent_name_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Agent name"
-                                android:textStyle="bold"
-                                android:textSize="16sp"
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
-                                android:layout_toRightOf="@id/delegated_user_avatar"/>
+                                android:text="Agent name"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-                            <!--<TextView
+                            &lt;!&ndash;<TextView
                                 android:id="@+id/delegated_agent_contact_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -107,43 +108,49 @@
                                 android:textSize="12sp"
                                 android:layout_below="@+id/delegated_agent_name_text_view"
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
-                                android:layout_toRightOf="@id/delegated_user_avatar"/>-->
+                                android:layout_toRightOf="@id/delegated_user_avatar"/>&ndash;&gt;
 
                             <TextView
                                 android:id="@+id/delegated_agent_status_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="Agent Status"
-                                android:textStyle="normal"
-                                android:textSize="12sp"
                                 android:layout_below="@+id/delegated_agent_name_text_view"
+                                android:layout_marginTop="2dp"
                                 android:layout_toEndOf="@+id/delegated_user_avatar"
-                                android:layout_toRightOf="@id/delegated_user_avatar"/>
+                                android:text="Agent Status"
+                                android:textSize="12sp"
+                                android:textStyle="normal" />
                         </RelativeLayout>
 
                     </RelativeLayout>
                 </RelativeLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>-->
 
-            <androidx.cardview.widget.CardView
+            <include
+                android:id="@+id/service_info_card"
+                layout="@layout/info_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/delegated_service_card_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/service_info_card"
+                android:layout_margin="4dp"
+                app:cardBackgroundColor="@color/White"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="8dp"
-                app:cardBackgroundColor="@color/White"
-                android:layout_margin="5dp"
-                android:layout_below="@id/delegated_user_card_view">
+                app:strokeColor="@color/ummo_1"
+                app:strokeWidth="1dp">
 
                 <androidx.core.widget.NestedScrollView
                     android:id="@+id/delegated_service_scrollview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    android:layout_marginBottom="65dp"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                     <RelativeLayout
                         android:id="@+id/delegated_service_main_layout"
@@ -160,116 +167,145 @@
                                 android:id="@+id/delegated_service_header_image_view"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                app:srcCompat="@drawable/ic_stat_service_avatar"
-                                android:layout_margin="8dp"/>
+                                android:layout_margin="8dp"
+                                app:srcCompat="@drawable/ic_stat_service_avatar" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_title_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Delegated Service"
-                                android:textSize="18sp"
-                                android:textColor="@color/black"
+                                android:layout_alignTop="@+id/delegated_service_header_image_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                android:layout_toRightOf="@id/delegated_service_header_image_view"
-                                android:layout_alignTop="@+id/delegated_service_header_image_view"/>
+                                android:text="Delegated Service"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_name"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Service Name"
-                                android:textSize="14sp"
-                                android:textColor="@color/Grey"
                                 android:layout_below="@+id/delegated_service_header_title_text_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                android:layout_toRightOf="@id/delegated_service_header_image_view"/>
+                                android:text="Service Name"
+                                android:textColor="@color/Grey"
+                                android:textSize="14sp" />
 
                         </RelativeLayout>
+
+                        <View
+                            android:id="@+id/divider_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/screenWhite"
+                            android:layout_below="@id/delegated_service_header_layout"
+                            android:layout_marginStart="30dp"
+                            android:layout_marginEnd="30dp"/>
 
                         <!-- Body Layout-->
                         <RelativeLayout
                             android:id="@+id/delegated_service_body_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/delegated_service_header_layout">
+                            android:layout_below="@id/divider_1">
 
                             <RelativeLayout
                                 android:id="@+id/description_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
+
                                 <ImageView
                                     android:id="@+id/description_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_description_icon"
                                     android:layout_centerVertical="true"
                                     android:layout_margin="8dp"
-                                    android:padding="8dp"/>
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_description_icon" />
 
                                 <RelativeLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/description_image_view"
-                                    android:layout_toRightOf="@+id/description_image_view">
+                                    android:layout_toEndOf="@+id/description_image_view">
+
                                     <TextView
                                         android:id="@+id/description_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Product Description"
-                                        android:textSize="16sp"
-                                        android:textColor="@color/black"/>
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
+
                                     <TextView
                                         android:id="@+id/description_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="@string/description_default_string"
-                                        android:textSize="14sp"
                                         android:layout_below="@id/description_header_text_view"
-                                        android:layout_marginTop="0dp"/>
+                                        android:layout_marginTop="0dp"
+                                        android:text="@string/description_default_string"
+                                        android:textSize="14sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
+
+                            <View
+                                android:id="@+id/divider_2"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/screenWhite"
+                                android:layout_below="@id/description_layout"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginEnd="30dp"/>
 
                             <RelativeLayout
                                 android:id="@+id/service_cost_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/description_layout">
+                                android:layout_below="@id/divider_2">
+
                                 <ImageView
                                     android:id="@+id/service_cost_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_cost_icon"
                                     android:layout_margin="8dp"
-                                    android:padding="8dp"/>
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_cost_icon" />
 
                                 <RelativeLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_cost_image_view"
-                                    android:layout_toRightOf="@+id/service_cost_image_view">
+                                    android:layout_toEndOf="@+id/service_cost_image_view">
+
                                     <TextView
                                         android:id="@+id/cost_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Product Cost"
-                                        android:textSize="16sp"
-                                        android:textColor="@color/black"/>
+                                        android:text="@string/product_cost"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
+
                                     <TextView
                                         android:id="@+id/service_cost_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Cost"
-                                        android:textSize="14sp"
-                                        android:layout_below="@id/cost_header_text_view"/>
+                                        android:layout_below="@id/cost_header_text_view"
+                                        android:text="@string/cost"
+                                        android:textSize="14sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
 
-                            <RelativeLayout
+                            <View
+                                android:id="@+id/divider_3"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/screenWhite"
+                                android:layout_below="@id/service_cost_layout"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginEnd="30dp"/>
+
+                            <!--<RelativeLayout
                                 android:id="@+id/service_duration_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -286,8 +322,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_duration_image_view"
-                                    android:layout_toRightOf="@+id/service_duration_image_view">
+                                    android:layout_toEndOf="@+id/service_duration_image_view">
                                     <TextView
                                         android:id="@+id/duration_header_text_view"
                                         android:layout_width="wrap_content"
@@ -304,9 +339,9 @@
                                         android:layout_below="@id/duration_header_text_view"/>
                                 </RelativeLayout>
 
-                            </RelativeLayout>
+                            </RelativeLayout>-->
 
-                            <RelativeLayout
+                            <!--<RelativeLayout
                                 android:id="@+id/service_docs_relative_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -323,8 +358,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@+id/service_docs_image_view"
-                                    android:layout_toRightOf="@+id/service_docs_image_view">
+                                    android:layout_toEndOf="@+id/service_docs_image_view">
                                     <TextView
                                         android:id="@+id/docs_header_text_view"
                                         android:layout_width="wrap_content"
@@ -338,124 +372,79 @@
                                         android:layout_height="wrap_content"
                                         android:orientation="horizontal"
                                         android:paddingBottom="8dp"
-                                        android:paddingLeft="8dp"
-                                        android:paddingRight="16dp"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
                                         android:layout_below="@+id/docs_header_text_view">
 
                                     </LinearLayout>
-                                    <!--<TextView
+                                    &lt;!&ndash;<TextView
                                         android:id="@+id/service_docs_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Docs"
                                         android:textSize="14sp"
-                                        android:layout_below="@id/docs_header_text_view"/>-->
+                                        android:layout_below="@id/docs_header_text_view"/>&ndash;&gt;
                                 </RelativeLayout>
-                            </RelativeLayout>
+                            </RelativeLayout>-->
 
                             <RelativeLayout
                                 android:id="@+id/service_progress_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/service_docs_relative_layout">
+                                android:layout_below="@id/divider_3"
+                                android:layout_marginTop="8dp">
+
                                 <ImageView
                                     android:id="@+id/service_progress_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_progress_icon"
                                     android:layout_margin="8dp"
-                                    android:padding="8dp"/>
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_progress_icon" />
 
                                 <RelativeLayout
+                                    android:id="@+id/service_progress_inner_layout"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
                                     android:layout_toEndOf="@id/service_progress_image_view"
-                                    android:layout_toRightOf="@id/service_progress_image_view"
-                                    android:id="@+id/service_progress_inner_layout"
                                     android:paddingBottom="8dp">
+
                                     <TextView
                                         android:id="@+id/progress_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Service Progress"
-                                        android:textSize="16sp"
-                                        android:textColor="@color/black"/>
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
+
                                     <ProgressBar
                                         android:id="@+id/service_progress_bar"
                                         style="?android:attr/progressBarStyleHorizontal"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_marginEnd="16dp"
-                                        android:layout_marginRight="16dp"
-                                        android:layout_below="@id/progress_header_text_view"/>
+                                        android:layout_below="@id/progress_header_text_view"
+                                        android:layout_marginEnd="30dp" />
 
                                     <TextView
                                         android:id="@+id/process_description_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Track your Agent's progress below..."
-                                        android:textSize="14sp"
+                                        android:layout_below="@id/service_progress_bar"
                                         android:paddingTop="8dp"
                                         android:paddingBottom="8dp"
-                                        android:layout_below="@id/service_progress_bar"/>
+                                        android:text="Track your Agent's progress below..."
+                                        android:textSize="14sp" />
+
                                     <LinearLayout
                                         android:id="@+id/delegated_service_steps_layout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:orientation="vertical"
-                                        android:paddingBottom="8dp"
-                                        android:layout_below="@+id/process_description_text_view">
+                                        android:layout_below="@+id/process_description_text_view"
+                                        android:orientation="vertical">
+
                                     </LinearLayout>
                                 </RelativeLayout>
-
-                                <!--<RelativeLayout
-                                    android:id="@+id/delegated_service_steps_parent_layout"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="0dp"
-                                    android:layout_marginRight="0dp"
-                                    android:layout_marginBottom="0dp"
-                                    android:layout_below="@id/service_progress_inner_layout">
-
-                                    <TextView
-                                        android:id="@+id/process_description_text_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Track your Agent's progress below..."
-                                        android:textSize="14sp"
-                                        android:paddingTop="8dp"
-                                        android:paddingBottom="8dp"/>
-
-                                    <LinearLayout
-                                        android:id="@+id/delegated_service_steps_layout"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="vertical"
-                                        android:paddingBottom="8dp"
-                                        android:layout_below="@+id/process_description_text_view">
-                                    </LinearLayout>
-
-                                </RelativeLayout>-->
-
-                                <!--<RelativeLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerInParent="true"
-                                    android:layout_toEndOf="@id/service_progress_image_view"
-                                    android:layout_toRightOf="@id/service_progress_image_view"
-                                    android:layout_below="@+id/service_progress_layout_inner_layout">
-                                    <LinearLayout
-                                        android:id="@+id/service_steps_layout"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:orientation="horizontal"
-                                        android:padding="8dp">
-
-                                    </LinearLayout>
-                                </RelativeLayout>-->
 
                             </RelativeLayout>
 
@@ -464,7 +453,7 @@
                     </RelativeLayout>
                 </androidx.core.widget.NestedScrollView>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </RelativeLayout>
 
@@ -473,8 +462,8 @@
             android:id="@+id/no_delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible"
-            android:gravity="center">
+            android:gravity="center"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/no_delegation_image_view"
@@ -487,13 +476,13 @@
                 android:id="@+id/no_delegation_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_delegated_service"
-                android:padding="8dp"
-                android:textSize="20sp"
+                android:layout_below="@id/no_delegation_image_view"
                 android:layout_centerInParent="true"
-                android:layout_below="@id/no_delegation_image_view"/>
+                android:padding="8dp"
+                android:text="@string/no_delegated_service"
+                android:textSize="20sp" />
         </RelativeLayout>
 
     </RelativeLayout>
 
-</FrameLayout>
+</layout>

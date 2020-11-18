@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sign_up_slide"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White"
+    tools:context=".ui.signup.CompleteSignUp">
+
+    <TextView
+        android:id="@+id/email_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/email_prompt"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/email_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/email_question"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/email_prompt2"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <!--<EditText
+        android:id="@+id/email"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_email"
+        android:inputType="textEmailAddress"
+        android:textColorHint="@color/Grey"
+        android:backgroundTint="@color/Grey"
+        android:layout_below="@id/email_prompt"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        tools:targetApi="lollipop" />-->
+
+    <EditText
+        android:id="@+id/userEmailEditText"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/email_prompt"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:autofillHints="Email address"
+        android:backgroundTint="@color/black"
+        android:ems="10"
+        android:hint="@string/enter_email"
+        android:inputType="textEmailAddress"
+        android:textColor="@color/black"
+        android:textColorHint="@color/Grey"
+        android:textCursorDrawable="@drawable/cursor"
+        tools:targetApi="o" />
+
+    <ProgressBar
+        android:id="@+id/signUp_loader"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sign_up_btn"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        app:icon="@drawable/ic_send_white_24"
+        app:iconGravity="textEnd"
+        android:backgroundTint="@color/ummo_1"
+        android:text="@string/sign_up_button"
+        android:textColor="@color/White"
+        android:textSize="14sp"
+        tools:targetApi="lollipop" />
+
+</RelativeLayout>

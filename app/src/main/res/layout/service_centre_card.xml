@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="3dp"
+    app:cardElevation="1dp"
+    app:cardMaxElevation="1dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:contentPaddingBottom="4dp"
+    app:contentPaddingTop="4dp"
+    app:strokeColor="@color/Grey"
+    app:strokeWidth="1dp"
+    tools:context=".ui.MainScreen">
+
+    <RelativeLayout
+        android:id="@+id/root_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/card_header_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/card_avatar_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                app:srcCompat="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/service_centre_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/card_avatar_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Service Centre"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                app:fontFamily="@font/rubik" />
+
+            <TextView
+                android:id="@+id/service_centre_location_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/service_centre_title_text_view"
+                android:layout_toEndOf="@+id/card_avatar_image_view"
+                android:text="Location"
+                android:textSize="17sp"
+                app:fontFamily="@font/rubik" />
+
+            <!--<ImageView
+                android:id="@+id/info_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/save_service"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_save_alt_24" />-->
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/card_header_relative_layout"
+            android:background="?android:attr/listDivider"
+            android:padding="20dp" />
+
+        <RelativeLayout
+            android:id="@+id/card_content_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/divider_1">
+
+            <ImageView
+                android:id="@+id/service_centre_image"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:contentDescription="@string/service_centre_image"
+                android:src="@drawable/esw_gov" />
+
+            <View
+                android:id="@+id/divider_2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/service_centre_image"
+                android:background="?android:attr/listDivider"
+                android:padding="20dp" />
+
+            <RelativeLayout
+                android:id="@+id/product_info_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_2"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/product_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="8dp"
+                    app:srcCompat="@drawable/ic_stat_description_icon" />
+
+                <TextView
+                    android:id="@+id/product_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/product_image"
+                    android:fontFamily="@font/rubik"
+                    android:text="Blue-Book Service"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/rubik" />
+
+                <TextView
+                    android:id="@+id/product_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/product_title"
+                    android:layout_toEndOf="@+id/product_image"
+                    android:text="Renew Motor-Vehicle Licence"
+                    android:textSize="14sp"
+                    app:fontFamily="@font/rubik" />
+
+                <ImageView
+                    android:id="@+id/request_agent_image_view"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/save_service"
+                    android:padding="4dp"
+                    app:srcCompat="@drawable/ic_agent_purple_24" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>
