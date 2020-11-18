@@ -43,6 +43,7 @@ import xyz.ummo.user.delegate.Feedback
 import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
+import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
@@ -384,7 +385,7 @@ class MainScreen : AppCompatActivity() {
 //                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
                 infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
 //                val homeFragment = HomeFragment()
-                Timber.e("Going to SERVICE-CENTRES FRAG")
+                Timber.e("Going to SERVICE-PROVIDERS FRAG")
 //                val serviceCentreFragment = ServiceCentresFragment()
                 val pagesFragment = PagesFragment()
                 openFragment(pagesFragment)

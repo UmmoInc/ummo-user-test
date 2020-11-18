@@ -181,7 +181,10 @@ class CompleteSignUp : AppCompatActivity() {
 
                             } catch (e: JSONException) {
                                 e.printStackTrace()
+                                Timber.e("User Signup JSON Exception -> $e")
                             }
+                        } else {
+                            Timber.e("USER-PID is null/empty -> $userPID")
                         }
                     }
                 }

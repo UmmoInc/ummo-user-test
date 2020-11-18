@@ -15,31 +15,28 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
-import xyz.ummo.user.databinding.FragmentCommerceBinding
+import xyz.ummo.user.databinding.FragmentRevenueBinding
 import xyz.ummo.user.models.Service
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 
-class CommerceFragment : Fragment() {
+class RevenueFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var commerceBinding: FragmentCommerceBinding
+    private lateinit var revenueBinding: FragmentRevenueBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
 
     /** ServiceProvider ViewModel && Entity Declarations **/
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
-
-    /** Service ViewModel && Entity Declarations **/
     private var serviceViewModel: ServiceViewModel? = null
 
-    /** HomeAffairs Service instance && Service ID **/
-    private lateinit var commerceServiceId: String
-    private lateinit var commerceService: Service
-    private lateinit var commerceServiceList: List<ServiceEntity>
+    private lateinit var financeServiceId: String
+    private lateinit var revenueService: Service
+    private lateinit var revenueServiceList: List<ServiceEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,36 +50,37 @@ class CommerceFragment : Fragment() {
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
-        Timber.e("CREATING COMMERCE-FRAGMENT!")
-        getCommerceServiceProviderId()
-        getCommerceServices(commerceServiceId)
+        Timber.e("CREATING REVENUE-FRAGMENT!")
+        getRevenueServiceProviderId()
+        getRevenueServices(financeServiceId)
 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        commerceBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_commerce,
+        revenueBinding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_revenue,
                 container, false)
 
-        val view = commerceBinding.root
+        val view = revenueBinding.root
         val layoutManager = view.services_recycler_view.layoutManager
+
         recyclerView = view.services_recycler_view
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        Timber.e("CREATING COMMERCE-VIEW!")
+        Timber.e("CREATING REVENUE-VIEW!")
 
-        if (commerceServiceList.isNotEmpty()) {
-            commerceBinding.loadProgressBar.visibility = View.GONE
+        if (revenueServiceList.isNotEmpty()) {
+            revenueBinding.loadProgressBar.visibility = View.GONE
         }
 
         return view
     }
 
-    private fun getCommerceServiceProviderId() {
+    private fun getRevenueServiceProviderId() {
         val serviceProviders: List<ServiceProviderEntity>? = serviceProviderViewModel
                 ?.getServiceProviderList()
 
@@ -90,16 +88,16 @@ class CommerceFragment : Fragment() {
             Timber.e("SERVICE-PROVIDERS [2]=> ${serviceProviders[i].serviceProviderId}")
             when {
                 serviceProviders[i].serviceProviderName
-                        .equals("ministry of commerce", true) -> {
+                        .equals("ministry of finance", true) -> {
 
-                    commerceServiceId = serviceProviders[i].serviceProviderId.toString()
-                    Timber.e("Commerce ID [2] -> $commerceServiceId")
+                    financeServiceId = serviceProviders[i].serviceProviderId.toString()
+                    Timber.e("Revenue ID [2] -> $financeServiceId")
                 }
             }
         }
     }
 
-    private fun getCommerceServices(commerceId: String) {
+    private fun getRevenueServices(revenueId: String) {
         var serviceId: String
         var serviceName: String
         var serviceDescription: String
@@ -117,40 +115,51 @@ class CommerceFragment : Fragment() {
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
-            if (servicesList[i].serviceProvider == commerceId) {
-                commerceServiceList = servicesList
-                Timber.e("COMMERCE SERVICE [3] -> ${servicesList[i].serviceName}")
-                serviceId = commerceServiceList[i].serviceId.toString() //0
-                serviceName = commerceServiceList[i].serviceName.toString() //1
-                serviceDescription = commerceServiceList[i].serviceDescription.toString() //2
-                serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = commerceServiceList[i].serviceCentres.toString() //4
-                presenceRequired = commerceServiceList[i].presenceRequired!! //5
-                serviceCost = commerceServiceList[i].serviceCost.toString() //6
-                serviceRequirements = commerceServiceList[i].serviceDocuments.toString() //7
-                serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
-                approvalCount = commerceServiceList[i].approvalCount!! //9
-                disApprovalCount = commerceServiceList[i].disapprovalCount!! //10
-                commentCount = commerceServiceList[i].comments?.size!! //11
-                shareCount = commerceServiceList[i].serviceShares!! //12
-                viewCount = commerceServiceList[i].serviceViews!! //13
+            if (servicesList[i].serviceProvider == revenueId) {
+                revenueServiceList = servicesList
+                Timber.e("REVENUE SERVICE [3] -> ${servicesList[i].serviceName}")
+                serviceId = revenueServiceList[i].serviceId.toString() //0
+                serviceName = revenueServiceList[i].serviceName.toString() //1
+                serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
+                serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
+                serviceCentre = revenueServiceList[i].serviceCentres.toString() //4
+                presenceRequired = revenueServiceList[i].presenceRequired!! //5
+                serviceCost = revenueServiceList[i].serviceCost.toString() //6
+                serviceRequirements = revenueServiceList[i].serviceDocuments.toString() //7
+                serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
+                approvalCount = revenueServiceList[i].approvalCount!! //9
+                disApprovalCount = revenueServiceList[i].disapprovalCount!! //10
+                commentCount = revenueServiceList[i].comments?.size!! //11
+                shareCount = revenueServiceList[i].serviceShares!! //12
+                viewCount = revenueServiceList[i].serviceViews!! //13
 
-                commerceService = Service(serviceId, serviceName, serviceDescription,
+                revenueService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentre, presenceRequired, serviceCost,
                         serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
                         commentCount, shareCount, viewCount)
-                Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")
+                Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
 
-                gAdapter.add(ServiceItem(commerceService, context))
+                gAdapter.add(ServiceItem(revenueService, context))
 
             }
         }
     }
 
+    private fun displayRevenueServices() {
+        gAdapter.add(ServiceItem(revenueService, context))
+
+        revenueBinding.loadProgressBar.visibility = View.GONE
+
+        recyclerView.adapter = gAdapter
+    }
+
     companion object {
+
+        fun newInstance() = RevenueFragment()
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                CommerceFragment().apply {
+                RevenueFragment().apply {
 
                 }
     }

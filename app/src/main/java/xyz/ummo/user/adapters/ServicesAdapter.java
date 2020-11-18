@@ -92,7 +92,7 @@ public class ServicesAdapter extends RecyclerView.Adapter<ServicesAdapter.MyView
         holder.serviceForm.setText(" " + steps);
         holder.servicePersonalDocs.setText(" " + service.getPersonalDocs());
         holder.serviceCost.setText(" " + service.getCost());
-        holder.serviceDuration.setText( " " + service.getDuraion());
+        holder.serviceDuration.setText( " " + service.getDuration());
 
 
         final String serviceName, description, form, personalDocs, cost, duration;

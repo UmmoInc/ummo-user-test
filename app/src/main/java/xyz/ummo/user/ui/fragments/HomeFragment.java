@@ -40,11 +40,11 @@ import xyz.ummo.user.Department;
 import xyz.ummo.user.R;
 import xyz.ummo.user.Services;
 import xyz.ummo.user.adapters.ServiceProviderAdapter;
-import xyz.ummo.user.data.entity.ServiceProviderEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
 import xyz.ummo.user.delegate.PublicService;
 import xyz.ummo.user.models.PublicServiceData;
 import xyz.ummo.user.delegate.SocketIO;
-import xyz.ummo.user.utilities.ServiceProviderViewModel;
+//import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -83,8 +83,8 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
 
     private Handler homeHandler = new Handler();
-    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
-    private ServiceProviderViewModel serviceProviderViewModel;
+//    private ServiceProviderEntityOld serviceProviderEntityOld = new ServiceProviderEntityOld();
+//    private ServiceProviderViewModel serviceProviderViewModel;
     private ProgressBar loadServicesProgressBar;
 
     public HomeFragment(){}
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        serviceProviderViewModel = ViewModelProviders.of(this).get(ServiceProviderViewModel.class);
+//        serviceProviderViewModel = ViewModelProviders.of(this).get(ServiceProviderViewModel.class);
 
         serviceProviderAdapter = new ServiceProviderAdapter(serviceProviderList,getActivity());
 //        loadDepartments(_data);
@@ -271,16 +271,16 @@ public class HomeFragment extends Fragment {
 
             serviceProviderList.clear();
 
-            for (int i = 0; i < serviceProviderViewModel.getServiceProviders().size(); i++) {
-                serviceProviderId[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderId();
-                serviceProviderName[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderName();
-                serviceProviderProvince[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderProvince();
-                serviceProviderMunicipality[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderMunicipality();
-                serviceProviderTown[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderTown();
+            /*for (int i = 0; i < serviceProviderViewModel.getServiceProviders().size(); i++) {
+//                serviceProviderId[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderId();
+//                serviceProviderName[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderName();
+//                serviceProviderProvince[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderProvince();
+//                serviceProviderMunicipality[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderMunicipality();
+//                serviceProviderTown[0] = serviceProviderViewModel.getServiceProviders().get(i).getServiceProviderTown();
                 Log.e(TAG, "addServiceProviders (" + i + ")=>" + serviceProviderName[0]);
                 PublicServiceData publicServiceData = new PublicServiceData(serviceProviderName[0], serviceProviderProvince[0], serviceProviderMunicipality[0], serviceProviderTown[0], serviceProviderId[0]);
                 serviceProviderList.add(publicServiceData);
-            }
+            }*/
 
             (getActivity()).runOnUiThread(() -> {
                 loadServicesProgressBar.setVisibility(View.INVISIBLE);
@@ -374,6 +374,7 @@ public class HomeFragment extends Fragment {
 
     private void reloadData(){
         new PublicService(getActivity()){
+
             @SuppressLint("LogNotTimber")
             @Override
             public void done(@NotNull List<PublicServiceData> data, @NotNull Number code) {

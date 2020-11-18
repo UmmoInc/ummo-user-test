@@ -48,7 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:fontFamily="@font/rubik"
-                    android:text="Service Name"
+                    android:text="@string/service_name"
                     android:textSize="21sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/service_title_text_view"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
-                    android:text="Service Description"
+                    android:text="@string/service_description"
                     android:textSize="14sp"
                     android:paddingEnd="8dp"
                     android:paddingStart="0dp"
@@ -127,7 +127,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignTop="@+id/delegated_service_header_image_view"
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
-                            android:text="Service Eligibility"
+                            android:text="@string/service_eligibility"
                             android:textColor="@color/Grey"
                             android:textSize="16sp" />
 
@@ -137,19 +137,20 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/service_eligibility_title_text_view"
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
-                            android:text="Who is eligible to receive this service?"
+                            android:text="@string/service_eligibility_placeholder"
                             android:textColor="@color/black"
                             android:textSize="14sp" />
 
                     </RelativeLayout>
 
-                    <!-- Body Layout -->
+                    <!-- [START] Body Layout -->
                     <RelativeLayout
                         android:id="@+id/service_body_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/service_header_layout">
 
+                        <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
                         <RelativeLayout
                             android:id="@+id/service_centre_layout"
                             android:layout_width="match_parent"
@@ -173,7 +174,7 @@
                                     android:id="@+id/service_centre_header_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Service Centres"
+                                    android:text="@string/service_centres"
                                     android:textColor="@color/Grey"
                                     android:textSize="16sp" />
 
@@ -182,13 +183,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@id/service_centre_header_text_view"
-                                    android:text="Service Centre"
+                                    android:text="@string/service_centre_placeholder"
                                     android:textColor="@color/black"
                                     android:textSize="14sp" />
                             </RelativeLayout>
 
                         </RelativeLayout>
+                        <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
 
+                        <!-- [START] Service Cost Layout (ID: "service_cost_layout")-->
                         <RelativeLayout
                             android:id="@+id/service_cost_layout"
                             android:layout_width="match_parent"
@@ -213,7 +216,7 @@
                                     android:id="@+id/service_cost_header_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Service Cost"
+                                    android:text="@string/service_cost_string"
                                     android:textColor="@color/Grey"
                                     android:textSize="16sp" />
 
@@ -222,102 +225,175 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@id/service_cost_header_text_view"
-                                    android:text="Free"
+                                    android:text="@string/service_cost_placeholder"
                                     android:textColor="@color/black"
                                     android:textSize="14sp" />
                             </RelativeLayout>
 
                         </RelativeLayout>
+                        <!-- [END] Service Cost Layout (ID: "service_cost_layout")-->
 
+                        <!-- [START] Action Layout (ID: "action_layout")-->
                         <RelativeLayout
-                            android:id="@+id/service_duration_layout"
+                            android:id="@+id/action_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/service_cost_layout">
+                            android:layout_below="@id/service_cost_layout"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <View
+                                android:id="@+id/divider"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="?android:attr/listDivider"
+                                android:layout_marginTop="8dp"
+                                android:layout_gravity="center_horizontal"/>
+
+                            <TextView
+                                android:id="@+id/action_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:padding="8dp"
+                                android:textSize="12sp"
+                                android:text="@string/more_info"
+                                android:textStyle="bold"
+                                android:textColor="@color/ummo_1"
+                                android:clickable="true"
+                                android:focusable="true"/>
 
                             <ImageView
-                                android:id="@+id/service_duration_image_view"
+                                android:id="@+id/expand_image_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="8dp"
-                                android:padding="8dp"
-                                app:srcCompat="@drawable/ic_stat_duration_icon" />
-
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_stat_expand_less"
+                                android:layout_alignParentEnd="true"
                                 android:layout_centerInParent="true"
-                                android:layout_toEndOf="@+id/service_duration_image_view">
+                                android:paddingRight="8dp"
+                                android:paddingEnd="8dp"
+                                android:paddingLeft="8dp"
+                                android:paddingStart="8dp"
+                                android:visibility="gone"
+                                tools:visibility="visible"/>
 
-                                <TextView
-                                    android:id="@+id/service_duration_header_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Service Duration"
-                                    android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
-
-                                <TextView
-                                    android:id="@+id/service_duration_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/service_duration_header_text_view"
-                                    android:text="Service Duration"
-                                    android:textColor="@color/black"
-                                    android:textSize="14sp" />
-                            </RelativeLayout>
-
+                            <ImageView
+                                android:id="@+id/collapse_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_stat_expand_more"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:paddingRight="8dp"
+                                android:paddingEnd="8dp"
+                                android:paddingLeft="8dp"
+                                android:paddingStart="8dp"
+                                android:visibility="visible"/>
                         </RelativeLayout>
+                        <!-- [END] Action Layout (ID: "action_layout")-->
 
+                        <!-- [START] Expandable Layout (ID: "expandable_relative_layout")-->
                         <RelativeLayout
-                            android:id="@+id/service_requirements_relative_layout"
+                            android:id="@+id/expandable_relative_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/service_duration_layout">
-
-                            <ImageView
-                                android:id="@+id/service_requirements_image_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="8dp"
-                                android:padding="8dp"
-                                app:srcCompat="@drawable/ic_stat_docs_icon" />
-
+                            android:layout_below="@+id/action_layout"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+                            <!-- [START] Service Duration Layout (ID: "service_duration_layout")-->
                             <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:layout_toEndOf="@+id/service_requirements_image_view">
+                                android:id="@+id/service_duration_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
 
-                                <TextView
-                                    android:id="@+id/service_requirements_header_text_view"
+                                <ImageView
+                                    android:id="@+id/service_duration_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Service Requirements"
-                                    android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
+                                    android:layout_margin="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_duration_icon" />
 
-                                <LinearLayout
-                                    android:id="@+id/service_requirements_linear_layout"
+                                <RelativeLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_requirements_header_text_view"
-                                    android:orientation="horizontal"
-                                    android:paddingStart="8dp"
-                                    android:paddingEnd="16dp"
-                                    android:paddingBottom="8dp">
+                                    android:layout_centerInParent="true"
+                                    android:layout_toEndOf="@+id/service_duration_image_view">
 
-                                </LinearLayout>
-                                <TextView
-                                    android:id="@+id/service_requirements_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Requirements"
-                                    android:textSize="14sp"
-                                    android:textColor="@color/black"
-                                    android:layout_below="@id/service_requirements_header_text_view"/>
+                                    <TextView
+                                        android:id="@+id/service_duration_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/service_duration"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:id="@+id/service_duration_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/service_duration_header_text_view"
+                                        android:text="@string/service_duration_placeholder"
+                                        android:textColor="@color/black"
+                                        android:textSize="14sp" />
+                                </RelativeLayout>
+
                             </RelativeLayout>
+                            <!-- [END] Service Duration Layout (ID: "service_duration_layout"-->
+
+                            <!-- [START] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
+                            <RelativeLayout
+                                android:id="@+id/service_requirements_relative_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/service_duration_layout">
+
+                                <ImageView
+                                    android:id="@+id/service_requirements_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_docs_icon" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_toEndOf="@+id/service_requirements_image_view">
+
+                                    <TextView
+                                        android:id="@+id/service_requirements_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/service_requirements"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="16sp" />
+
+                                    <LinearLayout
+                                        android:id="@+id/service_requirements_linear_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/service_requirements_header_text_view"
+                                        android:orientation="horizontal"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="16dp"
+                                        android:paddingBottom="8dp">
+
+                                    </LinearLayout>
+                                    <TextView
+                                        android:id="@+id/service_requirements_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/service_requirements_placeholder"
+                                        android:textSize="14sp"
+                                        android:textColor="@color/black"
+                                        android:layout_below="@id/service_requirements_header_text_view"/>
+                                </RelativeLayout>
+                            </RelativeLayout>
+                            <!-- [END] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
                         </RelativeLayout>
+                        <!-- [END] Expandable Layout (ID: "expandable_relative_layout")-->
 
                         <!--<RelativeLayout
                             android:id="@+id/service_progress_layout"
@@ -356,6 +432,7 @@
                         </RelativeLayout>-->
 
                     </RelativeLayout>
+                    <!-- [END] Body Layout -->
 
                 </RelativeLayout>
             </androidx.core.widget.NestedScrollView>
@@ -389,7 +466,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingStart="4dp"
-                        android:paddingEnd="4dp">
+                        android:paddingEnd="4dp"
+                        android:clickable="true"
+                        android:focusable="true">
 
                         <ImageView
                             android:id="@+id/disapprove_service_image"
@@ -397,7 +476,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_down_blue_24" />
+                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
 
                         <TextView
                             android:id="@+id/disapprove_count_text_view"
@@ -406,7 +485,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/disapprove_service_image"
                             android:fontFamily="@font/rubik"
-                            android:text="2"
+                            android:text="@string/disapproval_placeholder"
                             android:textSize="18sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
@@ -436,7 +515,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/approve_service_image"
                             android:fontFamily="@font/rubik"
-                            android:text="2"
+                            android:text="@string/approval_placeholder"
                             android:textSize="18sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
@@ -464,7 +543,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/service_comments_image"
                             android:fontFamily="@font/rubik"
-                            android:text="2"
+                            android:text="@string/comments_placeholder"
                             android:textSize="18sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
@@ -494,7 +573,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/share_service_image"
                             android:fontFamily="@font/rubik"
-                            android:text="2"
+                            android:text="@string/shares_placeholder"
                             android:textSize="18sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>

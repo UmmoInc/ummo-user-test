@@ -27,17 +27,17 @@ import java.util.List;
 import timber.log.Timber;
 import xyz.ummo.user.Product;
 import xyz.ummo.user.R;
-import xyz.ummo.user.data.entity.ServiceProviderEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
 import xyz.ummo.user.delegate.GetProducts;
 import xyz.ummo.user.models.PublicServiceData;
 import xyz.ummo.user.delegate.Get;
-import xyz.ummo.user.utilities.ServiceProviderViewModel;
+//import xyz.ummo.user.utilities.ServiceProviderViewModel;
 
 public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProviderAdapter.MyViewHolder> {
 
     private List<PublicServiceData> serviceProviderList;
-    private ServiceProviderEntity serviceProviderEntity = new ServiceProviderEntity();
-    private ServiceProviderViewModel serviceProviderViewModel;
+//    private ServiceProviderEntityOld serviceProviderEntityOld = new ServiceProviderEntityOld();
+//    private ServiceProviderViewModel serviceProviderViewModel;
 
     Activity context;
 
@@ -71,7 +71,7 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         context = activity;
         this.serviceProviderList = serviceProviderList;
 
-        serviceProviderViewModel = ViewModelProviders.of((FragmentActivity) context).get(ServiceProviderViewModel.class);
+//        serviceProviderViewModel = ViewModelProviders.of((FragmentActivity) context).get(ServiceProviderViewModel.class);
     }
 
     @NonNull
@@ -92,12 +92,12 @@ public class ServiceProviderAdapter extends RecyclerView.Adapter<ServiceProvider
         /*
         * Inserting `ServiceProvider` into RoomDB
         * */
-        serviceProviderEntity.setServiceProviderId(serviceProviderList.get(position).getServiceCode());
-        serviceProviderEntity.setServiceProviderName(serviceProviderList.get(position).getServiceName());
-        serviceProviderEntity.setServiceProviderProvince(serviceProviderList.get(position).getProvince());
-        serviceProviderEntity.setServiceProviderMunicipality(serviceProviderList.get(position).getMunicipality());
-        serviceProviderEntity.setServiceProviderTown(serviceProviderList.get(position).getTown());
-        serviceProviderViewModel.insertServiceProvider(serviceProviderEntity);
+//        serviceProviderEntityOld.setServiceProviderId(serviceProviderList.get(position).getServiceCode());
+//        serviceProviderEntityOld.setServiceProviderName(serviceProviderList.get(position).getServiceName());
+//        serviceProviderEntityOld.setServiceProviderProvince(serviceProviderList.get(position).getProvince());
+//        serviceProviderEntityOld.setServiceProviderMunicipality(serviceProviderList.get(position).getMunicipality());
+//        serviceProviderEntityOld.setServiceProviderTown(serviceProviderList.get(position).getTown());
+//        serviceProviderViewModel.insertServiceProvider(serviceProviderEntityOld);
 
         Timber.e("onBindViewHolder: SERVICE-PROVIDER-LIST->%s", serviceProviderList.get(position).getServiceName());
         addProduct(holder);

@@ -8,6 +8,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.models.PublicServiceData
+import xyz.ummo.user.models.ServiceProviderData
 
 abstract class PublicService(val activity: Activity) {
     init {
@@ -66,7 +67,6 @@ abstract class PublicService(val activity: Activity) {
 
         return PublicServiceData(serviceName, province, municipality, town, serviceCode)
     }
-
 
     private fun get(obj: JSONObject, path: String, default: Any): Any? {
         return try {

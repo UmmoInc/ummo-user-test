@@ -12,9 +12,13 @@ import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import xyz.ummo.user.data.dao.ProfileDao;
+//import xyz.ummo.user.data.dao.ServiceProviderDao;
+import xyz.ummo.user.data.dao.ServiceDao;
 import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
+//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
+import xyz.ummo.user.data.entity.ServiceEntity;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.utils.Converters;
 //import xyz.ummo.user.data.dao.AgentDao;
@@ -32,17 +36,24 @@ import static androidx.room.Room.databaseBuilder;
         DelegatedServiceEntity.class,
         ProductEntity.class,
         ProfileEntity.class,
-        ServiceProviderEntity.class}, version = 2, exportSchema = false)
+        ServiceProviderEntity.class,
+        ServiceEntity.class}, version = 2, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
 
     public abstract ProfileDao profileDao();
+
     public abstract DelegatedServiceDao delegatedServiceDao();
+
     public abstract ProductDao productDao();
+
     public abstract ServiceProviderDao serviceProviderDao();
-//    public abstract ServiceProviderDao serviceProviderDao();
+
+    public abstract ServiceDao serviceDao();
+
+    //    public abstract ServiceProviderDao serviceProviderDao();
     private static volatile UserRoomDatabase INSTANCE;
 
 /*    public static AgentRoomDatabase getInstance(final Context context,
@@ -58,9 +69,9 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }*/
 
-    public static UserRoomDatabase getUserDatabase(final Context context){
-        if (INSTANCE == null){
-            synchronized (UserRoomDatabase.class){
+    public static UserRoomDatabase getUserDatabase(final Context context) {
+        if (INSTANCE == null) {
+            synchronized (UserRoomDatabase.class) {
                 //Create database here
                 INSTANCE = databaseBuilder(context.getApplicationContext(),
                         UserRoomDatabase.class,
@@ -73,7 +84,9 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    private void setDatabaseCreated(){mIsDatabaseCreated.postValue(true);}
+    private void setDatabaseCreated() {
+        mIsDatabaseCreated.postValue(true);
+    }
 
     /**
      * Check whether the database already exists and expose it via {@link #getDatabaseCreated()}
@@ -94,7 +107,7 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         });
     }*/
 
-    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback(){
+    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
@@ -102,17 +115,19 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         }
     };
 
-    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void>{
+    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
         private final ProfileDao profileDao;
         private DelegatedServiceDao delegatedServiceDao;
         private ProductDao productDao;
         private ServiceProviderDao serviceProviderDao;
+        private ServiceDao serviceDao;
 
-        private PopulateDbAsync(UserRoomDatabase userRoomDatabase){
+        private PopulateDbAsync(UserRoomDatabase userRoomDatabase) {
             profileDao = userRoomDatabase.profileDao();
             delegatedServiceDao = userRoomDatabase.delegatedServiceDao();
             productDao = userRoomDatabase.productDao();
             serviceProviderDao = userRoomDatabase.serviceProviderDao();
+            serviceDao = userRoomDatabase.serviceDao();
         }
 
         @Override

@@ -22,7 +22,6 @@
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
 
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_services">Services</string>
@@ -151,5 +150,22 @@
     <string name="request_error_image_description">Request Error</string>
     <string name="call_for_bug_assistance">Please try again, or help us fix it by reporting the issue in Feedback.</string>
     <string name="registration_continue">Continue</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_description">Service Description</string>
+    <string name="service_eligibility">Service Eligibility</string>
+    <string name="service_eligibility_placeholder">Who is eligible to receive this service?</string>
+    <string name="service_centres">Service Centres</string>
+    <string name="service_centre_placeholder">Service Centre</string>
+    <string name="service_cost_string">Service Cost</string>
+    <string name="service_cost_placeholder">Free</string>
+    <string name="service_duration">Service Duration</string>
+    <string name="service_duration_placeholder">Service Duration</string>
+    <string name="service_requirements">Service Requirements</string>
+    <string name="service_requirements_placeholder">Requirements</string>
+    <string name="disapproval_placeholder">2</string>
+    <string name="approval_placeholder">2</string>
+    <string name="comments_placeholder">2</string>
+    <string name="shares_placeholder">2</string>
+    <string name="more_info">MORE INFO</string>
 
 </resources>
