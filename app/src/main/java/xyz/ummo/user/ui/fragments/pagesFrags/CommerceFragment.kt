@@ -13,6 +13,7 @@ import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentCommerceBinding
 import xyz.ummo.user.models.Service
@@ -38,6 +39,7 @@ class CommerceFragment : Fragment() {
     /** HomeAffairs Service instance && Service ID **/
     private lateinit var commerceServiceId: String
     private lateinit var commerceService: Service
+    private lateinit var commerceServiceList: List<ServiceEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,11 @@ class CommerceFragment : Fragment() {
 
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
+
+        Timber.e("CREATING COMMERCE-FRAGMENT!")
+        getCommerceServiceProviderId()
+        getCommerceServices(commerceServiceId)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -66,8 +73,11 @@ class CommerceFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        getCommerceServiceProviderId()
-        getCommerceServices(commerceServiceId)
+        Timber.e("CREATING COMMERCE-VIEW!")
+
+        if (commerceServiceList.isNotEmpty()) {
+            commerceBinding.loadProgressBar.visibility = View.GONE
+        }
 
         return view
     }
@@ -108,21 +118,22 @@ class CommerceFragment : Fragment() {
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
             if (servicesList[i].serviceProvider == commerceId) {
+                commerceServiceList = servicesList
                 Timber.e("COMMERCE SERVICE [3] -> ${servicesList[i].serviceName}")
-                serviceId = servicesList[i].serviceId.toString() //0
-                serviceName = servicesList[i].serviceName.toString() //1
-                serviceDescription = servicesList[i].serviceDescription.toString() //2
-                serviceEligibility = servicesList[i].serviceEligibility.toString() //3
-                serviceCentre = servicesList[i].serviceCentres.toString() //4
-                presenceRequired = servicesList[i].presenceRequired!! //5
-                serviceCost = servicesList[i].serviceCost.toString() //6
-                serviceRequirements = servicesList[i].serviceDocuments.toString() //7
-                serviceDuration = servicesList[i].serviceDuration.toString() //8
-                approvalCount = servicesList[i].approvalCount!! //9
-                disApprovalCount = servicesList[i].disapprovalCount!! //10
-                commentCount = servicesList[i].comments?.size!! //11
-                shareCount = servicesList[i].serviceShares!! //12
-                viewCount = servicesList[i].serviceViews!! //13
+                serviceId = commerceServiceList[i].serviceId.toString() //0
+                serviceName = commerceServiceList[i].serviceName.toString() //1
+                serviceDescription = commerceServiceList[i].serviceDescription.toString() //2
+                serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
+                serviceCentre = commerceServiceList[i].serviceCentres.toString() //4
+                presenceRequired = commerceServiceList[i].presenceRequired!! //5
+                serviceCost = commerceServiceList[i].serviceCost.toString() //6
+                serviceRequirements = commerceServiceList[i].serviceDocuments.toString() //7
+                serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
+                approvalCount = commerceServiceList[i].approvalCount!! //9
+                disApprovalCount = commerceServiceList[i].disapprovalCount!! //10
+                commentCount = commerceServiceList[i].comments?.size!! //11
+                shareCount = commerceServiceList[i].serviceShares!! //12
+                viewCount = commerceServiceList[i].serviceViews!! //13
 
                 commerceService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentre, presenceRequired, serviceCost,
@@ -132,9 +143,6 @@ class CommerceFragment : Fragment() {
 
                 gAdapter.add(ServiceItem(commerceService, context))
 
-                commerceBinding.loadProgressBar.visibility = View.GONE
-
-                recyclerView.adapter = gAdapter
             }
         }
     }

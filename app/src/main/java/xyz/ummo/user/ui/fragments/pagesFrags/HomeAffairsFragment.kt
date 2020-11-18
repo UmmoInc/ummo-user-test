@@ -1,14 +1,11 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
-import android.app.Activity
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -44,6 +41,8 @@ class HomeAffairsFragment : Fragment() {
     private lateinit var homeAffairsServiceId: String
     private lateinit var homeAffairsService: Service
 
+    private lateinit var homeAffairsServiceList: List<ServiceEntity>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,6 +54,10 @@ class HomeAffairsFragment : Fragment() {
 
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
+
+        Timber.e("CREATING HOME-AFFAIRS-FRAGMENT!")
+        getHomeAffairsServiceProviderId()
+        getHomeAffairsServices(homeAffairsServiceId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -72,9 +75,11 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        getHomeAffairsServiceProviderId()
-        getHomeAffairsServices(homeAffairsServiceId)
+        if (homeAffairsServiceList.isNotEmpty()) {
+            homeAffairsBinding.loadProgressBar.visibility = View.GONE
+        }
 
+        Timber.e("CREATING HOME-AFFAIRS-VIEW!")
         return view
     }
 
@@ -106,41 +111,45 @@ class HomeAffairsFragment : Fragment() {
         var serviceRequirements: String
         var serviceDuration: String
         var approvalCount: Int
-        var disApprovalCount: Int
+        var disapprovalCount: Int
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
 
         val servicesList = serviceViewModel?.getServicesList()
+
+        Timber.e("SERVICE-LIST [BEFORE]-> ${servicesList?.size}")
         for (i in servicesList?.indices!!) {
             if (servicesList[i].serviceProvider == homeAffairsId) {
+                Timber.e("SERVICE-LIST [AFTER]-> $servicesList")
+                homeAffairsServiceList = servicesList
+
                 Timber.e("HOME AFFAIRS SERVICE [3] -> ${servicesList[i].serviceName}")
-                serviceId = servicesList[i].serviceId.toString() //0
-                serviceName = servicesList[i].serviceName.toString() //1
-                serviceDescription = servicesList[i].serviceDescription.toString() //2
-                serviceEligibility = servicesList[i].serviceEligibility.toString() //3
-                serviceCentre = servicesList[i].serviceCentres.toString() //4
-                presenceRequired = servicesList[i].presenceRequired!! //5
-                serviceCost = servicesList[i].serviceCost.toString() //6
-                serviceRequirements = servicesList[i].serviceDocuments.toString() //7
-                serviceDuration = servicesList[i].serviceDuration.toString() //8
-                approvalCount = servicesList[i].approvalCount!! //9
-                disApprovalCount = servicesList[i].disapprovalCount!! //10
-                commentCount = servicesList[i].comments?.size!! //11
-                shareCount = servicesList[i].serviceShares!! //12
-                viewCount = servicesList[i].serviceViews!! //13
+                serviceId = homeAffairsServiceList[i].serviceId.toString() //0
+                serviceName = homeAffairsServiceList[i].serviceName.toString() //1
+                serviceDescription = homeAffairsServiceList[i].serviceDescription.toString() //2
+                serviceEligibility = homeAffairsServiceList[i].serviceEligibility.toString() //3
+                serviceCentre = homeAffairsServiceList[i].serviceCentres.toString() //4
+                presenceRequired = homeAffairsServiceList[i].presenceRequired!! //5
+                serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
+                serviceRequirements = homeAffairsServiceList[i].serviceDocuments.toString() //7
+                serviceDuration = homeAffairsServiceList[i].serviceDuration.toString() //8
+                approvalCount = homeAffairsServiceList[i].approvalCount!! //9
+                disapprovalCount = homeAffairsServiceList[i].disapprovalCount!! //10
+                commentCount = homeAffairsServiceList[i].comments?.size!! //11
+                shareCount = homeAffairsServiceList[i].serviceShares!! //12
+                viewCount = homeAffairsServiceList[i].serviceViews!! //13
+
+                Timber.e("HOME-AFFAIRS-SERVICE-LIST => ${homeAffairsServiceList[i].serviceId}")
 
                 homeAffairsService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
+                        serviceRequirements, serviceDuration, approvalCount, disapprovalCount,
                         commentCount, shareCount, viewCount)
                 Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")
 
                 gAdapter.add(ServiceItem(homeAffairsService, context))
 
-                homeAffairsBinding.loadProgressBar.visibility = View.GONE
-
-                recyclerView.adapter = gAdapter
             }
         }
     }

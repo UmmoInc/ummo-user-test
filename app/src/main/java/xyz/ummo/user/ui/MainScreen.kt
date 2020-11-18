@@ -385,7 +385,7 @@ class MainScreen : AppCompatActivity() {
 //                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
                 infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
 //                val homeFragment = HomeFragment()
-                Timber.e("Going to SERVICE-CENTRES FRAG")
+                Timber.e("Going to SERVICE-PROVIDERS FRAG")
 //                val serviceCentreFragment = ServiceCentresFragment()
                 val pagesFragment = PagesFragment()
                 openFragment(pagesFragment)

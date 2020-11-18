@@ -15,7 +15,7 @@ class ServiceProviderViewModel (application: Application) : AndroidViewModel(app
 
     fun addServiceProvider(serviceProviderEntity: ServiceProviderEntity?) {
         appRepository.insertServiceProvider(serviceProviderEntity)
-        Timber.e("ADDING SERVICE PROVIDER TO ROOM -> $serviceProviderEntity")
+        Timber.e("ADDING SERVICE PROVIDER TO ROOM -> ${serviceProviderEntity?.serviceProviderId}")
     }
 
     fun getServiceProviders(): LiveData<ServiceProviderEntity>? {

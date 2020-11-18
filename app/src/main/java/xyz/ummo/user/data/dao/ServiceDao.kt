@@ -6,7 +6,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 
 @Dao
 interface ServiceDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertService(serviceEntity: ServiceEntity)
 
     @get:Query("SELECT * FROM service")

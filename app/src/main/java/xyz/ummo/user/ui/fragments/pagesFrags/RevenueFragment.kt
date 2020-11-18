@@ -13,6 +13,7 @@ import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentRevenueBinding
 import xyz.ummo.user.models.Service
@@ -35,6 +36,7 @@ class RevenueFragment : Fragment() {
 
     private lateinit var financeServiceId: String
     private lateinit var revenueService: Service
+    private lateinit var revenueServiceList: List<ServiceEntity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,11 @@ class RevenueFragment : Fragment() {
 
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
+
+        Timber.e("CREATING REVENUE-FRAGMENT!")
+        getRevenueServiceProviderId()
+        getRevenueServices(financeServiceId)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +71,11 @@ class RevenueFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        //displayRevenueServices()
-        getRevenueServiceProviderId()
-        getRevenueServices(financeServiceId)
+        Timber.e("CREATING REVENUE-VIEW!")
+
+        if (revenueServiceList.isNotEmpty()) {
+            revenueBinding.loadProgressBar.visibility = View.GONE
+        }
 
         return view
     }
@@ -107,21 +116,22 @@ class RevenueFragment : Fragment() {
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
             if (servicesList[i].serviceProvider == revenueId) {
+                revenueServiceList = servicesList
                 Timber.e("REVENUE SERVICE [3] -> ${servicesList[i].serviceName}")
-                serviceId = servicesList[i].serviceId.toString() //0
-                serviceName = servicesList[i].serviceName.toString() //1
-                serviceDescription = servicesList[i].serviceDescription.toString() //2
-                serviceEligibility = servicesList[i].serviceEligibility.toString() //3
-                serviceCentre = servicesList[i].serviceCentres.toString() //4
-                presenceRequired = servicesList[i].presenceRequired!! //5
-                serviceCost = servicesList[i].serviceCost.toString() //6
-                serviceRequirements = servicesList[i].serviceDocuments.toString() //7
-                serviceDuration = servicesList[i].serviceDuration.toString() //8
-                approvalCount = servicesList[i].approvalCount!! //9
-                disApprovalCount = servicesList[i].disapprovalCount!! //10
-                commentCount = servicesList[i].comments?.size!! //11
-                shareCount = servicesList[i].serviceShares!! //12
-                viewCount = servicesList[i].serviceViews!! //13
+                serviceId = revenueServiceList[i].serviceId.toString() //0
+                serviceName = revenueServiceList[i].serviceName.toString() //1
+                serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
+                serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
+                serviceCentre = revenueServiceList[i].serviceCentres.toString() //4
+                presenceRequired = revenueServiceList[i].presenceRequired!! //5
+                serviceCost = revenueServiceList[i].serviceCost.toString() //6
+                serviceRequirements = revenueServiceList[i].serviceDocuments.toString() //7
+                serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
+                approvalCount = revenueServiceList[i].approvalCount!! //9
+                disApprovalCount = revenueServiceList[i].disapprovalCount!! //10
+                commentCount = revenueServiceList[i].comments?.size!! //11
+                shareCount = revenueServiceList[i].serviceShares!! //12
+                viewCount = revenueServiceList[i].serviceViews!! //13
 
                 revenueService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentre, presenceRequired, serviceCost,
@@ -131,9 +141,6 @@ class RevenueFragment : Fragment() {
 
                 gAdapter.add(ServiceItem(revenueService, context))
 
-                revenueBinding.loadProgressBar.visibility = View.GONE
-
-                recyclerView.adapter = gAdapter
             }
         }
     }

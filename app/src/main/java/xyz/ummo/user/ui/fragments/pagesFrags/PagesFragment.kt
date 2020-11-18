@@ -42,17 +42,18 @@ class PagesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.e("SERVICE-PROVIDER-DATA [1] -> $serviceProviderData")
+        Timber.e("SERVICE-PROVIDER-DATA {onCreate} [1] -> $serviceProviderData")
+
+        /** Initializing ServiceProviderViewModel **/
         serviceProviderViewModel = ViewModelProvider(this)
                 .get(ServiceProviderViewModel::class.java)
 
+        /** Initializing ServiceViewModel **/
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
 //        pagesPrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
-
-        getServiceProviderData()
-        Timber.e("SERVICE-PROVIDER-DATA [2] -> $serviceProviderData")
+        Timber.e("SERVICE-PROVIDER-DATA {onCreate} [2] -> $serviceProviderData")
 
 //        sortServiceProvidersByCategoryAndSave()
     }
@@ -65,6 +66,8 @@ class PagesFragment : Fragment() {
                 container, false)
 
         val view = pagesFragmentBinding.root
+
+        getServiceProviderData()
         setupPagesTabs()
 
         return view
@@ -72,7 +75,7 @@ class PagesFragment : Fragment() {
 
     private fun setupPagesTabs() {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
-        pagesAdapter.addFragment(HomeAffairsFragment(), "Home Affairs")
+        pagesAdapter.addFragment(HomeAffairsFragment(), "Home-Affairs")
         pagesAdapter.addFragment(RevenueFragment(), "Revenue")
         pagesAdapter.addFragment(CommerceFragment(), "Commerce")
 
@@ -87,13 +90,14 @@ class PagesFragment : Fragment() {
                 .setIcon(R.drawable.ic_commerce_24)
     }
 
+    /** This function fetches service-providers && #decomposes them with
+     * `decomposeServiceProviderData(arrayList)`
+     * TODO: since its a network operation, it needs to be moved away from the UI to another class**/
     private fun getServiceProviderData() {
 
         object : GetServiceProvider(requireActivity()) {
 
             override fun done(data: List<ServiceProviderData>, code: Number) {
-
-                Timber.e("LENGTH -> ${data.size}")
 
                 if (code == 200) {
                     serviceProviderData.addAll(data)
@@ -108,13 +112,15 @@ class PagesFragment : Fragment() {
         }
     }
 
+    /** The `decomposeServiceProviderData` function takes an arrayList of #ServiceProviderData;
+     * then, for each serviceProvider, we store that data with `storeServiceProviderData` **/
     private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
-//        Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
+        Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
         serviceProviderViewModel = ViewModelProvider(this)
                 .get(ServiceProviderViewModel::class.java)
 
         for (i in 0 until mServiceProviderData.size) {
-//            Timber.e("SERVICE-PROVIDER-DATA [$i] -> ${mServiceProviderData[i]}")
+            Timber.e("SERVICE-PROVIDER-DATA i->[$i] -> ${mServiceProviderData[i]}")
             storeServiceProviderData(mServiceProviderData[i])
 
             getServicesFromServiceProviders(mServiceProviderData[i].serviceProviderId)
@@ -122,6 +128,8 @@ class PagesFragment : Fragment() {
     }
 
     private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
+        /*serviceProviderViewModel = ViewModelProvider(this)
+                .get(ServiceProviderViewModel::class.java)*/
 
         serviceProviderEntity.serviceProviderId = mSingleServiceProviderData.serviceProviderId
         serviceProviderEntity.serviceProviderName = mSingleServiceProviderData.serviceProviderName
@@ -130,10 +138,13 @@ class PagesFragment : Fragment() {
         serviceProviderEntity.serviceProviderEmail = mSingleServiceProviderData.serviceProviderEmail
         serviceProviderEntity.serviceProviderAddress = mSingleServiceProviderData.serviceProviderAddress
 
-//        Timber.e("STORING SERVICE PROVIDER DATA -> ${serviceProviderEntity.serviceProviderName}")
+        Timber.e("STORING SERVICE PROVIDER DATA [ID]-> ${serviceProviderEntity.serviceProviderId}")
+        Timber.e("STORING SERVICE PROVIDER DATA [NAME] -> ${serviceProviderEntity.serviceProviderName}")
         serviceProviderViewModel?.addServiceProvider(serviceProviderEntity)
     }
 
+    /** This function gets services from a given service provider (via serviceProviderID).
+     * Likewise, it needs to be moved to a different class that handles network requests **/
     private fun getServicesFromServiceProviders(serviceProviderId: String) {
         object : GetServices(requireActivity(), serviceProviderId) {
             override fun done(data: ByteArray, code: Number) {
@@ -218,6 +229,7 @@ class PagesFragment : Fragment() {
                             serviceEntity.serviceProvider = serviceProvider //14
 
                             serviceViewModel?.addService(serviceEntity)
+                            Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
                         }
 
                     } catch (jse: JSONException) {
