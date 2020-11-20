@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class Converters {
 
     @TypeConverter
-
     public static ArrayList<String> fromString(String value){
         Type listType = new TypeToken<ArrayList<String>>(){}.getType();
 

@@ -1,7 +1,6 @@
 package xyz.ummo.user.ui
 
 import android.app.Activity
-import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -12,7 +11,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.Toolbar
@@ -31,15 +29,19 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.EditMyProfile
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
+import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.delegate.Feedback
+import xyz.ummo.user.delegate.GetServiceProvider
+import xyz.ummo.user.delegate.GetServices
 import xyz.ummo.user.delegate.PublicService
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
@@ -50,11 +52,23 @@ import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
+import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
+import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 
 class MainScreen : AppCompatActivity() {
+
+    private var serviceObject = JSONObject()
+    private val serviceEntity = ServiceEntity()
+    private var homeAffairsServiceEntities = ServiceEntity()
+    private var revenueServiceEntities = ServiceEntity()
+    private var commerceServiceEntities = ServiceEntity()
+    private var serviceViewModel: ServiceViewModel? = null
+    private var serviceProviderViewModel: ServiceProviderViewModel? = null
+    private var serviceProviderEntity = ServiceProviderEntity()
+    private var serviceProviderData: ArrayList<ServiceProviderData> = ArrayList()
 
     private var startFragmentExtra: Int = 0
     private var toolbar: Toolbar? = null
@@ -109,6 +123,14 @@ class MainScreen : AppCompatActivity() {
 
         setContentView(view)
 
+        /** Initializing ServiceProviderViewModel **/
+        serviceProviderViewModel = ViewModelProvider(this)
+                .get(ServiceProviderViewModel::class.java)
+
+        /** Initializing ServiceViewModel **/
+        serviceViewModel = ViewModelProvider(this)
+                .get(ServiceViewModel::class.java)
+
         var mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
@@ -127,7 +149,7 @@ class MainScreen : AppCompatActivity() {
 
         mAuth = FirebaseAuth.getInstance()
 
-        /**[NetworkStateEvent-1] Register for EventBus events **/
+        /** [NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
 
 //        logoutClick() //TODO: to reconsider implementation
@@ -141,7 +163,7 @@ class MainScreen : AppCompatActivity() {
 
         }
 
-        /** Getting Shared Pref Values for the user - to use in various scenarios to follow **/
+        /** Getting Shared Pref Values for the user - to use in various scenarios to follow**/
         sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
         sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
         sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
@@ -159,6 +181,8 @@ class MainScreen : AppCompatActivity() {
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
 //        checkForSocketConnection()
+
+        getServiceProviderData()
 
     }
 
@@ -264,12 +288,14 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
-        /** Length is 0 for Snackbar.LENGTH_LONG
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
          *  Length is -1 for Snackbar.LENGTH_SHORT
-         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -277,7 +303,7 @@ class MainScreen : AppCompatActivity() {
     private fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -486,60 +512,210 @@ class MainScreen : AppCompatActivity() {
         this.anyServiceInProgress = anyServiceInProgress
     }
 
-    fun setServiceProgress(serviceProgress: Int) {
-        this.serviceProgress = serviceProgress
-    }
+    /** The following section is reserved for fetching, rendering & storing Service Providers and
+     * the services they're associated with.
+     * We're using these values for the PagesFragment - I find it suitable doing all of this here,
+     * instead of on the PagesFragment itself (this fragment shouldn't worry about this kind of work
+     * simply focus on hosting the three fragments under it **/
 
-    fun goToEditProfile(view: View) {
+    /** This function fetches service-providers && #decomposes them with
+     * `decomposeServiceProviderData(arrayList)`
+     * TODO: since its a network operation, it needs to be moved away from the UI to another class**/
+    private fun getServiceProviderData() {
 
-        val textViewToEdit: TextView
+        object : GetServiceProvider(this) {
 
-        var textToEdit = " "
-        var toolBarTitle = " "
+            override fun done(data: List<ServiceProviderData>, code: Number) {
 
-        when (view.id) {
+                if (code == 200) {
+                    serviceProviderData.addAll(data)
+                    Timber.e(" GETTING SERVICE PROVIDER DATA ->%s", serviceProviderData)
 
-            R.id.profile_name -> {
-                textViewToEdit = view.findViewById(view.id)
-                textToEdit = textViewToEdit.text.toString()
-                toolBarTitle = "Enter your full name"
-            }
+                    decomposeServiceProviderData(serviceProviderData)
 
-            /*R.id.id_number -> {
-                textViewToEdit = view.findViewById(view.id)
-                textToEdit = textViewToEdit.text.toString()
-                toolBarTitle = "Enter your ID Number"
-            }*/
-
-            R.id.profile_contact -> {
-                textViewToEdit = view.findViewById(view.id)
-                textToEdit = textViewToEdit.text.toString()
-                toolBarTitle = "Enter your phone number"
-            }
-
-            R.id.profile_email -> {
-                textViewToEdit = view.findViewById(view.id)
-                textToEdit = textViewToEdit.text.toString()
-                toolBarTitle = "Enter your email"
+                } else {
+                    Timber.e("No PublicService READY!")
+                }
             }
         }
-
-        val myProfileFragment = ProfileFragment()
-        val intent = Intent(this, EditMyProfile::class.java)
-        val tag = myProfileFragment.tag
-        intent.putExtra(EditMyProfile.CONST_TAG, tag)
-        intent.putExtra("name", textToEdit)
-        intent.putExtra("toolBarTitle", toolBarTitle)
-        startActivity(intent)
     }
 
-    fun finishEditProfile() {
+    /** The `decomposeServiceProviderData` function takes an arrayList of #ServiceProviderData;
+     * then, for each serviceProvider, we store that data with `storeServiceProviderData` **/
+    private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
+        Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
+        serviceProviderViewModel = ViewModelProvider(this)
+                .get(ServiceProviderViewModel::class.java)
 
-        val fragment = ProfileFragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.frame, fragment, "TAG_PROFILE")
-        transaction.addToBackStack(null)
-        transaction.commit()
+        for (i in 0 until mServiceProviderData.size) {
+            Timber.e("SERVICE-PROVIDER-DATA i->[$i] -> ${mServiceProviderData[i]}")
+            /** Storing [serviceProviderData] below  **/
+            storeServiceProviderData(mServiceProviderData[i])
+
+            /** When getting services by serviceProvider, we often encounter a bug that jumbles up
+             * the services' destination: e.g., `Passport Service` will sometimes get stored under
+             * the `Revenue` tab.
+             * We might have to try wrapping them up before saving them **/
+            Timber.e("SERVICE-PROVIDER-NAME -> ${mServiceProviderData[i].serviceProviderName}")
+
+            when (mServiceProviderData[i].serviceProviderName) {
+                "Ministry Of Home Affairs" -> {
+                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
+                }
+                "Ministry Of Finance" -> {
+                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
+                }
+                "Ministry Of Commerce" -> {
+                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
+                }
+            }
+
+//            getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
+//            getServicesFromServerByServiceProviderId("5faab29cacc12a05daa75b42")
+        }
+    }
+
+    private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
+        /*serviceProviderViewModel = ViewModelProvider(this)
+                .get(ServiceProviderViewModel::class.java)*/
+
+        serviceProviderEntity.serviceProviderId = mSingleServiceProviderData.serviceProviderId
+        serviceProviderEntity.serviceProviderName = mSingleServiceProviderData.serviceProviderName
+        serviceProviderEntity.serviceProviderDescription = mSingleServiceProviderData.serviceProviderDescription
+        serviceProviderEntity.serviceProviderContact = mSingleServiceProviderData.serviceProviderContact
+        serviceProviderEntity.serviceProviderEmail = mSingleServiceProviderData.serviceProviderEmail
+        serviceProviderEntity.serviceProviderAddress = mSingleServiceProviderData.serviceProviderAddress
+
+        Timber.e("STORING SERVICE PROVIDER DATA [ID]-> ${serviceProviderEntity.serviceProviderId}")
+        Timber.e("STORING SERVICE PROVIDER DATA [NAME] -> ${serviceProviderEntity.serviceProviderName}")
+        serviceProviderViewModel?.addServiceProvider(serviceProviderEntity)
+    }
+
+    /** This function gets services from a given service provider (via serviceProviderID).
+     * Likewise, it needs to be moved to a different class that handles network requests **/
+    private fun getServicesFromServerByServiceProviderId(serviceProviderId: String) {
+
+        object : GetServices(this, serviceProviderId) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    try {
+                        val servicesArray = JSONArray(String(data))
+
+                        Timber.e("SERVICES-ARRAY -> $servicesArray")
+
+                        for (i in 0 until servicesArray.length()) {
+                            serviceObject = servicesArray.getJSONObject(i)
+
+                            Timber.e("SERVICE-ASSIGNED [$i] -> $serviceObject")
+                            captureServicesByServiceProvider(serviceObject)
+                        }
+
+                    } catch (jse: JSONException) {
+                        Timber.e("FAILED TO GET SERVICES -> $jse")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
+
+        val serviceCentresArrayList = ArrayList(listOf<String>())
+        val presenceRequired: Boolean? //5
+        val serviceDocumentsArrayList = ArrayList(listOf<String>())
+        val notUsefulCount = 0 //9
+        val usefulCount = 0 //10
+        var commentsJSONArray: JSONArray //11
+        val commentsArrayList = ArrayList(listOf<String>())
+        val serviceShares = 0 //12
+        val serviceViews = 0 //13
+        Timber.e("TESTING SERVICE-DATA-> $mServiceObject")
+        val serviceId: String = mServiceObject.getString("_id") //0
+        val serviceName: String = mServiceObject.getString("service_name") //1
+        val serviceDescription: String = mServiceObject.getString("service_description") //2
+        val serviceEligibility: String = mServiceObject.getString("service_eligibility") //3
+        val serviceCentresJSONArray: JSONArray = mServiceObject.getJSONArray("service_centres") //4
+
+        for (j in 0 until serviceCentresJSONArray.length()) {
+            serviceCentresArrayList.add(serviceCentresJSONArray.getString(j))
+        }
+
+        val serviceCost: String = "E150"//6 //TODO: Add SERVICE_COST
+        presenceRequired = mServiceObject.getJSONObject("service_requirements")
+                .getBoolean("presence_required")
+
+        //serviceCost = service.getString("service_cost")
+
+        val serviceDocumentsJSONArray: JSONArray = mServiceObject
+                .getJSONObject("service_requirements")
+                .getJSONArray("service_documents") //7
+
+        for (k in 0 until serviceDocumentsJSONArray.length()) {
+            serviceCentresArrayList.add(serviceDocumentsJSONArray.getString(k))
+
+        }
+
+        val serviceDuration: String = mServiceObject.getString("service_duration") //8
+
+        val serviceProvider: String = mServiceObject.getString("service_provider") //14
+        Timber.e("SAVING SERVICE BY SERVICE-PROVIDER -> $serviceProvider")
+
+        serviceEntity.serviceId = serviceId //0
+        serviceEntity.serviceName = serviceName //1
+        serviceEntity.serviceDescription = serviceDescription //2
+        serviceEntity.serviceEligibility = serviceEligibility //3
+        serviceEntity.serviceCentres = serviceCentresArrayList //4
+        serviceEntity.presenceRequired = presenceRequired //5
+        serviceEntity.serviceCost = serviceCost //6
+        serviceEntity.serviceDocuments = serviceDocumentsArrayList //7
+        serviceEntity.serviceDuration = serviceDuration //8
+        serviceEntity.notUsefulCount = notUsefulCount //9
+        serviceEntity.usefulCount = usefulCount //10
+        serviceEntity.commentCount = commentsArrayList.size //11
+        serviceEntity.serviceViews = serviceViews //12
+        serviceEntity.serviceShares = serviceShares //13
+        serviceEntity.serviceProvider = serviceProvider //14
+
+        /** 1) Checking #serviceProviderId;
+         *  2) Save each service entity by serviceProviderId **/
+
+        val serviceProviders: List<ServiceProviderEntity>? = serviceProviderViewModel
+                ?.getServiceProviderList()
+        Timber.e("SERVICE-PROVIDERS-CHECK -> $serviceProviders")
+
+        for (i in serviceProviders?.indices!!) {
+            when {
+                serviceProviders[i].serviceProviderName
+                        .equals("ministry of home affairs", true) -> {
+                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
+                        homeAffairsServiceEntities = serviceEntity
+                        Timber.e("SAVING HOME AFFAIRS SERVICES -> ${homeAffairsServiceEntities.serviceName}")
+                        serviceViewModel?.addService(homeAffairsServiceEntities)
+
+                    }
+                }
+                serviceProviders[i].serviceProviderName
+                        .equals("ministry of finance", true) -> {
+                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
+                        revenueServiceEntities = serviceEntity
+                        Timber.e("SAVING REVENUE SERVICES -> ${revenueServiceEntities.serviceName}")
+                        serviceViewModel?.addService(revenueServiceEntities)
+
+                    }
+                }
+                serviceProviders[i].serviceProviderName
+                        .equals("ministry of commerce", true) -> {
+                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
+                        commerceServiceEntities = serviceEntity
+                        Timber.e("SAVING COMMERCE SERVICES -> ${commerceServiceEntities.serviceName}")
+                        serviceViewModel?.addService(commerceServiceEntities)
+
+                    }
+                }
+            }
+        }
+//        saveServicesToRoom()
+        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
     }
 
     companion object {

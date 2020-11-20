@@ -461,36 +461,6 @@
                     android:weightSum="4">
 
                     <RelativeLayout
-                        android:id="@+id/disapprove_service_relative_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:id="@+id/disapprove_service_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
-
-                        <TextView
-                            android:id="@+id/disapprove_count_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/disapprove_service_image"
-                            android:fontFamily="@font/rubik"
-                            android:text="@string/disapproval_placeholder"
-                            android:textSize="18sp"
-                            app:fontFamily="@font/rubik" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
                         android:id="@+id/approve_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -516,6 +486,36 @@
                             android:layout_toEndOf="@+id/approve_service_image"
                             android:fontFamily="@font/rubik"
                             android:text="@string/approval_placeholder"
+                            android:textSize="18sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/disapprove_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/disapprove_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
+
+                        <TextView
+                            android:id="@+id/disapprove_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/disapprove_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/disapproval_placeholder"
                             android:textSize="18sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>

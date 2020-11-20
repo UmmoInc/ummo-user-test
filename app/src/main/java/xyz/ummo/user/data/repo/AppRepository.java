@@ -487,6 +487,14 @@ public class AppRepository {
         //TODO: deleteServiceAsyncTask
     }
 
+    /** 6 **/
+    public void updateService(ServiceEntity serviceEntity) {
+        new updateServiceAsyncTask(serviceDao).execute(serviceEntity);
+    }
+    /*public void incrementApprovalCount(ServiceEntity serviceEntity) {
+        new incrementApprovalCountAsync(serviceDao).execute(serviceEntity);
+    }*/
+
     /** 1.1 **/
     private static class insertServiceAsyncTask extends AsyncTask<ServiceEntity, Void, Void> {
         private final ServiceDao mServiceDao;
@@ -498,6 +506,35 @@ public class AppRepository {
         @Override
         protected Void doInBackground(ServiceEntity... serviceEntities) {
             mServiceDao.insertService(serviceEntities[0]);
+            return null;
+        }
+    }
+
+    /*private static class incrementApprovalCountAsync extends AsyncTask<ServiceEntity, Void, Void> {
+        private final ServiceDao mServiceDao;
+
+        private incrementApprovalCountAsync(ServiceDao serviceDao) {
+            this.mServiceDao = serviceDao;
+        }
+
+        @Override
+        protected Void doInBackground(ServiceEntity... serviceEntities) {
+            mServiceDao.incrementApprovalCount(serviceEntities);
+            return null;
+        }
+    }*/
+
+    private static class updateServiceAsyncTask extends AsyncTask<ServiceEntity, Void, Void> {
+        private final ServiceDao mServiceAsyncTaskDao;
+
+        updateServiceAsyncTask(ServiceDao serviceDao) {
+            mServiceAsyncTaskDao = serviceDao;
+        }
+
+        @Override
+        protected Void doInBackground(final ServiceEntity... serviceEntities) {
+            mServiceAsyncTaskDao.updateService(serviceEntities[0]);
+//            Timber.e("Updating ProductModel->%s", Arrays.toString(productEntities));
             return null;
         }
     }

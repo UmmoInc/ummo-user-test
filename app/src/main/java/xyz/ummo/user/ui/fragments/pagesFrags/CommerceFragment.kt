@@ -104,16 +104,17 @@ class CommerceFragment : Fragment() {
         var serviceName: String
         var serviceDescription: String
         var serviceEligibility: String
-        var serviceCentre: String
+        var serviceCentres: ArrayList<String>
         var presenceRequired: Boolean
         var serviceCost: String
-        var serviceRequirements: String
+        var serviceDocuments: ArrayList<String>
         var serviceDuration: String
         var approvalCount: Int
         var disApprovalCount: Int
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
+        var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
@@ -124,25 +125,28 @@ class CommerceFragment : Fragment() {
                 serviceName = commerceServiceList[i].serviceName.toString() //1
                 serviceDescription = commerceServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = commerceServiceList[i].serviceCentres.toString() //4
+                serviceCentres = commerceServiceList[i].serviceCentres!! //4
                 presenceRequired = commerceServiceList[i].presenceRequired!! //5
                 serviceCost = commerceServiceList[i].serviceCost.toString() //6
-                serviceRequirements = commerceServiceList[i].serviceDocuments.toString() //7
+                serviceDocuments = commerceServiceList[i].serviceDocuments!! //7
                 serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
-                approvalCount = commerceServiceList[i].approvalCount!! //9
-                disApprovalCount = commerceServiceList[i].disapprovalCount!! //10
-                commentCount = commerceServiceList[i].comments?.size!! //11
+                approvalCount = commerceServiceList[i].usefulCount!! //9
+                disApprovalCount = commerceServiceList[i].notUsefulCount!! //10
+                commentCount = commerceServiceList[i].commentCount!! //11
                 shareCount = commerceServiceList[i].serviceShares!! //12
                 viewCount = commerceServiceList[i].serviceViews!! //13
+                serviceProvider = commerceServiceId //14
 
                 commerceService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
-                        commentCount, shareCount, viewCount)
+                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceDocuments, serviceDuration, approvalCount, disApprovalCount,
+                        commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")
 
                 gAdapter.add(ServiceItem(commerceService, context))
 
+            } else {
+                commerceServiceList = arrayListOf()
             }
         }
     }

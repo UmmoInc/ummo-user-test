@@ -102,16 +102,17 @@ class RevenueFragment : Fragment() {
         var serviceName: String
         var serviceDescription: String
         var serviceEligibility: String
-        var serviceCentre: String
+        var serviceCentres: ArrayList<String>
         var presenceRequired: Boolean
         var serviceCost: String
-        var serviceRequirements: String
+        var serviceDocuments: ArrayList<String>
         var serviceDuration: String
         var approvalCount: Int
-        var disApprovalCount: Int
+        var disapprovalCount: Int
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
+        var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
@@ -122,25 +123,28 @@ class RevenueFragment : Fragment() {
                 serviceName = revenueServiceList[i].serviceName.toString() //1
                 serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = revenueServiceList[i].serviceCentres.toString() //4
+                serviceCentres = revenueServiceList[i].serviceCentres!! //4
                 presenceRequired = revenueServiceList[i].presenceRequired!! //5
                 serviceCost = revenueServiceList[i].serviceCost.toString() //6
-                serviceRequirements = revenueServiceList[i].serviceDocuments.toString() //7
+                serviceDocuments = revenueServiceList[i].serviceDocuments!! //7
                 serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
-                approvalCount = revenueServiceList[i].approvalCount!! //9
-                disApprovalCount = revenueServiceList[i].disapprovalCount!! //10
-                commentCount = revenueServiceList[i].comments?.size!! //11
+                approvalCount = revenueServiceList[i].usefulCount!! //9
+                disapprovalCount = revenueServiceList[i].notUsefulCount!! //10
+                commentCount = revenueServiceList[i].commentCount!! //11
                 shareCount = revenueServiceList[i].serviceShares!! //12
                 viewCount = revenueServiceList[i].serviceViews!! //13
+                serviceProvider = revenueId
 
                 revenueService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
-                        commentCount, shareCount, viewCount)
+                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
+                        commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
 
                 gAdapter.add(ServiceItem(revenueService, context))
 
+            } else {
+                revenueServiceList = arrayListOf()
             }
         }
     }

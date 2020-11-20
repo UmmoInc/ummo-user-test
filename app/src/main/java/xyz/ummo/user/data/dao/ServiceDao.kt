@@ -6,7 +6,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 
 @Dao
 interface ServiceDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertService(serviceEntity: ServiceEntity)
 
     @get:Query("SELECT * FROM service")
@@ -20,6 +20,9 @@ interface ServiceDao {
 
     @Update
     fun updateService(serviceEntity: ServiceEntity?)
+
+    @Query("UPDATE service SET useful_count = :approvalCount WHERE service_id = :serviceId")
+    fun incrementApprovalCount(serviceId: String?, approvalCount: Int)
 
     @Query("DELETE FROM service")
     fun deleteServices()

@@ -24,12 +24,13 @@ class ServiceEntity : ServiceModel {
 
     @ColumnInfo(name = "service_centres") //4
     override var serviceCentres: ArrayList<String>? = null
+//    override var serviceCentres: String? = null
 
     @ColumnInfo(name = "presence_required") //5
     override var presenceRequired: Boolean? = null
 
     @ColumnInfo(name = "service_cost") //6
-    override var serviceCost: Int? = null
+    override var serviceCost: String? = null
 
     @ColumnInfo(name = "service_documents") //7
     override var serviceDocuments: ArrayList<String>? = null
@@ -37,14 +38,14 @@ class ServiceEntity : ServiceModel {
     @ColumnInfo(name = "service_duration") //8
     override var serviceDuration: String? = null
 
-    @ColumnInfo(name = "disapproval_count") //9
-    override var disapprovalCount: Int? = null
+    @ColumnInfo(name = "useful_count") //9
+    override var usefulCount: Int? = null
 
-    @ColumnInfo(name = "approval_count") //10
-    override var approvalCount: Int? = null
+    @ColumnInfo(name = "not_useful_count") //10
+    override var notUsefulCount: Int? = null
 
-    @ColumnInfo(name = "comments") //11
-    override var comments: ArrayList<String>? = null
+    @ColumnInfo(name = "comment_count") //11
+    override var commentCount: Int? = null
 
     @ColumnInfo(name = "service_shares") //12
     override var serviceShares: Int? = null

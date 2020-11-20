@@ -6,7 +6,7 @@
     android:layout_margin="8dp">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/feedbackTextField"
+        android:id="@+id/serviceCommentTextField"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,21 +16,21 @@
         app:endIconMode="clear_text"
         app:hintTextColor="@color/ummo_2"
         app:layout_constraintTop_toTopOf="parent"
-        app:startIconContentDescription="Feedback Icon"
+        app:startIconContentDescription="Service Comment Icon"
         app:startIconDrawable="@drawable/message_toolbar_icon">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/feedbackEditText"
+            android:id="@+id/serviceCommentEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:background="@color/screenWhite"
             android:cursorVisible="true"
             android:fontFamily="@font/rubik"
-            android:hint="Help improve Ummo with feedback..."
-            android:lines="1"
+            android:hint="What do you think of this service?"
+            android:lines="3"
             android:textColorHint="@color/ummo_2"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>

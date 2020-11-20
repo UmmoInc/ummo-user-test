@@ -79,7 +79,7 @@ class HomeAffairsFragment : Fragment() {
             homeAffairsBinding.loadProgressBar.visibility = View.GONE
         }
 
-        Timber.e("CREATING HOME-AFFAIRS-VIEW!")
+        Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
         return view
     }
 
@@ -105,16 +105,17 @@ class HomeAffairsFragment : Fragment() {
         var serviceName: String
         var serviceDescription: String
         var serviceEligibility: String
-        var serviceCentre: String
+        var serviceCentres: ArrayList<String>
         var presenceRequired: Boolean
         var serviceCost: String
-        var serviceRequirements: String
+        var serviceDocuments: ArrayList<String>
         var serviceDuration: String
         var approvalCount: Int
         var disapprovalCount: Int
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
+        var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
 
@@ -129,27 +130,30 @@ class HomeAffairsFragment : Fragment() {
                 serviceName = homeAffairsServiceList[i].serviceName.toString() //1
                 serviceDescription = homeAffairsServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = homeAffairsServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = homeAffairsServiceList[i].serviceCentres.toString() //4
+                serviceCentres = homeAffairsServiceList[i].serviceCentres!! //4
                 presenceRequired = homeAffairsServiceList[i].presenceRequired!! //5
                 serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
-                serviceRequirements = homeAffairsServiceList[i].serviceDocuments.toString() //7
+                serviceDocuments = homeAffairsServiceList[i].serviceDocuments!!//7
                 serviceDuration = homeAffairsServiceList[i].serviceDuration.toString() //8
-                approvalCount = homeAffairsServiceList[i].approvalCount!! //9
-                disapprovalCount = homeAffairsServiceList[i].disapprovalCount!! //10
-                commentCount = homeAffairsServiceList[i].comments?.size!! //11
+                approvalCount = homeAffairsServiceList[i].usefulCount!! //9
+                disapprovalCount = homeAffairsServiceList[i].notUsefulCount!! //10
+                commentCount = homeAffairsServiceList[i].commentCount!! //11
                 shareCount = homeAffairsServiceList[i].serviceShares!! //12
                 viewCount = homeAffairsServiceList[i].serviceViews!! //13
+                serviceProvider = homeAffairsServiceId //14
 
                 Timber.e("HOME-AFFAIRS-SERVICE-LIST => ${homeAffairsServiceList[i].serviceId}")
 
                 homeAffairsService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disapprovalCount,
-                        commentCount, shareCount, viewCount)
+                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
+                        commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")
 
                 gAdapter.add(ServiceItem(homeAffairsService, context))
 
+            } else {
+                homeAffairsServiceList = arrayListOf()
             }
         }
     }
