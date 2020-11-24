@@ -9,6 +9,7 @@ import xyz.ummo.user.data.repo.AppRepository
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val appRepository: AppRepository = AppRepository(application)
     val profileEntityLiveData: LiveData<ProfileEntity>
+    val profileEntityListData: List<ProfileEntity>
     fun insertProfile(profileEntity: ProfileEntity?) {
         appRepository.insertProfile(profileEntity)
         //        Timber.e("insertProfile: PROFILE->%s", profileEntity.profileName);
@@ -24,5 +25,6 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     init {
         profileEntityLiveData = appRepository.profileEntityLiveData
+        profileEntityListData = appRepository.profileEntityListData
     }
 }

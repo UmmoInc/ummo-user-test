@@ -44,15 +44,18 @@ class ServiceEntity : ServiceModel {
     @ColumnInfo(name = "not_useful_count") //10
     override var notUsefulCount: Int? = null
 
-    @ColumnInfo(name = "comment_count") //11
+    @ColumnInfo(name = "service_comment") //11
+    override var serviceComments: ArrayList<String>? = null
+
+    @ColumnInfo(name = "comment_count") //12
     override var commentCount: Int? = null
 
-    @ColumnInfo(name = "service_shares") //12
+    @ColumnInfo(name = "service_shares") //13
     override var serviceShares: Int? = null
 
-    @ColumnInfo(name = "service_views") //13
+    @ColumnInfo(name = "service_views") //14
     override var serviceViews: Int? = null
 
-    @ColumnInfo(name = "service_provider") //14
+    @ColumnInfo(name = "service_provider") //15
     override var serviceProvider: String? = null
 }

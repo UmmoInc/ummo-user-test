@@ -4,11 +4,14 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
+import androidx.loader.content.AsyncTaskLoader;
 
 import java.lang.ref.WeakReference;
 
+import org.jetbrains.annotations.Async;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +45,7 @@ public class AppRepository {
 
     private LiveData<DelegatedServiceEntity> delegatedServiceEntityLiveData;
     private final LiveData<ProfileEntity> profileEntityLiveData;
+//    private final List<ProfileEntity> profileEntityListData;
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
@@ -52,6 +56,7 @@ public class AppRepository {
 
         profileDao = userRoomDatabase.profileDao();
         profileEntityLiveData = profileDao.getProfileLiveData();
+//        profileEntityListData = profileDao.getProfileListData();
 //        Log.e("AppRepo", "User->"+ profileEntityLiveData);
 
         delegatedServiceDao = userRoomDatabase.delegatedServiceDao();
@@ -173,6 +178,15 @@ public class AppRepository {
         return profileEntityLiveData;
     }
 
+    public List<ProfileEntity> getProfileEntityListData() {
+        try {
+            return new getProfileListAsyncTask(profileDao, this).execute().get();
+        } catch (ExecutionException | InterruptedException ie) {
+            Timber.e("Getting PROFILE failed because: %s", ie);
+            return null;
+        }
+    }
+
     public void updateProfile(ProfileEntity profileEntity) {
         new updateProfileAsyncTask(profileDao).execute(profileEntity);
     }
@@ -219,6 +233,21 @@ public class AppRepository {
             mProfileAsyncTaskDao.updateProfile(profileEntities[0]);
 //            Timber.e("Updating profile->%s", Arrays.toString(profileEntities));
             return null;
+        }
+    }
+
+    private static class getProfileListAsyncTask extends AsyncTask<Void, Void, List<ProfileEntity>> {
+        private final ProfileDao mProfileDao;
+        private final List<ProfileEntity> mProfileEntityList = new ArrayList<>();
+
+        getProfileListAsyncTask(ProfileDao profileDao, AppRepository appRepository) {
+            this.mProfileDao = profileDao;
+        }
+
+        @Override
+        protected List<ProfileEntity> doInBackground(Void... voids) {
+            mProfileEntityList.addAll(mProfileDao.getProfileListData());
+            return mProfileEntityList;
         }
     }
 

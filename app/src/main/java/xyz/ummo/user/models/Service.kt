@@ -11,7 +11,8 @@ data class Service(var serviceId: String, //0
                    var serviceDuration: String, //8
                    var usefulCount: Int, //9
                    var notUsefulCount: Int, //10
-                   var commentCount: Int, //11 TODO: upgrade to Array
-                   var shares: Int, //12
-                   var views: Int, //13
-                   var serviceProvider: String) //14
+                   var serviceComments: ArrayList<String>, //11
+                   var serviceCommentCount: Int, //12
+                   var serviceShareCount: Int, //13
+                   var serviceViewCount: Int, //14
+                   var serviceProvider: String) //15

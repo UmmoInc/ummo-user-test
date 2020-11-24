@@ -119,6 +119,7 @@ class CompleteSignUp : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+
         /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver
          * - app is in the background,
          * so we don't need to stay online (for NOW) **/

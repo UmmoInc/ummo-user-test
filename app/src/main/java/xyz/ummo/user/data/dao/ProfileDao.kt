@@ -13,6 +13,9 @@ interface ProfileDao {
     val profileLiveData: LiveData<ProfileEntity?>?
 
     @get:Query("SELECT * FROM profile")
+    val profileListData: List<ProfileEntity?>?
+
+    @get:Query("SELECT * FROM profile")
     val profileEntityLiveDataById: LiveData<ProfileEntity?>?
 
     @Update

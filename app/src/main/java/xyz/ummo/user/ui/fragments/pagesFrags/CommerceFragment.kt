@@ -1,5 +1,7 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
+import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -41,10 +44,22 @@ class CommerceFragment : Fragment() {
     private lateinit var commerceService: Service
     private lateinit var commerceServiceList: List<ServiceEntity>
 
+
+    /** Shared Preferences for storing user actions **/
+    private lateinit var commercePrefs: SharedPreferences
+    private val mode = Activity.MODE_PRIVATE
+    private val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
+    private var serviceUpVoteBoolean: Boolean = false
+    private var serviceDownVoteBoolean: Boolean = false
+    private var serviceCommentBoolean: Boolean = false
+    private var savedUserActions = JSONObject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
+
+        commercePrefs = this.requireActivity().getSharedPreferences(ummoUserPreferences, mode)
 
         /** Initializing ViewModels: ServiceProvider && Services **/
         serviceProviderViewModel = ViewModelProvider(this)
@@ -111,6 +126,7 @@ class CommerceFragment : Fragment() {
         var serviceDuration: String
         var approvalCount: Int
         var disApprovalCount: Int
+        var serviceComments: ArrayList<String>
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
@@ -132,6 +148,7 @@ class CommerceFragment : Fragment() {
                 serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
                 approvalCount = commerceServiceList[i].usefulCount!! //9
                 disApprovalCount = commerceServiceList[i].notUsefulCount!! //10
+                serviceComments = commerceServiceList[i].serviceComments!!
                 commentCount = commerceServiceList[i].commentCount!! //11
                 shareCount = commerceServiceList[i].serviceShares!! //12
                 viewCount = commerceServiceList[i].serviceViews!! //13
@@ -140,10 +157,31 @@ class CommerceFragment : Fragment() {
                 commerceService = Service(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentres, presenceRequired, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disApprovalCount,
-                        commentCount, shareCount, viewCount, serviceProvider)
+                        serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")
 
-                gAdapter.add(ServiceItem(commerceService, context))
+                /** 1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+                 *  2. wrapping those values in a JSON Object
+                 *  3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+                serviceUpVoteBoolean = commercePrefs
+                        .getBoolean("UP-VOTE-${commerceServiceList[i].serviceId}", false)
+
+                serviceDownVoteBoolean = commercePrefs
+                        .getBoolean("DOWN-VOTE-${commerceServiceList[i].serviceId}", false)
+
+                serviceCommentBoolean = commercePrefs
+                        .getBoolean("COMMENTED-ON-${commerceServiceList[i].serviceId}", false)
+
+                Timber.e("HOME-AFFAIRS-UP-VOTE-${commerceServiceList[i].serviceId} -> $serviceUpVoteBoolean")
+                Timber.e("HOME-AFFAIRS-DOWN-VOTE-${commerceServiceList[i].serviceId} -> $serviceDownVoteBoolean")
+
+                savedUserActions
+                        .put("UP-VOTE", serviceUpVoteBoolean)
+                        .put("DOWN-VOTE", serviceDownVoteBoolean)
+                        .put("COMMENTED-ON", serviceCommentBoolean)
+                Timber.e("SAVED-USER-ACTIONS -> $savedUserActions")
+
+                gAdapter.add(ServiceItem(commerceService, context, savedUserActions))
 
             } else {
                 commerceServiceList = arrayListOf()

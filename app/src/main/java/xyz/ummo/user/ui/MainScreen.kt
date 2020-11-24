@@ -281,7 +281,7 @@ class MainScreen : AppCompatActivity() {
                     showSnackbarBlue("Thank you for your feedback :)", 0)
                 } else {
                     Timber.e("Feedback Error: Code -> $code")
-                    Timber.e("Feedback Error: Data -> ${String()}")
+                    Timber.e("Feedback Error: Data -> ${String(data)}")
                 }
             }
         }
@@ -462,7 +462,9 @@ class MainScreen : AppCompatActivity() {
         profileEntity.profileName = sharedPrefUserName
         profileEntity.profileContact = sharedPrefUserContact
         profileEntity.profileEmail = sharedPrefUserEmail
+
         profileViewModel?.insertProfile(profileEntity)
+
         Timber.e("PROFILE ENTITY -> $profileEntity")
     }
 
@@ -620,43 +622,121 @@ class MainScreen : AppCompatActivity() {
 
     private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
 
-        val serviceCentresArrayList = ArrayList(listOf<String>())
-        val presenceRequired: Boolean? //5
-        val serviceDocumentsArrayList = ArrayList(listOf<String>())
-        val notUsefulCount = 0 //9
-        val usefulCount = 0 //10
-        var commentsJSONArray: JSONArray //11
-        val commentsArrayList = ArrayList(listOf<String>())
-        val serviceShares = 0 //12
         val serviceViews = 0 //13
         Timber.e("TESTING SERVICE-DATA-> $mServiceObject")
-        val serviceId: String = mServiceObject.getString("_id") //0
-        val serviceName: String = mServiceObject.getString("service_name") //1
-        val serviceDescription: String = mServiceObject.getString("service_description") //2
-        val serviceEligibility: String = mServiceObject.getString("service_eligibility") //3
-        val serviceCentresJSONArray: JSONArray = mServiceObject.getJSONArray("service_centres") //4
 
+        /** [SERVICE-ASSIGNMENT: 0]
+         * 1. Declaring $serviceID value
+         * 2. Assigning $serviceID value from service JSON value **/
+        val serviceId: String = mServiceObject.getString("_id") //0
+
+        /** [SERVICE-ASSIGNMENT: 1]
+         * 1. Declaring $serviceName value
+         * 2. Assigning $serviceName value from service JSON value **/
+        val serviceName: String = mServiceObject.getString("service_name") //1
+
+        /** [SERVICE-ASSIGNMENT: 2]
+         * 1. Declaring $serviceDescription value
+         * 2. Assigning $serviceDescription value from service JSON value **/
+        val serviceDescription: String = mServiceObject.getString("service_description") //2
+
+        /** [SERVICE-ASSIGNMENT: 3]
+         * 1. Declaring $serviceEligibility value
+         * 2. Assigning $serviceEligibility value from service JSON value **/
+        val serviceEligibility: String = mServiceObject.getString("service_eligibility") //3
+
+        /** [SERVICE-ASSIGNMENT: 4]
+         * 1. Declaring $serviceCentres value
+         * 2. Assigning $serviceCentres value to service JSON value **/
+        val serviceCentresJSONArray: JSONArray = mServiceObject.getJSONArray("service_centres")
+        val serviceCentresArrayList = ArrayList(listOf<String>())
         for (j in 0 until serviceCentresJSONArray.length()) {
             serviceCentresArrayList.add(serviceCentresJSONArray.getString(j))
         }
 
-        val serviceCost: String = "E150"//6 //TODO: Add SERVICE_COST
+        /** [SERVICE-ASSIGNMENT: 5]
+         * 1. Declaring $presenceRequired value
+         * 2. Assigning $presenceRequired value from service JSON value **/
+        val presenceRequired: Boolean?
         presenceRequired = mServiceObject.getJSONObject("service_requirements")
                 .getBoolean("presence_required")
 
-        //serviceCost = service.getString("service_cost")
+        /** [SERVICE-ASSIGNMENT: 6]
+         * 1. Declaring $serviceCost value
+         * 2. TODO: Assigning $serviceCost value to service JSON value **/
+        val serviceCost = "E150"
 
-        val serviceDocumentsJSONArray: JSONArray = mServiceObject
-                .getJSONObject("service_requirements")
-                .getJSONArray("service_documents") //7
-
+        /** [SERVICE-ASSIGNMENT: 7]
+         * 1. Declaring $serviceDocuments values
+         * 2. TODO: Assigning $serviceDocuments value from service JSON value **/
+        val serviceDocumentsJSONArray: JSONArray = mServiceObject.getJSONObject("service_requirements") //7
+                .getJSONArray("service_documents")
+        val serviceDocumentsArrayList = ArrayList(listOf<String>())
         for (k in 0 until serviceDocumentsJSONArray.length()) {
-            serviceCentresArrayList.add(serviceDocumentsJSONArray.getString(k))
-
+            serviceDocumentsArrayList.add(serviceDocumentsJSONArray.getString(k))
         }
 
-        val serviceDuration: String = mServiceObject.getString("service_duration") //8
+        /** [SERVICE-ASSIGNMENT: 8]
+         * 1. Declaring $serviceDuration value
+         * 2. Assigning $serviceDuration value to service JSON value **/
+        val serviceDuration: String = mServiceObject.getString("service_duration")
 
+        /** [SERVICE-ASSIGNMENT: 9]
+         * 1. Declaring $downVote value
+         * 2. TODO: Assigning $downVote value from service JSON value **/
+        var notUsefulCount = 0
+
+        /** [SERVICE-ASSIGNMENT: 10]
+         * 1. Declaring $upVote value
+         * 2. TODO: Assigning $upVote value from service JSON value **/
+        var usefulCount = 0
+
+        /** [SERVICE-ASSIGNMENT: 11]
+         * 1. Declaring $serviceComments values
+         * 2. TODO: Assigning $serviceComments value from service JSON value **/
+        val commentsJSONArray = mServiceObject.getJSONArray("service_comments")
+        val commentsArrayList = ArrayList(listOf<String>())
+        for (k in 0 until commentsJSONArray.length()) {
+            commentsArrayList.add(commentsJSONArray.getString(k))
+            Timber.e("COMMENT-INIT -> ${commentsArrayList.size}!")
+        }
+
+        /** [SERVICE-ASSIGNMENT: 12]
+         * 1. Declaring $serviceShares value
+         * 2. TODO: Stash $serviceShares value; replace with SAVE **/
+        val serviceShares = 0
+
+        //serviceCost = service.getString("service_cost")
+
+        /** [SERVICE-ASSIGNMENT: 13]
+         * 1. Declaring $serviceUpdates values
+         * 2. TODO: parse through serviceUpdates & get values for enumerated values ["UPVOTE", etc] **/
+        val serviceUpdatesJSONArray = mServiceObject.getJSONArray("service_updates")
+        val serviceUpdatesArrayList = ArrayList(listOf<String>())
+        var serviceUpdateObject: JSONObject
+        var updateType: String
+        for (m in 0 until serviceUpdatesJSONArray.length()) {
+            Timber.e("SERVICE-UPDATES -> ${serviceUpdatesJSONArray[m]}")
+            serviceUpdateObject = serviceUpdatesJSONArray.getJSONObject(m)
+            updateType = serviceUpdateObject.getString("update_type")
+
+            Timber.e("UPDATE-TYPE -> $updateType")
+
+            when (updateType) {
+                "THUMBS_UP" -> {
+                    usefulCount += 1
+                }
+                "THUMBS_DOWN" -> {
+                    notUsefulCount += 1
+                }
+            }
+
+            Timber.e("[$m] $usefulCount UP-VOTES; $notUsefulCount DOWN-VOTES")
+        }
+
+        /** [SERVICE-ASSIGNMENT: 14]
+         * 1. Declaring $serviceProvider value
+         * 2. Assigning $serviceProvider value to service JSON value **/
         val serviceProvider: String = mServiceObject.getString("service_provider") //14
         Timber.e("SAVING SERVICE BY SERVICE-PROVIDER -> $serviceProvider")
 
@@ -671,6 +751,7 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.serviceDuration = serviceDuration //8
         serviceEntity.notUsefulCount = notUsefulCount //9
         serviceEntity.usefulCount = usefulCount //10
+        serviceEntity.serviceComments = commentsArrayList //11
         serviceEntity.commentCount = commentsArrayList.size //11
         serviceEntity.serviceViews = serviceViews //12
         serviceEntity.serviceShares = serviceShares //13
@@ -703,6 +784,7 @@ class MainScreen : AppCompatActivity() {
 
                     }
                 }
+
                 serviceProviders[i].serviceProviderName
                         .equals("ministry of commerce", true) -> {
                     if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
