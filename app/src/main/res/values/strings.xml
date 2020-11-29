@@ -167,9 +167,12 @@
     <string name="comments_placeholder">2</string>
     <string name="shares_placeholder">2</string>
     <string name="more_info">MORE INFO</string>
-    <string name="you_upvoted_this">You upvoted this</string>
-    <string name="you_downvoted_this">You downvoted this</string>
-    <string name="you_commented_on_this">You commented on this</string>
-    <string name="you_shared_this">You shared this</string>
+    <string name="you_upvoted_this">You upvoted</string>
+    <string name="you_downvoted_this">You downvoted</string>
+    <string name="you_commented_on_this">You commented</string>
+    <string name="you_shared_this">You shared</string>
+    <string name="you_saved_this">Bookmarked</string>
+    <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
+    <string name="recommend_service_improvements">How would you improve this service?</string>
 
 </resources>

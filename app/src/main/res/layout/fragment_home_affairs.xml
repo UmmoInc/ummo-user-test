@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?android:attr/actionBarSize"
+        android:layout_marginTop="104dp"
         android:layout_marginBottom="?android:attr/actionBarSize"
         android:padding="4dp">
 
@@ -33,7 +33,7 @@
             android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:visibility="visible">
+            android:visibility="invisible">
         </ProgressBar>
 
     </RelativeLayout>

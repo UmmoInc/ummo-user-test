@@ -58,4 +58,7 @@ class ServiceEntity : ServiceModel {
 
     @ColumnInfo(name = "service_provider") //15
     override var serviceProvider: String? = null
+
+    @ColumnInfo(name = "bookmarked") //16
+    override var bookmarked: Boolean? = false
 }

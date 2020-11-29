@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -49,6 +50,7 @@ public class AppRepository {
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
+    private List<ServiceEntity> bookmarkedServiceEntityListData;
 //    private List<ServiceProviderEntityOld> serviceProviders = new ArrayList<>();
 
     public AppRepository(Application application) {
@@ -504,6 +506,17 @@ public class AppRepository {
         }
     }
 
+    public List<ServiceEntity> getBookmarkedServiceList(Boolean bookmarked) {
+        try {
+            return new getBookmarkedServiceListAsyncTask(serviceDao).execute().get();
+        } catch (ExecutionException | InterruptedException ie) {
+            Timber.e("Getting Services failed because: %s", ie);
+            return null;
+        }
+        /*bookmarkedServiceEntityListData = serviceDao.getBookmarkedServicesList(bookmarked);
+        return bookmarkedServiceEntityListData;*/
+    }
+
     /** 4 **/
     public LiveData<ServiceEntity> getServiceEntityLiveDataById(String serviceId) {
         serviceEntityLiveData = serviceDao.getServiceLiveDataById(serviceId);
@@ -562,8 +575,8 @@ public class AppRepository {
 
         @Override
         protected Void doInBackground(final ServiceEntity... serviceEntities) {
+            Timber.e("Updating ProductModel->%s", Arrays.toString(serviceEntities));
             mServiceAsyncTaskDao.updateService(serviceEntities[0]);
-//            Timber.e("Updating ProductModel->%s", Arrays.toString(productEntities));
             return null;
         }
     }
@@ -581,6 +594,22 @@ public class AppRepository {
         protected List<ServiceEntity> doInBackground(Void... voids) {
             mServiceEntityList.addAll(mServiceAsyncTaskDao.getServiceListData());
             return mServiceEntityList;
+        }
+    }
+
+    private static class getBookmarkedServiceListAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mBookmarkedServicesList = new ArrayList<>();
+
+        getBookmarkedServiceListAsyncTask(ServiceDao serviceDao) {
+            this.mServiceAsyncTaskDao = serviceDao;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mBookmarkedServicesList.addAll(mServiceAsyncTaskDao.getBookmarkedServicesList(true));
+            Timber.e("BOOKMARKED SERVICES -> %s", mBookmarkedServicesList);
+            return mBookmarkedServicesList;
         }
     }
 

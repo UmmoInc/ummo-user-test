@@ -3,6 +3,7 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.Toolbar
@@ -49,13 +51,15 @@ import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
+import xyz.ummo.user.ui.fragments.pagesFrags.SavedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 
 class MainScreen : AppCompatActivity() {
@@ -111,6 +115,9 @@ class MainScreen : AppCompatActivity() {
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
     private val connectivityReceiver = ConnectivityReceiver()
 
+    /** [EventBus] Event-values for Service Actions: UP-VOTE, DOWN-VOTE, COMMENT, BOOKMARK **/
+    private var serviceBookmarkJSONObject = JSONObject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -145,12 +152,9 @@ class MainScreen : AppCompatActivity() {
         /** Starting DelegatedServiceFragment **/
         startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
-        checkForAndLaunchDelegatedFragment()
+        //checkForAndLaunchDelegatedFragment()
 
         mAuth = FirebaseAuth.getInstance()
-
-        /** [NetworkStateEvent-1] Register for EventBus events **/
-        EventBus.getDefault().register(this)
 
 //        logoutClick() //TODO: to reconsider implementation
 
@@ -179,6 +183,7 @@ class MainScreen : AppCompatActivity() {
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 
 //        checkForSocketConnection()
 
@@ -192,6 +197,9 @@ class MainScreen : AppCompatActivity() {
          * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
+
+        /** [NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().register(this)
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
@@ -229,6 +237,9 @@ class MainScreen : AppCompatActivity() {
         /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
          * so we don't need to stay online (for NOW) **/
         unregisterReceiver(connectivityReceiver)
+
+        /** [NetworkStateEvent-1] Register for EventBus events **/
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onPause() {
@@ -296,6 +307,9 @@ class MainScreen : AppCompatActivity() {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -423,24 +437,31 @@ class MainScreen : AppCompatActivity() {
             R.id.bottom_navigation_service -> {
 
                 /** Modify info card **/
-                infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
+                /* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
 
-                sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
-                sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
-                sharedPrefProductId = mainScreenPrefs.getString("DELEGATED_PRODUCT_ID", "")!!
+                 sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
+                 sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
+                 sharedPrefProductId = mainScreenPrefs.getString("DELEGATED_PRODUCT_ID", "")!!
 
-                if (sharedPrefServiceId.isEmpty()) {
-//                    launchDelegatedServiceWithoutArgs() TODO: figure out what causes the null
-                    val bottomNav = findViewById<View>(R.id.bottom_nav)
-                    val snackbar = Snackbar.make(this.findViewById(android.R.id.content), "No Services yet...", Snackbar.LENGTH_LONG)
-                    snackbar.anchorView = bottomNav
-                    snackbar.show()
+                 if (sharedPrefServiceId.isEmpty()) {
+ //                    launchDelegatedServiceWithoutArgs() TODO: figure out what causes the null
+                     val bottomNav = findViewById<View>(R.id.bottom_nav)
+                     val snackbar = Snackbar.make(this.findViewById(android.R.id.content), "No Services yet...", Snackbar.LENGTH_LONG)
+                     snackbar.anchorView = bottomNav
+                     snackbar.show()
 
-                } else {
-                    launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
-                }
+                 } else {
+                     launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
+                 }
 
-                mixpanel?.track("getService_bottomNav")
+                 mixpanel?.track("getService_bottomNav")*/
+
+                supportActionBar?.title = "Your Service Bookmarks"
+
+                val savedServicesFragment = SavedServicesFragment()
+                openFragment(savedServicesFragment)
+
+                mixpanel?.track("bookmarkedServices_bottomNav")
 
                 return@OnNavigationItemSelectedListener true
             }
@@ -620,6 +641,28 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
+    @Subscribe
+    fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
+
+        val bookmarkingServicesList = serviceViewModel?.getServicesList()
+
+        for (i in bookmarkingServicesList?.indices!!) {
+            if (serviceBookmarkedEvent.serviceId.equals(bookmarkingServicesList[i].serviceId)) {
+                serviceEntity.bookmarked = serviceBookmarkedEvent.serviceBookmarked
+                //serviceViewModel?.updateService(serviceEntity)
+                Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
+
+                if (serviceBookmarkedEvent.serviceBookmarked!!)
+                    showSnackbarBlue("${serviceEntity.serviceName} bookmarked", -1)
+                else
+                    showSnackbarBlue("${serviceEntity.serviceName} removed from your bookmarks", -1)
+
+            }
+        }
+    }
+
     private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
 
         val serviceViews = 0 //13
@@ -756,6 +799,7 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.serviceViews = serviceViews //12
         serviceEntity.serviceShares = serviceShares //13
         serviceEntity.serviceProvider = serviceProvider //14
+//        serviceEntity.bookmarked = bookmarked //15
 
         /** 1) Checking #serviceProviderId;
          *  2) Save each service entity by serviceProviderId **/

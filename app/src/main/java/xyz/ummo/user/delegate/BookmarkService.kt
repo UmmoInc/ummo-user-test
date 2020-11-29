@@ -8,17 +8,13 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 
-abstract class Feedback(var context: Context, feedback: String, userContact: String) {
+abstract class BookmarkService (var context: Context, bookmarkObject: JSONObject) {
 
     init {
-        val feedbackObject = JSONObject().put("feedbackText", feedback)
-                .put("userContact", userContact)
-
-        Fuel.post("${context.getString(R.string.serverUrl)}/api/feedback")
-                .jsonBody(feedbackObject.toString())
+        Fuel.put("${context.getString(R.string.serverUrl)}/api/bookmark_service")
+                .jsonBody(bookmarkObject.toString())
                 .response { request, response, result ->
                     (context as Activity).runOnUiThread {
-
                         done(response.data, response.statusCode)
 
                         if (response.statusCode == 200) {
@@ -26,9 +22,7 @@ abstract class Feedback(var context: Context, feedback: String, userContact: Str
                         } else {
                             Timber.e("Status Code -> ${response.statusCode}")
                         }
-
                     }
-
                 }
     }
 

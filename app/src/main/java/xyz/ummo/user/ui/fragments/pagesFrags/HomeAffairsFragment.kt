@@ -3,17 +3,20 @@ package xyz.ummo.user.ui.fragments.pagesFrags
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -24,6 +27,8 @@ import xyz.ummo.user.models.Service
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
+import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
 
 class HomeAffairsFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -53,7 +58,9 @@ class HomeAffairsFragment : Fragment() {
     private var serviceUpVoteBoolean: Boolean = false
     private var serviceDownVoteBoolean: Boolean = false
     private var serviceCommentBoolean: Boolean = false
+    private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
+    private lateinit var loadProgressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +79,36 @@ class HomeAffairsFragment : Fragment() {
         Timber.e("CREATING HOME-AFFAIRS-FRAGMENT!")
         getHomeAffairsServiceProviderId()
         getHomeAffairsServices(homeAffairsServiceId)
+
+        /*loadProgressBar = requireActivity().findViewById(R.id.load_progress_bar)
+
+        if (homeAffairsServiceList.isNotEmpty())
+            loadProgressBar.visibility = View.GONE*/
+
+    }
+
+    @Subscribe
+    fun onServiceUpvotedEvent(upvoteServiceEvent: UpvoteServiceEvent) {
+        Timber.e("SERVICE-UPVOTED-EVENT -> ${upvoteServiceEvent.serviceId}")
+        Timber.e("SERVICE-UPVOTED-EVENT -> ${upvoteServiceEvent.serviceUpvote}")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        /** [Service-Actions Event] Register for EventBus events **/
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** [Service-Actions Event] Register for EventBus events **/
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe
+    fun onServiceDownvotedEvent(downvoteServiceEvent: DownvoteServiceEvent) {
+        Timber.e("SERVICE-DOWNVOTED-EVENT -> ${downvoteServiceEvent.serviceId}")
+        Timber.e("SERVICE-DOWNVOTED-EVENT -> ${downvoteServiceEvent.serviceDownvote}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -88,10 +125,6 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
-
-        if (homeAffairsServiceList.isNotEmpty()) {
-            homeAffairsBinding.loadProgressBar.visibility = View.GONE
-        }
 
         Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
         return view
@@ -133,6 +166,10 @@ class HomeAffairsFragment : Fragment() {
         var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
+
+        /* val bookmarkedServiceList = serviceViewModel?.getBookmarkedServiceList()
+         for (i in bookmarkedServiceList?.indices!!)
+             Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServiceList[i].serviceName}")*/
 
         Timber.e("SERVICE-LIST [BEFORE]-> ${servicesList?.size}")
         for (i in servicesList?.indices!!) {
@@ -178,6 +215,9 @@ class HomeAffairsFragment : Fragment() {
                 serviceCommentBoolean = homeAffairsPrefs
                         .getBoolean("COMMENTED-ON-${homeAffairsServiceList[i].serviceId}", false)
 
+                serviceBookmarked = homeAffairsPrefs
+                        .getBoolean("BOOKMARKED-${homeAffairsServiceList[i].serviceId}", false)
+
                 Timber.e("HOME-AFFAIRS-UP-VOTE-${homeAffairsServiceList[i].serviceId} -> $serviceUpVoteBoolean")
                 Timber.e("HOME-AFFAIRS-DOWN-VOTE-${homeAffairsServiceList[i].serviceId} -> $serviceDownVoteBoolean")
 
@@ -185,6 +225,7 @@ class HomeAffairsFragment : Fragment() {
                         .put("UP-VOTE", serviceUpVoteBoolean)
                         .put("DOWN-VOTE", serviceDownVoteBoolean)
                         .put("COMMENTED-ON", serviceCommentBoolean)
+                        .put("BOOKMARKED", serviceBookmarked)
 
                 Timber.e("SAVED-USER-ACTIONS -> $savedUserActions")
 

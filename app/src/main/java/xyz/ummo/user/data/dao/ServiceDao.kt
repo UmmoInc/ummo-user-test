@@ -17,6 +17,9 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE service_id = :serviceId ")
     fun getServiceLiveDataById(serviceId: String?): LiveData<ServiceEntity>
+    
+    @Query("SELECT * FROM service WHERE bookmarked = :bookmarked")
+    fun getBookmarkedServicesList(bookmarked: Boolean = true): List<ServiceEntity>
 
     @Update
     fun updateService(serviceEntity: ServiceEntity?)

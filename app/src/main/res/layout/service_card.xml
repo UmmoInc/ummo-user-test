@@ -553,7 +553,7 @@
 
                     </RelativeLayout>
 
-                    <RelativeLayout
+                    <!--<RelativeLayout
                         android:id="@+id/share_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -581,6 +581,39 @@
                             android:text="@string/shares_placeholder"
                             android:textSize="12sp"
                             app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>-->
+
+                    <RelativeLayout
+                        android:id="@+id/save_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/save_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
+<!--
+                        <TextView
+                            android:id="@+id/save_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/save_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/shares_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+-->
 
                     </RelativeLayout>
                 </LinearLayout>
@@ -632,12 +665,25 @@
                         tools:ignore="SmallSp"
                         tools:visibility="visible" />
 
-                    <TextView
+                    <!--<TextView
                         android:id="@+id/you_shared_this_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/you_shared_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />-->
+
+                    <TextView
+                        android:id="@+id/you_saved_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_saved_this"
                         android:textColor="@color/black"
                         android:textSize="8sp"
                         android:textStyle="italic"

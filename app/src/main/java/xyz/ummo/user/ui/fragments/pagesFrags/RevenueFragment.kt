@@ -48,6 +48,7 @@ class RevenueFragment : Fragment() {
     private var serviceUpVoteBoolean: Boolean = false
     private var serviceDownVoteBoolean: Boolean = false
     private var serviceCommentBoolean: Boolean = false
+    private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,9 +88,9 @@ class RevenueFragment : Fragment() {
 
         Timber.e("CREATING REVENUE-VIEW!")
 
-        if (revenueServiceList.isNotEmpty()) {
+        /*if (revenueServiceList.isNotEmpty()) {
             revenueBinding.loadProgressBar.visibility = View.GONE
-        }
+        }*/
 
         return view
     }
@@ -169,6 +170,9 @@ class RevenueFragment : Fragment() {
                 serviceCommentBoolean = revenuePrefs
                         .getBoolean("COMMENTED-ON-${revenueServiceList[i].serviceId}", false)
 
+                serviceBookmarked = revenuePrefs
+                        .getBoolean("BOOKMARKED-${revenueServiceList[i].serviceId}", false)
+
                 Timber.e("HOME-AFFAIRS-UP-VOTE-${revenueServiceList[i].serviceId} -> $serviceUpVoteBoolean")
                 Timber.e("HOME-AFFAIRS-DOWN-VOTE-${revenueServiceList[i].serviceId} -> $serviceDownVoteBoolean")
 
@@ -176,6 +180,8 @@ class RevenueFragment : Fragment() {
                         .put("UP-VOTE", serviceUpVoteBoolean)
                         .put("DOWN-VOTE", serviceDownVoteBoolean)
                         .put("COMMENTED-ON", serviceCommentBoolean)
+                        .put("BOOKMARKED", serviceBookmarked)
+
                 Timber.e("SAVED-USER-ACTIONS -> $savedUserActions")
 
                 gAdapter.add(ServiceItem(revenueService, context, savedUserActions))

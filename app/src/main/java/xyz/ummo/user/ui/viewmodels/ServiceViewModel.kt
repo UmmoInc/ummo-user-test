@@ -25,6 +25,11 @@ class ServiceViewModel (application: Application) : AndroidViewModel(application
     fun getServicesList(): List<ServiceEntity> {
         return appRepository.services
     }
+
+    fun getBookmarkedServiceList(): List<ServiceEntity> {
+        return appRepository.getBookmarkedServiceList(true)
+    }
+
     init {
         serviceEntityLiveData = appRepository.serviceEntityLiveData
     }
