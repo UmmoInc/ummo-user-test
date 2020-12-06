@@ -180,13 +180,39 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/service_centre_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/service_centre_header_text_view"
-                                    android:text="@string/service_centre_placeholder"
-                                    android:textColor="@color/black"
-                                    android:textSize="14sp" />
+                                    android:layout_alignBottom="@id/service_centre_header_text_view"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_toEndOf="@id/service_centre_header_text_view"
+                                    android:text="@string/service_centre_selection"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="14sp"
+                                    android:textStyle="italic" />
+
+                                <LinearLayout
+                                    android:id="@+id/service_centres_linear_layout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_centre_header_text_view"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="8dp"
+                                    android:paddingEnd="16dp"
+                                    android:paddingBottom="8dp">
+
+                                </LinearLayout>
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/service_centres_chip_group"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_below="@+id/service_centre_header_text_view"
+                                    app:chipSpacing="4dp"
+                                    app:chipSpacingHorizontal="4dp"
+                                    app:chipSpacingVertical="4dp"
+                                    app:selectionRequired="false"
+                                    app:singleLine="false" />
+
                             </RelativeLayout>
 
                         </RelativeLayout>
@@ -371,6 +397,17 @@
                                         android:textColor="@color/Grey"
                                         android:textSize="16sp" />
 
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/service_requirements_chip_group"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_below="@+id/service_requirements_header_text_view"
+                                        app:chipSpacing="4dp"
+                                        app:chipSpacingHorizontal="4dp"
+                                        app:chipSpacingVertical="4dp"
+                                        app:selectionRequired="false"
+                                        app:singleLine="false" />
+
                                     <LinearLayout
                                         android:id="@+id/service_requirements_linear_layout"
                                         android:layout_width="wrap_content"
@@ -379,18 +416,8 @@
                                         android:orientation="horizontal"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
-                                        android:paddingBottom="8dp">
+                                        android:paddingBottom="8dp" />
 
-                                    </LinearLayout>
-
-                                    <TextView
-                                        android:id="@+id/service_requirements_text_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_below="@id/service_requirements_header_text_view"
-                                        android:text="@string/service_requirements_placeholder"
-                                        android:textColor="@color/black"
-                                        android:textSize="14sp" />
                                 </RelativeLayout>
                             </RelativeLayout>
                             <!-- [END] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
@@ -447,13 +474,35 @@
                 android:background="?android:attr/listDivider"
                 android:padding="20dp" />
 
+            <RelativeLayout
+                android:id="@+id/request_agent_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_2"
+                android:padding="8dp"
+                android:visibility="visible">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/request_agent_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/ummo_1"
+                    android:text="@string/request_agent_text"
+                    android:textSize="16sp"
+                    android:layout_centerInParent="true"
+                    app:icon="@drawable/ic_agent_add_24"
+                    app:iconGravity="textStart"
+                    tools:targetApi="lollipop" />
+            </RelativeLayout>
+
             <!-- The layout below is for service actions: thumbs-up, thumbs-down, comment, share -->
             <RelativeLayout
                 android:id="@+id/service_actions_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider_2"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/service_actions_linear_layout"
@@ -602,18 +651,18 @@
                             android:layout_margin="4dp"
                             app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
-<!--
-                        <TextView
-                            android:id="@+id/save_count_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/save_service_image"
-                            android:fontFamily="@font/rubik"
-                            android:text="@string/shares_placeholder"
-                            android:textSize="12sp"
-                            app:fontFamily="@font/rubik" />
--->
+                        <!--
+                                                <TextView
+                                                    android:id="@+id/save_count_text_view"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_centerVertical="true"
+                                                    android:layout_toEndOf="@+id/save_service_image"
+                                                    android:fontFamily="@font/rubik"
+                                                    android:text="@string/shares_placeholder"
+                                                    android:textSize="12sp"
+                                                    app:fontFamily="@font/rubik" />
+                        -->
 
                     </RelativeLayout>
                 </LinearLayout>
@@ -656,10 +705,10 @@
                         android:id="@+id/you_commented_on_this_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/you_commented_on_this"
                         android:textColor="@color/black"
                         android:textSize="8sp"
-                        android:layout_weight="1"
                         android:textStyle="italic"
                         android:visibility="invisible"
                         tools:ignore="SmallSp"

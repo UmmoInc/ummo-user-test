@@ -82,7 +82,6 @@ class DelegatedServiceFragment : Fragment {
     constructor(entity: DelegatedServiceEntity) {
         delegatedServiceEntity = entity
 
-        // Required empty public constructor
     }
 
     constructor()
@@ -95,9 +94,9 @@ class DelegatedServiceFragment : Fragment {
         if (arguments != null) {
             val sharedPreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)
             agentName = sharedPreferences?.getString("DELEGATED_AGENT", "")
-            serviceId = arguments!!.getString("SERVICE_ID")
+            serviceId = arguments!!.getString("DELEGATION_ID")
             serviceAgentId = arguments!!.getString("SERVICE_AGENT_ID")
-            delegatedProductId = arguments!!.getString("DELEGATED_PRODUCT_ID")
+            delegatedProductId = arguments!!.getString("DELEGATED_SERVICE_ID")
             delegatedServiceViewModel = ViewModelProvider(this)
                     .get(DelegatedServiceViewModel::class.java)
             Timber.e("onCreate: Service id%s", serviceId)

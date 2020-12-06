@@ -3,12 +3,17 @@ package xyz.ummo.user.rvItems
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.CheckBox
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.xwray.groupie.GroupieViewHolder
@@ -19,12 +24,13 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
-import xyz.ummo.user.delegate.BookmarkService
-import xyz.ummo.user.delegate.ServiceComment
-import xyz.ummo.user.delegate.UpdateService
+import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Service
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
@@ -36,6 +42,8 @@ import java.util.*
 class ServiceItem(private val service: Service,
                   val context: Context?,
                   savedUserActions: JSONObject) : Item<GroupieViewHolder>() {
+
+    private var serviceId: String = ""
 
     /** Shared Preferences for storing user actions **/
     private lateinit var serviceItemPrefs: SharedPreferences
@@ -50,14 +58,7 @@ class ServiceItem(private val service: Service,
     private val isUpvotedEvent = UpvoteServiceEvent()
     private val isDownvotedEvent = DownvoteServiceEvent()
 
-    init {
-        upVote = savedUserActions.getBoolean("UP-VOTE")
-        downVote = savedUserActions.getBoolean("DOWN-VOTE")
-        commentedOn = savedUserActions.getBoolean("COMMENTED-ON")
-        bookmarked = savedUserActions.getBoolean("BOOKMARKED")
-    }
-
-//    var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
+    private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
 
     /** Initializing ServiceViewModel **/
     private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
@@ -69,6 +70,22 @@ class ServiceItem(private val service: Service,
             .get(ProfileViewModel::class.java)
 
     private var profileEntity = ProfileEntity()
+    private val inflater = LayoutInflater.from(context)
+
+    //private lateinit var serviceCentresTextView: TextView
+    private lateinit var serviceRequirementsTextView: TextView
+
+
+    init {
+        upVote = savedUserActions.getBoolean("UP-VOTE")
+        downVote = savedUserActions.getBoolean("DOWN-VOTE")
+        commentedOn = savedUserActions.getBoolean("COMMENTED-ON")
+        bookmarked = savedUserActions.getBoolean("BOOKMARKED")
+
+        serviceId = service.serviceId
+    }
+
+    var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
 
     override fun getLayout(): Int {
         return R.layout.service_card
@@ -88,10 +105,33 @@ class ServiceItem(private val service: Service,
         viewHolder.itemView.service_title_text_view.text = service.serviceName //1
         viewHolder.itemView.service_description_text_view.text = service.serviceDescription //2
         viewHolder.itemView.service_eligibility_text_view.text = service.serviceEligibility //3
-        viewHolder.itemView.service_centre_text_view.text = service.serviceCentre.toString() //4
+        /** Parsing and displaying the service centres in the Service Centres linear layout **/
+        if (service.serviceCentre.isNotEmpty()) {
+            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
+            for (i in service.serviceCentre.indices) {
+
+                val serviceCentreChipItem = inflater.inflate(R.layout.service_centre_chip_item,
+                        null, false) as Chip
+
+                serviceCentreChipItem.text = service.serviceCentre[i]
+                viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
+            }
+        }
         viewHolder.itemView.service_cost_text_view.text = service.serviceCost //6
         viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
-        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
+//        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
+        /** Parsing and displaying the service centres in the Service Centres linear layout **/
+        if (service.serviceDocuments.isNotEmpty()) {
+            viewHolder.itemView.service_requirements_linear_layout.removeAllViews()
+            for (i in service.serviceDocuments.indices) {
+                val serviceRequirementsChipItem = inflater.inflate(R.layout.service_centre_chip_item,
+                        null, false) as Chip
+
+                serviceRequirementsChipItem.text = service.serviceDocuments[i]
+                viewHolder.itemView.service_requirements_chip_group.addView(serviceRequirementsChipItem)
+            }
+        }
+
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
         viewHolder.itemView.disapprove_count_text_view.text = service.notUsefulCount.toString() //10
         viewHolder.itemView.service_comments_count_text_view.text = service.serviceComments.size.toString() //11
@@ -247,6 +287,117 @@ class ServiceItem(private val service: Service,
                 reverseBookmarkChangeStates(viewHolder)
             }
         }
+
+        viewHolder.itemView.request_agent_button.setOnClickListener {
+            makeRequest()
+        }
+    }
+
+    private fun makeRequest() {
+        val alertDialogBuilder =  MaterialAlertDialogBuilder(context!!)
+
+        val alertDialogView = LayoutInflater.from(context)
+                .inflate(R.layout.delegate_agent_dialog, null)
+
+        alertDialogBuilder.setTitle("Request Agent")
+                .setIcon(R.drawable.logo)
+                .setView(alertDialogView)
+
+        alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
+            Timber.e("Clicked Confirm!")
+//                detailedProduct.requestAgentDelegate(productId)
+
+            requestAgentDelegate(serviceId)
+        }
+
+        alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
+            Timber.e("Clicked Cancel!")
+        }
+
+        alertDialogBuilder.show() //TODO: BIG BUG!!!
+//            alertDialog.dismiss()
+    }
+
+    /** Requesting Agent Delegate **/
+    private fun requestAgentDelegate(mServiceId: String) {
+
+        val editor: SharedPreferences.Editor = serviceItemPrefs.edit()
+
+        Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
+
+        if (jwt != null) {
+            object : RequestService(context, User.getUserId(jwt!!), mServiceId) {
+                override fun done(data: ByteArray, code: Int) {
+                    Timber.e("delegatedService: Done->%s", String(data))
+                    Timber.e("delegatedService: Status Code->%s", code)
+
+                    when (code) {
+                        200 -> {
+//                            alertDialogBuilder.dismiss()
+
+                            Timber.e("CODE IS $code")
+
+                            val service = JSONObject(String(data))
+                            Timber.e("SERVICE OBJ -> $service")
+                            val delegatedServiceId = service.getString("_id")
+                            val serviceProduct = service.getString("product")
+                            val serviceAgent = service.getString("agent")
+
+                            editor.putString("DELEGATION_ID", delegatedServiceId)
+                            //TODO: remove after service is done
+                            editor.putString("DELEGATED_SERVICE_ID", serviceId)
+                            editor.putString("SERVICE_AGENT_ID", serviceAgent)
+                            editor.apply()
+
+                            launchDelegatedService(context, delegatedServiceId, serviceAgent, serviceProduct)
+
+                        }
+                        404 -> {
+                            Timber.e("CODE IS $code")
+
+                            agentRequestDialog.setTitle("Meh")
+                            agentRequestDialog.setMessage("Blah Blah Blah")
+                            agentRequestDialog.setPositiveButton("Continue...")
+                            { dialogInterface: DialogInterface?, i: Int ->
+                                Timber.e("GOING OFF!")
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun launchDelegatedService(context: Context?,
+                                       delegatedServiceId: String,
+                                       agentId: String,
+                                       serviceId: String) {
+
+        val bundle = Bundle()
+        bundle.putString("DELEGATION_ID", delegatedServiceId)
+        bundle.putString("DELEGATED_SERVICE_ID", serviceId)
+        bundle.putString("SERVICE_AGENT_ID", agentId)
+
+        val progress = ArrayList<String>()
+        val delegatedServiceEntity = DelegatedServiceEntity()
+        val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
+                .get(DelegatedServiceViewModel::class.java)
+
+        delegatedServiceEntity.serviceId = delegatedServiceId
+        delegatedServiceEntity.delegatedProductId = serviceId
+        delegatedServiceEntity.serviceAgentId = agentId
+        delegatedServiceEntity.serviceProgress = progress
+        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+        val fragmentActivity = context as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+//        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
     }
 
     /** When the user Up-Votes, we want them to immediately see a UI-state change that lets them

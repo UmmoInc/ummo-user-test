@@ -174,5 +174,7 @@
     <string name="you_saved_this">Bookmarked</string>
     <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
     <string name="recommend_service_improvements">How would you improve this service?</string>
+    <string name="service_centre_selection">(Choose one)</string>
+    <string name="request_agent_text">Request Agent</string>
 
 </resources>

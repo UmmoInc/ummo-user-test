@@ -12,7 +12,7 @@ import xyz.ummo.user.data.repo.AppRepository;
 
 public class DetailedProductViewModel extends AndroidViewModel {
 
-    private AppRepository appRepository;
+    private final AppRepository appRepository;
     private LiveData<ProductEntity> productEntityLiveData;
     private static final String TAG = "DetailedServiceViewMode";
 

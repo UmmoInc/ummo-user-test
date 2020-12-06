@@ -126,7 +126,7 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-        Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
+//        Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
         return view
     }
 

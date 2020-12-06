@@ -701,19 +701,19 @@ class MainScreen : AppCompatActivity() {
          * 1. Declaring $presenceRequired value
          * 2. Assigning $presenceRequired value from service JSON value **/
         val presenceRequired: Boolean?
-        presenceRequired = mServiceObject.getJSONObject("service_requirements")
-                .getBoolean("presence_required")
+        presenceRequired = mServiceObject/*.getJSONObject("service_requirements")
+                */.getBoolean("presence_required")
 
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
          * 2. TODO: Assigning $serviceCost value to service JSON value **/
-        val serviceCost = "E150"
+        val serviceCost = mServiceObject.getString("service_cost")
 
         /** [SERVICE-ASSIGNMENT: 7]
          * 1. Declaring $serviceDocuments values
          * 2. TODO: Assigning $serviceDocuments value from service JSON value **/
-        val serviceDocumentsJSONArray: JSONArray = mServiceObject.getJSONObject("service_requirements") //7
-                .getJSONArray("service_documents")
+        val serviceDocumentsJSONArray: JSONArray = mServiceObject/*.getJSONObject("service_requirements") //7
+                */.getJSONArray("service_documents")
         val serviceDocumentsArrayList = ArrayList(listOf<String>())
         for (k in 0 until serviceDocumentsJSONArray.length()) {
             serviceDocumentsArrayList.add(serviceDocumentsJSONArray.getString(k))
