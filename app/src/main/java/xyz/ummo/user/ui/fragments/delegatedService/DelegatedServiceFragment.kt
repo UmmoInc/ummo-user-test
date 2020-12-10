@@ -29,12 +29,15 @@ import xyz.ummo.user.DelegationChat
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.delegate.ConfirmService
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.serviceFeedback.Feedback
 import xyz.ummo.user.ui.serviceIssue.ServiceIssue
+import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A simple [Fragment] subclass.
@@ -52,7 +55,8 @@ class DelegatedServiceFragment : Fragment {
     private var productName: String? = null
     private var serviceId: String? = null
     private var serviceAgentId: String? = null
-    private var delegatedProductId: String? = null
+//    private var delegatedProductId: String? = null
+    private var delegatedServiceId: String? = null
     private var agentNameTextView: TextView? = null
     private var agentStatusTextView: TextView? = null
     private var delegatedProductNameTextView: TextView? = null
@@ -73,6 +77,7 @@ class DelegatedServiceFragment : Fragment {
     private var mListener: OnFragmentInteractionListener? = null
     private var delegatedServiceViewModel: DelegatedServiceViewModel? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
+    private var serviceViewModel: ServiceViewModel? = null
     private var delegatedServiceEntity = DelegatedServiceEntity()
     private var confirmReceiptDialog: AlertDialog? = null
     private var hasConfirmed = false
@@ -96,7 +101,7 @@ class DelegatedServiceFragment : Fragment {
             agentName = sharedPreferences?.getString("DELEGATED_AGENT", "")
             serviceId = arguments!!.getString("DELEGATION_ID")
             serviceAgentId = arguments!!.getString("SERVICE_AGENT_ID")
-            delegatedProductId = arguments!!.getString("DELEGATED_SERVICE_ID")
+            delegatedServiceId = arguments!!.getString("DELEGATED_SERVICE_ID")
             delegatedServiceViewModel = ViewModelProvider(this)
                     .get(DelegatedServiceViewModel::class.java)
             Timber.e("onCreate: Service id%s", serviceId)
@@ -104,6 +109,9 @@ class DelegatedServiceFragment : Fragment {
 //            delegatedServiceEntity = delegatedServiceViewModel.getDelegatedServiceEntityLiveData();//getDelegatedServiceById(serviceId).getValue();
             detailedProductViewModel = ViewModelProvider(this)
                     .get(DetailedProductViewModel::class.java)
+
+            serviceViewModel = ViewModelProvider(this)
+                    .get(ServiceViewModel::class.java)
         } else {
             viewBinding.noDelegationLayout.visibility = View.VISIBLE
             viewBinding.delegationLayout.visibility = View.GONE
@@ -111,7 +119,7 @@ class DelegatedServiceFragment : Fragment {
 
         Timber.e("onCreate: arguments: SERVICE-ID->%s", serviceId)
         Timber.e("onCreate: arguments: SERVICE-AGENT-ID->%s", serviceAgentId)
-        Timber.e("onCreate: arguments: DELEGATED-PRODUCT-ID->%s", delegatedProductId)
+        Timber.e("onCreate: arguments: DELEGATED-PRODUCT-ID->%s", delegatedServiceId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -128,9 +136,9 @@ class DelegatedServiceFragment : Fragment {
         /*agentNameTextView = viewBinding.delegatedAgentNameTextView
         agentStatusTextView = viewBinding.delegatedAgentStatusTextView
         openChat = viewBinding.openChatButton
-        progressBar = viewBinding.serviceProgressBar
+        progressBar = viewBinding.serviceProgressBar*/
 
-        delegatedProductNameTextView = viewBinding.delegatedAgentNameTextView*/
+        delegatedProductNameTextView = viewBinding.delegatedServiceHeaderName
         delegatedProductDescriptionTextView = viewBinding.descriptionTextView
         delegatedProductCostTextView = viewBinding.serviceCostTextView
         delegatedProductStepsLayout = viewBinding.delegatedServiceStepsLayout
@@ -139,21 +147,22 @@ class DelegatedServiceFragment : Fragment {
 
 //        goToDelegationChat()
 
-        Timber.e("onCreateView: New product id%s", delegatedProductId)
+        Timber.e("onCreateView: New SERVICE id%s", delegatedServiceId)
 
-        detailedProductViewModel!!.getProductEntityLiveDataById(delegatedProductId)
-                .observe(viewLifecycleOwner, Observer { delegatedProductEntity: ProductEntity ->
+        /** {START} Filling in View with DetailedProduct elements **/
+        /*detailedProductViewModel!!.getProductEntityLiveDataById(delegatedProductId)
+                .observe(viewLifecycleOwner, { delegatedProductEntity: ProductEntity ->
 
                     //TODO: BUG!
                     productName = delegatedProductEntity.productName
-                    Timber.e("onCreateView: DELEGATED PRODUCT->%s", delegatedProductEntity.productDuration)
+                    //Timber.e("onCreateView: DELEGATED PRODUCT->%s", delegatedProductEntity.productDuration)
                     delegatedProductNameTextView?.text = delegatedProductEntity.productName
                     delegatedProductDescriptionTextView?.text = delegatedProductEntity.productDescription
                     delegatedProductCostTextView?.text = delegatedProductEntity.productCost
                     //            delegatedProductDurationTextView.setText(delegatedProductEntity.getProductDuration());
 
 //            docsList = new ArrayList<>(delegatedProductEntity.getProductDocuments());
-                    /*if (!docsList.isEmpty()) {
+                    *//*if (!docsList.isEmpty()) {
                         delegatedProductDocsLayout.removeAllViews();
                         for (int i = 0; i < docsList.size(); i++) {
                             delegatedServiceDocsTextView = new TextView(getContext());
@@ -162,7 +171,7 @@ class DelegatedServiceFragment : Fragment {
                             delegatedServiceDocsTextView.setTextSize(14);
                             delegatedProductDocsLayout.addView(delegatedServiceDocsTextView);
                         }
-                    }*/
+                    }*//*
                     stepsList = ArrayList(delegatedProductEntity.productSteps)
                     if (stepsList!!.isNotEmpty()) {
                         delegatedProductStepsLayout?.removeAllViews()
@@ -185,26 +194,26 @@ class DelegatedServiceFragment : Fragment {
                     }
 
                     delegatedServiceViewModel!!.getDelegatedServiceById(serviceId)
-                            .observe(viewLifecycleOwner, Observer { delegatedServiceEntity1: DelegatedServiceEntity ->
+                            .observe(viewLifecycleOwner, { delegatedServiceEntity1: DelegatedServiceEntity ->
                                 val progress = delegatedServiceEntity1.serviceProgress
                                 //Log.e(TAG, "onCreate: DELEGATED-SERVICE-ENTITY-LIVE-DATA->"+stepsTV.size()+" "+delegatedServiceEntity1.getServiceProgress().size());
-                                /**
+                                *//**
                                  * This below 'for-loop' undoes the striking out of service steps (which should not be a likely scenario to occur)
-                                 */
+                                 *//*
                                 for (i in stepsTV.indices) {
                                     stepsTV[i].paintFlags = delegatedServiceStepsTextView!!.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                                 }
 
-                                /**
+                                *//**
                                  *This line below correlates the progress with the number of steps checked off
-                                 **/
+                                 **//*
                                 val progressPercentage = progress.size / stepsTV.size * 100
                                 progressBar?.progress = progress.size * 100 / stepsTV.size
                                 Timber.e("onCreateView: ->%s", progressPercentage)
 
-                                /**
+                                *//**
                                  *This below 'for-loop' strikes out service steps (according to the agent's progress)
-                                 **/
+                                 **//*
                                 for (i in progress.indices) {
                                     for (j in stepsTV.indices) {
                                         if (progress.contains(stepsTV[j].text.toString())) {
@@ -241,7 +250,20 @@ class DelegatedServiceFragment : Fragment {
                                     }
                                 }
                             })
+                })*/
+        /** {END} Filling in View with DetailedProduct elements **/
+
+        serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
+                .observe(viewLifecycleOwner, {delegatedServiceEntity: ServiceEntity ->
+                    productName = delegatedServiceEntity.serviceName
+
+                    delegatedProductNameTextView?.text = delegatedServiceEntity.serviceName
+                    delegatedProductDescriptionTextView?.text = delegatedServiceEntity.serviceDescription
+                    delegatedProductCostTextView?.text = delegatedServiceEntity.serviceCost
+
+
                 })
+
         return view
     }
 

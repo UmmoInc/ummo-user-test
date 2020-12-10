@@ -19,4 +19,5 @@ interface ServiceModel {
     var serviceViews: Int? //14
     var serviceProvider: String? //15
     var bookmarked: Boolean? //16
+    var isDelegated: Boolean? //17
 }

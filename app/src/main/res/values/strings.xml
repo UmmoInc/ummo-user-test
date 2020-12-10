@@ -135,7 +135,7 @@
     <string name="product_requirements">What you will need:</string>
     <string name="service_cost">Service will cost:</string>
     <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
-    <string name="request_ummo_agent">Request an Ummo Agent to renew your Motor Licence</string>
+    <string name="request_ummo_agent">Request an Ummo Agent for %1$s</string>
 
     <string name="product_cost">Product Cost</string>
 

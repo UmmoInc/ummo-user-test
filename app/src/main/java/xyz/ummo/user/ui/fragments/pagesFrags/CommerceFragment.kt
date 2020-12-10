@@ -39,11 +39,10 @@ class CommerceFragment : Fragment() {
     /** Service ViewModel && Entity Declarations **/
     private var serviceViewModel: ServiceViewModel? = null
 
-    /** HomeAffairs Service instance && Service ID **/
-    private lateinit var commerceServiceId: String
+    /** Commerce Service instance && Service ID **/
+    private var commerceServiceId: String = ""
     private lateinit var commerceService: Service
     private lateinit var commerceServiceList: List<ServiceEntity>
-
 
     /** Shared Preferences for storing user actions **/
     private lateinit var commercePrefs: SharedPreferences

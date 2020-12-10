@@ -177,8 +177,8 @@
                                 android:layout_alignTop="@+id/delegated_service_header_image_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Delegated Service"
-                                android:textColor="@color/black"
-                                android:textSize="18sp" />
+                                android:textColor="@color/Grey"
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_name"
@@ -187,8 +187,8 @@
                                 android:layout_below="@+id/delegated_service_header_title_text_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Service Name"
-                                android:textColor="@color/Grey"
-                                android:textSize="14sp" />
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
 
                         </RelativeLayout>
 
@@ -233,8 +233,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Product Description"
-                                        android:textColor="@color/black"
-                                        android:textSize="16sp" />
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:id="@+id/description_text_view"
@@ -242,8 +242,9 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/description_header_text_view"
                                         android:layout_marginTop="0dp"
+                                        android:textColor="@color/black"
                                         android:text="@string/description_default_string"
-                                        android:textSize="14sp" />
+                                        android:textSize="16sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -282,8 +283,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/product_cost"
-                                        android:textColor="@color/black"
-                                        android:textSize="16sp" />
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:id="@+id/service_cost_text_view"
@@ -291,7 +292,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/cost_header_text_view"
                                         android:text="@string/cost"
-                                        android:textSize="14sp" />
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -423,14 +425,14 @@
                                         style="?android:attr/progressBarStyleHorizontal"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:layout_below="@id/progress_header_text_view"
+                                        android:layout_below="@+id/process_description_text_view"
                                         android:layout_marginEnd="30dp" />
 
                                     <TextView
                                         android:id="@+id/process_description_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_below="@id/service_progress_bar"
+                                        android:layout_below="@+id/progress_header_text_view"
                                         android:paddingTop="8dp"
                                         android:paddingBottom="8dp"
                                         android:text="Track your Agent's progress below..."

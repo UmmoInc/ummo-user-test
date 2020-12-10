@@ -58,7 +58,6 @@ class RegisterActivity : AppCompatActivity() {
         /**[NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
 
-
         initCallback()
         register()
     }

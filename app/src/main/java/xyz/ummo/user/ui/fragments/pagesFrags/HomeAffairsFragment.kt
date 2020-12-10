@@ -46,7 +46,7 @@ class HomeAffairsFragment : Fragment() {
     private var serviceViewModel: ServiceViewModel? = null
 
     /** HomeAffairs Service instance && Service ID **/
-    private lateinit var homeAffairsServiceId: String
+    private var homeAffairsServiceId: String = ""
     private lateinit var homeAffairsService: Service
 
     private lateinit var homeAffairsServiceList: List<ServiceEntity>
@@ -78,6 +78,7 @@ class HomeAffairsFragment : Fragment() {
 
         Timber.e("CREATING HOME-AFFAIRS-FRAGMENT!")
         getHomeAffairsServiceProviderId()
+
         getHomeAffairsServices(homeAffairsServiceId)
 
         /*loadProgressBar = requireActivity().findViewById(R.id.load_progress_bar)
