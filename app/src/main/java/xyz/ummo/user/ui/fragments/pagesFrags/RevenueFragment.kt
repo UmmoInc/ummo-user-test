@@ -37,7 +37,7 @@ class RevenueFragment : Fragment() {
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
     private var serviceViewModel: ServiceViewModel? = null
 
-    private lateinit var financeServiceId: String
+    private var financeServiceId: String = ""
     private lateinit var revenueService: Service
     private lateinit var revenueServiceList: List<ServiceEntity>
 

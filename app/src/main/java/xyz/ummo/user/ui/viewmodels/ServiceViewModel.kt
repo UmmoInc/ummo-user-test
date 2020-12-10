@@ -30,6 +30,10 @@ class ServiceViewModel (application: Application) : AndroidViewModel(application
         return appRepository.getBookmarkedServiceList(true)
     }
 
+    fun getServiceEntityLiveDataById(serviceId: String): LiveData<ServiceEntity> {
+        return appRepository.getServiceEntityLiveDataById(serviceId)
+    }
+
     init {
         serviceEntityLiveData = appRepository.serviceEntityLiveData
     }

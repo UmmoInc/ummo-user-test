@@ -299,6 +299,14 @@ class ServiceItem(private val service: Service,
         val alertDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.delegate_agent_dialog, null)
 
+        /** Formatting and appending service texts to alertDialog **/
+        val requestAgentText = String.format(context.resources.getString(R.string.request_ummo_agent), service.serviceName)
+        val requestAgentTextView = alertDialogView.findViewById<TextView>(R.id.request_description_text_view)
+        val serviceCostTextView = alertDialogView.findViewById<TextView>(R.id.service_cost_text_view)
+
+        requestAgentTextView.text = requestAgentText
+        serviceCostTextView.text = service.serviceCost
+
         alertDialogBuilder.setTitle("Request Agent")
                 .setIcon(R.drawable.logo)
                 .setView(alertDialogView)
