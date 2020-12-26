@@ -5,7 +5,7 @@ data class Service(var serviceId: String, //0
                    var serviceDescription: String, //2
                    var serviceEligibility: String, //3
                    var serviceCentre: ArrayList<String>, //4
-                   var presenceRequired: Boolean, //5
+                   var delegatable: Boolean, //5
                    var serviceCost: String, //6
                    var serviceDocuments: ArrayList<String>, //7 TODO: upgrade to Array
                    var serviceDuration: String, //8

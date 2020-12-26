@@ -120,7 +120,7 @@ class CommerceFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -142,7 +142,7 @@ class CommerceFragment : Fragment() {
                 serviceDescription = commerceServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = commerceServiceList[i].serviceCentres!! //4
-                presenceRequired = commerceServiceList[i].presenceRequired!! //5
+                delegatable = commerceServiceList[i].delegatable!! //5
                 serviceCost = commerceServiceList[i].serviceCost.toString() //6
                 serviceDocuments = commerceServiceList[i].serviceDocuments!! //7
                 serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
@@ -155,7 +155,7 @@ class CommerceFragment : Fragment() {
                 serviceProvider = commerceServiceId //14
 
                 commerceService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disApprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")

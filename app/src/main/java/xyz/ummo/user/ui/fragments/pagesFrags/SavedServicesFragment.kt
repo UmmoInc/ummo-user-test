@@ -115,7 +115,7 @@ class SavedServicesFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -148,7 +148,7 @@ class SavedServicesFragment : Fragment() {
             serviceDescription = bookmarkedServicesList[i].serviceDescription!! //2
             serviceEligibility = bookmarkedServicesList[i].serviceEligibility!! //3
             serviceCentres = bookmarkedServicesList[i].serviceCentres!! //4
-            presenceRequired = bookmarkedServicesList[i].presenceRequired!! //5
+            delegatable = bookmarkedServicesList[i].delegatable!! //5
             serviceCost = bookmarkedServicesList[i].serviceCost!! //6
             serviceDocuments = bookmarkedServicesList[i].serviceDocuments!! //7
             serviceDuration = bookmarkedServicesList[i].serviceDuration!! //8
@@ -161,7 +161,7 @@ class SavedServicesFragment : Fragment() {
             serviceProvider = bookmarkedServicesList[i].serviceProvider!! //14
 
             bookmarkedService = Service(serviceId, serviceName, serviceDescription,
-                    serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                    serviceEligibility, serviceCentres, delegatable, serviceCost,
                     serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                     serviceComments, commentCount, shareCount, viewCount, serviceProvider)
 
@@ -218,7 +218,7 @@ class SavedServicesFragment : Fragment() {
             serviceEntity.serviceDescription = services[i].serviceDescription //2
             serviceEntity.serviceEligibility = services[i].serviceEligibility //3
             serviceEntity.serviceCentres = services[i].serviceCentres //4
-            serviceEntity.presenceRequired = services[i].presenceRequired //5
+            serviceEntity.delegatable = services[i].delegatable //5
             serviceEntity.serviceCost = services[i].serviceCost //6
             serviceEntity.serviceDocuments = services[i].serviceDocuments //7
             serviceEntity.serviceDuration = services[i].serviceDuration //8

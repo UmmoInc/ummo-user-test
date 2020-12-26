@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
+import kotlinx.android.synthetic.main.service_card.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
@@ -28,6 +29,7 @@ import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
 import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
 
 class HomeAffairsFragment : Fragment() {
@@ -112,8 +114,15 @@ class HomeAffairsFragment : Fragment() {
         Timber.e("SERVICE-DOWNVOTED-EVENT -> ${downvoteServiceEvent.serviceDownvote}")
     }
 
+    @Subscribe
+    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceId}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
+
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         homeAffairsBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_home_affairs,
@@ -154,7 +163,7 @@ class HomeAffairsFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -184,7 +193,7 @@ class HomeAffairsFragment : Fragment() {
                 serviceDescription = homeAffairsServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = homeAffairsServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = homeAffairsServiceList[i].serviceCentres!! //4
-                presenceRequired = homeAffairsServiceList[i].presenceRequired!! //5
+                delegatable = homeAffairsServiceList[i].delegatable!! //5
                 serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
                 serviceDocuments = homeAffairsServiceList[i].serviceDocuments!!//7
                 serviceDuration = homeAffairsServiceList[i].serviceDuration.toString() //8
@@ -199,7 +208,7 @@ class HomeAffairsFragment : Fragment() {
                 Timber.e("HOME-AFFAIRS-SERVICE-LIST => ${homeAffairsServiceList[i].serviceId}")
 
                 homeAffairsService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")

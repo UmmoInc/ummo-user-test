@@ -118,7 +118,7 @@ class RevenueFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -140,7 +140,7 @@ class RevenueFragment : Fragment() {
                 serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = revenueServiceList[i].serviceCentres!! //4
-                presenceRequired = revenueServiceList[i].presenceRequired!! //5
+                delegatable = revenueServiceList[i].delegatable!! //5
                 serviceCost = revenueServiceList[i].serviceCost.toString() //6
                 serviceDocuments = revenueServiceList[i].serviceDocuments!! //7
                 serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
@@ -153,7 +153,7 @@ class RevenueFragment : Fragment() {
                 serviceProvider = revenueId
 
                 revenueService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")

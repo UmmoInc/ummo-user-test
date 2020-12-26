@@ -14,7 +14,8 @@ class ServiceViewModel (application: Application) : AndroidViewModel(application
 
     fun addService(serviceEntity: ServiceEntity?) {
         appRepository.insertService(serviceEntity)
-        Timber.e("ADDING SERVICE TO ROOM -> ${serviceEntity!!.serviceProvider}")
+        Timber.e("ADDING SERVICE TO ROOM [PROVIDER]-> ${serviceEntity!!.serviceProvider}")
+        Timber.e("ADDING SERVICE TO ROOM [ID] -> ${serviceEntity.serviceId}")
     }
 
     fun updateService(serviceEntity: ServiceEntity?) {

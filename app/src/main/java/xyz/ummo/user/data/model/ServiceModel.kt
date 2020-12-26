@@ -7,7 +7,7 @@ interface ServiceModel {
     var serviceEligibility: String? //3
     var serviceCentres: ArrayList<String>? //4
     //    var serviceCentres: String?
-    var presenceRequired: Boolean? //5
+    var delegatable: Boolean? //5
     var serviceCost: String? //6
     var serviceDocuments: ArrayList<String>? //7
     var serviceDuration: String? //8

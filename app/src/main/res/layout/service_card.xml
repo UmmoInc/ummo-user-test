@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -473,28 +474,6 @@
                 android:layout_below="@+id/service_scrollview"
                 android:background="?android:attr/listDivider"
                 android:padding="20dp" />
-
-            <RelativeLayout
-                android:id="@+id/request_agent_relative_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/divider_2"
-                android:padding="8dp"
-                android:visibility="visible">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/request_agent_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/ummo_1"
-                    android:text="@string/request_agent_text"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    app:icon="@drawable/ic_agent_add_24"
-                    app:iconGravity="textStart"
-                    tools:targetApi="lollipop" />
-            </RelativeLayout>
-
             <!-- The layout below is for service actions: thumbs-up, thumbs-down, comment, share -->
             <RelativeLayout
                 android:id="@+id/service_actions_relative_layout"
@@ -502,7 +481,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider_2"
                 android:padding="8dp"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:id="@+id/service_actions_linear_layout"
@@ -519,7 +498,8 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:paddingStart="4dp"
-                        android:paddingEnd="4dp">
+                        android:paddingEnd="4dp"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/approve_service_image"
@@ -543,6 +523,38 @@
                     </RelativeLayout>
 
                     <RelativeLayout
+                        android:id="@+id/approved_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/approved_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_thumb_up_filled_24" />
+
+                        <TextView
+                            android:id="@+id/approved_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/approved_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/approval_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
                         android:id="@+id/disapprove_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -550,7 +562,8 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:paddingStart="4dp"
-                        android:paddingEnd="4dp">
+                        android:paddingEnd="4dp"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/disapprove_service_image"
@@ -566,6 +579,38 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/disapprove_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/disapproval_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/disapproved_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/disapproved_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_thumb_down_filled_24" />
+
+                        <TextView
+                            android:id="@+id/disapproved_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/disapproved_service_image"
                             android:fontFamily="@font/rubik"
                             android:text="@string/disapproval_placeholder"
                             android:textSize="12sp"
@@ -741,6 +786,27 @@
                         tools:visibility="visible" />
                 </LinearLayout>
 
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/request_agent_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/service_actions_relative_layout"
+                android:padding="8dp"
+                android:visibility="visible">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/request_agent_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/ummo_1"
+                    android:text="@string/request_agent_text"
+                    android:textSize="16sp"
+                    android:layout_centerInParent="true"
+                    app:icon="@drawable/ic_agent_add_24"
+                    app:iconGravity="textStart"
+                    tools:targetApi="lollipop" />
             </RelativeLayout>
 
         </RelativeLayout>

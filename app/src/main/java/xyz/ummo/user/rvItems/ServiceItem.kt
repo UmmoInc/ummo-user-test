@@ -20,6 +20,7 @@ import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_card.view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
@@ -35,6 +36,7 @@ import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
 import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
 import java.text.SimpleDateFormat
 import java.util.*
@@ -54,9 +56,13 @@ class ServiceItem(private val service: Service,
     private var commentedOn: Boolean = false
     private var bookmarked: Boolean = false
     private var anonymousComment: Boolean = false
-    private val isBookmarkedEvent = ServiceBookmarkedEvent()
     private val isUpvotedEvent = UpvoteServiceEvent()
     private val isDownvotedEvent = DownvoteServiceEvent()
+    private val serviceCommentEvent = ServiceCommentEvent()
+    private val isBookmarkedEvent = ServiceBookmarkedEvent()
+
+    private var isUpvotedPref: Boolean = false
+    private var isDownvotedPref: Boolean = false
 
     private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
 
@@ -75,7 +81,6 @@ class ServiceItem(private val service: Service,
     //private lateinit var serviceCentresTextView: TextView
     private lateinit var serviceRequirementsTextView: TextView
 
-
     init {
         upVote = savedUserActions.getBoolean("UP-VOTE")
         downVote = savedUserActions.getBoolean("DOWN-VOTE")
@@ -83,6 +88,7 @@ class ServiceItem(private val service: Service,
         bookmarked = savedUserActions.getBoolean("BOOKMARKED")
 
         serviceId = service.serviceId
+
     }
 
     var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
@@ -101,6 +107,8 @@ class ServiceItem(private val service: Service,
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        isUpvotedPref = serviceItemPrefs.getBoolean("UP-VOTE-${service.serviceId}", false)
 
         viewHolder.itemView.service_title_text_view.text = service.serviceName //1
         viewHolder.itemView.service_description_text_view.text = service.serviceDescription //2
@@ -133,10 +141,21 @@ class ServiceItem(private val service: Service,
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
+        viewHolder.itemView.approved_count_text_view.text = service.usefulCount.toString() //9.1
+
         viewHolder.itemView.disapprove_count_text_view.text = service.notUsefulCount.toString() //10
+        viewHolder.itemView.disapproved_count_text_view.text = service.notUsefulCount.toString() //10.1
+
         viewHolder.itemView.service_comments_count_text_view.text = service.serviceComments.size.toString() //11
 //        viewHolder.itemView.save_count_text_view.text = service.serviceShareCount.toString() //12
 //        viewHolder.itemView.share_count_text_view.text = service.serviceShareCount.toString() //12
+
+        /** If service is not delegatable, we don't need to draw the $RequestAgentButton **/
+        if (service.delegatable) {
+            viewHolder.itemView.request_agent_button.visibility = View.VISIBLE
+        } else {
+            viewHolder.itemView.request_agent_button.visibility = View.GONE
+        }
 
         /** Date chunk below is being used to capture a selection's time-stamp **/
         val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
@@ -206,51 +225,52 @@ class ServiceItem(private val service: Service,
 
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {
-            if (upVote) {
-                /** #UX Trigger icon-change on click **/
-                upVoteTriggeredChangeStates(viewHolder)
-                viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-                upVoteService(currentDate)
-                Timber.e("UPVOTE-CHECK-1: $upVote")
 
-            } else {
-                reverseUpVoteTriggeredChangeStates(viewHolder)
-                viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-                undoServiceUpvote(currentDate)
-                Timber.e("UPVOTE-CHECK-2: $upVote")
-
-                //TODO: reverse Up-vote - server-side
-            }
+            upVoteService(currentDate)
+            /** #UX Trigger icon-change on click **/
+            upVoteTriggeredChangeStates(viewHolder)
+            Timber.e("SERVICE-UPVOTED-PREF [ELSE]-> $isUpvotedPref")
 
         }
         viewHolder.itemView.approve_service_image.setOnClickListener {
-            if (upVote) {
-                /** #UX Trigger icon-change on click **/
-                upVoteTriggeredChangeStates(viewHolder)
-                viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-                upVoteService(currentDate)
-            } else {
-                reverseUpVoteTriggeredChangeStates(viewHolder)
-                viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-                undoServiceUpvote(currentDate)
-            }
+
+            upVoteService(currentDate)
+            /** #UX Trigger icon-change on click **/
+            upVoteTriggeredChangeStates(viewHolder)
+            Timber.e("SERVICE-UPVOTED-PREF [ELSE]-> $isUpvotedPref")
+
+        }
+
+        /** [1.1] Reverse Approve Service Click Handlers **/
+        viewHolder.itemView.approved_service_relative_layout.setOnClickListener {
+            undoServiceUpvote(currentDate)
+            reverseUpVoteTriggeredChangeStates(viewHolder)
+        }
+        viewHolder.itemView.approved_service_image.setOnClickListener {
+            undoServiceUpvote(currentDate)
+            reverseUpVoteTriggeredChangeStates(viewHolder)
         }
 
         /** [2] Disapprove Service Click Handlers **/
         viewHolder.itemView.disapprove_service_relative_layout.setOnClickListener {
-            viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
             downVoteService(currentDate)
-
+            /** #UX Trigger icon-change on click **/
+            downVoteTriggeredChangeStates(viewHolder)
+        }
+        viewHolder.itemView.disapprove_service_image.setOnClickListener {
+            downVoteService(currentDate)
             /** #UX Trigger icon-change on click **/
             downVoteTriggeredChangeStates(viewHolder)
         }
 
-        viewHolder.itemView.disapprove_service_image.setOnClickListener {
-            viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
-            downVoteService(currentDate)
-
-            /** #UX Trigger icon-change on click **/
-            downVoteTriggeredChangeStates(viewHolder)
+        /** [2.1] Reverse Disapprove Service Click Handlers **/
+        viewHolder.itemView.disapproved_service_relative_layout.setOnClickListener {
+            undoServiceDownvote(currentDate)
+            reverseDownVoteTriggeredChangeStates(viewHolder)
+        }
+        viewHolder.itemView.disapproved_service_image.setOnClickListener {
+            undoServiceDownvote(currentDate)
+            reverseDownVoteTriggeredChangeStates(viewHolder)
         }
 
         /** [3] Service Feedback Click Handlers **/
@@ -258,7 +278,6 @@ class ServiceItem(private val service: Service,
             makeServiceComment(currentDate)
             commentTriggeredChangeStates(viewHolder)
         }
-
         viewHolder.itemView.service_comments_image.setOnClickListener {
             makeServiceComment(currentDate)
             commentTriggeredChangeStates(viewHolder)
@@ -266,7 +285,7 @@ class ServiceItem(private val service: Service,
 
         /** [4] Save Service Click Handlers **/
         viewHolder.itemView.save_service_relative_layout.setOnClickListener {
-            Timber.e("Save Service-Layout!")
+//            Timber.e("Save Service-Layout!")
 
             if (!bookmarked) {
                 bookmarkService(currentDate)
@@ -277,7 +296,7 @@ class ServiceItem(private val service: Service,
             }
         }
         viewHolder.itemView.save_service_image.setOnClickListener {
-            Timber.e("Save Service-Image!")
+//            Timber.e("Save Service-Image!")
 
             if (!bookmarked) {
                 bookmarkService(currentDate)
@@ -294,7 +313,7 @@ class ServiceItem(private val service: Service,
     }
 
     private fun makeRequest() {
-        val alertDialogBuilder =  MaterialAlertDialogBuilder(context!!)
+        val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
 
         val alertDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.delegate_agent_dialog, null)
@@ -415,18 +434,89 @@ class ServiceItem(private val service: Service,
      * 3. We activate the $downVote option, in case they want to change their minds
      * TODO: Allow the user to undo their upVote by reversing the action altogether **/
     private fun upVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        /** Assigning upVote counts to both textViews; each textView needs a fresh copy of count **/
         viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-        viewHolder.itemView.approve_service_image.setImageResource(R.drawable.ic_thumb_up_filled_24)
+        viewHolder.itemView.approved_count_text_view.text = serviceEntity.usefulCount.toString()
+        /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_up_voted_this_text_view.visibility = View.VISIBLE
-
+        /** Toggling b/n Approved & Approve (soon to be Upvoted & Upvote) **/
+        viewHolder.itemView.approved_service_relative_layout.visibility = View.VISIBLE
+        viewHolder.itemView.approve_service_relative_layout.visibility = View.GONE
+        /** Ensuring that we don't have both Upvote & Downvote checked simultaneously **/
         reverseDownVoteTriggeredChangeStates(viewHolder)
 
     }
 
     private fun reverseUpVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        /** Assigning upVote counts to both textViews; each textView needs a fresh copy of count **/
         viewHolder.itemView.approve_count_text_view.text = serviceEntity.usefulCount.toString()
-        viewHolder.itemView.approve_service_image.setImageResource(R.drawable.ic_outline_thumb_up_blue_24)
+        viewHolder.itemView.approved_count_text_view.text = serviceEntity.usefulCount.toString()
+        /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_up_voted_this_text_view.visibility = View.INVISIBLE
+        /** Toggling b/n Approved & Approve (soon to be Upvoted & Upvote) **/
+        viewHolder.itemView.approved_service_relative_layout.visibility = View.GONE
+        viewHolder.itemView.approve_service_relative_layout.visibility = View.VISIBLE
+    }
+
+    private fun upVoteService(date: String) {
+
+        undoServiceDownvote(date)
+        /** Initializing sharedPreferences **/
+        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+         * 1. switch action-icon based on user's previous action
+         * 2. toggle b/n icons based on user changing their mind on an action **/
+        val upVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
+        serviceEntity.usefulCount = serviceEntity.usefulCount?.plus(1)
+        Timber.e("UPVOTE COUNT -> ${serviceEntity.usefulCount}")
+
+        upVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", true)
+                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false).apply()
+
+        Timber.e("SERVICE-USEFUL -> ${serviceEntity.usefulCount}")
+        /** Updating Service in [Room] **/
+        serviceViewModel.updateService(serviceEntity)
+        /** Updating Service [Backend] **/
+        makeServiceUpdate("THUMBS_UP", date)
+
+        /** Publish Upvote Event via EventBus **/
+        isUpvotedEvent.serviceUpvote = true
+        isUpvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isUpvotedEvent)
+
+        isDownvotedEvent.serviceDownvote = false
+        isDownvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isDownvotedEvent)
+    }
+
+    private fun undoServiceUpvote(date: String) {
+        /** Check if the count is not zero - because we can't have a negative count **/
+        if (serviceEntity.usefulCount != 0) {
+            serviceEntity.usefulCount = serviceEntity.usefulCount?.minus(1)
+            Timber.e("UPVOTE COUNT -> ${serviceEntity.usefulCount}")
+
+        }
+
+        /** Initializing sharedPreferences **/
+        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+         * 1. switch action-icon based on user's previous action
+         * 2. toggle b/n icons based on user changing their mind on an action **/
+        val upVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
+        upVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", false).apply()
+
+        Timber.e("SERVICE-USEFUL -> ${serviceEntity.usefulCount}")
+        /** Updating Service in [Room] **/
+        serviceViewModel.updateService(serviceEntity)
+        //TODO: undo service upvote - server side
+
+        /** Publish Upvote Event via EventBus **/
+        isUpvotedEvent.serviceUpvote = false
+        isUpvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isUpvotedEvent)
+
     }
 
     /** When the user Down-Votes, we want them to immediately see a UI-state change that lets them
@@ -436,17 +526,83 @@ class ServiceItem(private val service: Service,
      * 3. We activate the $upVote option, in case they want to change their minds
      *  TODO: Allow the user to undo their upVote by reversing the action altogether **/
     private fun downVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        /** Assigning downVote counts to both textViews; each textView needs a fresh copy of count **/
         viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
-        viewHolder.itemView.disapprove_service_image.setImageResource(R.drawable.ic_thumb_down_filled_24)
+        viewHolder.itemView.disapproved_count_text_view.text = serviceEntity.notUsefulCount.toString()
+        /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_downvoted_this_text_view.visibility = View.VISIBLE
-
+        /** Toggling b/n Disapproved & Disapprove (soon to be Upvoted & Upvote) **/
+        viewHolder.itemView.disapproved_service_relative_layout.visibility = View.VISIBLE
+        viewHolder.itemView.disapprove_service_relative_layout.visibility = View.GONE
+        /** Ensuring that we don't have both Upvote & Downvote checked simultaneously **/
         reverseUpVoteTriggeredChangeStates(viewHolder)
     }
 
     private fun reverseDownVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        /** Assigning downVote counts to both textViews; each textView needs a fresh copy of count **/
         viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
-        viewHolder.itemView.disapprove_service_image.setImageResource(R.drawable.ic_outline_thumb_down_red_24)
+        viewHolder.itemView.disapproved_count_text_view.text = serviceEntity.notUsefulCount.toString()
+        /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_downvoted_this_text_view.visibility = View.INVISIBLE
+        /** Toggling b/n Disapproved & Disapprove (soon to be Upvoted & Upvote) **/
+        viewHolder.itemView.disapproved_service_relative_layout.visibility = View.GONE
+        viewHolder.itemView.disapprove_service_relative_layout.visibility = View.VISIBLE
+    }
+
+    private fun downVoteService(date: String) {
+
+        undoServiceUpvote(date)
+        /** Initializing sharedPreferences **/
+        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+         * 1. switch action-icon based on user's previous action
+         * 2. toggle b/n icons based on user changing their mind on an action **/
+        val downVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
+        downVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
+                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", true).apply()
+
+        serviceEntity.notUsefulCount = serviceEntity.notUsefulCount?.plus(1)
+//        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
+        serviceViewModel.updateService(serviceEntity)
+
+        makeServiceUpdate("THUMBS_DOWN", date)
+
+        /** Publish Downvote Event via EventBus & flip Upvote **/
+        isDownvotedEvent.serviceDownvote = true
+        isDownvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isDownvotedEvent)
+
+        isUpvotedEvent.serviceUpvote = false
+        isUpvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isUpvotedEvent)
+    }
+
+    private fun undoServiceDownvote(date: String) {
+        /** Check if the count is not zero - because we can't have a negative count **/
+        if (serviceEntity.notUsefulCount != 0) {
+            serviceEntity.notUsefulCount = serviceEntity.notUsefulCount?.minus(1)
+            Timber.e("DOWNVOTE COUNT -> ${serviceEntity.notUsefulCount}")
+
+        }
+
+        /** Initializing sharedPreferences **/
+        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+         * 1. switch action-icon based on user's previous action
+         * 2. toggle b/n icons based on user changing their mind on an action **/
+        val downVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
+        downVoteEditor.putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false).apply()
+
+        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
+        /** Updating Service in [Room] **/
+        serviceViewModel.updateService(serviceEntity)
+        //TODO: undo service upvote - server side
+
+        /** Publish Upvote Event via EventBus **/
+        isDownvotedEvent.serviceDownvote = false
+        isUpvotedEvent.serviceId = serviceEntity.serviceId
+        EventBus.getDefault().post(isDownvotedEvent)
     }
 
     /** When the user Down-Votes, we want them to immediately see a UI-state change that lets them
@@ -470,11 +626,13 @@ class ServiceItem(private val service: Service,
      * 1. We update the comment icon to a filled one
      * 2. We let them know that they've commented by showing them a text; **/
     private fun commentTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
         viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_chat_bubble_filled_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.VISIBLE
     }
 
     private fun reverseCommentTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
         viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_outline_chat_bubble_blue_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.INVISIBLE
     }
@@ -485,7 +643,7 @@ class ServiceItem(private val service: Service,
         mServiceEntity.serviceDescription = service.serviceDescription //2
         mServiceEntity.serviceEligibility = service.serviceEligibility //3
         mServiceEntity.serviceCentres = service.serviceCentre //4
-        mServiceEntity.presenceRequired = service.presenceRequired //5
+        mServiceEntity.delegatable = service.delegatable //5
         mServiceEntity.serviceCost = service.serviceCost //6
         mServiceEntity.serviceDocuments = service.serviceDocuments //7
         mServiceEntity.serviceDuration = service.serviceDuration //8
@@ -498,82 +656,6 @@ class ServiceItem(private val service: Service,
         mServiceEntity.serviceProvider = service.serviceProvider //15
     }
 
-    private fun upVoteService(date: String) {
-
-        /** Initializing sharedPreferences **/
-        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
-         * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **/
-        val upVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
-        upVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", true)
-                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false).apply()
-
-        serviceEntity.usefulCount = serviceEntity.usefulCount?.plus(1)
-        Timber.e("SERVICE-USEFUL -> ${serviceEntity.usefulCount}")
-        serviceViewModel.updateService(serviceEntity)
-
-        makeServiceUpdate("THUMBS_UP", date)
-
-        /** Publish Upvote Event via EventBus **/
-        isUpvotedEvent.serviceUpvote = true
-        isUpvotedEvent.serviceId = serviceEntity.serviceId
-        EventBus.getDefault().post(isUpvotedEvent)
-
-        isDownvotedEvent.serviceDownvote = false
-        isDownvotedEvent.serviceId = serviceEntity.serviceId
-        EventBus.getDefault().post(isDownvotedEvent)
-    }
-
-    private fun undoServiceUpvote(date: String) {
-        /** Check if the count is not zero - because we can't have a negative count **/
-        if (serviceEntity.usefulCount != 0) {
-            serviceEntity.usefulCount = serviceEntity.usefulCount?.minus(1)
-        }
-
-        Timber.e("SERVICE-USEFUL -> ${serviceEntity.usefulCount}")
-        serviceViewModel.updateService(serviceEntity)
-        //TODO: undo service upvote - server side
-
-    }
-
-    private fun downVoteService(date: String) {
-
-        /** Initializing sharedPreferences **/
-        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
-         * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **/
-        val downVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
-        downVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
-                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", true).apply()
-
-        serviceEntity.notUsefulCount = serviceEntity.notUsefulCount?.plus(1)
-        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
-        serviceViewModel.updateService(serviceEntity)
-
-        makeServiceUpdate("THUMBS_DOWN", date)
-
-        /** Publish Downvote Event via EventBus & flip Upvote **/
-        isDownvotedEvent.serviceDownvote = true
-        isDownvotedEvent.serviceId = serviceEntity.serviceId
-        EventBus.getDefault().post(isDownvotedEvent)
-
-        isUpvotedEvent.serviceUpvote = false
-        isUpvotedEvent.serviceId = serviceEntity.serviceId
-        EventBus.getDefault().post(isUpvotedEvent)
-    }
-
-    private fun undoServiceNotDownvote() {
-        /** Check if the count is not zero - because we can't have a negative count **/
-        if (serviceEntity.notUsefulCount != 0) {
-            serviceEntity.notUsefulCount = serviceEntity.notUsefulCount?.minus(1)
-        }
-        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
-        serviceViewModel.updateService(serviceEntity)
-
-    }
-
     private fun makeServiceUpdate(updateType: String, date: String) {
         val serviceUpdate = JSONObject()
 
@@ -583,12 +665,12 @@ class ServiceItem(private val service: Service,
                     .put("update_type", updateType)
                     .put("user_contact", profileEntity.profileContact)
 
-            Timber.e("SERVICE-UPDATE-OBJECT -> $serviceUpdate")
+//            Timber.e("SERVICE-UPDATE-OBJECT -> $serviceUpdate")
 
             object : UpdateService(context!!, serviceUpdate) {
                 override fun done(data: ByteArray, code: Number) {
                     if (code == 200) {
-                        Timber.e("SERVICE UPDATED -> ${String(data)}")
+//                        Timber.e("SERVICE UPDATED -> ${String(data)}")
                     } else {
                         Timber.e("SERVICE-UPDATE-ERROR-> $code")
                     }
@@ -618,6 +700,7 @@ class ServiceItem(private val service: Service,
         assignServiceEntity(serviceEntity)
         showCommentDialog(date)
         makeServiceUpdate("SERVICE_COMMENT", date)
+
     }
 
     /** This is where we publish the comment captured by #captureServiceComment:
@@ -637,7 +720,12 @@ class ServiceItem(private val service: Service,
             object : ServiceComment(context!!, serviceCommentObject) {
                 override fun done(data: ByteArray, code: Number) {
                     if (code == 200) {
-                        Timber.e("SERVICE COMMENT -> ${String(data)}")
+//                        Timber.e("SERVICE COMMENT -> ${String(data)}")
+
+                        serviceCommentEvent.serviceCommentedOn = true
+                        serviceCommentEvent.serviceId = serviceEntity.serviceId
+                        EventBus.getDefault().post(serviceCommentEvent)
+
                     } else {
                         Timber.e("SERVICE-COMMENT-ERROR-> $code")
                     }
@@ -666,7 +754,7 @@ class ServiceItem(private val service: Service,
 
         anonymousCheckBox.setOnClickListener {
             if (anonymousCheckBox.isChecked) {
-                Timber.e("GOING ANONYMOUS!")
+//                Timber.e("GOING ANONYMOUS!")
                 //TODO: change the color of the comment dialog
                 /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 commentDialogView.setBackgroundColor(R.color.greyProfile)
@@ -699,6 +787,9 @@ class ServiceItem(private val service: Service,
      * 1. doing the actual saving of the comment to RoomDB
      * 2. calling #commentOnService to publish the comment to the back-end/server **/
     private fun captureServiceComment(mServiceComment: String, date: String) {
+        /** Initializing sharedPreferences **/
+        serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
         serviceEntity.serviceComments?.add(mServiceComment)
         serviceViewModel.updateService(serviceEntity)
         commentOnService(mServiceComment, date)
@@ -765,5 +856,15 @@ class ServiceItem(private val service: Service,
         } catch (jse: JSONException) {
             Timber.e("JSONException ->$jse")
         }
+    }
+
+    @Subscribe
+    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceId}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
+
+        var serviceCommentCount = viewHolder.itemView.service_comments_count_text_view.text.toString().toInt()
+        serviceCommentCount += 1
+        viewHolder.itemView.service_comments_count_text_view.text = serviceCommentCount.toString()
     }
 }

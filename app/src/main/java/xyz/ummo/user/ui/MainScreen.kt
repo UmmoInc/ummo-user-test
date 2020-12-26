@@ -3,7 +3,6 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -41,10 +40,7 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
-import xyz.ummo.user.delegate.Feedback
-import xyz.ummo.user.delegate.GetServiceProvider
-import xyz.ummo.user.delegate.GetServices
-import xyz.ummo.user.delegate.PublicService
+import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.models.ServiceProviderData
@@ -618,7 +614,7 @@ class MainScreen : AppCompatActivity() {
      * Likewise, it needs to be moved to a different class that handles network requests **/
     private fun getServicesFromServerByServiceProviderId(serviceProviderId: String) {
 
-        object : GetServices(this, serviceProviderId) {
+        object : GetServicesByServiceProviderId(this, serviceProviderId) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     try {
@@ -636,6 +632,24 @@ class MainScreen : AppCompatActivity() {
                     } catch (jse: JSONException) {
                         Timber.e("FAILED TO GET SERVICES -> $jse")
                     }
+                }
+            }
+        }
+    }
+
+    private fun getAllServicesFromServer() {
+        object : GetAllServices(this) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    val allServices = JSONArray(String(data))
+                    Timber.e("GETTING ALL SERVICES -> $allServices")
+
+                    for (i in 0 until allServices.length()) {
+                        serviceObject = allServices.getJSONObject(i)
+                        Timber.e("GETTING ALL SERVICES [$i] -> $serviceObject")
+                    }
+                } else {
+                    Timber.e("ERROR GETTING ALL SERVICES -> $code")
                 }
             }
         }
@@ -700,9 +714,9 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 5]
          * 1. Declaring $presenceRequired value
          * 2. Assigning $presenceRequired value from service JSON value **/
-        val presenceRequired: Boolean?
-        presenceRequired = mServiceObject/*.getJSONObject("service_requirements")
-                */.getBoolean("presence_required")
+        val delegatable: Boolean?
+        delegatable = mServiceObject/*.getJSONObject("service_requirements")
+                */.getBoolean("delegatable")
 
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
@@ -788,7 +802,7 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.serviceDescription = serviceDescription //2
         serviceEntity.serviceEligibility = serviceEligibility //3
         serviceEntity.serviceCentres = serviceCentresArrayList //4
-        serviceEntity.presenceRequired = presenceRequired //5
+        serviceEntity.delegatable = delegatable //5
         serviceEntity.serviceCost = serviceCost //6
         serviceEntity.serviceDocuments = serviceDocumentsArrayList //7
         serviceEntity.serviceDuration = serviceDuration //8
@@ -808,7 +822,8 @@ class MainScreen : AppCompatActivity() {
                 ?.getServiceProviderList()
         Timber.e("SERVICE-PROVIDERS-CHECK -> $serviceProviders")
 
-        for (i in serviceProviders?.indices!!) {
+        serviceViewModel?.addService(serviceEntity)
+        /*for (i in serviceProviders?.indices!!) {
             when {
                 serviceProviders[i].serviceProviderName
                         .equals("ministry of home affairs", true) -> {
@@ -839,7 +854,7 @@ class MainScreen : AppCompatActivity() {
                     }
                 }
             }
-        }
+        }*/
 //        saveServicesToRoom()
         Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
     }

@@ -26,8 +26,8 @@ class ServiceEntity : ServiceModel {
     override var serviceCentres: ArrayList<String>? = null
 //    override var serviceCentres: String? = null
 
-    @ColumnInfo(name = "presence_required") //5
-    override var presenceRequired: Boolean? = null
+    @ColumnInfo(name = "delegatable") //5
+    override var delegatable: Boolean? = null
 
     @ColumnInfo(name = "service_cost") //6
     override var serviceCost: String? = null
