@@ -30,6 +30,7 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Service
+import xyz.ummo.user.ui.fragments.bottomSheets.CustomBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
@@ -40,6 +41,7 @@ import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
 import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class ServiceItem(private val service: Service,
                   val context: Context?,
@@ -115,22 +117,23 @@ class ServiceItem(private val service: Service,
         viewHolder.itemView.service_eligibility_text_view.text = service.serviceEligibility //3
         /** Parsing and displaying the service centres in the Service Centres linear layout **/
         if (service.serviceCentre.isNotEmpty()) {
-            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
+//            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
             for (i in service.serviceCentre.indices) {
 
                 val serviceCentreChipItem = inflater.inflate(R.layout.service_centre_chip_item,
                         null, false) as Chip
 
                 serviceCentreChipItem.text = service.serviceCentre[i]
+
                 viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
             }
         }
         viewHolder.itemView.service_cost_text_view.text = service.serviceCost //6
         viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
 //        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
-        /** Parsing and displaying the service centres in the Service Centres linear layout **/
+        /** Parsing and displaying the service requirements in the Service Requirements linear layout **/
         if (service.serviceDocuments.isNotEmpty()) {
-            viewHolder.itemView.service_requirements_linear_layout.removeAllViews()
+//            viewHolder.itemView.service_requirements_linear_layout.removeAllViews()
             for (i in service.serviceDocuments.indices) {
                 val serviceRequirementsChipItem = inflater.inflate(R.layout.service_centre_chip_item,
                         null, false) as Chip
@@ -191,6 +194,13 @@ class ServiceItem(private val service: Service,
             bookmarkTriggeredChangeStates(viewHolder)
         } else {
             reverseBookmarkChangeStates(viewHolder)
+        }
+
+        viewHolder.itemView.service_info_icon_relative_layout.setOnClickListener {
+
+            val customBottomSheetFrag = CustomBottomSheetDialogFragment()
+            customBottomSheetFrag.show((context as FragmentActivity).supportFragmentManager,
+                    CustomBottomSheetDialogFragment.TAG)
         }
 
         /** Expand Service Card to reveal more info - Layout-Click... **/

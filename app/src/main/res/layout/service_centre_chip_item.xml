@@ -7,4 +7,6 @@
     android:layout_height="wrap_content"
     android:text="Example"
     android:textSize="14sp"
+    android:checkable="true"
+    app:chipBackgroundColor="@drawable/chip_state_list"
     app:chipIcon="@drawable/ic_service_centre_24" />
