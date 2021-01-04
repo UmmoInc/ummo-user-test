@@ -30,7 +30,7 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Service
-import xyz.ummo.user.ui.fragments.bottomSheets.CustomBottomSheetDialogFragment
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
@@ -48,6 +48,7 @@ class ServiceItem(private val service: Service,
                   savedUserActions: JSONObject) : Item<GroupieViewHolder>() {
 
     private var serviceId: String = ""
+    private val bundle = Bundle()
 
     /** Shared Preferences for storing user actions **/
     private lateinit var serviceItemPrefs: SharedPreferences
@@ -198,9 +199,12 @@ class ServiceItem(private val service: Service,
 
         viewHolder.itemView.service_info_icon_relative_layout.setOnClickListener {
 
-            val customBottomSheetFrag = CustomBottomSheetDialogFragment()
-            customBottomSheetFrag.show((context as FragmentActivity).supportFragmentManager,
-                    CustomBottomSheetDialogFragment.TAG)
+            bundle.putBoolean("SERVICE_DELEGATABLE", service.delegatable)
+            val serviceExtrasBottomSheetDialogFragment = ServiceExtrasBottomSheetDialogFragment()
+            serviceExtrasBottomSheetDialogFragment.arguments = bundle
+            serviceExtrasBottomSheetDialogFragment
+                    .show((context as FragmentActivity).supportFragmentManager,
+                            ServiceExtrasBottomSheetDialogFragment.TAG)
         }
 
         /** Expand Service Card to reveal more info - Layout-Click... **/
@@ -692,7 +696,7 @@ class ServiceItem(private val service: Service,
     }
 
     private fun getUserProfile() {
-        profileEntity = profileViewModel.profileEntityListData[0]
+        profileEntity = profileViewModel.profileEntityListData[0] //TODO: fix bug!!!
     }
 
     /** This lets us wrap it all up and plug it into the action-triggers that the user taps to
