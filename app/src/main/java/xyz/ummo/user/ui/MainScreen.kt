@@ -366,7 +366,7 @@ class MainScreen : AppCompatActivity() {
                         //openFragment(serviceCentreFragment)
                     }
 
-                    Timber.e("PUBLIC SERVICE DATA -> $data")
+                    //Timber.e("PUBLIC SERVICE DATA -> $data")
                     //Do something with list of services
                 }
             }
@@ -482,7 +482,7 @@ class MainScreen : AppCompatActivity() {
 
         profileViewModel?.insertProfile(profileEntity)
 
-        Timber.e("PROFILE ENTITY -> $profileEntity")
+        Timber.e("PROFILE ENTITY -> ${profileEntity.profileContact}")
     }
 
     private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {

@@ -26,7 +26,6 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Service
@@ -78,7 +77,7 @@ class ServiceItem(private val service: Service,
     private var profileViewModel = ViewModelProvider(context as FragmentActivity)
             .get(ProfileViewModel::class.java)
 
-    private var profileEntity = ProfileEntity()
+    private var userContactPref = ""
     private val inflater = LayoutInflater.from(context)
 
     //private lateinit var serviceCentresTextView: TextView
@@ -110,6 +109,8 @@ class ServiceItem(private val service: Service,
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        userContactPref = serviceItemPrefs.getString("USER_CONTACT", "")!!
 
         isUpvotedPref = serviceItemPrefs.getBoolean("UP-VOTE-${service.serviceId}", false)
 
@@ -167,7 +168,6 @@ class ServiceItem(private val service: Service,
 
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
-        getUserProfile()
 
         /** The below two methods check for any actions the user might have taken before a
          * click-action is lodged:
@@ -326,6 +326,7 @@ class ServiceItem(private val service: Service,
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun makeRequest() {
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
 
@@ -336,9 +337,23 @@ class ServiceItem(private val service: Service,
         val requestAgentText = String.format(context.resources.getString(R.string.request_ummo_agent), service.serviceName)
         val requestAgentTextView = alertDialogView.findViewById<TextView>(R.id.request_description_text_view)
         val serviceCostTextView = alertDialogView.findViewById<TextView>(R.id.service_cost_text_view)
+        val delegationCostTextView = alertDialogView.findViewById<TextView>(R.id.delegation_cost_text_view)
+        val totalCostTextView = alertDialogView.findViewById<TextView>(R.id.total_cost_text_view)
+        val confirmPaymentCheckBox = alertDialogView.findViewById<CheckBox>(R.id.confirm_payment_check_box)
 
         requestAgentTextView.text = requestAgentText
         serviceCostTextView.text = service.serviceCost
+        /** Hard coding Delegation Cost (temporarily) **/
+        delegationCostTextView.text = context.getString(R.string.delegation_fee)
+
+        /** 1) Removing the currency from the fee
+         *  2) Converting fee string to int
+         *  3) Adding [Delegation Fee] to get Total Cost (int)
+         *  4) Displaying Total Cost**/
+        val serviceCost = service.serviceCost.subSequence(1, service.serviceCost.length)
+        val serviceCostInt = Integer.parseInt(serviceCost.toString())
+        val totalCostInt = serviceCostInt + 100
+        totalCostTextView.text = "E$totalCostInt"
 
         alertDialogBuilder.setTitle("Request Agent")
                 .setIcon(R.drawable.logo)
@@ -357,6 +372,14 @@ class ServiceItem(private val service: Service,
 
         alertDialogBuilder.show() //TODO: BIG BUG!!!
 //            alertDialog.dismiss()
+
+        confirmPaymentCheckBox.setOnClickListener {
+            if (confirmPaymentCheckBox.isChecked) {
+                alertDialogBuilder.setPositiveButton("Req") { dialogInterface, i ->
+//                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.YELLOW)
+                }
+            }
+        }
     }
 
     /** Requesting Agent Delegate **/
@@ -677,7 +700,7 @@ class ServiceItem(private val service: Service,
             serviceUpdate.put("_id", serviceEntity.serviceId)
                     .put("update_time", date)
                     .put("update_type", updateType)
-                    .put("user_contact", profileEntity.profileContact)
+                    .put("user_contact", userContactPref)
 
 //            Timber.e("SERVICE-UPDATE-OBJECT -> $serviceUpdate")
 
@@ -693,10 +716,6 @@ class ServiceItem(private val service: Service,
         } catch (jse: JSONException) {
             Timber.e("JSONException ->$jse")
         }
-    }
-
-    private fun getUserProfile() {
-        profileEntity = profileViewModel.profileEntityListData[0] //TODO: fix bug!!!
     }
 
     /** This lets us wrap it all up and plug it into the action-triggers that the user taps to
@@ -729,7 +748,7 @@ class ServiceItem(private val service: Service,
                     .put("service_comment", serviceComment)
                     .put("comment_date", date)
                     .put("anonymous_comment", anonymousComment)
-                    .put("user_contact", profileEntity.profileContact)
+                    .put("user_contact", userContactPref)
 
             object : ServiceComment(context!!, serviceCommentObject) {
                 override fun done(data: ByteArray, code: Number) {
@@ -855,7 +874,7 @@ class ServiceItem(private val service: Service,
         try {
             bookmarkObject
                     .put("bookmark_date", date)
-                    .put("user_contact", profileEntity.profileContact)
+                    .put("user_contact", userContactPref)
                     .put("bookmarked_service", serviceEntity.serviceId)
 
             object : BookmarkService(context!!, bookmarkObject) {

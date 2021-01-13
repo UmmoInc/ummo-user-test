@@ -5,6 +5,9 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -17,6 +20,7 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.RegisterBinding
+import xyz.ummo.user.delegate.SafetyNetReCAPTCHA
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
@@ -227,10 +231,47 @@ class RegisterActivity : AppCompatActivity() {
                 intent.putExtra("USER_NAME", userName)
                 startActivity(intent)
 
+                //reCAPTCHA()
+
                 finish()
             } else {
                 showSnackbar("Please enter a correct number.", 0)
                 registerBinding.userContactEditText.error = "Edit your contact."
+            }
+        }
+    }
+
+    private fun reCAPTCHA() {
+        Timber.e("reCAPTCHA SUCCESSFUL - 0!")
+
+        SafetyNet.getClient(this).verifyWithRecaptcha("6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno")
+                .addOnSuccessListener { response ->
+                    Timber.e("reCAPTCHA SUCCESSFUL - 1!")
+                    val userResponseToken = response.tokenResult
+                    if (response.tokenResult?.isNotEmpty() == true) {
+                        Timber.e("reCAPTCHA Token -> $userResponseToken")
+
+                        Thread {
+                            verifyCaptchaFromServer(userResponseToken)
+                        }.start()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Timber.e("reCAPTCHA FAILED - 2!")
+                    if (e is ApiException) {
+                        Timber.e("reCAPTCHA ERROR -> ${CommonStatusCodes.getStatusCodeString(e.statusCode)}")
+                    } else
+                        Timber.e("reCAPTCHA ERROR (unknown) -> ${e.message}")
+                }
+    }
+
+    private fun verifyCaptchaFromServer(responseToken: String) {
+        object : SafetyNetReCAPTCHA(this, responseToken) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("reCAPTCHA Verified from Server -> ${String(data)}")
+                } else
+                    Timber.e("reCAPTCHA could NOT be verified -> ${String(data)}")
             }
         }
     }
@@ -242,13 +283,13 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
         snackbar.show()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
     }
 }

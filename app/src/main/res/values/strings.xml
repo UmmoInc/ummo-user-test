@@ -139,8 +139,6 @@
 
     <string name="product_cost">Product Cost</string>
 
-    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
-    <string name="serverUrl">http://192.168.8.100:3000</string>
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>
     <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
@@ -181,5 +179,12 @@
     <string name="verified_by">Verified by: </string>
     <string name="service_verifier">Ministry of Public Service</string>
     <string name="service_tips">Service Tips</string>
+
+    <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
+    <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
+
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.8.103:3000</string>
+    <string name="delegation_fee">E100</string>
 
 </resources>

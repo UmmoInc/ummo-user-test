@@ -67,7 +67,8 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        /**[NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver - to monitor the network state **/
+        /**[NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver -
+         * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
     }

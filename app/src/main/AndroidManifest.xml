@@ -32,6 +32,7 @@
         android:theme="@style/AppTheme"
         tools:overrideLibrary="com.mongodb.stitch.android"
         tools:replace="android:allowBackup">
+
         <activity android:name=".ui.signup.CompleteSignUp">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -44,7 +45,11 @@
                 android:value=".ui.signup.RegisterActivity"/>
         </activity>
 
-        <activity android:name=".ui.signup.RegisterActivity" />
+        <activity android:name=".ui.signup.RegisterActivity">
+            <meta-data
+                android:name="com.google.android.safetynet.ATTEST_API_KEY"
+                android:value="@string/safety_net_api_key"/>
+        </activity>
 
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
 

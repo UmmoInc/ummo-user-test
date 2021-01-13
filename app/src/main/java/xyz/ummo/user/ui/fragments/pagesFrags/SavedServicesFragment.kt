@@ -81,8 +81,6 @@ class SavedServicesFragment : Fragment() {
         profileViewModel = ViewModelProvider(context as FragmentActivity)
                 .get(ProfileViewModel::class.java)
 
-        profileEntity = profileViewModel.profileEntityListData[0]
-
         /** [BookmarkEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
     }
