@@ -184,7 +184,7 @@
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
     <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
-    <string name="serverUrl">http://192.168.8.103:3000</string>
+    <string name="serverUrl">http://192.168.8.102:3000</string>
     <string name="delegation_fee">E100</string>
 
 </resources>

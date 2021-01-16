@@ -41,7 +41,6 @@ import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class ServiceItem(private val service: Service,
                   val context: Context?,
                   savedUserActions: JSONObject) : Item<GroupieViewHolder>() {

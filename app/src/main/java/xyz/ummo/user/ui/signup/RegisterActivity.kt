@@ -231,7 +231,7 @@ class RegisterActivity : AppCompatActivity() {
                 intent.putExtra("USER_NAME", userName)
                 startActivity(intent)
 
-                //reCAPTCHA()
+//                reCAPTCHA()
 
                 finish()
             } else {

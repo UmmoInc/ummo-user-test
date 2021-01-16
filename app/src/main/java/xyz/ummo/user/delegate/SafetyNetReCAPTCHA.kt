@@ -7,7 +7,7 @@ import timber.log.Timber
 
 abstract class SafetyNetReCAPTCHA(var activity: Activity, reCAPTCHASiteKey: String) {
     init {
-        Fuel.post("/security/reCAPTCHAVerification")
+        Fuel.post("/security/captcha_verification")
                 .jsonBody(reCAPTCHASiteKey)
                 .response { request, response, result ->
 
