@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.Register
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
 import xyz.ummo.user.databinding.InfoCardBinding

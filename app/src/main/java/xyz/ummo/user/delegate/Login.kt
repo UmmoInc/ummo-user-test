@@ -59,7 +59,6 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
                         SocketIO.mSocket?.on("service-created") {
                             val intent = Intent(context, MainScreen::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                Log.e(TAG, "Service-Created: IT->"+JSONObject(it[0].toString()))
                             intent.putExtra("SERVICE_ID", JSONObject(it[0].toString())
                                     .getString("_id"))
                             intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString())

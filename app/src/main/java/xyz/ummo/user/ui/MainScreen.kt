@@ -42,7 +42,6 @@ import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Info
-import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
@@ -50,7 +49,6 @@ import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.fragments.pagesFrags.SavedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
-import xyz.ummo.user.ui.fragments.serviceCentres.ServiceCentresFragment
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
@@ -209,7 +207,8 @@ class MainScreen : AppCompatActivity() {
         } else {
             showSnackbarBlue("Connecting...", -1)
             /** Reloading Service Centre Fragment **/
-            val serviceCentreFragment = ServiceCentresFragment()
+            //TODO: replace with HomeAffairsFragment
+//            val serviceCentreFragment = ServiceCentresFragment()
             //openFragment(serviceCentreFragment)
         }
     }
@@ -358,7 +357,8 @@ class MainScreen : AppCompatActivity() {
             // return
         } else {
 
-            object : PublicService(this) {
+            //TODO: replace this process with equivalent conversion
+            /*object : PublicService(this) {
                 override fun done(data: List<PublicServiceData>, code: Number) {
                     if (code == 200) {
 
@@ -369,7 +369,7 @@ class MainScreen : AppCompatActivity() {
                     //Timber.e("PUBLIC SERVICE DATA -> $data")
                     //Do something with list of services
                 }
-            }
+            }*/
         }
     }
 

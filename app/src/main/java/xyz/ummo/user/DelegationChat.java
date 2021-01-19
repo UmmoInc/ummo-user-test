@@ -262,13 +262,6 @@ public class DelegationChat extends AppCompatActivity {
         arrow.startAnimation(rotateAnim);
     }
 
-    // TODO: 10/22/19 -> Investigate the intended intent of this function
-    public void goToDelegateProgress(){
-        Intent intent = new Intent(this, DelegationProgress.class);
-        finish();
-        startActivity(intent);
-    }
-
     public void goHome(){
         Intent intent = new Intent(this, MainScreen.class);
         finish();

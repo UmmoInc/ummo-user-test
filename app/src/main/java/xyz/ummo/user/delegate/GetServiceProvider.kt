@@ -6,7 +6,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.models.PublicServiceData
 import xyz.ummo.user.models.ServiceProviderData
 
 abstract class GetServiceProvider(val activity: Activity) {

@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/service_centre_card"/>
+            tools:listitem="@layout/service_card"/>
 
         <ProgressBar
             android:id="@+id/load_progress_bar"

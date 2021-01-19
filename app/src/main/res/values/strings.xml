@@ -129,7 +129,7 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="service_nav_title">Service</string>
+    <string name="service_nav_title">My Services</string>
     <string name="save_service">Save Service</string>
     <string name="service_centre_image">Service Centre Image</string>
     <string name="product_requirements">What you will need:</string>
