@@ -823,39 +823,6 @@ class MainScreen : AppCompatActivity() {
         Timber.e("SERVICE-PROVIDERS-CHECK -> $serviceProviders")
 
         serviceViewModel?.addService(serviceEntity)
-        /*for (i in serviceProviders?.indices!!) {
-            when {
-                serviceProviders[i].serviceProviderName
-                        .equals("ministry of home affairs", true) -> {
-                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
-                        homeAffairsServiceEntities = serviceEntity
-                        Timber.e("SAVING HOME AFFAIRS SERVICES -> ${homeAffairsServiceEntities.serviceName}")
-                        serviceViewModel?.addService(homeAffairsServiceEntities)
-
-                    }
-                }
-                serviceProviders[i].serviceProviderName
-                        .equals("ministry of finance", true) -> {
-                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
-                        revenueServiceEntities = serviceEntity
-                        Timber.e("SAVING REVENUE SERVICES -> ${revenueServiceEntities.serviceName}")
-                        serviceViewModel?.addService(revenueServiceEntities)
-
-                    }
-                }
-
-                serviceProviders[i].serviceProviderName
-                        .equals("ministry of commerce", true) -> {
-                    if (serviceEntity.serviceProvider == serviceProviders[i].serviceProviderId) {
-                        commerceServiceEntities = serviceEntity
-                        Timber.e("SAVING COMMERCE SERVICES -> ${commerceServiceEntities.serviceName}")
-                        serviceViewModel?.addService(commerceServiceEntities)
-
-                    }
-                }
-            }
-        }*/
-//        saveServicesToRoom()
         Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
     }
 

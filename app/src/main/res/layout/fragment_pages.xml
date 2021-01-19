@@ -21,7 +21,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tabBackground="@color/ummo_3"
-                app:tabGravity="center"
                 app:tabInlineLabel="true"
                 app:tabMode="fixed"
                 app:tabTextAppearance="@style/AppTabTextAppearance" />

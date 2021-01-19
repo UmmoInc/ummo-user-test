@@ -31,7 +31,6 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
-import xyz.ummo.user.delegate.ConfirmService
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.serviceFeedback.Feedback
 import xyz.ummo.user.ui.serviceIssue.ServiceIssue
