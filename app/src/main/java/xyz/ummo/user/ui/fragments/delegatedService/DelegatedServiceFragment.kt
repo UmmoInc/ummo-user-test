@@ -2,12 +2,7 @@ package xyz.ummo.user.ui.fragments.delegatedService
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
-import android.content.Intent
-import android.graphics.Paint
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,26 +11,16 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.mixpanel.android.mpmetrics.MixpanelAPI
-import org.json.JSONException
-import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.DelegationChat
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
-import xyz.ummo.user.ui.serviceFeedback.Feedback
-import xyz.ummo.user.ui.serviceIssue.ServiceIssue
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**

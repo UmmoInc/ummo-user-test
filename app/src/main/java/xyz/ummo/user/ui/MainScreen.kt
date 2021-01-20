@@ -227,6 +227,28 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
+    @Subscribe
+    fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
+
+        val bookmarkingServicesList = serviceViewModel?.getServicesList()
+
+        for (i in bookmarkingServicesList?.indices!!) {
+            if (serviceBookmarkedEvent.serviceId.equals(bookmarkingServicesList[i].serviceId)) {
+                serviceEntity.bookmarked = serviceBookmarkedEvent.serviceBookmarked
+                //serviceViewModel?.updateService(serviceEntity)
+                Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
+
+                if (serviceBookmarkedEvent.serviceBookmarked!!)
+                    showSnackbarBlue("${serviceEntity.serviceName} bookmarked", -1)
+                else
+                    showSnackbarBlue("${serviceEntity.serviceName} removed from your bookmarks", -1)
+
+            }
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         /** [NetworkStateEvent-4] Unregistering the Connectivity Broadcast Receiver - app is in the background,
@@ -290,118 +312,6 @@ class MainScreen : AppCompatActivity() {
                     Timber.e("Feedback Error: Data -> ${String(data)}")
                 }
             }
-        }
-    }
-
-    private fun showSnackbarBlue(message: String, length: Int) {
-        /**
-         * Length is 0 for Snackbar.LENGTH_LONG
-         *  Length is -1 for Snackbar.LENGTH_SHORT
-         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
-         *  **/
-        val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
-
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-        textView.textSize = 14F
-        snackbar.anchorView = bottomNav
-        snackbar.show()
-    }
-
-    private fun showSnackbarRed(message: String, length: Int) {
-        val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
-        snackbar.anchorView = bottomNav
-        snackbar.show()
-    }
-
-    private fun checkForAndLaunchDelegatedFragment() {
-        Timber.e("StartFragment->$startFragmentExtra")
-
-        if (startFragmentExtra == 1) {
-            Timber.e("Starting DelegatedServiceFrag!")
-            val delegatedServiceFragment = DelegatedServiceFragment()
-
-            delegatedProductId = intent.extras?.getString("DELEGATED_PRODUCT_ID")!!
-            serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")!!
-            serviceId = intent.extras!!.getString("SERVICE_ID")!!
-            Timber.e("SERVICE-ID -> $serviceId")
-
-            bundle.putString("SERVICE_ID", serviceId)
-            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
-            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
-
-//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
-            delegatedServiceFragment.arguments = bundle
-            val delegatedServiceViewModel = ViewModelProvider(this)
-                    .get(DelegatedServiceViewModel::class.java)
-
-            delegatedServiceEntity.serviceId = serviceId
-            delegatedServiceEntity.delegatedProductId = delegatedProductId
-            delegatedServiceEntity.serviceAgentId = serviceAgentId
-            delegatedServiceEntity.serviceProgress = progress
-
-//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Timber.e("Populating ServiceEntity: Agent->${
-                delegatedServiceEntity
-                        .serviceAgentId
-            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
-
-            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-            fragmentTransaction.commit()
-            // return
-        } else {
-
-            //TODO: replace this process with equivalent conversion
-            /*object : PublicService(this) {
-                override fun done(data: List<PublicServiceData>, code: Number) {
-                    if (code == 200) {
-
-                        val serviceCentreFragment = ServiceCentresFragment()
-                        //openFragment(serviceCentreFragment)
-                    }
-
-                    //Timber.e("PUBLIC SERVICE DATA -> $data")
-                    //Do something with list of services
-                }
-            }*/
-        }
-    }
-
-    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
-        return try {
-            val tbr = ArrayList<String>()
-            for (i in 0 until arr.length()) {
-                tbr.add(arr.getString(i))
-            }
-            tbr
-        } catch (e: JSONException) {
-            ArrayList()
-        }
-
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val menuInflater = menuInflater
-        menuInflater.inflate(R.menu.top_app_bar, menu)
-
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        return when (item.itemId) {
-            R.id.feedback_icon -> {
-                Timber.e("FEEDBACK TAPPED!")
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -485,50 +395,10 @@ class MainScreen : AppCompatActivity() {
         Timber.e("PROFILE ENTITY -> ${profileEntity.profileContact}")
     }
 
-    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
-        val bundle = Bundle()
-        bundle.putString("SERVICE_ID", serviceId)
-        bundle.putString("DELEGATED_PRODUCT_ID", productId)
-        bundle.putString("SERVICE_AGENT_ID", agentId)
-
-        val progress = java.util.ArrayList<String>()
-        val delegatedServiceEntity = DelegatedServiceEntity()
-        val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
-
-        delegatedServiceEntity.serviceId = serviceId
-        delegatedServiceEntity.delegatedProductId = productId
-        delegatedServiceEntity.serviceAgentId = agentId
-        delegatedServiceEntity.serviceProgress = progress
-        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
-    }
-
-    private fun launchDelegatedServiceWithoutArgs() {
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
-    }
-
     private fun openFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.frame, fragment)
         transaction.commit()
-    }
-
-    fun setAnyServiceInProgress(anyServiceInProgress: Boolean) {
-        this.anyServiceInProgress = anyServiceInProgress
     }
 
     /** The following section is reserved for fetching, rendering & storing Service Providers and
@@ -655,28 +525,6 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    @Subscribe
-    fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
-        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
-        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
-
-        val bookmarkingServicesList = serviceViewModel?.getServicesList()
-
-        for (i in bookmarkingServicesList?.indices!!) {
-            if (serviceBookmarkedEvent.serviceId.equals(bookmarkingServicesList[i].serviceId)) {
-                serviceEntity.bookmarked = serviceBookmarkedEvent.serviceBookmarked
-                //serviceViewModel?.updateService(serviceEntity)
-                Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
-
-                if (serviceBookmarkedEvent.serviceBookmarked!!)
-                    showSnackbarBlue("${serviceEntity.serviceName} bookmarked", -1)
-                else
-                    showSnackbarBlue("${serviceEntity.serviceName} removed from your bookmarks", -1)
-
-            }
-        }
-    }
-
     private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
 
         val serviceViews = 0 //13
@@ -773,7 +621,7 @@ class MainScreen : AppCompatActivity() {
         var serviceUpdateObject: JSONObject
         var updateType: String
         for (m in 0 until serviceUpdatesJSONArray.length()) {
-            Timber.e("SERVICE-UPDATES -> ${serviceUpdatesJSONArray[m]}")
+//            Timber.e("SERVICE-UPDATES -> ${serviceUpdatesJSONArray[m]}")
             serviceUpdateObject = serviceUpdatesJSONArray.getJSONObject(m)
             updateType = serviceUpdateObject.getString("update_type")
 
@@ -826,6 +674,154 @@ class MainScreen : AppCompatActivity() {
         Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
     }
 
+    private fun checkForAndLaunchDelegatedFragment() {
+        Timber.e("StartFragment->$startFragmentExtra")
+
+        if (startFragmentExtra == 1) {
+            Timber.e("Starting DelegatedServiceFrag!")
+            val delegatedServiceFragment = DelegatedServiceFragment()
+
+            delegatedProductId = intent.extras?.getString("DELEGATED_PRODUCT_ID")!!
+            serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")!!
+            serviceId = intent.extras!!.getString("SERVICE_ID")!!
+            Timber.e("SERVICE-ID -> $serviceId")
+
+            bundle.putString("SERVICE_ID", serviceId)
+            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
+            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
+
+//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
+            delegatedServiceFragment.arguments = bundle
+            val delegatedServiceViewModel = ViewModelProvider(this)
+                    .get(DelegatedServiceViewModel::class.java)
+
+            delegatedServiceEntity.serviceId = serviceId
+            delegatedServiceEntity.delegatedProductId = delegatedProductId
+            delegatedServiceEntity.serviceAgentId = serviceAgentId
+            delegatedServiceEntity.serviceProgress = progress
+
+//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
+            Timber.e("Populating ServiceEntity: Agent->${
+                delegatedServiceEntity
+                        .serviceAgentId
+            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
+
+            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+            fragmentTransaction.commit()
+            // return
+        } else {
+
+            //TODO: replace this process with equivalent conversion
+            /*object : PublicService(this) {
+                override fun done(data: List<PublicServiceData>, code: Number) {
+                    if (code == 200) {
+
+                        val serviceCentreFragment = ServiceCentresFragment()
+                        //openFragment(serviceCentreFragment)
+                    }
+
+                    //Timber.e("PUBLIC SERVICE DATA -> $data")
+                    //Do something with list of services
+                }
+            }*/
+        }
+    }
+
+    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
+        return try {
+            val tbr = ArrayList<String>()
+            for (i in 0 until arr.length()) {
+                tbr.add(arr.getString(i))
+            }
+            tbr
+        } catch (e: JSONException) {
+            ArrayList()
+        }
+
+    }
+
+    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
+        val bundle = Bundle()
+        bundle.putString("SERVICE_ID", serviceId)
+        bundle.putString("DELEGATED_PRODUCT_ID", productId)
+        bundle.putString("SERVICE_AGENT_ID", agentId)
+
+        val progress = java.util.ArrayList<String>()
+        val delegatedServiceEntity = DelegatedServiceEntity()
+        val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
+                .get(DelegatedServiceViewModel::class.java)
+
+        delegatedServiceEntity.serviceId = serviceId
+        delegatedServiceEntity.delegatedProductId = productId
+        delegatedServiceEntity.serviceAgentId = agentId
+        delegatedServiceEntity.serviceProgress = progress
+        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+        val fragmentActivity = this as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
+    }
+
+    private fun launchDelegatedServiceWithoutArgs() {
+        val fragmentActivity = this as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val delegatedServiceFragment = DelegatedServiceFragment()
+        delegatedServiceFragment.arguments = bundle
+        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
+        fragmentTransaction.commit()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.top_app_bar, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        return when (item.itemId) {
+            R.id.feedback_icon -> {
+                Timber.e("FEEDBACK TAPPED!")
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun showSnackbarRed(message: String, length: Int) {
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
     companion object {
         // tags used to attach the fragments
         private const val TAG_HOME = "home"
@@ -839,7 +835,4 @@ class MainScreen : AppCompatActivity() {
         private const val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
     }
 
-    init {
-
-    }
 }

@@ -15,6 +15,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -107,6 +109,7 @@ class RegisterActivity : AppCompatActivity() {
         Timber.e("onSTOP")
     }
 
+    //TODO: Reload user details from savedInstanceState bundle - instead of re-typing
     override fun onResume() {
         super.onResume()
     }
@@ -231,7 +234,7 @@ class RegisterActivity : AppCompatActivity() {
                 intent.putExtra("USER_NAME", userName)
                 startActivity(intent)
 
-//                reCAPTCHA()
+                reCAPTCHA()
 
                 finish()
             } else {
@@ -251,9 +254,16 @@ class RegisterActivity : AppCompatActivity() {
                     if (response.tokenResult?.isNotEmpty() == true) {
                         Timber.e("reCAPTCHA Token -> $userResponseToken")
 
-                        Thread {
+/*                        Thread {
                             verifyCaptchaFromServer(userResponseToken)
-                        }.start()
+                        }.start()*/
+
+                        GlobalScope.launch {
+                            Timber.e("reCAPTCHA Token -> $userResponseToken")
+
+                            Timber.e("GLOBAL SCOPE THREAD NAME -> ${Thread.currentThread().name}")
+                            verifyCaptchaFromServer(userResponseToken)
+                        }
                     }
                 }
                 .addOnFailureListener { e ->

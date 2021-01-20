@@ -1,10 +1,9 @@
-package xyz.ummo.user;
+package xyz.ummo.user.ui;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.github.florent37.viewtooltip.ViewTooltip;
 import com.github.nkzawa.emitter.Emitter;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -23,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
@@ -35,15 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import xyz.ummo.user.ui.animations.ExpandOrCollapse;
+import xyz.ummo.user.R;
 import xyz.ummo.user.delegate.GetService;
-import xyz.ummo.user.delegate.Service;
 
 
 import xyz.ummo.user.adapters.MessageAdapter;
 import xyz.ummo.user.delegate.SendChatMessage;
 import xyz.ummo.user.delegate.SocketIO;
-import xyz.ummo.user.delegate.User;
-import xyz.ummo.user.ui.MainScreen;
 
 public class DelegationChat extends AppCompatActivity {
 

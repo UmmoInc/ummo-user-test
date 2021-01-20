@@ -1,4 +1,4 @@
-package xyz.ummo.user
+package xyz.ummo.user.models
 
 class DelegatedService(
         var serviceName: String,

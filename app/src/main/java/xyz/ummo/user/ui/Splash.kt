@@ -13,7 +13,6 @@ import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
-import xyz.ummo.user.BuildConfig
 import xyz.ummo.user.R
 import xyz.ummo.user.ui.signup.RegisterActivity
 import java.io.ByteArrayOutputStream
@@ -26,7 +25,6 @@ class Splash : Activity() {
     private val mode = MODE_PRIVATE
     private val mRandom: Random = SecureRandom()
     private var mResult: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +111,7 @@ class Splash : Activity() {
         val client = SafetyNet.getClient(this)
         val task = client.attest(nonce!!, R.string.safety_net_api_key.toString())
 
-        task.addOnSuccessListener (this, mSuccessListener)
+        task.addOnSuccessListener(this, mSuccessListener)
                 .addOnFailureListener(this, mFailureListener)
     }
 

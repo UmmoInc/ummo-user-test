@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.ui.animations;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;

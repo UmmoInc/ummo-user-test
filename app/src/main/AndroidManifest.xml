@@ -33,7 +33,7 @@
         tools:overrideLibrary="com.mongodb.stitch.android"
         tools:replace="android:allowBackup">
 
-        <activity android:name=".ui.signup.CompleteSignUp">
+        <activity android:name=".ui.signup.CompleteSignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.signup.ContactVerificationActivity"/>
@@ -53,7 +53,7 @@
 
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
 
-        <activity android:name=".SelfDelegateActivity">
+        <activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -73,7 +73,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".DelegationChat"
+            android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--

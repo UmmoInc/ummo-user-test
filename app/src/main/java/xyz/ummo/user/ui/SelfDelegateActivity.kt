@@ -1,4 +1,4 @@
-package xyz.ummo.user
+package xyz.ummo.user.ui
 
 import android.content.Intent
 import android.net.Uri
@@ -8,14 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.data.entity.ProductEntity
-import xyz.ummo.user.data.repo.AppRepository
+import xyz.ummo.user.R
 import xyz.ummo.user.delegate.GetService
 import xyz.ummo.user.delegate.NewlyDelegated
-import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.utilities.PrefManager
 import java.util.*
 

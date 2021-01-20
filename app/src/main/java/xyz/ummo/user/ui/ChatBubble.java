@@ -1,4 +1,4 @@
-package xyz.ummo.user;
+package xyz.ummo.user.ui;
 
 public class ChatBubble {
 

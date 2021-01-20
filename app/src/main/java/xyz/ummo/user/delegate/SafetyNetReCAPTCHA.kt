@@ -1,26 +1,36 @@
 package xyz.ummo.user.delegate
 
 import android.app.Activity
+import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.extensions.jsonBody
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 abstract class SafetyNetReCAPTCHA(var activity: Activity, reCAPTCHASiteKey: String) {
     init {
-        Fuel.post("/security/captcha_verification")
-                .jsonBody(reCAPTCHASiteKey)
-                .response { request, response, result ->
 
-                    Thread {
+        Fuel.get("/security/captcha_verification", listOf("user_token" to reCAPTCHASiteKey))
+                .responseString { request, response, result ->
+                    Timber.e("REQUEST -> $request")
+                    Timber.e("RESULT -> $result")
+                    Timber.e("RESPONSE -> $response")
+
+                    GlobalScope.launch {
                         done(response.data, response.statusCode)
 
-                        if (response.statusCode == 200) {
-                            Timber.e("Responding well| Data -> ${response.data}")
-                        } else {
-                            Timber.e("Status Code -> ${response.statusCode}")
-                        }
-                    }.start()
+                        result.fold({data ->
+                            if (data.contains("PASSED"))
+                                Timber.e("CAPTCHA PASSED!")
+                            else
+                                Timber.e("CAPTCHA FAILED!")
+                        }, { error ->
+                            Timber.e("ERROR CONNECTING TO SERVER")
+                        })
+
+                    }
                 }
+
     }
 
     abstract fun done(data: ByteArray, code: Number)

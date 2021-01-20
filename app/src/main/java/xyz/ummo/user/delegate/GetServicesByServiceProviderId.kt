@@ -10,7 +10,7 @@ abstract class GetServicesByServiceProviderId(activity: Activity, serviceProvide
                 .response { request, response, result ->
                     activity.runOnUiThread {
                         done(response.data, response.statusCode)
-                        Timber.e("RESPONSE DATA -> ${String(response.data)}")
+//                        Timber.e("RESPONSE DATA -> ${String(response.data)}")
                     }
                 }
     }

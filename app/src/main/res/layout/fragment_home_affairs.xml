@@ -50,7 +50,7 @@
                 android:id="@+id/offlineTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Connection lost. Tap 'Retry' to reconnect..."
+                android:text="We're having trouble "
                 android:textSize="14sp"
                 android:textColor="@color/quantum_googred"/>
 

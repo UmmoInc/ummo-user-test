@@ -28,13 +28,13 @@ import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.delegate.Login
 import xyz.ummo.user.delegate.SocketIO
 import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.util.*
 
-class CompleteSignUp : AppCompatActivity() {
+class CompleteSignUpActivity : AppCompatActivity() {
 
     private var readyToSignUp: Boolean = false
     private lateinit var viewBinding: CompleteSignUpBinding
@@ -176,7 +176,9 @@ class CompleteSignUp : AppCompatActivity() {
                                     mixpanel.people.set("User-Contact", userContact)
                                 }
 
+                                //Ummo server sign-up
                                 signUp(userName, userEmail, userContact, userPID)
+                                //Firebase email-auth sign-up
                                 createUserWithEmailAndPassword(userEmail, userContact)
                                 progress.dismiss()
 
@@ -214,6 +216,7 @@ class CompleteSignUp : AppCompatActivity() {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     launchHomeScreen()
+                    /** Saving user details in Shared Preferences */
                     val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
                     val editor: SharedPreferences.Editor
                     editor = sharedPreferences.edit()
@@ -258,13 +261,13 @@ class CompleteSignUp : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
         snackbar.show()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
     }
 
@@ -299,6 +302,5 @@ class CompleteSignUp : AppCompatActivity() {
     companion object {
         private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
         private const val mode = Activity.MODE_PRIVATE
-
     }
 }

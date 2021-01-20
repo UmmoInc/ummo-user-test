@@ -3,8 +3,8 @@ package xyz.ummo.user.ui.signup
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -17,8 +17,8 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.ContactVerificationBinding
-import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import java.util.concurrent.TimeUnit
 
 class ContactVerificationActivity : AppCompatActivity() {
@@ -54,8 +54,8 @@ class ContactVerificationActivity : AppCompatActivity() {
         }
         //Retrieving user's contact from intentExtras
         val intent = intent
-        userContact = intent.getStringExtra("USER_CONTACT")!!
         userName = intent.getStringExtra("USER_NAME")!!
+        userContact = intent.getStringExtra("USER_CONTACT")!!
 
         val promptText: String = String.format(resources.getString(R.string.code_prompt_text), userContact)
         viewBinding.codePrompt.text = promptText
@@ -95,9 +95,11 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun verifyCode() {
         viewBinding.verifyContact.setOnClickListener {
-            val code = "123456"
+            val code = viewBinding.confirmationCode.text.toString()
+//            val code = "123456"
+            Timber.e("Verifying code -> $code!")
+
             verifyPhoneNumberWithCode(mVerificationId!!.toString(), code)
-            Timber.e("Verifying code!")
         }
     }
 
@@ -113,6 +115,7 @@ class ContactVerificationActivity : AppCompatActivity() {
         signInWithPhoneAuthCredential(credential)
     }
 
+    //TODO: track this event with Mixpanel
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         mAuth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
@@ -121,7 +124,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                 val user = task.result?.user
                 Timber.e("Signing in, user -> $user")
 
-                startActivity(Intent(this, CompleteSignUp::class.java)
+                startActivity(Intent(this, CompleteSignUpActivity::class.java)
                         .putExtra("USER_CONTACT", userContact)
                         .putExtra("USER_NAME", userName))
 
@@ -131,7 +134,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                 finish()
             } else {
                 showSnackbar("[FIX] Illegally signing in")
-                startActivity(Intent(this, CompleteSignUp::class.java)
+                startActivity(Intent(this, CompleteSignUpActivity::class.java)
                         .putExtra("USER_CONTACT", userContact)
                         .putExtra("USER_NAME", userName))
 
@@ -157,12 +160,12 @@ class ContactVerificationActivity : AppCompatActivity() {
         mCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
+                /** This callback will be invoked in two situations:
+                1 - Instant verification. In some cases the phone number can be instantly
+                verified without needing to send or enter a verification code.
+                2 - Auto-retrieval. On some devices Google Play services can automatically
+                detect the incoming verification SMS and perform verification without
+                user action. */
                 showSnackbar("onVerificationCompleted:$credential")
                 Timber.e("onVerificationCompleted: $credential")
                 // [START_EXCLUDE silent]
@@ -174,10 +177,11 @@ class ContactVerificationActivity : AppCompatActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                // This callback is invoked in an invalid request for verification is made,
-                // for instance if the the phone number format is not valid.
-                // [START_EXCLUDE silent]
-                showSnackbar("onVerificationFailed")
+                /** This callback is invoked if an invalid request for verification is made,
+                for instance if the the phone number format is not valid.
+                [START_EXCLUDE silent] */
+
+                showSnackbar("Verification Failed: Please try again.")
                 Timber.e("onVerificationFailed: $e")
                 mVerificationInProgress = false
                 // [END_EXCLUDE]
@@ -198,9 +202,9 @@ class ContactVerificationActivity : AppCompatActivity() {
                     verificationId: String,
                     token: PhoneAuthProvider.ForceResendingToken
             ) {
-                // The SMS verification code has been sent to the provided phone number, we
-                // now need to ask the user to enter the code and then construct a credential
-                // by combining the code with a verification ID.
+                /** The SMS verification code has been sent to the provided phone number, we
+                now need to ask the user to enter the code and then construct a credential
+                by combining the code with a verification ID.*/
                 showSnackbar("Verification SMS on the way")
                 Timber.e("onCodeSent: $verificationId")
 
@@ -211,6 +215,7 @@ class ContactVerificationActivity : AppCompatActivity() {
 
             override fun onCodeAutoRetrievalTimeOut(verificationId: String) {
                 super.onCodeAutoRetrievalTimeOut(verificationId)
+                //TODO: add action that'll take user back to RegisterActivity
                 showSnackbarBlue("Please re-enter your contact", -1)
                 Timber.e("onCodeAutoRetrievalTimeOut: $verificationId")
             }
@@ -229,13 +234,13 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
         snackbar.show()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor( resources.getColor(R.color.ummo_4))
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
     }
 }

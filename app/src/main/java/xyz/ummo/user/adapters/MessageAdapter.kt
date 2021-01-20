@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import xyz.ummo.user.ChatBubble
+import xyz.ummo.user.ui.ChatBubble
 import xyz.ummo.user.R
 
 class MessageAdapter(private val activity: Activity, resource: Int, private val messages: List<ChatBubble>) : ArrayAdapter<ChatBubble?>(activity, resource, messages) {
