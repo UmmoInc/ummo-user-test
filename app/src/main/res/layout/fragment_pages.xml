@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/pages_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.fragments.pagesFrags.PagesFragment">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/pages_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/pages_tab_layout"
+                style="@style/AppTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabBackground="@color/ummo_3"
+                app:tabInlineLabel="true"
+                app:tabMode="fixed"
+                app:tabTextAppearance="@style/AppTabTextAppearance" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Default specification for tab-layouts = 48dp-->
+        <!-- Default specification for bottomNav-layouts = 56dp-->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/pages_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="56dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pages_appbar" />
+
+    </FrameLayout>
+</layout>

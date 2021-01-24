@@ -1,18 +1,18 @@
 package xyz.ummo.user.ui.detailedService;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import timber.log.Timber;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.repo.AppRepository;
 
 public class DetailedProductViewModel extends AndroidViewModel {
 
-    private AppRepository appRepository;
+    private final AppRepository appRepository;
     private LiveData<ProductEntity> productEntityLiveData;
     private static final String TAG = "DetailedServiceViewMode";
 
@@ -25,7 +25,7 @@ public class DetailedProductViewModel extends AndroidViewModel {
 
     public void insertProduct(ProductEntity productEntity){
         appRepository.insertProduct(productEntity);
-        Log.e(TAG, "insertProduct: PRODUCT->"+productEntity.getProductId());
+        Timber.e("insertProduct: PRODUCT->%s", productEntity.getProductId());
     }
 
     public void updateProduct(ProductEntity productEntity){

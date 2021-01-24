@@ -14,7 +14,6 @@
     <color name= "listedProviderBackground">#ffffff</color>
     <color name= "catergoryBackground">#faf8f8</color>
 
-
     <color name="ummo_1">#ae35e0</color>
     <color name="ummo_2">#0086c3</color>
     <color name="ummo_3">#29b6f6</color>
@@ -24,6 +23,8 @@
 
     <color name="greyProfile">#a6a3a4</color>
     <color name="dim_color">#cc000000</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color">#0086c3</color>
 
     <!-- dots inactive colors -->
     <color name="dot_dark_screen1">#d1395c</color>

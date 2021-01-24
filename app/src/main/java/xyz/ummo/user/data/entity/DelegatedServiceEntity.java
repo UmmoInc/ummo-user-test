@@ -12,8 +12,13 @@ import xyz.ummo.user.data.model.DelegatedServiceModel;
 @Entity(tableName = "delegated_service")
 public class DelegatedServiceEntity implements DelegatedServiceModel {
 
+    /*@PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    private String id;
+
+    */
     @NonNull
-    @PrimaryKey()
+    @PrimaryKey
     @ColumnInfo(name = "service_id")
     private String serviceId;
 
@@ -44,7 +49,14 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
         this.serviceAgentId = _serviceAgentId;
     }
 
-    public DelegatedServiceEntity(){}
+    public DelegatedServiceEntity(){
+        serviceId = null;
+    }
+
+    /*@Override
+    public String getId() {
+        return null;
+    }*/
 
     @Override
     @NonNull

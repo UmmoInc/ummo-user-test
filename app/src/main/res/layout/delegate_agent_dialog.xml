@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/delegated_service_body_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!--ProductModel Description Layout Start-->
+        <RelativeLayout
+            android:id="@+id/description_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/description_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_agent_blue_24" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/description_image_view">
+                <!--<TextView
+                    android:id="@+id/description_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Request Agent"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>-->
+                <TextView
+                    android:id="@+id/request_description_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/request_ummo_agent"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <!--ProductModel Description Layout End-->
+
+        <RelativeLayout
+            android:id="@+id/cost_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/description_layout">
+            <!--ProductModel Cost Layout Start-->
+            <RelativeLayout
+                android:id="@+id/service_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/service_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_stat_cost_icon" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/service_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/cost_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Service Cost (Gov. Fee)"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <TextView
+                        android:id="@+id/service_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/cost_header_text_view"
+                        android:text="E50"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+            <!--ProductModel Cost Layout End-->
+
+            <!--ProductModel Cost Layout Start-->
+            <RelativeLayout
+                android:id="@+id/delegation_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_below="@id/service_cost_layout">
+
+                <ImageView
+                    android:id="@+id/delegation_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_agent_cost_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@+id/delegation_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/delegation_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delegation Cost (Flat Agent Fee)"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <TextView
+                        android:id="@+id/delegation_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/delegation_header_text_view"
+                        android:text="E100"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <!--ProductModel Cost Layout End-->
+            <View
+                android:id="@+id/divider_1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/delegation_cost_layout"
+                android:background="@color/Grey"
+                android:padding="20dp" />
+            <!--ProductModel Total Cost Layout Start-->
+
+            <RelativeLayout
+                android:id="@+id/total_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_1"
+                android:background="@color/linkWhite"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/total_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_total_payment_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@+id/total_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/total_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total"
+                        android:textColor="@color/Grey"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/total_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/total_header_text_view"
+                        android:text="E150"
+                        android:textColor="#15B60A"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+            <!--ProductModel Cost Layout End-->
+        </RelativeLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/confirm_payment_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cost_layout"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:text="Confirm Payment T's &amp; C's"
+            android:textColor="@color/ummo_2"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
+
+        <!--ProductModel Duration Layout Start-->
+        <!--<RelativeLayout
+            android:id="@+id/service_duration_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/service_cost_layout">
+            <ImageView
+                android:id="@+id/service_duration_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_stat_duration_icon"
+                android:layout_margin="8dp"
+                android:padding="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/service_duration_image_view">
+                <TextView
+                    android:id="@+id/duration_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Service Duration"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"/>
+                <TextView
+                    android:id="@+id/service_duration_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Service Duration"
+                    android:textSize="16sp"
+                    android:layout_below="@id/duration_header_text_view"/>
+            </RelativeLayout>
+
+        </RelativeLayout>-->
+        <!--ProductModel Duration Layout End-->
+
+        <!--ProductModel Docs Layout Start-->
+        <!--<RelativeLayout
+            android:id="@+id/service_docs_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/service_duration_layout">
+            <ImageView
+                android:id="@+id/service_docs_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_stat_docs_icon"
+                android:layout_margin="8dp"
+                android:padding="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/service_docs_image_view">
+                <TextView
+                    android:id="@+id/docs_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Product Requirements"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"/>
+                <LinearLayout
+                    android:id="@+id/service_docs_linear_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_below="@+id/docs_header_text_view">
+
+                </LinearLayout>
+                &lt;!&ndash;<TextView
+                    android:id="@+id/service_docs_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Docs"
+                    android:textSize="14sp"
+                    android:layout_below="@id/docs_header_text_view"/>&ndash;&gt;
+            </RelativeLayout>
+        </RelativeLayout>-->
+        <!--ProductModel Docs Layout End-->
+
+        <!--ProductModel Steps Layout Start-->
+        <!--<RelativeLayout
+            android:id="@+id/service_steps_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/service_docs_relative_layout">
+            <ImageView
+                android:id="@+id/service_steps_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_action_steps"
+                android:layout_margin="8dp"
+                android:padding="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/service_steps_image_view">
+                <TextView
+                    android:id="@+id/steps_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Procurement Steps"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"/>
+                <LinearLayout
+                    android:id="@+id/service_steps_linear_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="16dp"
+                    android:layout_below="@+id/steps_header_text_view">
+
+                </LinearLayout>
+                </RelativeLayout>
+        </RelativeLayout>-->
+        <!--ProductModel Steps Layout End-->
+
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

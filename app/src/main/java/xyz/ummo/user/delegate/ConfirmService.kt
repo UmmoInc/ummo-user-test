@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import org.json.JSONObject
 import xyz.ummo.user.R
-
+//TODO: Deletable
 abstract class ConfirmService(context: Context, service_id:String) {
     init {
         val data = JSONObject();
@@ -18,6 +19,6 @@ abstract class ConfirmService(context: Context, service_id:String) {
                         done(response.data,response.statusCode)
                     }
                 }
-    }
+}                                                           
     abstract fun done(data:ByteArray,code:Int)
 }

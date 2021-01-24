@@ -3,6 +3,7 @@ package xyz.ummo.user.delegate
 import android.content.Context
 import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.core.FuelManager
+import timber.log.Timber
 
 abstract class Logout(context: Context) {
     init {
@@ -12,6 +13,8 @@ abstract class Logout(context: Context) {
                 .edit()
                 .remove("jwt")
                 .apply()
+
+        Timber.e("Logging out!")
         done()
     }
 

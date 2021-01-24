@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/White">
+
+    <TextView
+        android:id="@+id/code_screen_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/code_prompt_title"
+        android:textColor="@android:color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/code_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/code_screen_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="30dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="3"
+        android:text="@string/code_prompt_text"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <!--<TextView
+        android:id="@+id/retried_user_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="<expecting_a_number>"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_toEndOf="@+id/code_prompt"
+        android:layout_toRightOf="@+id/code_prompt"
+        android:layout_alignBaseline="@+id/code_prompt"/>-->
+
+    <com.alimuzaffar.lib.pin.PinEntryEditText
+        android:id="@+id/confirmation_code"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/code_prompt"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@null"
+        android:cursorVisible="false"
+        android:digits="1234567890"
+        android:inputType="number"
+        android:maxLength="6"
+        android:textIsSelectable="false"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:pinLineColors="@android:color/black" />
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/confirmation_code"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/resend_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view1"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:enabled="false"
+        android:gravity="center"
+        android:maxLines="3"
+        android:onClick="resendCode"
+        android:text="@string/resend_code"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="18sp" />
+
+    <ProgressBar
+        android:id="@+id/confirmation_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/verify_contact"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/ummo_2"
+        android:text="@string/registration_continue"
+        android:textColor="@color/White"
+        app:icon="@drawable/ic_done_all_24"
+        app:iconGravity="textEnd"
+        tools:targetApi="lollipop" />
+
+</RelativeLayout>

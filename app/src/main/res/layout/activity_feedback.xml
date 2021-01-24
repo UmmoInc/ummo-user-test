@@ -1,48 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.serviceFeedback.Feedback">
 
-    <RelativeLayout
-        android:id="@+id/rootFeedbackRelativeLayout"
+    <TextView
+        android:id="@+id/service_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="$Price"
+        android:textSize="40sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="50dp"/>
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/Grey"
+        android:layout_below="@id/service_price"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/agent_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view1"
+        android:text="Agent"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="20dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/profile_pic"
+        android:layout_below="@id/agent_title"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="25dp"/>
+
+    <TextView
+        android:id="@+id/agent__full_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Agent Full Name"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="30dp"
+        android:layout_toEndOf="@id/profile_image"
+        android:layout_below="@id/agent_title"
+        android:layout_marginStart="10dp"/>
+
+    <View
+        android:id="@+id/view_2"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/Grey"
+        android:layout_below="@id/profile_image"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/rate_agent_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view_2"
+        android:text="Rate your agent"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"/>
+
+    <RatingBar
+        android:id="@+id/ratingStars"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/rate_agent_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1"
+        android:isIndicator="false" />
+
+    <EditText
+        android:id="@+id/comment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:hint="Leave a Comment"
+        android:backgroundTint="@color/black"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@id/ratingStars"
+        android:textCursorDrawable="@drawable/cursor"
+        tools:targetApi="lollipop" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    <View
+        android:id="@+id/view_3"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/Grey"
+        android:layout_below="@id/comment"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp" />
 
-        <RatingBar
-            android:id="@+id/ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="101dp"
-            android:layout_marginLeft="101dp"
-            android:layout_marginEnd="70dp"
-            android:layout_marginRight="70dp"
-            android:layout_marginBottom="192dp" />
+    <Button
+        android:id="@+id/request_agent_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Submit"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:textColor="@color/White"
+        android:background="@drawable/register_next_button"
+        android:layout_gravity="bottom"/>
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="311dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
-    </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
