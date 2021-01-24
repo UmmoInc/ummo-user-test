@@ -7,17 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.adapters.PagesViewPagerAdapter
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentPagesBinding
-import xyz.ummo.user.delegate.GetServiceProvider
-import xyz.ummo.user.delegate.GetServices
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -67,7 +62,7 @@ class PagesFragment : Fragment() {
 
         val view = pagesFragmentBinding.root
 
-        getServiceProviderData()
+        //getServiceProviderData()
         setupPagesTabs()
 
         return view
@@ -93,7 +88,7 @@ class PagesFragment : Fragment() {
     /** This function fetches service-providers && #decomposes them with
      * `decomposeServiceProviderData(arrayList)`
      * TODO: since its a network operation, it needs to be moved away from the UI to another class**/
-    private fun getServiceProviderData() {
+    /*private fun getServiceProviderData() {
 
         object : GetServiceProvider(requireActivity()) {
 
@@ -110,11 +105,11 @@ class PagesFragment : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     /** The `decomposeServiceProviderData` function takes an arrayList of #ServiceProviderData;
      * then, for each serviceProvider, we store that data with `storeServiceProviderData` **/
-    private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
+    /*private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
         Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
         serviceProviderViewModel = ViewModelProvider(this)
                 .get(ServiceProviderViewModel::class.java)
@@ -125,11 +120,11 @@ class PagesFragment : Fragment() {
 
             getServicesFromServiceProviders(mServiceProviderData[i].serviceProviderId)
         }
-    }
+    }*/
 
-    private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
-        /*serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)*/
+    /*private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
+        *//*serviceProviderViewModel = ViewModelProvider(this)
+                .get(ServiceProviderViewModel::class.java)*//*
 
         serviceProviderEntity.serviceProviderId = mSingleServiceProviderData.serviceProviderId
         serviceProviderEntity.serviceProviderName = mSingleServiceProviderData.serviceProviderName
@@ -141,11 +136,11 @@ class PagesFragment : Fragment() {
         Timber.e("STORING SERVICE PROVIDER DATA [ID]-> ${serviceProviderEntity.serviceProviderId}")
         Timber.e("STORING SERVICE PROVIDER DATA [NAME] -> ${serviceProviderEntity.serviceProviderName}")
         serviceProviderViewModel?.addServiceProvider(serviceProviderEntity)
-    }
+    }*/
 
     /** This function gets services from a given service provider (via serviceProviderID).
      * Likewise, it needs to be moved to a different class that handles network requests **/
-    private fun getServicesFromServiceProviders(serviceProviderId: String) {
+    /*private fun getServicesFromServiceProviders(serviceProviderId: String) {
         object : GetServices(requireActivity(), serviceProviderId) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
@@ -162,14 +157,14 @@ class PagesFragment : Fragment() {
                         val serviceCentresArrayList = ArrayList(listOf<String>())
 
                         var presenceRequired: Boolean? //5
-                        var serviceCost = 0 //6
+                        var serviceCost: String//6 //TODO: Add SERVICE_COST
 
                         var serviceDocumentsJSONArray: JSONArray //7
                         val serviceDocumentsArrayList = ArrayList(listOf<String>())
 
                         var serviceDuration: String //8
-                        var disapprovalCount = 0 //9
-                        var approvalCount = 0 //10
+                        var notUsefulCount = 0 //9
+                        var usefulCount = 0 //10
 
                         var commentsJSONArray: JSONArray //11
                         var commentsArrayList = ArrayList(listOf<String>())
@@ -181,7 +176,7 @@ class PagesFragment : Fragment() {
                         for (i in 0 until servicesArray.length()) {
                             service = servicesArray.getJSONObject(i)
 
-                            Timber.e("TESTING SERVICE-PROVIDER-> ${service.getString("service_provider")}")
+                            Timber.e("TESTING SERVICE-DATA-> $service")
                             serviceId = service.getString("_id")
                             serviceName = service.getString("service_name")
 
@@ -194,6 +189,7 @@ class PagesFragment : Fragment() {
                                 serviceCentresArrayList.add(serviceCentresJSONArray.getString(j))
                             }
 
+                            serviceCost = "E150"
                             presenceRequired = service.getJSONObject("service_requirements")
                                     .getBoolean("presence_required")
 
@@ -221,9 +217,9 @@ class PagesFragment : Fragment() {
                             serviceEntity.serviceCost = serviceCost //6
                             serviceEntity.serviceDocuments = serviceDocumentsArrayList //7
                             serviceEntity.serviceDuration = serviceDuration //8
-                            serviceEntity.disapprovalCount = disapprovalCount //9
-                            serviceEntity.approvalCount = approvalCount //10
-                            serviceEntity.comments = commentsArrayList //11
+                            serviceEntity.notUsefulCount = notUsefulCount //9
+                            serviceEntity.usefulCount = usefulCount //10
+                            serviceEntity.commentCount = commentsArrayList.size //11
                             serviceEntity.serviceViews = serviceViews //12
                             serviceEntity.serviceShares = serviceShares //13
                             serviceEntity.serviceProvider = serviceProvider //14
@@ -238,7 +234,7 @@ class PagesFragment : Fragment() {
                 }
             }
         }
-    }
+    }*/
 
     /** The function below might be useful, but for now, I'm stashing it #hoarding **/
     /*private fun sortServiceProvidersByCategoryAndSave() {

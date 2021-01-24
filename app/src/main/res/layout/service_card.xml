@@ -39,17 +39,19 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
+                    android:layout_margin="8dp"
                     app:srcCompat="@drawable/logo" />
 
                 <TextView
                     android:id="@+id/service_title_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
-                    android:textSize="21sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -58,18 +60,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/service_title_text_view"
+                    android:layout_marginStart="8dp"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
                     android:text="@string/service_description"
                     android:textSize="14sp"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="0dp"
                     app:fontFamily="@font/rubik" />
+
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/service_info_icon_relative_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:gravity="end">
+
                 <ImageView
                     android:id="@+id/info_image_view"
                     android:layout_width="wrap_content"
@@ -80,6 +87,7 @@
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_outline_info_blue_24" />
             </RelativeLayout>
+
         </RelativeLayout>
 
         <View
@@ -119,7 +127,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_margin="8dp"
-                            app:srcCompat="@drawable/ic_stat_service_avatar" />
+                            android:padding="8dp"
+                            app:srcCompat="@drawable/ic_service_verification_24" />
 
                         <TextView
                             android:id="@+id/service_eligibility_title_text_view"
@@ -129,7 +138,7 @@
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility"
                             android:textColor="@color/Grey"
-                            android:textSize="16sp" />
+                            android:textSize="12sp" />
 
                         <TextView
                             android:id="@+id/service_eligibility_text_view"
@@ -176,16 +185,42 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/service_centres"
                                     android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
+                                    android:textSize="12sp" />
 
                                 <TextView
-                                    android:id="@+id/service_centre_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/service_centre_header_text_view"
-                                    android:text="@string/service_centre_placeholder"
-                                    android:textColor="@color/black"
-                                    android:textSize="14sp" />
+                                    android:layout_alignBottom="@id/service_centre_header_text_view"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_toEndOf="@id/service_centre_header_text_view"
+                                    android:text="@string/service_centre_selection"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="12sp"
+                                    android:textStyle="italic" />
+
+                                <!--<LinearLayout
+                                    android:id="@+id/service_centres_linear_layout"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_centre_header_text_view"
+                                    android:orientation="horizontal"
+                                    android:paddingStart="4dp"
+                                    android:paddingEnd="8dp"
+                                    android:paddingBottom="4dp">
+
+                                </LinearLayout>-->
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/service_centres_chip_group"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_below="@+id/service_centre_header_text_view"
+                                    app:chipSpacing="2dp"
+                                    app:chipSpacingHorizontal="2dp"
+                                    app:chipSpacingVertical="2dp"
+                                    app:selectionRequired="true"
+                                    app:singleLine="false" />
+
                             </RelativeLayout>
 
                         </RelativeLayout>
@@ -218,7 +253,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/service_cost_string"
                                     android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/service_cost_text_view"
@@ -246,49 +281,52 @@
                                 android:id="@+id/divider"
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="?android:attr/listDivider"
-                                android:layout_marginTop="8dp"
-                                android:layout_gravity="center_horizontal"/>
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="20dp"
+                                android:background="?android:attr/listDivider" />
 
                             <TextView
                                 android:id="@+id/action_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:padding="8dp"
-                                android:textSize="12sp"
-                                android:text="@string/more_info"
-                                android:textStyle="bold"
-                                android:textColor="@color/ummo_1"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="4dp"
                                 android:clickable="true"
-                                android:focusable="true"/>
+                                android:focusable="true"
+                                android:padding="8dp"
+                                android:text="@string/more_info"
+                                android:textColor="@color/ummo_1"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:id="@+id/expand_image_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/ic_stat_expand_less"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerInParent="true"
-                                android:paddingRight="8dp"
-                                android:paddingEnd="8dp"
-                                android:paddingLeft="8dp"
                                 android:paddingStart="8dp"
+                                android:paddingLeft="8dp"
+                                android:paddingEnd="8dp"
+                                android:paddingRight="8dp"
                                 android:visibility="gone"
-                                tools:visibility="visible"/>
+                                app:srcCompat="@drawable/ic_stat_expand_less"
+                                tools:visibility="visible" />
 
                             <ImageView
                                 android:id="@+id/collapse_image_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/ic_stat_expand_more"
                                 android:layout_alignParentEnd="true"
                                 android:layout_centerInParent="true"
-                                android:paddingRight="8dp"
-                                android:paddingEnd="8dp"
-                                android:paddingLeft="8dp"
                                 android:paddingStart="8dp"
-                                android:visibility="visible"/>
+                                android:paddingLeft="8dp"
+                                android:paddingEnd="8dp"
+                                android:paddingRight="8dp"
+                                android:visibility="visible"
+                                app:srcCompat="@drawable/ic_stat_expand_more" />
                         </RelativeLayout>
                         <!-- [END] Action Layout (ID: "action_layout")-->
 
@@ -326,7 +364,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_duration"
                                         android:textColor="@color/Grey"
-                                        android:textSize="16sp" />
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:id="@+id/service_duration_text_view"
@@ -368,9 +406,31 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_requirements"
                                         android:textColor="@color/Grey"
-                                        android:textSize="16sp" />
+                                        android:textSize="12sp" />
 
-                                    <LinearLayout
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignBottom="@id/service_requirements_header_text_view"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_toEndOf="@id/service_requirements_header_text_view"
+                                        android:text="(FYI: Checklist)"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp"
+                                        android:textStyle="italic" />
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/service_requirements_chip_group"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_below="@+id/service_requirements_header_text_view"
+                                        app:chipSpacing="2dp"
+                                        app:chipSpacingHorizontal="2dp"
+                                        app:chipSpacingVertical="2dp"
+                                        app:selectionRequired="false"
+                                        app:singleLine="false" />
+
+                                    <!--<LinearLayout
                                         android:id="@+id/service_requirements_linear_layout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -378,17 +438,8 @@
                                         android:orientation="horizontal"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
-                                        android:paddingBottom="8dp">
+                                        android:paddingBottom="8dp" />-->
 
-                                    </LinearLayout>
-                                    <TextView
-                                        android:id="@+id/service_requirements_text_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/service_requirements_placeholder"
-                                        android:textSize="14sp"
-                                        android:textColor="@color/black"
-                                        android:layout_below="@id/service_requirements_header_text_view"/>
                                 </RelativeLayout>
                             </RelativeLayout>
                             <!-- [END] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
@@ -442,16 +493,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@+id/service_scrollview"
-                android:background="?android:attr/listDivider"
-                android:padding="20dp" />
-
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="?android:attr/listDivider" />
             <!-- The layout below is for service actions: thumbs-up, thumbs-down, comment, share -->
             <RelativeLayout
                 android:id="@+id/service_actions_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider_2"
-                android:padding="8dp">
+                android:layout_marginStart="8dp"
+                android:padding="4dp"
+                android:visibility="visible">
 
                 <LinearLayout
                     android:id="@+id/service_actions_linear_layout"
@@ -461,36 +514,6 @@
                     android:weightSum="4">
 
                     <RelativeLayout
-                        android:id="@+id/disapprove_service_relative_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:id="@+id/disapprove_service_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
-
-                        <TextView
-                            android:id="@+id/disapprove_count_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/disapprove_service_image"
-                            android:fontFamily="@font/rubik"
-                            android:text="@string/disapproval_placeholder"
-                            android:textSize="18sp"
-                            app:fontFamily="@font/rubik" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
                         android:id="@+id/approve_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -498,7 +521,8 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:paddingStart="4dp"
-                        android:paddingEnd="4dp">
+                        android:paddingEnd="4dp"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/approve_service_image"
@@ -516,8 +540,105 @@
                             android:layout_toEndOf="@+id/approve_service_image"
                             android:fontFamily="@font/rubik"
                             android:text="@string/approval_placeholder"
-                            android:textSize="18sp"
+                            android:textSize="12sp"
                             app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/approved_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/approved_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_thumb_up_filled_24" />
+
+                        <TextView
+                            android:id="@+id/approved_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/approved_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/approval_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/disapprove_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/disapprove_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
+
+                        <TextView
+                            android:id="@+id/disapprove_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/disapprove_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/disapproval_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/disapproved_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/disapproved_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_thumb_down_filled_24" />
+
+                        <TextView
+                            android:id="@+id/disapproved_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/disapproved_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/disapproval_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
+
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -544,11 +665,12 @@
                             android:layout_toEndOf="@+id/service_comments_image"
                             android:fontFamily="@font/rubik"
                             android:text="@string/comments_placeholder"
-                            android:textSize="18sp"
+                            android:textSize="12sp"
                             app:fontFamily="@font/rubik" />
+
                     </RelativeLayout>
 
-                    <RelativeLayout
+                    <!--<RelativeLayout
                         android:id="@+id/share_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -574,11 +696,140 @@
                             android:layout_toEndOf="@+id/share_service_image"
                             android:fontFamily="@font/rubik"
                             android:text="@string/shares_placeholder"
-                            android:textSize="18sp"
+                            android:textSize="12sp"
                             app:fontFamily="@font/rubik" />
+
+                    </RelativeLayout>-->
+
+                    <RelativeLayout
+                        android:id="@+id/save_service_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp">
+
+                        <ImageView
+                            android:id="@+id/save_service_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="4dp"
+                            app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
+                        <!--
+                                                <TextView
+                                                    android:id="@+id/save_count_text_view"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:layout_centerVertical="true"
+                                                    android:layout_toEndOf="@+id/save_service_image"
+                                                    android:fontFamily="@font/rubik"
+                                                    android:text="@string/shares_placeholder"
+                                                    android:textSize="12sp"
+                                                    app:fontFamily="@font/rubik" />
+                        -->
+
                     </RelativeLayout>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/service_action_labels_linear_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_actions_linear_layout"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <TextView
+                        android:id="@+id/you_up_voted_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_upvoted_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/you_downvoted_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_downvoted_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/you_commented_on_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_commented_on_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />
+
+                    <!--<TextView
+                        android:id="@+id/you_shared_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_shared_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />-->
+
+                    <TextView
+                        android:id="@+id/you_saved_this_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/you_saved_this"
+                        android:textColor="@color/black"
+                        android:textSize="8sp"
+                        android:textStyle="italic"
+                        android:visibility="invisible"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/request_agent_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/service_actions_relative_layout"
+                android:padding="2dp"
+                android:visibility="visible">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/request_agent_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:backgroundTint="@color/ummo_1"
+                    android:text="@string/request_agent_text"
+                    android:textSize="16sp"
+                    app:icon="@drawable/ic_agent_add_24"
+                    app:iconGravity="textStart"
+                    tools:targetApi="lollipop" />
             </RelativeLayout>
 
         </RelativeLayout>

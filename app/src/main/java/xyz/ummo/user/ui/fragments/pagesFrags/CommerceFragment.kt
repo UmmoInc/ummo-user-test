@@ -1,16 +1,20 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
+import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -36,15 +40,27 @@ class CommerceFragment : Fragment() {
     /** Service ViewModel && Entity Declarations **/
     private var serviceViewModel: ServiceViewModel? = null
 
-    /** HomeAffairs Service instance && Service ID **/
-    private lateinit var commerceServiceId: String
+    /** Commerce Service instance && Service ID **/
+    private var commerceServiceId: String = ""
     private lateinit var commerceService: Service
     private lateinit var commerceServiceList: List<ServiceEntity>
+
+    /** Shared Preferences for storing user actions **/
+    private lateinit var commercePrefs: SharedPreferences
+    private val mode = Activity.MODE_PRIVATE
+    private val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
+    private var serviceUpVoteBoolean: Boolean = false
+    private var serviceDownVoteBoolean: Boolean = false
+    private var serviceCommentBoolean: Boolean = false
+    private var serviceBookmarked: Boolean = false
+    private var savedUserActions = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
+
+        commercePrefs = this.requireActivity().getSharedPreferences(ummoUserPreferences, mode)
 
         /** Initializing ViewModels: ServiceProvider && Services **/
         serviceProviderViewModel = ViewModelProvider(this)
@@ -79,6 +95,15 @@ class CommerceFragment : Fragment() {
             commerceBinding.loadProgressBar.visibility = View.GONE
         }
 
+        /** Refreshing Commerce services with `SwipeRefreshLayout **/
+        commerceBinding.commerceSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getCommerceServices(commerceServiceId)
+            commerceBinding.commerceSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services refreshed", -1)
+        }
+
         return view
     }
 
@@ -104,16 +129,18 @@ class CommerceFragment : Fragment() {
         var serviceName: String
         var serviceDescription: String
         var serviceEligibility: String
-        var serviceCentre: String
-        var presenceRequired: Boolean
+        var serviceCentres: ArrayList<String>
+        var delegatable: Boolean
         var serviceCost: String
-        var serviceRequirements: String
+        var serviceDocuments: ArrayList<String>
         var serviceDuration: String
         var approvalCount: Int
         var disApprovalCount: Int
+        var serviceComments: ArrayList<String>
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
+        var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
@@ -124,27 +151,68 @@ class CommerceFragment : Fragment() {
                 serviceName = commerceServiceList[i].serviceName.toString() //1
                 serviceDescription = commerceServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = commerceServiceList[i].serviceCentres.toString() //4
-                presenceRequired = commerceServiceList[i].presenceRequired!! //5
+                serviceCentres = commerceServiceList[i].serviceCentres!! //4
+                delegatable = commerceServiceList[i].delegatable!! //5
                 serviceCost = commerceServiceList[i].serviceCost.toString() //6
-                serviceRequirements = commerceServiceList[i].serviceDocuments.toString() //7
+                serviceDocuments = commerceServiceList[i].serviceDocuments!! //7
                 serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
-                approvalCount = commerceServiceList[i].approvalCount!! //9
-                disApprovalCount = commerceServiceList[i].disapprovalCount!! //10
-                commentCount = commerceServiceList[i].comments?.size!! //11
+                approvalCount = commerceServiceList[i].usefulCount!! //9
+                disApprovalCount = commerceServiceList[i].notUsefulCount!! //10
+                serviceComments = commerceServiceList[i].serviceComments!!
+                commentCount = commerceServiceList[i].commentCount!! //11
                 shareCount = commerceServiceList[i].serviceShares!! //12
                 viewCount = commerceServiceList[i].serviceViews!! //13
+                serviceProvider = commerceServiceId //14
 
                 commerceService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
-                        commentCount, shareCount, viewCount)
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
+                        serviceDocuments, serviceDuration, approvalCount, disApprovalCount,
+                        serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")
 
-                gAdapter.add(ServiceItem(commerceService, context))
+                /** 1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+                 *  2. wrapping those values in a JSON Object
+                 *  3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+                serviceUpVoteBoolean = commercePrefs
+                        .getBoolean("UP-VOTE-${commerceServiceList[i].serviceId}", false)
 
+                serviceDownVoteBoolean = commercePrefs
+                        .getBoolean("DOWN-VOTE-${commerceServiceList[i].serviceId}", false)
+
+                serviceCommentBoolean = commercePrefs
+                        .getBoolean("COMMENTED-ON-${commerceServiceList[i].serviceId}", false)
+
+                serviceBookmarked = commercePrefs
+                        .getBoolean("BOOKMARKED-${commerceServiceList[i].serviceId}", false)
+
+                Timber.e("HOME-AFFAIRS-UP-VOTE-${commerceServiceList[i].serviceId} -> $serviceUpVoteBoolean")
+                Timber.e("HOME-AFFAIRS-DOWN-VOTE-${commerceServiceList[i].serviceId} -> $serviceDownVoteBoolean")
+
+                savedUserActions
+                        .put("UP-VOTE", serviceUpVoteBoolean)
+                        .put("DOWN-VOTE", serviceDownVoteBoolean)
+                        .put("COMMENTED-ON", serviceCommentBoolean)
+                        .put("BOOKMARKED", serviceBookmarked)
+
+                Timber.e("SAVED-USER-ACTIONS -> $savedUserActions")
+
+                gAdapter.add(ServiceItem(commerceService, context, savedUserActions))
+
+            } else {
+                commerceServiceList = arrayListOf()
             }
         }
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {

@@ -1,5 +1,7 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,9 +10,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
+import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -34,14 +38,26 @@ class RevenueFragment : Fragment() {
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
     private var serviceViewModel: ServiceViewModel? = null
 
-    private lateinit var financeServiceId: String
+    private var financeServiceId: String = ""
     private lateinit var revenueService: Service
     private lateinit var revenueServiceList: List<ServiceEntity>
+
+    /** Shared Preferences for storing user actions **/
+    private lateinit var revenuePrefs: SharedPreferences
+    private val mode = Activity.MODE_PRIVATE
+    private val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
+    private var serviceUpVoteBoolean: Boolean = false
+    private var serviceDownVoteBoolean: Boolean = false
+    private var serviceCommentBoolean: Boolean = false
+    private var serviceBookmarked: Boolean = false
+    private var savedUserActions = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
+
+        revenuePrefs = this.requireActivity().getSharedPreferences(ummoUserPreferences, mode)
 
         /** Initializing ViewModels: ServiceProvider && Services **/
         serviceProviderViewModel = ViewModelProvider(this)
@@ -73,8 +89,17 @@ class RevenueFragment : Fragment() {
 
         Timber.e("CREATING REVENUE-VIEW!")
 
-        if (revenueServiceList.isNotEmpty()) {
+        /*if (revenueServiceList.isNotEmpty()) {
             revenueBinding.loadProgressBar.visibility = View.GONE
+        }*/
+
+        /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
+        revenueBinding.revenueSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getRevenueServices(financeServiceId)
+            revenueBinding.revenueSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services reloaded", -1)
         }
 
         return view
@@ -102,16 +127,18 @@ class RevenueFragment : Fragment() {
         var serviceName: String
         var serviceDescription: String
         var serviceEligibility: String
-        var serviceCentre: String
-        var presenceRequired: Boolean
+        var serviceCentres: ArrayList<String>
+        var delegatable: Boolean
         var serviceCost: String
-        var serviceRequirements: String
+        var serviceDocuments: ArrayList<String>
         var serviceDuration: String
         var approvalCount: Int
-        var disApprovalCount: Int
+        var disapprovalCount: Int
+        var serviceComments: ArrayList<String>
         var commentCount: Int
         var shareCount: Int
         var viewCount: Int
+        var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
         for (i in servicesList?.indices!!) {
@@ -122,35 +149,76 @@ class RevenueFragment : Fragment() {
                 serviceName = revenueServiceList[i].serviceName.toString() //1
                 serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
-                serviceCentre = revenueServiceList[i].serviceCentres.toString() //4
-                presenceRequired = revenueServiceList[i].presenceRequired!! //5
+                serviceCentres = revenueServiceList[i].serviceCentres!! //4
+                delegatable = revenueServiceList[i].delegatable!! //5
                 serviceCost = revenueServiceList[i].serviceCost.toString() //6
-                serviceRequirements = revenueServiceList[i].serviceDocuments.toString() //7
+                serviceDocuments = revenueServiceList[i].serviceDocuments!! //7
                 serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
-                approvalCount = revenueServiceList[i].approvalCount!! //9
-                disApprovalCount = revenueServiceList[i].disapprovalCount!! //10
-                commentCount = revenueServiceList[i].comments?.size!! //11
+                approvalCount = revenueServiceList[i].usefulCount!! //9
+                disapprovalCount = revenueServiceList[i].notUsefulCount!! //10
+                serviceComments = revenueServiceList[i].serviceComments!!
+                commentCount = revenueServiceList[i].commentCount!! //11
                 shareCount = revenueServiceList[i].serviceShares!! //12
                 viewCount = revenueServiceList[i].serviceViews!! //13
+                serviceProvider = revenueId
 
                 revenueService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentre, presenceRequired, serviceCost,
-                        serviceRequirements, serviceDuration, approvalCount, disApprovalCount,
-                        commentCount, shareCount, viewCount)
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
+                        serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
+                        serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
 
-                gAdapter.add(ServiceItem(revenueService, context))
+                /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+                 * 2. wrapping those values in a JSON Object
+                 * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+                serviceUpVoteBoolean = revenuePrefs
+                        .getBoolean("UP-VOTE-${revenueServiceList[i].serviceId}", false)
 
+                serviceDownVoteBoolean = revenuePrefs
+                        .getBoolean("DOWN-VOTE-${revenueServiceList[i].serviceId}", false)
+
+                serviceCommentBoolean = revenuePrefs
+                        .getBoolean("COMMENTED-ON-${revenueServiceList[i].serviceId}", false)
+
+                serviceBookmarked = revenuePrefs
+                        .getBoolean("BOOKMARKED-${revenueServiceList[i].serviceId}", false)
+
+                Timber.e("HOME-AFFAIRS-UP-VOTE-${revenueServiceList[i].serviceId} -> $serviceUpVoteBoolean")
+                Timber.e("HOME-AFFAIRS-DOWN-VOTE-${revenueServiceList[i].serviceId} -> $serviceDownVoteBoolean")
+
+                savedUserActions
+                        .put("UP-VOTE", serviceUpVoteBoolean)
+                        .put("DOWN-VOTE", serviceDownVoteBoolean)
+                        .put("COMMENTED-ON", serviceCommentBoolean)
+                        .put("BOOKMARKED", serviceBookmarked)
+
+                Timber.e("SAVED-USER-ACTIONS -> $savedUserActions")
+
+                gAdapter.add(ServiceItem(revenueService, context, savedUserActions))
+
+            } else {
+                revenueServiceList = arrayListOf()
             }
         }
     }
 
     private fun displayRevenueServices() {
-        gAdapter.add(ServiceItem(revenueService, context))
+        //gAdapter.add(ServiceItem(revenueService, context))
 
         revenueBinding.loadProgressBar.visibility = View.GONE
 
         recyclerView.adapter = gAdapter
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {

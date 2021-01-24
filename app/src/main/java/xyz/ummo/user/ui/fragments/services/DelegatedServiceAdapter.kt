@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import timber.log.Timber
-import xyz.ummo.user.DelegatedService
+import xyz.ummo.user.models.DelegatedService
 import xyz.ummo.user.R
 import xyz.ummo.user.ui.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment

@@ -2,7 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:padding="4dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/feedbackTextField"
@@ -10,10 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/White"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:boxStrokeColor="@color/ummo_2"
         app:endIconMode="clear_text"
-        app:hintTextColor="@color/ummo_1"
-        android:paddingTop="18dp"
-        android:paddingBottom="18dp"
+        app:hintTextColor="@color/ummo_2"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconContentDescription="Feedback Icon"
         app:startIconDrawable="@drawable/message_toolbar_icon">
@@ -22,14 +25,15 @@
             android:id="@+id/feedbackEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="14dp"
-            android:background="#eeeeee"
+            android:layout_margin="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:cursorVisible="true"
             android:fontFamily="@font/rubik"
             android:hint="Help improve Ummo with feedback..."
-            android:lines="2"
-            android:cursorVisible="true"
-            android:textColorHint="@color/ummo_1"
+            android:lines="1"
+            android:textColorHint="@color/ummo_2"
+            android:textCursorDrawable="@drawable/cursor"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
 

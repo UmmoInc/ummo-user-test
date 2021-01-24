@@ -8,7 +8,7 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -32,23 +32,36 @@
         android:theme="@style/AppTheme"
         tools:overrideLibrary="com.mongodb.stitch.android"
         tools:replace="android:allowBackup">
-        <activity android:name=".ui.signup.CompleteSignUp">
+        <activity android:name=".ui.legal.TermsAndConditions"></activity>
+        <activity android:name=".ui.legal.PrivacyPolicy" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <activity android:name=".ui.signup.CompleteSignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.signup.ContactVerificationActivity"/>
+                android:value=".ui.signup.ContactVerificationActivity" />
         </activity>
-
         <activity android:name=".ui.signup.ContactVerificationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.signup.RegisterActivity"/>
+                android:value=".ui.signup.RegisterActivity" />
         </activity>
-
-        <activity android:name=".ui.signup.RegisterActivity" />
-
+        <activity android:name=".ui.signup.RegisterActivity">
+            <meta-data
+                android:name="com.google.android.safetynet.ATTEST_API_KEY"
+                android:value="@string/safety_net_api_key" />
+        </activity>
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
-
-        <activity android:name=".SelfDelegateActivity">
+        <activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -61,42 +74,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
-
         <activity
             android:name=".ui.detailedService.DetailedProduct"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AllServices"
-            android:label="@string/title_activity_all_services"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".AddCard"
-            android:label="@string/title_activity_add_card"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".AddPaymentMethod"
-            android:label="@string/title_activity_add_payment_method"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".EditMyProfile"
-            android:label="@string/title_activity_edit_my_profile"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".DelegationProgress"
-            android:label="@string/title_activity_delegation_progress"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".DelegationChat"
+            android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".AgentRequest"
-            android:label="@string/title_activity_agent_request"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Services"
-            android:label="@string/title_activity_services"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -122,17 +106,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity
-            android:name=".Register"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
-
     </application>
 
 </manifest>

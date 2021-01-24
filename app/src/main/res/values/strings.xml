@@ -16,8 +16,8 @@
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
     <string name="search_location_string">Search location</string>
-    <string name="name_prompt_hint">Enter your full name</string>
-    <string name="contact_prompt_hint">Enter your contact</string>
+    <string name="name_prompt_hint">Full name</string>
+    <string name="contact_prompt_hint">Mobile contact</string>
     <string name="ummo_logo_descriptor">Ummo Logo</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
@@ -129,18 +129,16 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="service_nav_title">Service</string>
+    <string name="service_nav_title">My Services</string>
     <string name="save_service">Save Service</string>
     <string name="service_centre_image">Service Centre Image</string>
     <string name="product_requirements">What you will need:</string>
     <string name="service_cost">Service will cost:</string>
     <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
-    <string name="request_ummo_agent">Request an Ummo Agent to renew your Motor Licence</string>
+    <string name="request_ummo_agent">Request an Ummo Agent for %1$s</string>
 
     <string name="product_cost">Product Cost</string>
 
-    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
-    <string name="serverUrl">http://192.168.43.125:3000</string>
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>
     <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
@@ -167,5 +165,30 @@
     <string name="comments_placeholder">2</string>
     <string name="shares_placeholder">2</string>
     <string name="more_info">MORE INFO</string>
+    <string name="you_upvoted_this">You upvoted</string>
+    <string name="you_downvoted_this">You downvoted</string>
+    <string name="you_commented_on_this">You commented</string>
+    <string name="you_shared_this">You shared</string>
+    <string name="you_saved_this">Bookmarked</string>
+    <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
+    <string name="recommend_service_improvements">How would you improve this service?</string>
+    <string name="service_centre_selection">(Choose one)</string>
+    <string name="request_agent_text">Request Agent</string>
+    <string name="service_created">Service Created…</string>
+    <string name="service_authenticity">Service Authenticity</string>
+    <string name="verified_by">Verified by: </string>
+    <string name="service_verifier">Ministry of Public Service</string>
+    <string name="service_tips">Service Tips</string>
+
+    <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
+    <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
+
+    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.8.103:3000</string>
+    <string name="delegation_fee">E100</string>
+    <string name="intro_header_text"><![CDATA[Thank you for helping us improve Ummo. We value your advice & we\'ll do our best to learn from you.]]></string>
+    <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
+    <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
+    <string name="clean_hands">Made with clean hands. (Don\'t forget to sanitize.)</string>
 
 </resources>

@@ -14,12 +14,27 @@ class ServiceViewModel (application: Application) : AndroidViewModel(application
 
     fun addService(serviceEntity: ServiceEntity?) {
         appRepository.insertService(serviceEntity)
-        Timber.e("ADDING SERVICE TO ROOM -> ${serviceEntity!!.serviceProvider}")
+        Timber.e("ADDING SERVICE TO ROOM [PROVIDER]-> ${serviceEntity!!.serviceProvider}")
+        Timber.e("ADDING SERVICE TO ROOM [ID] -> ${serviceEntity.serviceId}")
+    }
+
+    fun updateService(serviceEntity: ServiceEntity?) {
+        appRepository.updateService(serviceEntity)
+        Timber.e("UPDATING SERVICE IN ROOM -> ${serviceEntity!!.serviceId}")
     }
 
     fun getServicesList(): List<ServiceEntity> {
         return appRepository.services
     }
+
+    fun getBookmarkedServiceList(): List<ServiceEntity> {
+        return appRepository.getBookmarkedServiceList(true)
+    }
+
+    fun getServiceEntityLiveDataById(serviceId: String): LiveData<ServiceEntity> {
+        return appRepository.getServiceEntityLiveDataById(serviceId)
+    }
+
     init {
         serviceEntityLiveData = appRepository.serviceEntityLiveData
     }

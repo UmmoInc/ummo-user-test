@@ -6,14 +6,18 @@ interface ServiceModel {
     var serviceDescription: String? //2
     var serviceEligibility: String? //3
     var serviceCentres: ArrayList<String>? //4
-    var presenceRequired: Boolean? //5
-    var serviceCost: Int? //6
+    //    var serviceCentres: String?
+    var delegatable: Boolean? //5
+    var serviceCost: String? //6
     var serviceDocuments: ArrayList<String>? //7
     var serviceDuration: String? //8
-    var disapprovalCount: Int? //9
-    var approvalCount: Int? //10
-    var comments: ArrayList<String>? //11
-    var serviceShares: Int? //12
-    var serviceViews: Int? //13
-    var serviceProvider: String? //14
+    var notUsefulCount: Int? //9
+    var usefulCount: Int? //10
+    var serviceComments: ArrayList<String>? //11
+    var commentCount: Int? //12
+    var serviceShares: Int? //13
+    var serviceViews: Int? //14
+    var serviceProvider: String? //15
+    var bookmarked: Boolean? //16
+    var isDelegated: Boolean? //17
 }

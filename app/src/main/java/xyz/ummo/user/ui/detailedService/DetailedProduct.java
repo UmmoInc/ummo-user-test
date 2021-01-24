@@ -20,26 +20,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import timber.log.Timber;
 import xyz.ummo.user.R;
-import xyz.ummo.user.Services;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.delegate.DelegateService;
-import xyz.ummo.user.delegate.SocketIO;
 import xyz.ummo.user.delegate.User;
 import xyz.ummo.user.ui.MainScreen;
-import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment;
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
