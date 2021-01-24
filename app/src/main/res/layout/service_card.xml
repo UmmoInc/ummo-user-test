@@ -39,17 +39,19 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
+                    android:layout_margin="8dp"
                     app:srcCompat="@drawable/logo" />
 
                 <TextView
                     android:id="@+id/service_title_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
-                    android:textSize="21sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -58,18 +60,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/service_title_text_view"
+                    android:layout_marginStart="8dp"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:paddingStart="0dp"
                     android:paddingEnd="8dp"
                     android:text="@string/service_description"
                     android:textSize="14sp"
                     app:fontFamily="@font/rubik" />
+
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/service_info_icon_relative_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:gravity="end">
 
                 <ImageView
                     android:id="@+id/info_image_view"
@@ -81,6 +87,7 @@
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_outline_info_blue_24" />
             </RelativeLayout>
+
         </RelativeLayout>
 
         <View
@@ -120,7 +127,8 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_margin="8dp"
-                            app:srcCompat="@drawable/ic_stat_service_avatar" />
+                            android:padding="8dp"
+                            app:srcCompat="@drawable/ic_service_verification_24" />
 
                         <TextView
                             android:id="@+id/service_eligibility_title_text_view"
@@ -130,7 +138,7 @@
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility"
                             android:textColor="@color/Grey"
-                            android:textSize="16sp" />
+                            android:textSize="12sp" />
 
                         <TextView
                             android:id="@+id/service_eligibility_text_view"
@@ -177,7 +185,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/service_centres"
                                     android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -187,7 +195,7 @@
                                     android:layout_toEndOf="@id/service_centre_header_text_view"
                                     android:text="@string/service_centre_selection"
                                     android:textColor="@color/Grey"
-                                    android:textSize="14sp"
+                                    android:textSize="12sp"
                                     android:textStyle="italic" />
 
                                 <!--<LinearLayout
@@ -245,7 +253,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/service_cost_string"
                                     android:textColor="@color/Grey"
-                                    android:textSize="16sp" />
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:id="@+id/service_cost_text_view"
@@ -283,8 +291,8 @@
                                 android:id="@+id/action_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
                                 android:layout_marginStart="8dp"
+                                android:layout_marginTop="4dp"
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:padding="8dp"
@@ -356,7 +364,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_duration"
                                         android:textColor="@color/Grey"
-                                        android:textSize="16sp" />
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:id="@+id/service_duration_text_view"
@@ -398,7 +406,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_requirements"
                                         android:textColor="@color/Grey"
-                                        android:textSize="16sp" />
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -408,7 +416,7 @@
                                         android:layout_toEndOf="@id/service_requirements_header_text_view"
                                         android:text="(FYI: Checklist)"
                                         android:textColor="@color/Grey"
-                                        android:textSize="14sp"
+                                        android:textSize="12sp"
                                         android:textStyle="italic" />
 
                                     <com.google.android.material.chip.ChipGroup
@@ -494,8 +502,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider_2"
-                android:padding="4dp"
                 android:layout_marginStart="8dp"
+                android:padding="4dp"
                 android:visibility="visible">
 
                 <LinearLayout

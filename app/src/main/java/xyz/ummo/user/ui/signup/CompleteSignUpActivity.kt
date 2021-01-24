@@ -134,8 +134,8 @@ class CompleteSignUpActivity : AppCompatActivity() {
         val onePlayerId = status.subscriptionStatus.userId
 
         viewBinding.signUpBtn.setOnClickListener {
-            val emailField: EditText = viewBinding.userEmailEditText
-            val userEmail: String = viewBinding.userEmailEditText.text.toString()
+            val emailField: EditText = viewBinding.userEmailTextInputEditText
+            val userEmail: String = viewBinding.userEmailTextInputEditText.text.toString()
 
             when {
                 Patterns.EMAIL_ADDRESS.matcher(userEmail).matches().not() -> {
@@ -225,6 +225,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     editor.putString("USER_CONTACT", contact)
                     editor.putString("USER_EMAIL", email)
                     editor.putString("USER_PID", playerId)
+                    editor.putBoolean("NEW_SESSION", true)
                     editor.apply()
 
                     Timber.e("successfully logging in-> ${String(data)}")
@@ -293,6 +294,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun launchHomeScreen() {
+
         prefManager?.isFirstTimeLaunch = false
         Timber.e("launchHomeScreen: No Extras")
         startActivity(Intent(this, MainScreen::class.java))

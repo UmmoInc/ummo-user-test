@@ -3,13 +3,14 @@ package xyz.ummo.user.ui.fragments.pagesFrags
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
@@ -92,6 +93,15 @@ class CommerceFragment : Fragment() {
 
         if (commerceServiceList.isNotEmpty()) {
             commerceBinding.loadProgressBar.visibility = View.GONE
+        }
+
+        /** Refreshing Commerce services with `SwipeRefreshLayout **/
+        commerceBinding.commerceSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getCommerceServices(commerceServiceId)
+            commerceBinding.commerceSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services refreshed", -1)
         }
 
         return view
@@ -192,6 +202,17 @@ class CommerceFragment : Fragment() {
                 commerceServiceList = arrayListOf()
             }
         }
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {

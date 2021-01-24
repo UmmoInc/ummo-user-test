@@ -3,8 +3,17 @@ package xyz.ummo.user.ui.signup
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
+import android.webkit.CookieManager
+import android.webkit.WebSettings
+import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+import android.webkit.WebView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
@@ -23,9 +32,12 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.RegisterBinding
 import xyz.ummo.user.delegate.SafetyNetReCAPTCHA
+import xyz.ummo.user.ui.legal.PrivacyPolicy
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {
@@ -42,6 +54,7 @@ class RegisterActivity : AppCompatActivity() {
     private var mVerificationInProgress = false
     private var snackbar: Snackbar? = null
     private val connectivityReceiver = ConnectivityReceiver()
+    private val recaptchaStateEvent = RecaptchaStateEvent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +77,35 @@ class RegisterActivity : AppCompatActivity() {
         /**[NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
 
+        termsAndConditions()
         initCallback()
         register()
+    }
+
+    private fun termsAndConditions() {
+
+        val legalIntent = Intent(this, PrivacyPolicy::class.java)
+        legalIntent.action = Intent.ACTION_VIEW
+
+        registerBinding.legalTermsTextView.isClickable = true
+        registerBinding.legalTermsTextView.movementMethod = LinkMovementMethod.getInstance()
+        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='file:///android_asset/www/terms_and_conditions.html'>Terms of Use</a> & <a href='file:///android_asset/www/privacy_policy.html'> Privacy Policy </a></div>"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms, Html.FROM_HTML_MODE_LEGACY)
+            Timber.e("USING HTML FLAG")
+        } else {
+            registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms)
+            Timber.e("NOT USING HTML FLAG")
+        }
+
+        registerBinding.legalTermsTextView.setOnClickListener {
+
+            Timber.e("LEGAL TERMS CLICKED!")
+            Toast.makeText(this, "Link loading...", Toast.LENGTH_SHORT).show()
+
+            startActivity(legalIntent)
+            //TODO: track legal terms clicked event with Mixpanel
+        }
     }
 
     override fun onStart() {
@@ -141,7 +181,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    /**  **/
     private fun initCallback() {
         // Initialize phone auth callbacks
         // [START phone_auth_callbacks]
@@ -217,9 +256,9 @@ class RegisterActivity : AppCompatActivity() {
     private fun register() {
         registerBinding.registerButton.setOnClickListener {
 
-            registerBinding.registrationCcp.registerCarrierNumberEditText(registerBinding.userContactEditText)
+            registerBinding.registrationCcp.registerCarrierNumberEditText(registerBinding.userContactTextInputEditText)
             fullFormattedPhoneNumber = registerBinding.registrationCcp.fullNumberWithPlus.toString().trim()
-            userName = registerBinding.userNameEditText.text.toString().trim()
+            userName = registerBinding.userNameTextInputEditText.text.toString().trim()
 
             if (registerBinding.registrationCcp.isValidFullNumber) {
                 //TODO: begin registration process
@@ -239,7 +278,7 @@ class RegisterActivity : AppCompatActivity() {
                 finish()
             } else {
                 showSnackbar("Please enter a correct number.", 0)
-                registerBinding.userContactEditText.error = "Edit your contact."
+                registerBinding.userContactTextInputEditText.error = "Edit your contact."
             }
         }
     }
@@ -280,8 +319,14 @@ class RegisterActivity : AppCompatActivity() {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     Timber.e("reCAPTCHA Verified from Server -> ${String(data)}")
-                } else
+                    recaptchaStateEvent.recaptchaPassed = true
+                    EventBus.getDefault().post(recaptchaStateEvent)
+                } else {
+                    recaptchaStateEvent.recaptchaPassed = false
+                    EventBus.getDefault().post(recaptchaStateEvent)
                     Timber.e("reCAPTCHA could NOT be verified -> ${String(data)}")
+                }
+
             }
         }
     }

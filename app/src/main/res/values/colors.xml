@@ -24,6 +24,8 @@
     <color name="greyProfile">#a6a3a4</color>
     <color name="dim_color">#cc000000</color>
 
+    <color name="mtrl_textinput_default_box_stroke_color">#0086c3</color>
+
     <!-- dots inactive colors -->
     <color name="dot_dark_screen1">#d1395c</color>
     <color name="dot_dark_screen2">#14a895</color>

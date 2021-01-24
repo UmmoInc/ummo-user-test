@@ -19,6 +19,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.databinding.ContactVerificationBinding
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import java.util.concurrent.TimeUnit
 
 class ContactVerificationActivity : AppCompatActivity() {
@@ -113,6 +114,17 @@ class ContactVerificationActivity : AppCompatActivity() {
     private fun verifyPhoneNumberWithCode(verificationId: String, code: String) {
         val credential = PhoneAuthProvider.getCredential(verificationId, code)
         signInWithPhoneAuthCredential(credential)
+    }
+
+    @Subscribe
+    fun onRecaptchaStateEvent(recaptchaStateEvent: RecaptchaStateEvent){
+        Timber.e("Recaptcha State -> $recaptchaStateEvent")
+
+        if (recaptchaStateEvent.recaptchaPassed!!) {
+            showSnackbarGreen("Security check passed", -1)
+        } else {
+            showSnackbarRed("Security issues detected. Try again.", -2)
+        }
     }
 
     //TODO: track this event with Mixpanel
@@ -241,6 +253,12 @@ class ContactVerificationActivity : AppCompatActivity() {
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.show()
+    }
+
+    private fun showSnackbarGreen(message: String, length: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.quantum_googgreen400))
         snackbar.show()
     }
 }

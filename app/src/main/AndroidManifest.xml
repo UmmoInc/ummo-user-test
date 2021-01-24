@@ -8,7 +8,7 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -32,27 +32,35 @@
         android:theme="@style/AppTheme"
         tools:overrideLibrary="com.mongodb.stitch.android"
         tools:replace="android:allowBackup">
+        <activity android:name=".ui.legal.TermsAndConditions"></activity>
+        <activity android:name=".ui.legal.PrivacyPolicy" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
 
         <activity android:name=".ui.signup.CompleteSignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.signup.ContactVerificationActivity"/>
+                android:value=".ui.signup.ContactVerificationActivity" />
         </activity>
-
         <activity android:name=".ui.signup.ContactVerificationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.signup.RegisterActivity"/>
+                android:value=".ui.signup.RegisterActivity" />
         </activity>
-
         <activity android:name=".ui.signup.RegisterActivity">
             <meta-data
                 android:name="com.google.android.safetynet.ATTEST_API_KEY"
-                android:value="@string/safety_net_api_key"/>
+                android:value="@string/safety_net_api_key" />
         </activity>
-
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
-
         <activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -66,12 +74,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
-
         <activity
             android:name=".ui.detailedService.DetailedProduct"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
@@ -96,15 +102,14 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar" />
-
     </application>
 
 </manifest>

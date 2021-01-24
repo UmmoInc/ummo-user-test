@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
@@ -91,6 +92,15 @@ class RevenueFragment : Fragment() {
         /*if (revenueServiceList.isNotEmpty()) {
             revenueBinding.loadProgressBar.visibility = View.GONE
         }*/
+
+        /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
+        revenueBinding.revenueSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getRevenueServices(financeServiceId)
+            revenueBinding.revenueSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services reloaded", -1)
+        }
 
         return view
     }
@@ -198,6 +208,17 @@ class RevenueFragment : Fragment() {
         revenueBinding.loadProgressBar.visibility = View.GONE
 
         recyclerView.adapter = gAdapter
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {

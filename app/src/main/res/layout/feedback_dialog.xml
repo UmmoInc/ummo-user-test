@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    android:padding="4dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/feedbackTextField"
@@ -13,6 +14,7 @@
         android:background="@color/White"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        app:boxStrokeColor="@color/ummo_2"
         app:endIconMode="clear_text"
         app:hintTextColor="@color/ummo_2"
         app:layout_constraintTop_toTopOf="parent"
@@ -26,12 +28,12 @@
             android:layout_margin="4dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/screenWhite"
             android:cursorVisible="true"
             android:fontFamily="@font/rubik"
             android:hint="Help improve Ummo with feedback..."
             android:lines="1"
             android:textColorHint="@color/ummo_2"
+            android:textCursorDrawable="@drawable/cursor"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
 

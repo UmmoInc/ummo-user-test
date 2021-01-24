@@ -52,9 +52,7 @@ import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
-import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
-import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
-import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import xyz.ummo.user.utilities.eventBusEvents.*
 
 class MainScreen : AppCompatActivity() {
 
@@ -97,6 +95,8 @@ class MainScreen : AppCompatActivity() {
     private var sharedPrefUserName: String = ""
     private var sharedPrefUserContact: String = ""
     private var sharedPrefUserEmail: String = ""
+    private var sharedPrefNewSession: Boolean = false
+
     private val profileEntity = ProfileEntity()
     private var profileViewModel: ProfileViewModel? = null
 
@@ -105,6 +105,7 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarBinding: AppBarMainScreenBinding
     private lateinit var infoCardBinding: InfoCardBinding
 
+    /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
     private val connectivityReceiver = ConnectivityReceiver()
@@ -165,6 +166,12 @@ class MainScreen : AppCompatActivity() {
         sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
         sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
         sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
+        sharedPrefNewSession = mainScreenPrefs.getBoolean("NEW_SESSION", false)
+
+        Timber.e("NEW SESSION -> $sharedPrefNewSession")
+        if (sharedPrefNewSession) {
+            welcomeUserAboard()
+        }
 
         getAndStoreUserInfoLocally()
 
@@ -183,6 +190,26 @@ class MainScreen : AppCompatActivity() {
 
         getServiceProviderData()
 
+    }
+
+    private fun welcomeUserAboard() {
+        val introDialogBuilder = MaterialAlertDialogBuilder(this)
+        introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
+
+        val introDialogView = LayoutInflater.from(this)
+                .inflate(R.layout.intro_dialog_layout, null)
+
+        introDialogBuilder.setView(introDialogView)
+
+        introDialogBuilder.setPositiveButton("I'm in") { dialogInterface, i ->
+            Timber.e("USER IS IN!!!")
+            val pagesFragment = PagesFragment()
+            openFragment(pagesFragment)
+            val editor = mainScreenPrefs.edit()
+            editor.putBoolean("NEW_SESSION", false).apply()
+        }
+
+        introDialogBuilder.show()
     }
 
     override fun onStart() {
@@ -213,7 +240,6 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    /** DO NOT DELETE!!!**/
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
         Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")

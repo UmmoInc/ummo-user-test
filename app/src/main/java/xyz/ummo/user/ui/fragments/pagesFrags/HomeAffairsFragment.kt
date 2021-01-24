@@ -11,6 +11,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -64,12 +66,20 @@ class HomeAffairsFragment : Fragment() {
     private var savedUserActions = JSONObject()
     private lateinit var loadProgressBar: ProgressBar
 
+    private var newSession = false
+
+    private lateinit var homeAffairsSwipeRefresher: SwipeRefreshLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /** [Service-Actions Event] Register for EventBus events **/
+        EventBus.getDefault().register(this)
 
         gAdapter = GroupAdapter()
 
         homeAffairsPrefs = this.requireActivity().getSharedPreferences(ummoUserPreferences, mode)
+        newSession = homeAffairsPrefs.getBoolean("NEW_SESSION", false)
 
         /** Initializing ViewModels: ServiceProvider && Services **/
         serviceProviderViewModel = ViewModelProvider(this)
@@ -79,6 +89,7 @@ class HomeAffairsFragment : Fragment() {
                 .get(ServiceViewModel::class.java)
 
         Timber.e("CREATING HOME-AFFAIRS-FRAGMENT!")
+
         getHomeAffairsServiceProviderId()
 
         getHomeAffairsServices(homeAffairsServiceId)
@@ -87,7 +98,6 @@ class HomeAffairsFragment : Fragment() {
 
         if (homeAffairsServiceList.isNotEmpty())
             loadProgressBar.visibility = View.GONE*/
-
     }
 
     @Subscribe
@@ -98,8 +108,7 @@ class HomeAffairsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        /** [Service-Actions Event] Register for EventBus events **/
-        EventBus.getDefault().register(this)
+
     }
 
     override fun onStop() {
@@ -136,7 +145,15 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-//        Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
+        /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
+        homeAffairsBinding.homeAffairsSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getHomeAffairsServices(homeAffairsServiceId)
+            homeAffairsBinding.homeAffairsSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services refreshed", -1)
+        }
+
         return view
     }
 
@@ -182,7 +199,9 @@ class HomeAffairsFragment : Fragment() {
              Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServiceList[i].serviceName}")*/
 
         Timber.e("SERVICE-LIST [BEFORE]-> ${servicesList?.size}")
-        for (i in servicesList?.indices!!) {
+        homeAffairsServiceList = servicesList!!
+
+        for (i in servicesList.indices) {
             if (servicesList[i].serviceProvider == homeAffairsId) {
                 Timber.e("SERVICE-LIST [AFTER]-> $servicesList")
                 homeAffairsServiceList = servicesList
