@@ -40,7 +40,7 @@
                 android:contentDescription="@string/info_image"
                 app:srcCompat="@drawable/ic_eco_24" />
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/info_cancel_image_view"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
@@ -49,7 +49,7 @@
                 android:contentDescription="@string/dismiss_info"
                 app:srcCompat="@drawable/ic_cancel_24"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"/>-->
 
             <TextView
                 android:id="@+id/info_title_text_view"

@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.signup
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -32,6 +33,7 @@ import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CompleteSignUpActivity : AppCompatActivity() {
@@ -211,7 +213,13 @@ class CompleteSignUpActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun signUp(name: String, email: String, contact: String, playerId: String) {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+        val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        val currentDate = simpleDateFormat.format(Date())
+
         object : Login(applicationContext, name, email, contact, playerId) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
@@ -228,6 +236,16 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     editor.putBoolean("NEW_SESSION", true)
                     editor.apply()
 
+                    /** [MixpanelAPI] 1. Identifying User by contact &&
+                     *                2. Tracking sign_up activity **/
+                    val userObject = JSONObject()
+                    userObject.put("USER_NAME", name)
+                    userObject.put("USER_CONTACT", contact)
+                    userObject.put("USER_EMAIL", email)
+                    userObject.put("SIGN_UP_DATE", currentDate)
+
+                    mixpanel?.people?.identify(contact)
+                    mixpanel?.track("userRegistering_userDetails", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
                 } else {
                     Timber.e("Something happened... $code +  $data  + ${String(data)}")

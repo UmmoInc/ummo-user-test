@@ -1,8 +1,10 @@
 package xyz.ummo.user.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.graphics.pdf.PdfDocument
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -53,6 +55,9 @@ import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainScreen : AppCompatActivity() {
 
@@ -113,8 +118,16 @@ class MainScreen : AppCompatActivity() {
     /** [EventBus] Event-values for Service Actions: UP-VOTE, DOWN-VOTE, COMMENT, BOOKMARK **/
     private var serviceBookmarkJSONObject = JSONObject()
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         /** Initializing view binders **/
         mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
@@ -133,9 +146,6 @@ class MainScreen : AppCompatActivity() {
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
-        var mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
         toolbar = appBarBinding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Ummo"
@@ -151,15 +161,9 @@ class MainScreen : AppCompatActivity() {
 
         mAuth = FirebaseAuth.getInstance()
 
-//        logoutClick() //TODO: to reconsider implementation
-
-        mHandler = Handler()
-
         if (savedInstanceState == null) {
             navItemIndex = 0
-
             CURRENT_TAG = TAG_HOME
-
         }
 
         /** Getting Shared Pref Values for the user - to use in various scenarios to follow**/
@@ -184,6 +188,7 @@ class MainScreen : AppCompatActivity() {
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 
 //        checkForSocketConnection()
@@ -193,6 +198,9 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun welcomeUserAboard() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
         introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
 
@@ -207,6 +215,11 @@ class MainScreen : AppCompatActivity() {
             openFragment(pagesFragment)
             val editor = mainScreenPrefs.edit()
             editor.putBoolean("NEW_SESSION", false).apply()
+
+            /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
+            val welcomeEventObject = JSONObject()
+            welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
+            mixpanel?.track("welcomePromptUser_userConfirmation", welcomeEventObject)
         }
 
         introDialogBuilder.show()
@@ -254,6 +267,18 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onServiceUpvoted(serviceUpvoteServiceEvent: UpvoteServiceEvent) {
+        if (serviceUpvoteServiceEvent.serviceUpvote!!)
+            showSnackbarBlue("Service Upvoted", -1)
+    }
+
+    @Subscribe
+    fun onServiceDownvoted(serviDownvoteServiceEvent: DownvoteServiceEvent) {
+        if (serviDownvoteServiceEvent.serviceDownvote!!)
+            showSnackbarRed("Service Downvoted", -1)
+    }
+
+    @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
@@ -267,9 +292,9 @@ class MainScreen : AppCompatActivity() {
                 Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
 
                 if (serviceBookmarkedEvent.serviceBookmarked!!)
-                    showSnackbarBlue("${serviceEntity.serviceName} bookmarked", -1)
+                    showSnackbarYellow("Service Bookmarked", -1)
                 else
-                    showSnackbarBlue("${serviceEntity.serviceName} removed from your bookmarks", -1)
+                    showSnackbarYellow("Service removed from your bookmarks", -1)
 
             }
         }
@@ -294,6 +319,8 @@ class MainScreen : AppCompatActivity() {
     }
 
     fun feedback() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         val feedbackDialogView = LayoutInflater.from(this)
                 .inflate(R.layout.feedback_dialog, null)
@@ -311,8 +338,16 @@ class MainScreen : AppCompatActivity() {
             Timber.e("Feedback Submitted-> $feedbackText")
             if (feedbackText.isNotEmpty()) {
                 submitFeedback(feedbackText, sharedPrefUserContact)
+
+                /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
+                val feedbackEventObject = JSONObject()
+                feedbackEventObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("FEEDBACK", feedbackText)
+                mixpanel?.track("feedback_submitted", feedbackEventObject)
+
             } else {
                 showSnackbarRed("You forgot your feedback", -1)
+                mixpanel?.track("feedback_cancelled")
             }
 
         }
@@ -362,7 +397,10 @@ class MainScreen : AppCompatActivity() {
                 val pagesFragment = PagesFragment()
                 openFragment(pagesFragment)
 
-                mixpanel?.track("homeTapped_bottomNav")
+                val homeEventObject = JSONObject()
+                homeEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
+
                 return@OnNavigationItemSelectedListener true
             }
 
@@ -393,7 +431,9 @@ class MainScreen : AppCompatActivity() {
                 val savedServicesFragment = SavedServicesFragment()
                 openFragment(savedServicesFragment)
 
-                mixpanel?.track("bookmarkedServices_bottomNav")
+                val bookmarkEventObject = JSONObject()
+                bookmarkEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_bookmarksTapped", bookmarkEventObject)
 
                 return@OnNavigationItemSelectedListener true
             }
@@ -402,7 +442,9 @@ class MainScreen : AppCompatActivity() {
                 val profileFragment = ProfileFragment()
                 openFragment(profileFragment)
 
-                mixpanel?.track("profile_bottomNav")
+                val profileEventObject = JSONObject()
+                profileEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_profileTapped", profileEventObject)
 
                 return@OnNavigationItemSelectedListener true
             }
@@ -840,10 +882,28 @@ class MainScreen : AppCompatActivity() {
         snackbar.show()
     }
 
+    private fun showSnackbarYellow(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.quantum_yellow700))
+
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
     private fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }

@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
@@ -24,6 +26,9 @@ import xyz.ummo.user.models.Service
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class CommerceFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -55,8 +60,16 @@ class CommerceFragment : Fragment() {
     private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         gAdapter = GroupAdapter()
 
@@ -91,6 +104,12 @@ class CommerceFragment : Fragment() {
 
         Timber.e("CREATING COMMERCE-VIEW!")
 
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+        val commerceEventObject = JSONObject()
+        commerceEventObject.put("EVENT_DATE_TIME", currentDate)
+        mixpanel?.track("commerceTab_displayed", commerceEventObject)
+
         if (commerceServiceList.isNotEmpty()) {
             commerceBinding.loadProgressBar.visibility = View.GONE
         }
@@ -102,6 +121,8 @@ class CommerceFragment : Fragment() {
             getCommerceServices(commerceServiceId)
             commerceBinding.commerceSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed", -1)
+
+            mixpanel?.track("commerceTab_swipeRefreshed", commerceEventObject)
         }
 
         return view

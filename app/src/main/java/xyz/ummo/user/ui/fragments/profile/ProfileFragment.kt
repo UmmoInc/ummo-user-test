@@ -77,7 +77,7 @@ class ProfileFragment : Fragment() {
             logout()
         }
 
-        dismissInfoCard()
+//        dismissInfoCard()
 
         return view
     }
@@ -95,11 +95,11 @@ class ProfileFragment : Fragment() {
         // prefManager.unSetFirstTimeLaunch();
     }
 
-    private fun dismissInfoCard() {
+    /*private fun dismissInfoCard() {
         profileInfoCard.infoCancelImageView.setOnClickListener {
             Timber.e("CARD DISMISSED!")
         }
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri?) {

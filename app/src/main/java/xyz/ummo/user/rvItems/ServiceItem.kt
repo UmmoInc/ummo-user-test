@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_card.view.*
@@ -100,6 +101,13 @@ class ServiceItem(private val service: Service,
 
     @SuppressLint("SimpleDateFormat")
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        /** Date chunk below is being used to capture a selection's time-stamp **/
+        val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        val currentDate = simpleDateFormat.format(Date())
+
+        val mixpanel = MixpanelAPI.getInstance(context,
+                context?.resources?.getString(R.string.mixpanelToken))
+        val serviceItemObject = JSONObject()
 
         Timber.e("UP-VOTE -> $upVote")
         Timber.e("DOWN-VOTE -> $downVote")
@@ -125,6 +133,13 @@ class ServiceItem(private val service: Service,
                         null, false) as Chip
 
                 serviceCentreChipItem.text = service.serviceCentre[i]
+
+                if (serviceCentreChipItem.isChecked) {
+                    serviceItemObject.put("CENTRE_CHIP", service.serviceCentre)
+                    mixpanel?.track("serviceCard_centreChipChecked", serviceItemObject)
+
+                    Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentre}")
+                }
 
                 viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
             }
@@ -160,10 +175,6 @@ class ServiceItem(private val service: Service,
         } else {
             viewHolder.itemView.request_agent_button.visibility = View.GONE
         }
-
-        /** Date chunk below is being used to capture a selection's time-stamp **/
-        val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
-        val currentDate = simpleDateFormat.format(Date())
 
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
@@ -204,6 +215,10 @@ class ServiceItem(private val service: Service,
             serviceExtrasBottomSheetDialogFragment
                     .show((context as FragmentActivity).supportFragmentManager,
                             ServiceExtrasBottomSheetDialogFragment.TAG)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_ID", serviceId)
+            mixpanel?.track("serviceCard_infoIconTapped", serviceItemObject)
         }
 
         /** Expand Service Card to reveal more info - Layout-Click... **/
@@ -213,11 +228,21 @@ class ServiceItem(private val service: Service,
                 viewHolder.itemView.expand_image_view.visibility = View.GONE
                 viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.action_text_view.text = "CLOSE"
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_ID", serviceId)
+                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
+
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
                 viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
                 viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.collapse_image_view.visibility = View.GONE
                 viewHolder.itemView.action_text_view.text = "MORE INFO"
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_ID", serviceId)
+                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
+
             }
         }
 
@@ -228,11 +253,21 @@ class ServiceItem(private val service: Service,
                 viewHolder.itemView.expand_image_view.visibility = View.GONE
                 viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.action_text_view.text = "CLOSE"
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_ID", serviceId)
+                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
+
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
                 viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
                 viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.collapse_image_view.visibility = View.GONE
                 viewHolder.itemView.action_text_view.text = "MORE INFO"
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_ID", serviceId)
+                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
+
             }
         }
 
@@ -242,7 +277,11 @@ class ServiceItem(private val service: Service,
             upVoteService(currentDate)
             /** #UX Trigger icon-change on click **/
             upVoteTriggeredChangeStates(viewHolder)
-            Timber.e("SERVICE-UPVOTED-PREF [ELSE]-> $isUpvotedPref")
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_UPVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceUpvoted", serviceItemObject)
+            serviceItemObject.remove("SERVICE_UPVOTED")
 
         }
         viewHolder.itemView.approve_service_image.setOnClickListener {
@@ -250,7 +289,11 @@ class ServiceItem(private val service: Service,
             upVoteService(currentDate)
             /** #UX Trigger icon-change on click **/
             upVoteTriggeredChangeStates(viewHolder)
-            Timber.e("SERVICE-UPVOTED-PREF [ELSE]-> $isUpvotedPref")
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_UPVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceUpvoted", serviceItemObject)
+            serviceItemObject.remove("SERVICE_UPVOTED")
 
         }
 
@@ -258,10 +301,20 @@ class ServiceItem(private val service: Service,
         viewHolder.itemView.approved_service_relative_layout.setOnClickListener {
             undoServiceUpvote(currentDate)
             reverseUpVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_UPVOTED_UNDO", serviceId)
+            mixpanel?.track("serviceCard_serviceUpvoted_undo", serviceItemObject)
+            serviceItemObject.remove("SERVICE_UPVOTED_UNDO")
         }
         viewHolder.itemView.approved_service_image.setOnClickListener {
             undoServiceUpvote(currentDate)
             reverseUpVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_UPVOTED_UNDO", serviceId)
+            mixpanel?.track("serviceCard_serviceUpvoted_undo", serviceItemObject)
+            serviceItemObject.remove("SERVICE_UPVOTED_UNDO")
         }
 
         /** [2] Disapprove Service Click Handlers **/
@@ -269,31 +322,61 @@ class ServiceItem(private val service: Service,
             downVoteService(currentDate)
             /** #UX Trigger icon-change on click **/
             downVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_DOWNVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceDownvoted", serviceItemObject)
+            serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
         viewHolder.itemView.disapprove_service_image.setOnClickListener {
             downVoteService(currentDate)
             /** #UX Trigger icon-change on click **/
             downVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_DOWNVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceDownvoted", serviceItemObject)
+            serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
 
         /** [2.1] Reverse Disapprove Service Click Handlers **/
         viewHolder.itemView.disapproved_service_relative_layout.setOnClickListener {
             undoServiceDownvote(currentDate)
             reverseDownVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_DOWNVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceDownvoted_undo", serviceItemObject)
+            serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
         viewHolder.itemView.disapproved_service_image.setOnClickListener {
             undoServiceDownvote(currentDate)
             reverseDownVoteTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_DOWNVOTED", serviceId)
+            mixpanel?.track("serviceCard_serviceDownvoted_undo", serviceItemObject)
+            serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
 
         /** [3] Service Feedback Click Handlers **/
         viewHolder.itemView.service_comments_relative_layout.setOnClickListener {
             makeServiceComment(currentDate)
             commentTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_COMMENTED_ON", serviceId)
+            mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")
         }
         viewHolder.itemView.service_comments_image.setOnClickListener {
             makeServiceComment(currentDate)
             commentTriggeredChangeStates(viewHolder)
+
+            serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                    .put("SERVICE_COMMENTED_ON", serviceId)
+            mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")
         }
 
         /** [4] Save Service Click Handlers **/
@@ -303,9 +386,20 @@ class ServiceItem(private val service: Service,
             if (!bookmarked) {
                 bookmarkService(currentDate)
                 bookmarkTriggeredChangeStates(viewHolder)
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_BOOKMARKED", serviceId)
+                mixpanel?.track("serviceCard_serviceBookmarked", serviceItemObject)
+                serviceItemObject.remove("SERVICE_BOOKMARKED")
+
             } else {
                 removeBookmark(currentDate)
                 reverseBookmarkChangeStates(viewHolder)
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_BOOKMARKED_UNDO", serviceId)
+                mixpanel?.track("serviceCard_serviceBookmarked_undo", serviceItemObject)
+                serviceItemObject.remove("SERVICE_BOOKMARKED_UNDO")
             }
         }
         viewHolder.itemView.save_service_image.setOnClickListener {
@@ -314,9 +408,20 @@ class ServiceItem(private val service: Service,
             if (!bookmarked) {
                 bookmarkService(currentDate)
                 bookmarkTriggeredChangeStates(viewHolder)
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_BOOKMARKED", serviceId)
+                mixpanel?.track("serviceCard_serviceBookmarked", serviceItemObject)
+                serviceItemObject.remove("SERVICE_BOOKMARKED")
+
             } else {
                 removeBookmark(currentDate)
                 reverseBookmarkChangeStates(viewHolder)
+
+                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("SERVICE_BOOKMARKED_UNDO", serviceId)
+                mixpanel?.track("serviceCard_serviceBookmarked_undo", serviceItemObject)
+                serviceItemObject.remove("SERVICE_BOOKMARKED_UNDO")
             }
         }
 

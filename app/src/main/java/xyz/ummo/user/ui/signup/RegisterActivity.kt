@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.Base64
 import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -83,28 +85,23 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun termsAndConditions() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         val legalIntent = Intent(this, PrivacyPolicy::class.java)
         legalIntent.action = Intent.ACTION_VIEW
 
         registerBinding.legalTermsTextView.isClickable = true
         registerBinding.legalTermsTextView.movementMethod = LinkMovementMethod.getInstance()
-        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='file:///android_asset/www/terms_and_conditions.html'>Terms of Use</a> & <a href='file:///android_asset/www/privacy_policy.html'> Privacy Policy </a></div>"
+        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms of Use</a> & <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy </a></div>"
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms, Html.FROM_HTML_MODE_LEGACY)
+
             Timber.e("USING HTML FLAG")
         } else {
             registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms)
             Timber.e("NOT USING HTML FLAG")
-        }
-
-        registerBinding.legalTermsTextView.setOnClickListener {
-
-            Timber.e("LEGAL TERMS CLICKED!")
-            Toast.makeText(this, "Link loading...", Toast.LENGTH_SHORT).show()
-
-            startActivity(legalIntent)
-            //TODO: track legal terms clicked event with Mixpanel
         }
     }
 
@@ -158,7 +155,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun startPhoneNumberVerification(phoneNumber: String) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, this, mCallbacks)
         mVerificationInProgress = true
-        Timber.i("Verification started!")
+        Timber.e("Verification started!")
     }
 
     /** Signing up with PhoneAuth Credential - with Firebase's Auth instance (mAuth);
@@ -254,6 +251,9 @@ class RegisterActivity : AppCompatActivity() {
      * checking it against the international standards for mobile numbers
      * **/
     private fun register() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         registerBinding.registerButton.setOnClickListener {
 
             registerBinding.registrationCcp.registerCarrierNumberEditText(registerBinding.userContactTextInputEditText)
@@ -275,8 +275,12 @@ class RegisterActivity : AppCompatActivity() {
 
                 reCAPTCHA()
 
+                mixpanel?.track("registrationStarted_nextButton")
+
                 finish()
             } else {
+                mixpanel?.track("registrationStarted_incorrectContact")
+
                 showSnackbar("Please enter a correct number.", 0)
                 registerBinding.userContactTextInputEditText.error = "Edit your contact."
             }
@@ -292,10 +296,6 @@ class RegisterActivity : AppCompatActivity() {
                     val userResponseToken = response.tokenResult
                     if (response.tokenResult?.isNotEmpty() == true) {
                         Timber.e("reCAPTCHA Token -> $userResponseToken")
-
-/*                        Thread {
-                            verifyCaptchaFromServer(userResponseToken)
-                        }.start()*/
 
                         GlobalScope.launch {
                             Timber.e("reCAPTCHA Token -> $userResponseToken")
@@ -326,7 +326,6 @@ class RegisterActivity : AppCompatActivity() {
                     EventBus.getDefault().post(recaptchaStateEvent)
                     Timber.e("reCAPTCHA could NOT be verified -> ${String(data)}")
                 }
-
             }
         }
     }

@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
@@ -24,6 +26,9 @@ import xyz.ummo.user.models.Service
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RevenueFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -52,8 +57,16 @@ class RevenueFragment : Fragment() {
     private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         gAdapter = GroupAdapter()
 
@@ -66,10 +79,8 @@ class RevenueFragment : Fragment() {
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
-        Timber.e("CREATING REVENUE-FRAGMENT!")
         getRevenueServiceProviderId()
         getRevenueServices(financeServiceId)
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -93,6 +104,12 @@ class RevenueFragment : Fragment() {
             revenueBinding.loadProgressBar.visibility = View.GONE
         }*/
 
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+        val revenueEventObject = JSONObject()
+        revenueEventObject.put("EVENT_DATE_TIME", currentDate)
+        mixpanel?.track("revenueTab_displayed", revenueEventObject)
+
         /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
         revenueBinding.revenueSwipeRefresher.setOnRefreshListener {
             Timber.e("REFRESHING VIEW")
@@ -100,6 +117,7 @@ class RevenueFragment : Fragment() {
             getRevenueServices(financeServiceId)
             revenueBinding.revenueSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services reloaded", -1)
+            mixpanel?.track("revenueTab_swipeRefreshed", revenueEventObject)
         }
 
         return view

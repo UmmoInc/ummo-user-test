@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
@@ -33,6 +35,9 @@ import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
 import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeAffairsFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -70,8 +75,16 @@ class HomeAffairsFragment : Fragment() {
 
     private lateinit var homeAffairsSwipeRefresher: SwipeRefreshLayout
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         /** [Service-Actions Event] Register for EventBus events **/
         EventBus.getDefault().register(this)
@@ -79,7 +92,6 @@ class HomeAffairsFragment : Fragment() {
         gAdapter = GroupAdapter()
 
         homeAffairsPrefs = this.requireActivity().getSharedPreferences(ummoUserPreferences, mode)
-        newSession = homeAffairsPrefs.getBoolean("NEW_SESSION", false)
 
         /** Initializing ViewModels: ServiceProvider && Services **/
         serviceProviderViewModel = ViewModelProvider(this)
@@ -145,6 +157,12 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
+        val homeAffairsEvent = JSONObject()
+        homeAffairsEvent.put("EVENT_DATE_TIME", currentDate)
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+        mixpanel?.track("homeAffairsTab_displayed", homeAffairsEvent)
+
         /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
         homeAffairsBinding.homeAffairsSwipeRefresher.setOnRefreshListener {
             Timber.e("REFRESHING VIEW")
@@ -152,6 +170,7 @@ class HomeAffairsFragment : Fragment() {
             getHomeAffairsServices(homeAffairsServiceId)
             homeAffairsBinding.homeAffairsSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed", -1)
+            mixpanel?.track("homeAffairsTab_swipeRefreshed", homeAffairsEvent)
         }
 
         return view
@@ -193,10 +212,6 @@ class HomeAffairsFragment : Fragment() {
         var serviceProvider: String
 
         val servicesList = serviceViewModel?.getServicesList()
-
-        /* val bookmarkedServiceList = serviceViewModel?.getBookmarkedServiceList()
-         for (i in bookmarkedServiceList?.indices!!)
-             Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServiceList[i].serviceName}")*/
 
         Timber.e("SERVICE-LIST [BEFORE]-> ${servicesList?.size}")
         homeAffairsServiceList = servicesList!!

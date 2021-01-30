@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
@@ -95,12 +96,18 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun verifyCode() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         viewBinding.verifyContact.setOnClickListener {
             val code = viewBinding.confirmationCode.text.toString()
 //            val code = "123456"
             Timber.e("Verifying code -> $code!")
 
+            //TODO: java.lang.IllegalArgumentException: Cannot create PhoneAuthCredential without either verificationProof, sessionInfo, temporary proof, or enrollment ID.
             verifyPhoneNumberWithCode(mVerificationId!!.toString(), code)
+
+            mixpanel?.track("contactVerification_contactVerified")
         }
     }
 
@@ -113,22 +120,34 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun verifyPhoneNumberWithCode(verificationId: String, code: String) {
         val credential = PhoneAuthProvider.getCredential(verificationId, code)
+
+
         signInWithPhoneAuthCredential(credential)
     }
 
     @Subscribe
     fun onRecaptchaStateEvent(recaptchaStateEvent: RecaptchaStateEvent){
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         Timber.e("Recaptcha State -> $recaptchaStateEvent")
 
         if (recaptchaStateEvent.recaptchaPassed!!) {
             showSnackbarGreen("Security check passed", -1)
+            /** [Mixpanel] Tracking recaptcha success */
+            mixpanel?.track("contactVerification_recaptchaPassed")
         } else {
             showSnackbarRed("Security issues detected. Try again.", -2)
+            /** [Mixpanel] Tracking recaptcha failure */
+            mixpanel?.track("contactVerification_recaptchaFailed")
         }
     }
 
     //TODO: track this event with Mixpanel
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         mAuth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 //Sign user in, update UI
@@ -142,6 +161,8 @@ class ContactVerificationActivity : AppCompatActivity() {
 
                 Timber.e("User Name -> $userName")
                 Timber.e("User Contact -> $userContact")
+
+                mixpanel?.track("registrationStarted_nextButton")
 
                 finish()
             } else {

@@ -16,8 +16,8 @@
 
             <ImageView
                 android:id="@+id/service_creation_image_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_author_info_icon_24" />
 
@@ -51,8 +51,8 @@
 
             <ImageView
                 android:id="@+id/service_authenticity_image_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_verified_mark_24" />
 
@@ -125,8 +125,8 @@
 
             <ImageView
                 android:id="@+id/service_tips_image_view"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_service_tips_24" />
 

@@ -9,7 +9,7 @@
 
     <item
         android:id="@+id/bottom_navigation_service"
-        android:icon="@drawable/ic_action_assigned"
+        android:icon="@drawable/ic_bookmarks_24_icon"
         android:title="@string/service_nav_title" />
 
     <item
