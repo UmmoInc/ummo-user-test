@@ -260,6 +260,13 @@ class RegisterActivity : AppCompatActivity() {
             fullFormattedPhoneNumber = registerBinding.registrationCcp.fullNumberWithPlus.toString().trim()
             userName = registerBinding.userNameTextInputEditText.text.toString().trim()
 
+            if (userName.isBlank()) {
+                showSnackbar("Please enter your name.", 0)
+                registerBinding.userNameTextInputEditText.error = "Enter your name here..."
+            } else if (userName.length < 3) {
+                registerBinding.userNameTextInputEditText.error = "Please enter your real name..."
+            }
+
             if (registerBinding.registrationCcp.isValidFullNumber) {
                 //TODO: begin registration process
                 startPhoneNumberVerification(fullFormattedPhoneNumber)

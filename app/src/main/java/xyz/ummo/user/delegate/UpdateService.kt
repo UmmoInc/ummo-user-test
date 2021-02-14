@@ -11,7 +11,7 @@ import xyz.ummo.user.R
 abstract class UpdateService(context: Context, serviceUpdate: JSONObject) {
     init {
         Timber.e("SERVICE-UPDATE -> $serviceUpdate")
-        Fuel.put("${context.getString(R.string.serverUrl)}/api/update_service/")
+        Fuel.put("${context.getString(R.string.serverUrl)}/api/update_service")
 //        Fuel.put("${context.getString(R.string.serverUrl)}/product/${serviceUpdate.getString("_id")}/")
                 .jsonBody(serviceUpdate.toString())
                 .response { request, response, result ->

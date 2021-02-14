@@ -35,10 +35,7 @@ import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
-import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
-import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
-import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
+import xyz.ummo.user.utilities.eventBusEvents.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -62,6 +59,7 @@ class ServiceItem(private val service: Service,
     private val isDownvotedEvent = DownvoteServiceEvent()
     private val serviceCommentEvent = ServiceCommentEvent()
     private val isBookmarkedEvent = ServiceBookmarkedEvent()
+    private val paymentTermsEvent = ConfirmPaymentTermsEvent()
 
     private var isUpvotedPref: Boolean = false
     private var isDownvotedPref: Boolean = false
@@ -109,10 +107,10 @@ class ServiceItem(private val service: Service,
                 context?.resources?.getString(R.string.mixpanelToken))
         val serviceItemObject = JSONObject()
 
-        Timber.e("UP-VOTE -> $upVote")
-        Timber.e("DOWN-VOTE -> $downVote")
-        Timber.e("COMMENTED-ON -> $commentedOn")
-        Timber.e("BOOKMARKED -> $bookmarked")
+//        Timber.e("UP-VOTE -> $upVote")
+//        Timber.e("DOWN-VOTE -> $downVote")
+//        Timber.e("COMMENTED-ON -> $commentedOn")
+//        Timber.e("BOOKMARKED -> $bookmarked")
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
@@ -176,6 +174,15 @@ class ServiceItem(private val service: Service,
             viewHolder.itemView.request_agent_button.visibility = View.GONE
         }
 
+
+        //TODO: disable button TODAY
+        if (serviceEntity.isDelegated == true) {
+            viewHolder.itemView.request_agent_button.text = "IN-PROGRESS"
+            viewHolder.itemView.request_agent_button.isClickable = false
+            viewHolder.itemView.request_agent_button
+                    .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
+            viewHolder.itemView.request_agent_button.isActivated = false
+        }
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
 
@@ -454,8 +461,16 @@ class ServiceItem(private val service: Service,
          *  2) Converting fee string to int
          *  3) Adding [Delegation Fee] to get Total Cost (int)
          *  4) Displaying Total Cost**/
-        val serviceCost = service.serviceCost.subSequence(1, service.serviceCost.length)
-        val serviceCostInt = Integer.parseInt(serviceCost.toString())
+        val serviceCost: String = service.serviceCost.subSequence(1, service.serviceCost.length) as String
+        val formattedServiceCost: String
+
+        formattedServiceCost = if (serviceCost.contains(",")) {
+            serviceCost.replace(",", "")
+        } else {
+            serviceCost
+        }
+
+        val serviceCostInt = Integer.parseInt(formattedServiceCost)
         val totalCostInt = serviceCostInt + 100
         totalCostTextView.text = "E$totalCostInt"
 
@@ -463,11 +478,27 @@ class ServiceItem(private val service: Service,
                 .setIcon(R.drawable.logo)
                 .setView(alertDialogView)
 
+        confirmPaymentCheckBox.setOnClickListener {
+            if (confirmPaymentCheckBox.isChecked) {
+                paymentTermsEvent.paymentTermsConfirmed = true
+                EventBus.getDefault().post(paymentTermsEvent)
+
+            } else {
+                alertDialogBuilder.setPositiveButton("Req") { dialogInterface, i ->
+//                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.YELLOW)
+                }
+            }
+        }
+
         alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
             Timber.e("Clicked Confirm!")
 //                detailedProduct.requestAgentDelegate(productId)
 
-            requestAgentDelegate(serviceId)
+            if (!confirmPaymentCheckBox.isChecked) {
+                paymentTermsEvent.paymentTermsConfirmed = false
+                EventBus.getDefault().post(paymentTermsEvent)
+            } else
+                requestAgentDelegate(serviceId)
         }
 
         alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
@@ -476,14 +507,6 @@ class ServiceItem(private val service: Service,
 
         alertDialogBuilder.show() //TODO: BIG BUG!!!
 //            alertDialog.dismiss()
-
-        confirmPaymentCheckBox.setOnClickListener {
-            if (confirmPaymentCheckBox.isChecked) {
-                alertDialogBuilder.setPositiveButton("Req") { dialogInterface, i ->
-//                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.YELLOW)
-                }
-            }
-        }
     }
 
     /** Requesting Agent Delegate **/
@@ -505,19 +528,19 @@ class ServiceItem(private val service: Service,
 
                             Timber.e("CODE IS $code")
 
-                            val service = JSONObject(String(data))
-                            Timber.e("SERVICE OBJ -> $service")
-                            val delegatedServiceId = service.getString("_id")
-                            val serviceProduct = service.getString("product")
-                            val serviceAgent = service.getString("agent")
+                            val delegation = JSONObject(String(data))
+                            Timber.e("SERVICE OBJ -> $delegation")
+                            val delegatedServiceId = delegation.getString("product")
+                            val delegationId = delegation.getString("_id")
+                            val serviceAgent = delegation.getString("agent")
 
-                            editor.putString("DELEGATION_ID", delegatedServiceId)
+                            editor.putString("DELEGATION_ID", delegationId)
                             //TODO: remove after service is done
                             editor.putString("DELEGATED_SERVICE_ID", serviceId)
                             editor.putString("SERVICE_AGENT_ID", serviceAgent)
                             editor.apply()
 
-                            launchDelegatedService(context, delegatedServiceId, serviceAgent, serviceProduct)
+                            launchDelegatedService(context, delegatedServiceId, serviceAgent, delegationId)
 
                         }
                         404 -> {
@@ -540,20 +563,28 @@ class ServiceItem(private val service: Service,
     private fun launchDelegatedService(context: Context?,
                                        delegatedServiceId: String,
                                        agentId: String,
-                                       serviceId: String) {
+                                       delegationId: String) {
 
         val bundle = Bundle()
-        bundle.putString("DELEGATION_ID", delegatedServiceId)
-        bundle.putString("DELEGATED_SERVICE_ID", serviceId)
+        bundle.putString("DELEGATED_SERVICE_ID", delegatedServiceId)
         bundle.putString("SERVICE_AGENT_ID", agentId)
+        bundle.putString("DELEGATION_ID", delegationId)
+
+        Timber.e("DELEGATION_ID -> $delegationId")
+        Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
+        Timber.e("SERVICE_AGENT_ID -> $agentId")
 
         val progress = ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
                 .get(DelegatedServiceViewModel::class.java)
 
-        delegatedServiceEntity.serviceId = delegatedServiceId
-        delegatedServiceEntity.delegatedProductId = serviceId
+        /** Setting Service as Delegated **/
+        serviceEntity.isDelegated = true
+        serviceViewModel.updateService(serviceEntity)
+
+        delegatedServiceEntity.delegationId = delegationId
+        delegatedServiceEntity.delegatedProductId = delegatedServiceId
         delegatedServiceEntity.serviceAgentId = agentId
         delegatedServiceEntity.serviceProgress = progress
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)

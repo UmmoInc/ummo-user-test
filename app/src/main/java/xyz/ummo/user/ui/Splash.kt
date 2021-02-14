@@ -3,6 +3,8 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
@@ -11,6 +13,8 @@ import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.gms.safetynet.SafetyNetApi
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -25,6 +29,7 @@ class Splash : Activity() {
     private val mode = MODE_PRIVATE
     private val mRandom: Random = SecureRandom()
     private var mResult: String? = null
+    private lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +37,17 @@ class Splash : Activity() {
 
         sendSafetyNetRequest()
 
+        /** Init'ing Firebase Auth **/
+
+        FirebaseApp.initializeApp(this)
+        mAuth = FirebaseAuth.getInstance()
+
         val context = this.applicationContext
         val mixpanel = MixpanelAPI.getInstance(context,
                 resources.getString(R.string.mixpanelToken))
         mixpanel?.track("appLaunched")
+
+        //TODO: REPLACE WITH COROUTINE
         Thread {
             try {
                 Thread.sleep(1000)
@@ -60,20 +72,43 @@ class Splash : Activity() {
                 startActivity(Intent(this@Splash, MainScreen::class.java))
             } else {
                 Timber.e("onCreate - User has not signed up yet!")
+
+                val providers = arrayListOf(AuthUI.IdpConfig.PhoneBuilder().build())
                 startActivity(Intent(this@Splash, RegisterActivity::class.java))
+                /*startActivityForResult(AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false)
+                        .setLogo(R.drawable.logo)
+                        .build(), RC_SIGN_IN)*/
             }
             finish()
         }.start()
-
-        /*val mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addApi(SafetyNet.API)
-                .addConnectionCallbacks(this)*/
 
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
                 == ConnectionResult.SUCCESS) {
             Timber.e("SafetyNet Attestation API is available")
         } else {
             Timber.e("WE NEED TO UPDATE Google Play services")
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
+
+            if (resultCode == RESULT_OK) {
+                val user = FirebaseAuth.getInstance().currentUser
+                Timber.e("FIREBASE USER -> $user")
+                Timber.e("RESPONSE DATA -> $response")
+            } else {
+                if (response == null) {
+                    Timber.e("SIGN-UP CANCELLED!")
+                }/* else if (response.error == ErrorCodes)
+                    Timber.e("NO FIREBASE USER RETURNED!")*/
+            }
         }
     }
 
@@ -148,6 +183,10 @@ class Splash : Activity() {
                 resources.getString(R.string.mixpanelToken))
         mixpanel.flush()
         super.onDestroy()
+    }
+
+    companion object {
+        private const val RC_SIGN_IN = 123
     }
 
 }

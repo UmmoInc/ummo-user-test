@@ -15,10 +15,10 @@ abstract class GetServiceProvider(val activity: Activity) {
                 activity.runOnUiThread {
                     if (response.data.isNotEmpty()) {
                         val array = JSONArray(String(response.data))
-                        Timber.e("SERVICE-PROVIDER-DATA -> ${response.data}")
+//                        Timber.e("SERVICE-PROVIDER-DATA -> ${response.data}")
                         done(fromJSONList(array), response.statusCode)
                     } else {
-                        Timber.e("NO SERVICE-PROVIDER DATA")
+//                        Timber.e("NO SERVICE-PROVIDER DATA")
                         done(fromJSONList(JSONArray("[]")),200)
                     }
                 }

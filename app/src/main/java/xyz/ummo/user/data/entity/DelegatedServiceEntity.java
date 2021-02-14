@@ -19,8 +19,8 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
     */
     @NonNull
     @PrimaryKey
-    @ColumnInfo(name = "service_id")
-    private String serviceId;
+    @ColumnInfo(name = "delegation_id")
+    private String delegationId;
 
     /*@NonNull
     @ColumnInfo(name = "service_name")
@@ -42,7 +42,7 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
                                   @NonNull String _delegatedProductId,
 //                                  @NonNull ArrayList _serviceProgress,
                                   @NonNull String _serviceAgentId){
-        this.serviceId = _serviceId;
+        this.delegationId = _serviceId;
 //        this.serviceName = _serviceName;
         this.delegatedProductId = _delegatedProductId;
 //        this.serviceProgress = _serviceProgress;
@@ -50,7 +50,7 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
     }
 
     public DelegatedServiceEntity(){
-        serviceId = null;
+        delegationId = null;
     }
 
     /*@Override
@@ -60,12 +60,12 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
 
     @Override
     @NonNull
-    public String getServiceId() {
-        return serviceId;
+    public String getDelegationId() {
+        return delegationId;
     }
 
-    public void setServiceId(@NonNull String serviceId) {
-        this.serviceId = serviceId;
+    public void setDelegationId(@NonNull String delegationId) {
+        this.delegationId = delegationId;
     }
 
     /*@Override

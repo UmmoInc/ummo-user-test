@@ -129,7 +129,7 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="service_nav_title">Service Bookmarks</string>
+    <string name="service_nav_title">Bookmarks</string>
     <string name="save_service">Save Service</string>
     <string name="service_centre_image">Service Centre Image</string>
     <string name="product_requirements">What you will need:</string>
@@ -183,12 +183,15 @@
     <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
-    <string name="serverUrl">https://stage.ummo.xyz/</string>
-    <!--<string name="serverUrl">http://10.0.2.2:3000</string>-->
+    <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
+    <string name="serverUrl">http://192.168.8.101:3000</string>
     <string name="delegation_fee">E100</string>
     <string name="intro_header_text"><![CDATA[Thank you for helping us improve Ummo. We value your advice & we\'ll do our best to learn from you.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
     <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
     <string name="clean_hands">Made with clean hands. (Don\'t forget to sanitize.)</string>
+    <string name="delegate">Delegate</string>
+    <string name="bottom_nav_delegated">Delegated</string>
+    <string name="service_interruption_text">There are minor interruptions at the Service Centre. We may be slightly delayed.</string>
 
 </resources>

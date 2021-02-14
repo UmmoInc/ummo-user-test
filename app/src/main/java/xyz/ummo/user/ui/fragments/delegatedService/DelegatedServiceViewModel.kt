@@ -14,7 +14,11 @@ class DelegatedServiceViewModel(application: Application) : AndroidViewModel(app
 
     fun insertDelegatedService(delegatedServiceEntity: DelegatedServiceEntity) {
         appRepository.insertDelegatedService(delegatedServiceEntity)
-        Timber.e("insertDelegatedService: SERVICE->%s", delegatedServiceEntity.serviceId)
+        Timber.e("insertDelegatedService: SERVICE->%s", delegatedServiceEntity.delegationId)
+    }
+
+    fun getCountOfDelegatedServices(): Int {
+        return appRepository.delegatedServiceCount
     }
 
     fun updateDelegatedService(delegatedServiceEntity: DelegatedServiceEntity?) {

@@ -4,26 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/main"
+
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.MainScreen">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/main_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
+                android:id="@+id/delegated_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/ummo_3"
+                android:background="@color/White"
                 app:menu="@menu/top_app_bar"
-                app:subtitle="Test Version"
-                app:subtitleTextColor="@color/White"
+                app:subtitle="Delegated"
+                app:subtitleTextColor="@color/ummo_2"
                 app:title="Ummo"
-                app:titleTextColor="@color/White"/>
+                app:titleTextColor="@color/ummo_2">
+
+            </com.google.android.material.appbar.MaterialToolbar>
 
             <!--<View
                 android:layout_width="match_parent"
@@ -31,19 +31,6 @@
                 android:background="@color/black" />-->
 
         </com.google.android.material.appbar.AppBarLayout>
-
-        <ProgressBar
-            android:id="@+id/toolbar_progress_bar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/ummo_1"
-            android:indeterminateTintMode="src_in"
-            android:visibility="gone"
-            app:layout_anchor="@id/main_app_bar"
-            app:layout_anchorGravity="bottom"
-            tools:targetApi="lollipop" />
 
         <FrameLayout
             android:id="@+id/frame"

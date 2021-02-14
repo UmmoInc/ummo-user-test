@@ -8,7 +8,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 
-abstract class Feedback(var context: Context, feedback: String, userContact: String) {
+abstract class GeneralFeedback(var context: Context, feedback: String, userContact: String) {
 
     init {
         val feedbackObject = JSONObject().put("feedbackText", feedback)

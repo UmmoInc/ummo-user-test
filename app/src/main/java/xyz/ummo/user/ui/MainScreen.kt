@@ -1,10 +1,8 @@
 package xyz.ummo.user.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.graphics.pdf.PdfDocument
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -22,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -43,6 +42,10 @@ import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.delegate.*
+import xyz.ummo.user.delegate.User.Companion.DELEGATION_STATE
+import xyz.ummo.user.delegate.User.Companion.SERVICE_STATE
+import xyz.ummo.user.delegate.User.Companion.mode
+import xyz.ummo.user.delegate.User.Companion.ummoUserPreferences
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -55,6 +58,7 @@ import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
+import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -109,6 +113,9 @@ class MainScreen : AppCompatActivity() {
     private lateinit var mainScreenBinding: ActivityMainScreenBinding
     private lateinit var appBarBinding: AppBarMainScreenBinding
     private lateinit var infoCardBinding: InfoCardBinding
+
+    private lateinit var badge: BadgeDrawable
+    private var serviceUpdated = false
 
     /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
@@ -185,16 +192,42 @@ class MainScreen : AppCompatActivity() {
             feedback()
         }
 
+        val delegateIcon = findViewById<ActionMenuItemView>(R.id.delegate_icon)
+        delegateIcon.setOnClickListener {
+            //TODO: Launch Delegate fragment
+            val delegatedServiceFragment = DelegatedServiceFragment()
+            openFragment(delegatedServiceFragment)
+
+        }
+
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
+        badge = bottomNavigation.getOrCreateBadge(R.id.bottom_navigation_delegates)
 
+        if (bottomNavigation.selectedItemId == R.id.bottom_navigation_delegates) {
+            badge.isVisible = false
+        }
+        showBadge()
+        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
         getServiceProviderData()
 
+        val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
+        val delegationState = intent.extras?.getString(DELEGATION_STATE)
+        val delegatedServiceFragment = DelegatedServiceFragment()
+
+        if (openDelegation == 1) {
+            openFragment(DelegatedServiceFragment())
+            Timber.e("$DELEGATION_STATE -> $delegationState")
+        }
+    }
+
+    private fun showBadge() {
+        if (serviceUpdated)
+            badge.isVisible = true
     }
 
     private fun welcomeUserAboard() {
@@ -236,6 +269,35 @@ class MainScreen : AppCompatActivity() {
         EventBus.getDefault().register(this)
     }
 
+    @Subscribe
+    fun onServiceStateChange(serviceUpdateEvents: ServiceUpdateEvents) {
+
+        val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
+        val editor = sharedPreferences!!.edit()
+
+        when (serviceUpdateEvents.serviceObject.getString("status")) {
+            "PENDING" -> {
+                editor.putInt(SERVICE_STATE, 0).apply()
+            }
+            "STARTED" -> {
+                editor.putInt(SERVICE_STATE, 1).apply()
+
+            }
+            "DELAYING" -> {
+                editor.putInt(SERVICE_STATE, -1).apply()
+
+            }
+            "DONE" -> {
+                editor.putInt(SERVICE_STATE, 2).apply()
+
+            }
+            "DELIVERED" -> {
+                editor.putInt(SERVICE_STATE, 3).apply()
+
+            }
+        }
+    }
+
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
     @Subscribe
     fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
@@ -267,14 +329,45 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onServiceUpdatedEvent(serviceUpdateEvents: ServiceUpdateEvents) {
+        if (serviceUpdateEvents.serviceUpdatedEvent!!) {
+            serviceUpdated = true
+            val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
+            val editor = sharedPreferences!!.edit()
+
+            editor.putInt("SERVICE_STATE", 0).apply()
+        }
+    }
+
+    @Subscribe
+    fun onRatingSentEvent(ratingSentEvent: RatingSentEvent) {
+        if (ratingSentEvent.ratingSent == true) {
+            val editor: SharedPreferences.Editor
+            val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
+            editor = sharedPreferences!!.edit()
+
+            if (sharedPreferences.getInt(SERVICE_STATE, 0) == 3)
+                editor.remove(SERVICE_STATE).apply()
+
+            showSnackbarBlue("Thank you, your rating has been sent", -1)
+        }
+    }
+
+    @Subscribe
     fun onServiceUpvoted(serviceUpvoteServiceEvent: UpvoteServiceEvent) {
         if (serviceUpvoteServiceEvent.serviceUpvote!!)
             showSnackbarBlue("Service Upvoted", -1)
     }
 
     @Subscribe
-    fun onServiceDownvoted(serviDownvoteServiceEvent: DownvoteServiceEvent) {
-        if (serviDownvoteServiceEvent.serviceDownvote!!)
+    fun onPaymentTermsConfirmed(paymentTermsEvent: ConfirmPaymentTermsEvent) {
+        if (paymentTermsEvent.paymentTermsConfirmed == false)
+            showSnackbarYellow("Please confirm Payment Terms first", -1)
+    }
+
+    @Subscribe
+    fun onServiceDownvoted(serviceDownvoteServiceEvent: DownvoteServiceEvent) {
+        if (serviceDownvoteServiceEvent.serviceDownvote!!)
             showSnackbarRed("Service Downvoted", -1)
     }
 
@@ -363,7 +456,7 @@ class MainScreen : AppCompatActivity() {
      * It's used by #feedback **/
     private fun submitFeedback(feedbackString: String, userContact: String) {
 
-        object : Feedback(this, feedbackString, userContact) {
+        object : GeneralFeedback(this, feedbackString, userContact) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     Timber.e("Feedback Submitted -> ${String(data)}")
@@ -400,6 +493,19 @@ class MainScreen : AppCompatActivity() {
                 val homeEventObject = JSONObject()
                 homeEventObject.put("EVENT_DATE_TIME", currentDate)
                 mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
+
+                return@OnNavigationItemSelectedListener true
+            }
+
+            R.id.bottom_navigation_delegates -> {
+                val delegatedServiceFragment = DelegatedServiceFragment()
+                openFragment(delegatedServiceFragment)
+
+                badge.isVisible = false
+
+                val delegatedServiceEventObject = JSONObject()
+                delegatedServiceEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_delegatedServiceTapped", delegatedServiceEventObject)
 
                 return@OnNavigationItemSelectedListener true
             }
@@ -763,7 +869,7 @@ class MainScreen : AppCompatActivity() {
             val delegatedServiceViewModel = ViewModelProvider(this)
                     .get(DelegatedServiceViewModel::class.java)
 
-            delegatedServiceEntity.serviceId = serviceId
+            delegatedServiceEntity.delegationId = serviceId
             delegatedServiceEntity.delegatedProductId = delegatedProductId
             delegatedServiceEntity.serviceAgentId = serviceAgentId
             delegatedServiceEntity.serviceProgress = progress
@@ -822,7 +928,7 @@ class MainScreen : AppCompatActivity() {
         val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
                 .get(DelegatedServiceViewModel::class.java)
 
-        delegatedServiceEntity.serviceId = serviceId
+        delegatedServiceEntity.delegationId = serviceId
         delegatedServiceEntity.delegatedProductId = productId
         delegatedServiceEntity.serviceAgentId = agentId
         delegatedServiceEntity.serviceProgress = progress
@@ -866,7 +972,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private fun showSnackbarBlue(message: String, length: Int) {
+    fun showSnackbarBlue(message: String, length: Int) {
         /**
          * Length is 0 for Snackbar.LENGTH_LONG
          *  Length is -1 for Snackbar.LENGTH_SHORT
@@ -917,8 +1023,6 @@ class MainScreen : AppCompatActivity() {
         // index to identify current nav menu item
         var navItemIndex = 0
         private lateinit var mainScreenPrefs: SharedPreferences
-        private const val mode = Activity.MODE_PRIVATE
-        private const val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
     }
 
 }
