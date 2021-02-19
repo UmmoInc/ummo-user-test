@@ -28,10 +28,10 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
-import xyz.ummo.user.delegate.DelegationFeedback
-import xyz.ummo.user.delegate.User.Companion.SERVICE_STATE
-import xyz.ummo.user.delegate.User.Companion.mode
-import xyz.ummo.user.delegate.User.Companion.ummoUserPreferences
+import xyz.ummo.user.api.DelegationFeedback
+import xyz.ummo.user.api.User.Companion.SERVICE_STATE
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel

@@ -1,8 +1,7 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.app.Activity
 import com.github.kittinunf.fuel.Fuel
-import timber.log.Timber
 
 abstract class GetServicesByServiceProviderId(activity: Activity, serviceProviderId: String) {
     init {

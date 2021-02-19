@@ -1,7 +1,6 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.app.Activity
-import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

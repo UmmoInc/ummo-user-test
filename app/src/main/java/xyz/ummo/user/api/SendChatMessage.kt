@@ -1,4 +1,4 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody

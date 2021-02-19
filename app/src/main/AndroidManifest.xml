@@ -16,7 +16,7 @@
         android:required="true" />
 
     <application
-        android:name=".delegate.User"
+        android:name=".api.User"
         android:allowBackup="false"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/user_logo"

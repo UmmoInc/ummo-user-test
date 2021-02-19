@@ -41,11 +41,11 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
-import xyz.ummo.user.delegate.*
-import xyz.ummo.user.delegate.User.Companion.DELEGATION_STATE
-import xyz.ummo.user.delegate.User.Companion.SERVICE_STATE
-import xyz.ummo.user.delegate.User.Companion.mode
-import xyz.ummo.user.delegate.User.Companion.ummoUserPreferences
+import xyz.ummo.user.api.*
+import xyz.ummo.user.api.User.Companion.DELEGATION_STATE
+import xyz.ummo.user.api.User.Companion.SERVICE_STATE
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -472,9 +472,6 @@ class MainScreen : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
-
-        val delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
 
         when (item.itemId) {
 

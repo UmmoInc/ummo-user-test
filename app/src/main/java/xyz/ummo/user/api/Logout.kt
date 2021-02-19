@@ -1,4 +1,4 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.content.Context
 import android.preference.PreferenceManager

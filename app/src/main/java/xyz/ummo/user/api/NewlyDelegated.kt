@@ -1,7 +1,6 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.content.Context
-import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
 
 abstract class NewlyDelegated(context: Context, query: String) {

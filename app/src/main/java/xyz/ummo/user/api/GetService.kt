@@ -1,19 +1,14 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.content.Context
 import android.preference.PreferenceManager
-import android.util.Log
 import com.github.kittinunf.fuel.Fuel
-import timber.log.Timber
 
-import xyz.ummo.user.R.string.*
-
-abstract class Service(context: Context) {
+abstract class GetService(context: Context, service_id: String) {
     init {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "jwt")
-        Fuel.get("/service?user=${User.getUserId(jwt!!)}&status=IN-PROGRESS")
+        Fuel.get("/service/$service_id")
                 .response { request, response, result ->
-                    //Timber.e("Services->%s",String(response.data))
                     done(response.data,response.statusCode)
                 }
     }

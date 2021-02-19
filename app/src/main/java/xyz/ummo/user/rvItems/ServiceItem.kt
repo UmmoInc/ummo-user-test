@@ -28,7 +28,7 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
-import xyz.ummo.user.delegate.*
+import xyz.ummo.user.api.*
 import xyz.ummo.user.models.Service
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -69,6 +69,9 @@ class ServiceItem(private val service: Service,
     /** Initializing ServiceViewModel **/
     private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
             .get(ServiceViewModel::class.java)
+
+    private var delegatedServiceModel = ViewModelProvider(context as FragmentActivity)
+            .get(DelegatedServiceViewModel::class.java)
 
     private var serviceEntity = ServiceEntity()
 
@@ -175,14 +178,8 @@ class ServiceItem(private val service: Service,
         }
 
 
-        //TODO: disable button TODAY
-        if (serviceEntity.isDelegated == true) {
-            viewHolder.itemView.request_agent_button.text = "IN-PROGRESS"
-            viewHolder.itemView.request_agent_button.isClickable = false
-            viewHolder.itemView.request_agent_button
-                    .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
-            viewHolder.itemView.request_agent_button.isActivated = false
-        }
+        markDelegatedAlready(viewHolder)
+
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
 
@@ -437,6 +434,22 @@ class ServiceItem(private val service: Service,
         }
     }
 
+    private fun markDelegatedAlready(viewHolder: GroupieViewHolder) {
+        delegatedServiceModel.delegatedServiceEntityLiveData?.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
+            val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+            Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+            if (serviceEntity.serviceId == delegatedServiceId) {
+                Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                viewHolder.itemView.request_agent_button.text = "IN-PROGRESS"
+                viewHolder.itemView.request_agent_button.isClickable = false
+                viewHolder.itemView.request_agent_button
+                        .setBackgroundColor(context.resources.getColor(R.color.quantum_grey))
+                viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                viewHolder.itemView.request_agent_button.isActivated = false
+            }
+        })
+    }
+
     @SuppressLint("SetTextI18n")
     private fun makeRequest() {
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
@@ -581,6 +594,8 @@ class ServiceItem(private val service: Service,
 
         /** Setting Service as Delegated **/
         serviceEntity.isDelegated = true
+        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+
         serviceViewModel.updateService(serviceEntity)
 
         delegatedServiceEntity.delegationId = delegationId

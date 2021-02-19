@@ -7,14 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.util.Base64
-import android.webkit.CookieManager
-import android.webkit.WebSettings
-import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-import android.webkit.WebView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
@@ -33,13 +26,12 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.RegisterBinding
-import xyz.ummo.user.delegate.SafetyNetReCAPTCHA
+import xyz.ummo.user.api.SafetyNetReCAPTCHA
 import xyz.ummo.user.ui.legal.PrivacyPolicy
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {

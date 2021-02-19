@@ -26,8 +26,8 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.CompleteSignUpBinding
-import xyz.ummo.user.delegate.Login
-import xyz.ummo.user.delegate.SocketIO
+import xyz.ummo.user.api.Login
+import xyz.ummo.user.api.SocketIO
 import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver

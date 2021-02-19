@@ -7,9 +7,9 @@ import com.onesignal.OSNotificationAction.ActionType
 import com.onesignal.OSNotificationOpenResult
 import com.onesignal.OneSignal.NotificationOpenedHandler
 import timber.log.Timber
-import xyz.ummo.user.delegate.User.Companion.SERVICE_STATE
-import xyz.ummo.user.delegate.User.Companion.mode
-import xyz.ummo.user.delegate.User.Companion.ummoUserPreferences
+import xyz.ummo.user.api.User.Companion.SERVICE_STATE
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.ui.MainScreen
 
 class UmmoNotificationOpenedHandler(private val application: Application) : NotificationOpenedHandler {
@@ -25,23 +25,31 @@ class UmmoNotificationOpenedHandler(private val application: Application) : Noti
             val delegationStatus = data.optString("STATUS", null)
             Timber.e("CUSTOM DATA -> $delegationStatus")
 
+            val currentState = sharedPreferences.getInt(SERVICE_STATE, 0)
+            Timber.e("CURRENT STATE -> $currentState")
+
             when (delegationStatus) {
                 "PENDING" -> {
-//                    editor.putInt(SERVICE_STATE, 0).apply()
+                    if (currentState != 0)
+                        editor.putInt(SERVICE_STATE, 0).apply()
                 }
                 "STARTED" -> {
-//                    editor.putInt(SERVICE_STATE, 1).apply()
+                    if (currentState != 1 && currentState < 1)
+                        editor.putInt(SERVICE_STATE, 1).apply()
                 }
                 "DELAYED" -> {
-//                    editor.putInt(SERVICE_STATE, -1).apply()
+                    if (currentState != -1)
+                        editor.putInt(SERVICE_STATE, -1).apply()
 
                 }
                 "DONE" -> {
-//                    editor.putInt(SERVICE_STATE, 2).apply()
+                    if (currentState != 2 && currentState < 2)
+                        editor.putInt(SERVICE_STATE, 2).apply()
 
                 }
                 "DELIVERED" -> {
-//                    editor.putInt(SERVICE_STATE, 3).apply()
+                    if (currentState != 3 && currentState < 3)
+                        editor.putInt(SERVICE_STATE, 3).apply()
 
                 }
             }

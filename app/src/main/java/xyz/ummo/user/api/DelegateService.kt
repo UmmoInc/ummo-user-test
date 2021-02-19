@@ -1,4 +1,4 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.app.Activity
 import android.content.Context

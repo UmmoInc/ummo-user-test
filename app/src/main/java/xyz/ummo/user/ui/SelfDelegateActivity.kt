@@ -10,8 +10,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.delegate.GetService
-import xyz.ummo.user.delegate.NewlyDelegated
+import xyz.ummo.user.api.GetService
+import xyz.ummo.user.api.NewlyDelegated
 import xyz.ummo.user.utilities.PrefManager
 import java.util.*
 

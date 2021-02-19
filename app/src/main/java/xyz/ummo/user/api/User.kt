@@ -1,4 +1,4 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.app.Activity
 import android.app.Application
@@ -147,7 +147,7 @@ class User : Application() {
 
             //SocketIO.mSocket?.connect()
             SocketIO.mSocket?.on("connect") {
-                Timber.e("Connected to ")
+                Timber.e("Connected")
                 socketStateEvent.socketConnected = true
                 EventBus.getDefault().post(socketStateEvent)
             }
@@ -162,6 +162,10 @@ class User : Application() {
                 Timber.e("it[0].toString()")
             }
 
+            SocketIO.mSocket?.on("service-done") {
+                Timber.e("SERVICE-DONE SOCKET")
+            }
+
             SocketIO.mSocket?.on("updated-service") {
                 try {
                     val sharedPreferences = (this.applicationContext).getSharedPreferences(ummoUserPreferences, mode)
@@ -173,7 +177,7 @@ class User : Application() {
 
                     val intent: Intent = Intent(this, MainScreen::class.java)
                             .putExtra(UmmoNotificationOpenedHandler.OPEN_DELEGATION, 1)
-                            .setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
                     when (status) {
                         PENDING -> {

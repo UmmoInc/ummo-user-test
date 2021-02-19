@@ -1,15 +1,13 @@
 package xyz.ummo.user;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import xyz.ummo.user.delegate.Login;
-import xyz.ummo.user.delegate.User;
+import xyz.ummo.user.api.Login;
+import xyz.ummo.user.api.User;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 

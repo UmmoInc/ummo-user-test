@@ -1,13 +1,11 @@
-package xyz.ummo.user.delegate
+package xyz.ummo.user.api
 
 import android.content.Context
 import android.content.Intent
 import android.preference.PreferenceManager
-import android.util.Log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import org.json.JSONObject
 import timber.log.Timber

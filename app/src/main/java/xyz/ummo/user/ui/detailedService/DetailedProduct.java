@@ -2,15 +2,12 @@ package xyz.ummo.user.ui.detailedService;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.github.nkzawa.emitter.Emitter;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
@@ -26,8 +23,8 @@ import timber.log.Timber;
 import xyz.ummo.user.R;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
-import xyz.ummo.user.delegate.DelegateService;
-import xyz.ummo.user.delegate.User;
+import xyz.ummo.user.api.DelegateService;
+import xyz.ummo.user.api.User;
 import xyz.ummo.user.ui.MainScreen;
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel;
 
