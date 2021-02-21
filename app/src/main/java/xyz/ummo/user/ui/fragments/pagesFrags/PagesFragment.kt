@@ -64,18 +64,18 @@ class PagesFragment : Fragment() {
 
     private fun setupPagesTabs() {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
-        pagesAdapter.addFragment(HomeAffairsFragment(), "Home-Affairs")
-        pagesAdapter.addFragment(RevenueFragment(), "Revenue")
-        pagesAdapter.addFragment(CommerceFragment(), "Commerce")
+        pagesAdapter.addFragment(Tfuma(), "Tfuma")
+        pagesAdapter.addFragment(Tfola(), "Tfola")
+        pagesAdapter.addFragment(Phepha(), "Phepha")
 
         pagesFragmentBinding.pagesViewPager.adapter = pagesAdapter
         pagesFragmentBinding.pagesTabLayout.setupWithViewPager(pagesFragmentBinding.pagesViewPager)
 
         pagesFragmentBinding.pagesTabLayout.getTabAt(0)!!
-                .setIcon(R.drawable.ic_home_affairs_24)
+                .setIcon(R.drawable.ic_tfuma_24)
         pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!
-                .setIcon(R.drawable.ic_treasury_24)
+                .setIcon(R.drawable.ic_tfola_24)
         pagesFragmentBinding.pagesTabLayout.getTabAt(2)!!
-                .setIcon(R.drawable.ic_commerce_24)
+                .setIcon(R.drawable.ic_coronavirus_24)
     }
 }

@@ -17,6 +17,12 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE service_id = :serviceId ")
     fun getServiceLiveDataById(serviceId: String?): LiveData<ServiceEntity>
+
+    @Query("SELECT * FROM service WHERE delegatable = :delegatable")
+    fun getDelegatableServices(delegatable: Boolean = true): List<ServiceEntity>
+
+    @Query("SELECT * FROM service WHERE delegatable = :delegatable")
+    fun getNonDelegatableServices(delegatable: Boolean = false): List<ServiceEntity>
     
     @Query("SELECT * FROM service WHERE bookmarked = :bookmarked")
     fun getBookmarkedServicesList(bookmarked: Boolean = true): List<ServiceEntity>

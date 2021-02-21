@@ -360,9 +360,9 @@
                                         android:layout_below="@id/cost_header_text_view"
                                         android:layout_toEndOf="@+id/service_cost_text_view"
                                         android:text=" (+ E100 Delegation Fee)"
-                                        android:textStyle="italic"
                                         android:textColor="@color/black"
-                                        android:textSize="16sp" />
+                                        android:textSize="16sp"
+                                        android:textStyle="italic" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -523,13 +523,13 @@
                                 android:id="@+id/delegation_state_progress_bar"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_below="@+id/service_progress_layout"
+                                android:layout_margin="8dp"
                                 android:layout_marginEnd="0dp"
                                 app:spb_animateToCurrentProgressState="true"
                                 app:spb_checkStateCompleted="true"
-                                android:layout_below="@+id/service_progress_layout"
                                 app:spb_currentStateDescriptionColor="@color/colorAccent"
                                 app:spb_maxStateNumber="four"
-                                android:layout_margin="8dp"
                                 app:spb_stateBackgroundColor="#BDBDBD"
                                 app:spb_stateDescriptionColor="#808080"
                                 app:spb_stateForegroundColor="@color/colorPrimaryDark"
@@ -539,31 +539,31 @@
                             <RelativeLayout
                                 android:id="@+id/service_interrupted_relative_layout"
                                 android:layout_width="match_parent"
-                                android:layout_below="@id/delegation_state_progress_bar"
                                 android:layout_height="wrap_content"
-                                android:visibility="gone"
-                                tools:visibility="visible"
+                                android:layout_below="@id/delegation_state_progress_bar"
+                                android:layout_margin="8dp"
                                 android:background="@drawable/rounded_border_transparent_yellow"
                                 android:padding="4dp"
-                                android:layout_margin="8dp">
+                                android:visibility="gone"
+                                tools:visibility="visible">
 
                                 <ImageView
                                     android:id="@+id/service_interruption_image"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    app:srcCompat="@drawable/ic_work_24"
-                                    android:layout_marginEnd="4dp"/>
+                                    android:layout_marginEnd="4dp"
+                                    app:srcCompat="@drawable/ic_work_24" />
 
                                 <TextView
                                     android:id="@+id/service_interruption_text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textSize="14sp"
                                     android:layout_marginStart="4dp"
-                                    android:textStyle="italic"
-                                    android:textColor="@color/black"
                                     android:layout_toEndOf="@+id/service_interruption_image"
-                                    android:text="@string/service_interruption_text"/>
+                                    android:text="@string/service_interruption_text"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp"
+                                    android:textStyle="italic" />
                             </RelativeLayout>
 
                         </RelativeLayout>
@@ -580,8 +580,13 @@
             android:id="@+id/no_delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:visibility="gone">
+
+            <include
+                android:id="@+id/profile_info_card"
+                layout="@layout/delegate_intro_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/no_delegation_image_view"

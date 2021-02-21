@@ -10,7 +10,7 @@ interface DelegatedServiceDao {
     fun insertDelegatedService(delegatedServiceEntity: DelegatedServiceEntity?)
 
     @get:Query("SELECT * FROM delegated_service")
-    val delegatedService: LiveData<DelegatedServiceEntity?>?
+    val delegatedService: LiveData<DelegatedServiceEntity?>
 
     @Query("SELECT COUNT(delegation_id) FROM delegated_service")
     fun getDelegatedServicesCount(): Int

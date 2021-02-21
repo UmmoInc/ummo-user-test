@@ -464,6 +464,7 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun inflateDelegatedServiceView(delegatedServiceId: String?) {
+        //TODO: cater for null-safety on non-null live-data
         serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
                 .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
                     delegatedProductNameTextView!!.text = serviceEntity.serviceName

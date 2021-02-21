@@ -47,6 +47,8 @@ public class AppRepository {
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
+    private List<ServiceEntity> delegatableServices;
+    private List<ServiceEntity> nonDelegatableServices;
     private List<ServiceEntity> bookmarkedServiceEntityListData;
 //    private List<ServiceProviderEntityOld> serviceProviders = new ArrayList<>();
 
@@ -75,7 +77,6 @@ public class AppRepository {
     }
 
     public int getDelegatedServiceCount() {
-//        return delegatedServiceDao.getDelegatedServicesCount();
         try {
             return new getDelegatedServiceCountAsyncTask(delegatedServiceDao).execute().get();
         } catch (ExecutionException | InterruptedException ie) {
@@ -472,7 +473,7 @@ public class AppRepository {
      **/
     public List<ServiceEntity> getServices() {
         try {
-            return new getServicesAsyncTask(serviceDao, this).execute().get();
+            return new getServicesAsyncTask(serviceDao).execute().get();
         } catch (ExecutionException | InterruptedException ie) {
             Timber.e("Getting Services failed because: %s", ie);
             return null;
@@ -497,6 +498,30 @@ public class AppRepository {
         serviceEntityLiveData = serviceDao.getServiceLiveDataById(serviceId);
         Timber.e("Getting Service:" + serviceEntityLiveData + " By ID: " + serviceId);
         return serviceEntityLiveData;
+    }
+
+    /**
+     * 4.1
+     **/
+    public List<ServiceEntity> getDelegatableServices() {
+        try {
+            return new getDelegatableServicesAsyncTask(serviceDao).execute().get();
+        } catch (ExecutionException | InterruptedException ie) {
+            Timber.e("Getting Delegatable Services failed because: %s", ie);
+            return null;
+        }
+    }
+
+    /**
+     * 4.2
+     **/
+    public List<ServiceEntity> getNonDelegatableServices() {
+        try {
+            return new getNonDelegatableServicesAsyncTask(serviceDao).execute().get();
+        } catch (ExecutionException | InterruptedException ie) {
+            Timber.e("Getting Delegatable Services failed because: %s", ie);
+            return null;
+        }
     }
 
     /**
@@ -569,7 +594,7 @@ public class AppRepository {
         private final ServiceDao mServiceAsyncTaskDao;
         private final List<ServiceEntity> mServiceEntityList = new ArrayList<>();
 
-        getServicesAsyncTask(ServiceDao serviceDao, AppRepository appRepository) {
+        getServicesAsyncTask(ServiceDao serviceDao) {
             this.mServiceAsyncTaskDao = serviceDao;
         }
 
@@ -577,6 +602,36 @@ public class AppRepository {
         protected List<ServiceEntity> doInBackground(Void... voids) {
             mServiceEntityList.addAll(mServiceAsyncTaskDao.getServiceListData());
             return mServiceEntityList;
+        }
+    }
+
+    private static class getDelegatableServicesAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mDelegatableServicesEntityList = new ArrayList<>();
+
+        getDelegatableServicesAsyncTask(ServiceDao serviceDao) {
+            this.mServiceAsyncTaskDao = serviceDao;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mDelegatableServicesEntityList.addAll(mServiceAsyncTaskDao.getDelegatableServices(true));
+            return mDelegatableServicesEntityList;
+        }
+    }
+
+    private static class getNonDelegatableServicesAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mDelegatableServicesEntityList = new ArrayList<>();
+
+        getNonDelegatableServicesAsyncTask(ServiceDao serviceDao) {
+            this.mServiceAsyncTaskDao = serviceDao;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mDelegatableServicesEntityList.addAll(mServiceAsyncTaskDao.getNonDelegatableServices(false));
+            return mDelegatableServicesEntityList;
         }
     }
 

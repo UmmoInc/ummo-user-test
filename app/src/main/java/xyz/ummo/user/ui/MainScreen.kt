@@ -81,11 +81,8 @@ class MainScreen : AppCompatActivity() {
     private var feedbackIcon: ImageView? = null
 //    private var circularProgressBarButton: ProgressBar? = null
 
-    private var anyServiceInProgress = false
-    private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
-    private var mHandler: Handler? = null
     private val delegatedServiceEntity = DelegatedServiceEntity()
 
     /**Values for launching DelegatedServiceFragment**/
@@ -94,11 +91,6 @@ class MainScreen : AppCompatActivity() {
     var delegatedProductId = ""
     var serviceAgentId = ""
     var progress: ArrayList<String> = ArrayList()
-
-    /** Shared Prefs **/
-    private var sharedPrefServiceId: String = ""
-    private var sharedPrefAgentId: String = ""
-    private var sharedPrefProductId: String = ""
 
     /** User Preferences & VM **/
     private var sharedPrefUserName: String = ""
@@ -213,7 +205,9 @@ class MainScreen : AppCompatActivity() {
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
-        getServiceProviderData()
+//        getServiceProviderData()
+
+        getAllServicesFromServer()
 
         val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
@@ -267,6 +261,14 @@ class MainScreen : AppCompatActivity() {
 
         /** [NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
+    }
+
+    @Subscribe
+    fun onServicesReloaded(reloadingServicesEvent: ReloadingServicesEvent) {
+        if (reloadingServicesEvent.reloadingServices == true) {
+            showSnackbarBlue("Reloading services...", -1)
+            getAllServicesFromServer()
+        }
     }
 
     @Subscribe
@@ -350,6 +352,15 @@ class MainScreen : AppCompatActivity() {
                 editor.remove(SERVICE_STATE).apply()
 
             showSnackbarBlue("Thank you, your rating has been sent", -1)
+        }
+    }
+
+    @Subscribe
+    fun onDelegateStateEvent(delegateStateEvent: DelegateStateEvent) {
+        if (delegateStateEvent.delegateStateEvent.equals(SERVICE_PENDING)) {
+            showSnackbarYellow("Please wait for your other service to finish", -1)
+        } else if (delegateStateEvent.delegateStateEvent.equals(CURRENT_SERVICE_PENDING)) {
+            openFragment(DelegatedServiceFragment())
         }
     }
 
@@ -572,112 +583,6 @@ class MainScreen : AppCompatActivity() {
         transaction.commit()
     }
 
-    /** The following section is reserved for fetching, rendering & storing Service Providers and
-     * the services they're associated with.
-     * We're using these values for the PagesFragment - I find it suitable doing all of this here,
-     * instead of on the PagesFragment itself (this fragment shouldn't worry about this kind of work
-     * simply focus on hosting the three fragments under it **/
-
-    /** This function fetches service-providers && #decomposes them with
-     * `decomposeServiceProviderData(arrayList)`
-     * TODO: since its a network operation, it needs to be moved away from the UI to another class**/
-    private fun getServiceProviderData() {
-
-        object : GetServiceProvider(this) {
-
-            override fun done(data: List<ServiceProviderData>, code: Number) {
-
-                if (code == 200) {
-                    serviceProviderData.addAll(data)
-                    Timber.e(" GETTING SERVICE PROVIDER DATA ->%s", serviceProviderData)
-
-                    decomposeServiceProviderData(serviceProviderData)
-
-                } else {
-                    Timber.e("No PublicService READY!")
-                }
-            }
-        }
-    }
-
-    /** The `decomposeServiceProviderData` function takes an arrayList of #ServiceProviderData;
-     * then, for each serviceProvider, we store that data with `storeServiceProviderData` **/
-    private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
-        Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
-        serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)
-
-        for (i in 0 until mServiceProviderData.size) {
-            Timber.e("SERVICE-PROVIDER-DATA i->[$i] -> ${mServiceProviderData[i]}")
-            /** Storing [serviceProviderData] below  **/
-            storeServiceProviderData(mServiceProviderData[i])
-
-            /** When getting services by serviceProvider, we often encounter a bug that jumbles up
-             * the services' destination: e.g., `Passport Service` will sometimes get stored under
-             * the `Revenue` tab.
-             * We might have to try wrapping them up before saving them **/
-            Timber.e("SERVICE-PROVIDER-NAME -> ${mServiceProviderData[i].serviceProviderName}")
-
-            when (mServiceProviderData[i].serviceProviderName) {
-                "Ministry Of Home Affairs" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-                "Ministry Of Finance" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-                "Ministry Of Commerce" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-            }
-
-//            getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-//            getServicesFromServerByServiceProviderId("5faab29cacc12a05daa75b42")
-        }
-    }
-
-    private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
-        /*serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)*/
-
-        serviceProviderEntity.serviceProviderId = mSingleServiceProviderData.serviceProviderId
-        serviceProviderEntity.serviceProviderName = mSingleServiceProviderData.serviceProviderName
-        serviceProviderEntity.serviceProviderDescription = mSingleServiceProviderData.serviceProviderDescription
-        serviceProviderEntity.serviceProviderContact = mSingleServiceProviderData.serviceProviderContact
-        serviceProviderEntity.serviceProviderEmail = mSingleServiceProviderData.serviceProviderEmail
-        serviceProviderEntity.serviceProviderAddress = mSingleServiceProviderData.serviceProviderAddress
-
-        Timber.e("STORING SERVICE PROVIDER DATA [ID]-> ${serviceProviderEntity.serviceProviderId}")
-        Timber.e("STORING SERVICE PROVIDER DATA [NAME] -> ${serviceProviderEntity.serviceProviderName}")
-        serviceProviderViewModel?.addServiceProvider(serviceProviderEntity)
-    }
-
-    /** This function gets services from a given service provider (via serviceProviderID).
-     * Likewise, it needs to be moved to a different class that handles network requests **/
-    private fun getServicesFromServerByServiceProviderId(serviceProviderId: String) {
-
-        object : GetServicesByServiceProviderId(this, serviceProviderId) {
-            override fun done(data: ByteArray, code: Number) {
-                if (code == 200) {
-                    try {
-                        val servicesArray = JSONArray(String(data))
-
-                        Timber.e("SERVICES-ARRAY -> $servicesArray")
-
-                        for (i in 0 until servicesArray.length()) {
-                            serviceObject = servicesArray.getJSONObject(i)
-
-                            Timber.e("SERVICE-ASSIGNED [$i] -> $serviceObject")
-                            captureServicesByServiceProvider(serviceObject)
-                        }
-
-                    } catch (jse: JSONException) {
-                        Timber.e("FAILED TO GET SERVICES -> $jse")
-                    }
-                }
-            }
-        }
-    }
-
     private fun getAllServicesFromServer() {
         object : GetAllServices(this) {
             override fun done(data: ByteArray, code: Number) {
@@ -688,6 +593,7 @@ class MainScreen : AppCompatActivity() {
                     for (i in 0 until allServices.length()) {
                         serviceObject = allServices.getJSONObject(i)
                         Timber.e("GETTING ALL SERVICES [$i] -> $serviceObject")
+                        saveServicesLocally(serviceObject)
                     }
                 } else {
                     Timber.e("ERROR GETTING ALL SERVICES -> $code")
@@ -696,7 +602,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
+    private fun saveServicesLocally(mServiceObject: JSONObject) {
 
         val serviceViews = 0 //13
         Timber.e("TESTING SERVICE-DATA-> $mServiceObject")
@@ -845,111 +751,6 @@ class MainScreen : AppCompatActivity() {
         Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
     }
 
-    private fun checkForAndLaunchDelegatedFragment() {
-        Timber.e("StartFragment->$startFragmentExtra")
-
-        if (startFragmentExtra == 1) {
-            Timber.e("Starting DelegatedServiceFrag!")
-            val delegatedServiceFragment = DelegatedServiceFragment()
-
-            delegatedProductId = intent.extras?.getString("DELEGATED_PRODUCT_ID")!!
-            serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")!!
-            serviceId = intent.extras!!.getString("SERVICE_ID")!!
-            Timber.e("SERVICE-ID -> $serviceId")
-
-            bundle.putString("SERVICE_ID", serviceId)
-            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
-            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
-
-//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
-            delegatedServiceFragment.arguments = bundle
-            val delegatedServiceViewModel = ViewModelProvider(this)
-                    .get(DelegatedServiceViewModel::class.java)
-
-            delegatedServiceEntity.delegationId = serviceId
-            delegatedServiceEntity.delegatedProductId = delegatedProductId
-            delegatedServiceEntity.serviceAgentId = serviceAgentId
-            delegatedServiceEntity.serviceProgress = progress
-
-//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Timber.e("Populating ServiceEntity: Agent->${
-                delegatedServiceEntity
-                        .serviceAgentId
-            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
-
-            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-            fragmentTransaction.commit()
-            // return
-        } else {
-
-            //TODO: replace this process with equivalent conversion
-            /*object : PublicService(this) {
-                override fun done(data: List<PublicServiceData>, code: Number) {
-                    if (code == 200) {
-
-                        val serviceCentreFragment = ServiceCentresFragment()
-                        //openFragment(serviceCentreFragment)
-                    }
-
-                    //Timber.e("PUBLIC SERVICE DATA -> $data")
-                    //Do something with list of services
-                }
-            }*/
-        }
-    }
-
-    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
-        return try {
-            val tbr = ArrayList<String>()
-            for (i in 0 until arr.length()) {
-                tbr.add(arr.getString(i))
-            }
-            tbr
-        } catch (e: JSONException) {
-            ArrayList()
-        }
-
-    }
-
-    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
-        val bundle = Bundle()
-        bundle.putString("SERVICE_ID", serviceId)
-        bundle.putString("DELEGATED_PRODUCT_ID", productId)
-        bundle.putString("SERVICE_AGENT_ID", agentId)
-
-        val progress = java.util.ArrayList<String>()
-        val delegatedServiceEntity = DelegatedServiceEntity()
-        val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
-
-        delegatedServiceEntity.delegationId = serviceId
-        delegatedServiceEntity.delegatedProductId = productId
-        delegatedServiceEntity.serviceAgentId = agentId
-        delegatedServiceEntity.serviceProgress = progress
-        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
-    }
-
-    private fun launchDelegatedServiceWithoutArgs() {
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.top_app_bar, menu)
@@ -1020,6 +821,8 @@ class MainScreen : AppCompatActivity() {
         // index to identify current nav menu item
         var navItemIndex = 0
         private lateinit var mainScreenPrefs: SharedPreferences
+        const val SERVICE_PENDING = "SERVICE_PENDING"
+        const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
     }
 
 }

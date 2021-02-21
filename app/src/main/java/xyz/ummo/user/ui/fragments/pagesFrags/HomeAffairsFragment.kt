@@ -25,6 +25,8 @@ import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentHomeAffairsBinding
@@ -40,9 +42,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class HomeAffairsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var homeAffairsBinding: FragmentHomeAffairsBinding
     private lateinit var recyclerView: RecyclerView
@@ -62,8 +61,6 @@ class HomeAffairsFragment : Fragment() {
 
     /** Shared Preferences for storing user actions **/
     private lateinit var homeAffairsPrefs: SharedPreferences
-    private val mode = Activity.MODE_PRIVATE
-    private val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
     private var serviceUpVoteBoolean: Boolean = false
     private var serviceDownVoteBoolean: Boolean = false
     private var serviceCommentBoolean: Boolean = false
