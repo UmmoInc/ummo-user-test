@@ -30,7 +30,7 @@
         android:layout_marginEnd="30dp"
         android:text="@string/email_prompt2"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="12sp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/userNameTextInputLayout"

@@ -66,7 +66,7 @@ class PagesFragment : Fragment() {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
         pagesAdapter.addFragment(Tfuma(), "Tfuma")
         pagesAdapter.addFragment(Tfola(), "Tfola")
-        pagesAdapter.addFragment(Phepha(), "Phepha")
+//        pagesAdapter.addFragment(Phepha(), "Phepha")
 
         pagesFragmentBinding.pagesViewPager.adapter = pagesAdapter
         pagesFragmentBinding.pagesTabLayout.setupWithViewPager(pagesFragmentBinding.pagesViewPager)
@@ -75,7 +75,7 @@ class PagesFragment : Fragment() {
                 .setIcon(R.drawable.ic_tfuma_24)
         pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!
                 .setIcon(R.drawable.ic_tfola_24)
-        pagesFragmentBinding.pagesTabLayout.getTabAt(2)!!
-                .setIcon(R.drawable.ic_coronavirus_24)
+        /*pagesFragmentBinding.pagesTabLayout.getTabAt(2)!!
+                .setIcon(R.drawable.ic_coronavirus_24)*/
     }
 }

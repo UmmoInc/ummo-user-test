@@ -12,7 +12,7 @@
     <string name="ummo_logo_text">Ummo Logo</string>
     <string name="next_registration_button">Next</string>
     <string name="email_prompt">What\'s your email?</string>
-    <string name="email_prompt2">Enter your email address (required)</string>
+    <string name="email_prompt2">Your email will be used for User Support purposes only.</string>
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
     <string name="search_location_string">Search location</string>
@@ -110,7 +110,7 @@
     <string name="logout">Log out</string>
     <string name="search">Search</string>
     <string name="code_prompt_title">Let\'s verify your phone</string>
-    <string name="resend_code">Resend code in</string>
+    <string name="resend_code">Resend code in: </string>
     <string name="description_default_string">Default Product Description</string>
     <string name="no_delegated_service">No Delegated Service Found</string>
     <string name="nav_drawer_delegated_service">Delegated Service</string>
@@ -193,5 +193,7 @@
     <string name="delegate">Delegate</string>
     <string name="bottom_nav_delegated">Delegated</string>
     <string name="service_interruption_text">There are minor interruptions at the Service Centre. We may be slightly delayed.</string>
+    <string name="no_verification_code_msg">It seems we are unable to verify your contact at the moment.</string>
+    <string name="verify_later">No worries, we will verify later.</string>
 
 </resources>

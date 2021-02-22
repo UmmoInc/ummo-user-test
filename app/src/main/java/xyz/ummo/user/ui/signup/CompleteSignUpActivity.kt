@@ -29,6 +29,8 @@ import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.api.Login
 import xyz.ummo.user.api.SocketIO
 import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
@@ -54,8 +56,10 @@ class CompleteSignUpActivity : AppCompatActivity() {
         setContentView(view)
 
         val intent = intent
-        userContact = intent.getStringExtra("USER_CONTACT")!!
-        userName = intent.getStringExtra("USER_NAME")!!
+        userContact = intent.getStringExtra(USER_CONTACT)!!
+        userName = intent.getStringExtra(USER_NAME)!!
+
+        Timber.e("BUNDLE -> ${intent.extras}")
 
         /** Hiding the toolbar **/
         try {
@@ -142,7 +146,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
             when {
                 Patterns.EMAIL_ADDRESS.matcher(userEmail).matches().not() -> {
                     emailField.error = "Please use a valid email..."
-                    emailField.requestFocus();
+                    emailField.requestFocus()
                 }
                 emailField.length() == 0 -> {
                     emailField.error = "Please provide an email..."

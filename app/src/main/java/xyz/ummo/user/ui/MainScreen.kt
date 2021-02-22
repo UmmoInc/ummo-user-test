@@ -184,13 +184,12 @@ class MainScreen : AppCompatActivity() {
             feedback()
         }
 
-        val delegateIcon = findViewById<ActionMenuItemView>(R.id.delegate_icon)
+        /*val delegateIcon = findViewById<ActionMenuItemView>(R.id.delegate_icon)
         delegateIcon.setOnClickListener {
             //TODO: Launch Delegate fragment
             val delegatedServiceFragment = DelegatedServiceFragment()
             openFragment(delegatedServiceFragment)
-
-        }
+        }*/
 
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
@@ -518,10 +517,10 @@ class MainScreen : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
 
-            R.id.bottom_navigation_service -> {
+            /*R.id.bottom_navigation_service -> {
 
-                /** Modify info card **/
-                /* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
+                *//** Modify info card **//*
+                *//* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
 
                  sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
                  sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
@@ -538,7 +537,7 @@ class MainScreen : AppCompatActivity() {
                      launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
                  }
 
-                 mixpanel?.track("getService_bottomNav")*/
+                 mixpanel?.track("getService_bottomNav")*//*
 
                 supportActionBar?.title = "Your Service Bookmarks"
 
@@ -550,7 +549,7 @@ class MainScreen : AppCompatActivity() {
                 mixpanel?.track("bottomNavigation_bookmarksTapped", bookmarkEventObject)
 
                 return@OnNavigationItemSelectedListener true
-            }
+            }*/
 
             R.id.bottom_navigation_profile -> {
                 val profileFragment = ProfileFragment()

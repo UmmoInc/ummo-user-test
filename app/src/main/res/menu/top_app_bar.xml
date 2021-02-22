@@ -8,9 +8,9 @@
         android:title="@string/feedback"
         app:showAsAction="always" />
 
-    <item
+    <!--<item
         android:id="@+id/delegate_icon"
         android:icon="@drawable/ic_delegate_white_circle_24"
         android:title="@string/delegate"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>-->
 </menu>

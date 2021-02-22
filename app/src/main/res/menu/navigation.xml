@@ -8,13 +8,13 @@
 
     <item
         android:id="@+id/bottom_navigation_delegates"
-        android:icon="@drawable/ic_delegate_white_circle_24"
+        android:icon="@drawable/ic_tfuma_24"
         android:title="@string/bottom_nav_delegated" />
 
-    <item
+    <!--<item
         android:id="@+id/bottom_navigation_service"
         android:icon="@drawable/ic_bookmarks_24_icon"
-        android:title="@string/service_nav_title" />
+        android:title="@string/service_nav_title" />-->
 
     <item
         android:id="@+id/bottom_navigation_profile"

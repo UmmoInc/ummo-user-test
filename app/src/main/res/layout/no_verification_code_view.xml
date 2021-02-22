@@ -17,7 +17,43 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/intro_header_image_view"
+                android:id="@+id/no_code_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_no_verification_code_24" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/no_code_image_view">
+
+                <TextView
+                    android:id="@+id/no_code_description_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/no_verification_code_msg"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <!--Intro Header Layout Start-->
+
+        <!--Intro Header Layout Start-->
+        <RelativeLayout
+            android:id="@+id/verify_later_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/no_code_relative_layout"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/verify_later_header_image_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -29,93 +65,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/intro_header_image_view">
+                android:layout_toEndOf="@+id/verify_later_header_image_view">
 
                 <TextView
-                    android:id="@+id/intro_header_description_text_view"
+                    android:id="@+id/verify_later_description_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:paddingStart="0dp"
                     android:paddingEnd="8dp"
-                    android:text="@string/intro_header_text"
+                    android:text="@string/verify_later"
                     android:textSize="14sp" />
             </RelativeLayout>
 
         </RelativeLayout>
         <!--Intro Header Layout Start-->
-
-        <!--Intro Header Layout Start-->
-        <RelativeLayout
-            android:id="@+id/intro_body_relative_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/no_code_relative_layout"
-            android:layout_marginTop="8dp">
-
-            <ImageView
-                android:id="@+id/intro_body_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_bug_report_24" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/intro_body_image_view">
-
-                <TextView
-                    android:id="@+id/intro_body_description_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:paddingStart="0dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/bug_bounty"
-                    android:textSize="14sp" />
-            </RelativeLayout>
-
-        </RelativeLayout>
-        <!--Intro Header Layout Start-->
-
-        <!--Intro Header Layout Start-->
-        <RelativeLayout
-            android:id="@+id/intro_footer_relative_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/intro_body_relative_layout">
-
-            <ImageView
-                android:id="@+id/intro_footer_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                app:srcCompat="@drawable/ic_clean_hands_24" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/intro_footer_image_view">
-
-                <TextView
-                    android:id="@+id/intro_footer_description_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:text="@string/clean_hands"
-                    android:textSize="14sp" />
-            </RelativeLayout>
-
-        </RelativeLayout>
-        <!--Intro Header Layout Start-->
-
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

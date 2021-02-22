@@ -5,8 +5,10 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -25,9 +27,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.databinding.RegisterBinding
 import xyz.ummo.user.api.SafetyNetReCAPTCHA
+import xyz.ummo.user.databinding.RegisterBinding
 import xyz.ummo.user.ui.legal.PrivacyPolicy
+import xyz.ummo.user.ui.signup.ContactVerificationActivity.Companion.TRYING_AGAIN
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
@@ -141,6 +144,13 @@ class RegisterActivity : AppCompatActivity() {
     //TODO: Reload user details from savedInstanceState bundle - instead of re-typing
     override fun onResume() {
         super.onResume()
+        intent.getIntExtra(TRYING_AGAIN, 0)
+
+        if (intent.getIntExtra(TRYING_AGAIN, 0) == 1) {
+            registerBinding.userNameTextInputEditText.setText(intent.getStringExtra(USER_NAME))
+            registerBinding.userContactTextInputEditText.error = "Please try again."
+        }
+        Timber.e("WE'RE BACK")
     }
 
     /** Begin Phone Number Verification with PhoneAuthProvider from Firebase **/
@@ -243,6 +253,7 @@ class RegisterActivity : AppCompatActivity() {
      * checking it against the international standards for mobile numbers
      * **/
     private fun register() {
+        var nameApproved = false
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
@@ -254,29 +265,44 @@ class RegisterActivity : AppCompatActivity() {
 
             if (userName.isBlank()) {
                 showSnackbar("Please enter your name.", 0)
-                registerBinding.userNameTextInputEditText.error = "Enter your name here..."
+                registerBinding.userNameTextInputEditText.error = "Enter your name here."
+                registerBinding.userNameTextInputEditText.requestFocus()
+            } else if (!userName.contains(" ")) {
+                showSnackbar("You forgot your last name.", 0)
+                registerBinding.userNameTextInputEditText.error = "Please include your last name."
+                registerBinding.userNameTextInputEditText.requestFocus()
             } else if (userName.length < 3) {
-                registerBinding.userNameTextInputEditText.error = "Please enter your real name..."
-            }
-
-            if (registerBinding.registrationCcp.isValidFullNumber && userName.isNotBlank()) {
+                registerBinding.userNameTextInputEditText.error = "Please enter your real name."
+                registerBinding.userNameTextInputEditText.requestFocus()
+            } else if (registerBinding.registrationCcp.isValidFullNumber) {
                 //TODO: begin registration process
                 startPhoneNumberVerification(fullFormattedPhoneNumber)
 
                 val intent = Intent(this, ContactVerificationActivity::class.java)
 
-                Timber.e("User Name -> $userName")
-                Timber.e("User Contact -> $fullFormattedPhoneNumber")
+                intent.putExtra(USER_CONTACT, fullFormattedPhoneNumber)
+                intent.putExtra(USER_NAME, userName)
 
-                intent.putExtra("USER_CONTACT", fullFormattedPhoneNumber)
-                intent.putExtra("USER_NAME", userName)
-                startActivity(intent)
+                /** Delaying [startActivity] for 2 seconds **/
+                val timer = object : CountDownTimer(1000, 1000) {
+                    override fun onTick(p0: Long) {
+//                        Timber.e("SKIPPING VERIF. $p0")
+                        registerBinding.registerProgressBarLayout.visibility = View.VISIBLE
+                    }
 
-                reCAPTCHA()
+                    override fun onFinish() {
+                        registerBinding.registerProgressBarLayout.visibility = View.GONE
 
-                mixpanel?.track("registrationStarted_nextButton")
+                        startActivity(intent)
+                        reCAPTCHA()
+                        mixpanel?.track("registrationStarted_nextButton")
 
-                finish()
+                        finish()
+                    }
+                }
+
+                timer.start()
+
             } else {
                 mixpanel?.track("registrationStarted_incorrectContact")
 
@@ -344,5 +370,10 @@ class RegisterActivity : AppCompatActivity() {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
+    }
+
+    companion object {
+        const val USER_CONTACT = "USER_CONTACT"
+        const val USER_NAME = "USER_NAME"
     }
 }

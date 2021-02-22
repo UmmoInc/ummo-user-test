@@ -2,8 +2,10 @@ package xyz.ummo.user.api
 
 import android.app.Activity
 import android.content.Context
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -15,8 +17,6 @@ import xyz.ummo.user.R
 /** This abstract function takes a User (contact) && Product (ID); then a request
  *  is made with Fuel (HTTP POST) **/
 abstract class RequestService(context: Context?, user: String, product: String) {
-
-    private lateinit var alertDialog: MaterialAlertDialogBuilder
 
     init {
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
@@ -45,24 +45,30 @@ abstract class RequestService(context: Context?, user: String, product: String) 
                             alertDialogBuilder.setTitle("Making Request")
                                     .setIcon(R.drawable.logo)
                                     .setView(completingAlertDialogView)
-                                    .setPositiveButton("Got It") { dialogInterface, i ->
-                                        val bottomNavigationView = context.findViewById<View>(R.id.bottom_nav)
-                                        val snackbar = Snackbar.make(context.findViewById(android.R.id.content), "Your request was successful!", Snackbar.LENGTH_LONG)
-                                        snackbar.setTextColor(context.resources.getColor(R.color.ummo_4))
-                                        snackbar.anchorView = bottomNavigationView
-                                        snackbar.show()
-                                    }
 
-                            alertDialogBuilder.show()
+                            val alertDialog = alertDialogBuilder.create()
+                            alertDialog.show()
 
-                            Thread {
-                                try {
-                                    Thread.sleep(1000)
+                            val timer = object : CountDownTimer(5000, 1000) {
+                                override fun onTick(p0: Long) {
 
-                                } catch (ie: InterruptedException) {
-                                    Timber.e("Thread exception -> $ie")
                                 }
-                            }.start()
+
+                                override fun onFinish() {
+                                    alertDialog.dismiss()
+                                    val bottomNavigationView = context.findViewById<View>(R.id.bottom_nav)
+                                    val snackbar = Snackbar.make(context.findViewById(android.R.id.content),
+                                            "Your request was successful! We'll reach you shortly.", Snackbar.LENGTH_LONG)
+                                    snackbar.setTextColor(context.resources.getColor(R.color.ummo_4))
+                                    val textView = snackbar.view
+                                            .findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+                                    textView.textSize = 14F
+                                    snackbar.anchorView = bottomNavigationView
+                                    snackbar.show()
+                                }
+                            }
+
+                            timer.start()
 
                         } else if (response.statusCode == 500) {
                             alertDialogBuilder.setTitle("Something's Wrong")
