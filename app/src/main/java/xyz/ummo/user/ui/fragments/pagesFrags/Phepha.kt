@@ -12,14 +12,6 @@ import com.xwray.groupie.GroupieViewHolder
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentPhephaBinding
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Phepha.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Phepha : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -32,13 +24,11 @@ class Phepha : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         phephaBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_phepha,
@@ -65,8 +55,6 @@ class Phepha : Fragment() {
         fun newInstance(param1: String, param2: String) =
                 Phepha().apply {
                     arguments = Bundle().apply {
-                        putString(ARG_PARAM1, param1)
-                        putString(ARG_PARAM2, param2)
                     }
                 }
     }

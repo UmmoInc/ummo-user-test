@@ -259,7 +259,7 @@ class RegisterActivity : AppCompatActivity() {
                 registerBinding.userNameTextInputEditText.error = "Please enter your real name..."
             }
 
-            if (registerBinding.registrationCcp.isValidFullNumber) {
+            if (registerBinding.registrationCcp.isValidFullNumber && userName.isNotBlank()) {
                 //TODO: begin registration process
                 startPhoneNumberVerification(fullFormattedPhoneNumber)
 

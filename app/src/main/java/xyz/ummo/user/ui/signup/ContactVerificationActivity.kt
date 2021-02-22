@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
@@ -104,7 +105,8 @@ class ContactVerificationActivity : AppCompatActivity() {
 //            val code = "123456"
             Timber.e("Verifying code -> $code!")
 
-            //TODO: java.lang.IllegalArgumentException: Cannot create PhoneAuthCredential without either verificationProof, sessionInfo, temporary proof, or enrollment ID.
+            //TODO: java.lang.IllegalArgumentException: Cannot create PhoneAuthCredential
+            // without either verificationProof, sessionInfo, temporary proof, or enrollment ID.
             verifyPhoneNumberWithCode(mVerificationId!!.toString(), code)
 
             mixpanel?.track("contactVerification_contactVerified")
@@ -119,10 +121,22 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun verifyPhoneNumberWithCode(verificationId: String, code: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
+
+        when {
+            code.isBlank() -> {
+                showSnackbarRed("Please enter your verification code first", 0)
+            }
+            code.length != 6 -> {
+                showSnackbarRed("Please make sure you enter the complete code", 0)
+            }
+            else -> {
+
+                val credential = PhoneAuthProvider.getCredential(verificationId, code)
+                signInWithPhoneAuthCredential(credential)
+            }
+        }
 
 
-        signInWithPhoneAuthCredential(credential)
     }
 
     @Subscribe
@@ -134,11 +148,11 @@ class ContactVerificationActivity : AppCompatActivity() {
 
         if (recaptchaStateEvent.recaptchaPassed!!) {
             showSnackbarGreen("Security check passed", -1)
-            /** [Mixpanel] Tracking recaptcha success */
+            /** [MixpanelAPI] Tracking recaptcha success */
             mixpanel?.track("contactVerification_recaptchaPassed")
         } else {
             showSnackbarRed("Security issues detected. Try again.", -2)
-            /** [Mixpanel] Tracking recaptcha failure */
+            /** [MixpanelAPI] Tracking recaptcha failure */
             mixpanel?.track("contactVerification_recaptchaFailed")
         }
     }
@@ -268,18 +282,24 @@ class ContactVerificationActivity : AppCompatActivity() {
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
     }
 
     private fun showSnackbarGreen(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.quantum_googgreen400))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
     }
 }
