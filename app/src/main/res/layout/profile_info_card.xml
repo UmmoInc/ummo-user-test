@@ -76,7 +76,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_alignStart="@id/ummo_image_view"
-                android:layout_alignBottom="@+id/intro_text_view"
+                android:layout_centerVertical="true"
                 android:layout_margin="5dp"
                 android:contentDescription="@string/info_image"
                 app:srcCompat="@drawable/ic_eco_24" />
@@ -89,7 +89,7 @@
                 android:layout_margin="8dp"
                 android:layout_toEndOf="@+id/info_eco_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov."
+                android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov. \n\nPlease advice on how we can best serve you in this space."
                 android:textSize="12sp" />
 
             <RelativeLayout
@@ -118,7 +118,7 @@
                     android:layout_marginBottom="8dp"
                     android:layout_toEndOf="@+id/vision_image_view"
                     android:fontFamily="@font/rubik"
-                    android:text="The Vision: "
+                    android:text="Objective: "
                     android:textSize="12sp"
                     android:textStyle="bold" />
 

@@ -110,6 +110,9 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun noVerificationCode() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         val noVerificationCodeDialogBuilder = MaterialAlertDialogBuilder(this)
         val noVerificationCodeView = LayoutInflater.from(this)
                 .inflate(R.layout.no_verification_code_view, null)
@@ -124,6 +127,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                     viewBinding.verifyContact.setBackgroundColor(resources.getColor(R.color.ummo_4))
                     /** Indicating that the User has not confirmed their contact yet**/
                     bundle.putInt(CONFIRMED, 0)
+                    mixpanel?.track("contactVerification_skippingVerification")
                 }
                 .setNegativeButton("Try Again") { dialogInterface, i ->
 
@@ -135,6 +139,9 @@ class ContactVerificationActivity : AppCompatActivity() {
                     intent.putExtra(USER_NAME, userName)
                     intent.putExtra(USER_CONTACT, userContact)
                     startActivity(intent)
+
+                    mixpanel?.track("contactVerification_repeatingRegistration")
+
                     finish()
                 }
 
@@ -178,7 +185,7 @@ class ContactVerificationActivity : AppCompatActivity() {
             // without either verificationProof, sessionInfo, temporary proof, or enrollment ID.
             verifyPhoneNumberWithCode(mVerificationId!!.toString(), code)
 
-            mixpanel?.track("contactVerification_contactVerified")
+//            mixpanel?.track("contactVerification_")
 
         }
     }

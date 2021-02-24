@@ -5,8 +5,8 @@
     style="@style/Widget.MaterialComponents.Chip.Filter"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Example"
-    android:textSize="14sp"
     android:checkable="true"
+    android:text="Example"
+    android:textSize="12sp"
     app:chipBackgroundColor="@drawable/chip_state_list"
     app:chipIcon="@drawable/ic_service_centre_24" />

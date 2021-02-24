@@ -83,9 +83,6 @@ class RegisterActivity : AppCompatActivity() {
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
-        val legalIntent = Intent(this, PrivacyPolicy::class.java)
-        legalIntent.action = Intent.ACTION_VIEW
-
         registerBinding.legalTermsTextView.isClickable = true
         registerBinding.legalTermsTextView.movementMethod = LinkMovementMethod.getInstance()
         val legalTerms = "<div>By signing up, you agree to Ummo's <a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms of Use</a> & <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy </a></div>"
@@ -144,11 +141,17 @@ class RegisterActivity : AppCompatActivity() {
     //TODO: Reload user details from savedInstanceState bundle - instead of re-typing
     override fun onResume() {
         super.onResume()
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         intent.getIntExtra(TRYING_AGAIN, 0)
 
         if (intent.getIntExtra(TRYING_AGAIN, 0) == 1) {
             registerBinding.userNameTextInputEditText.setText(intent.getStringExtra(USER_NAME))
             registerBinding.userContactTextInputEditText.error = "Please try again."
+            registerBinding.userNameTextInputEditText.requestFocus()
+
+            mixpanel?.track("registration_tryingAgain")
         }
         Timber.e("WE'RE BACK")
     }
@@ -267,13 +270,19 @@ class RegisterActivity : AppCompatActivity() {
                 showSnackbar("Please enter your name.", 0)
                 registerBinding.userNameTextInputEditText.error = "Enter your name here."
                 registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_nameLeftBlank_issue")
+
             } else if (!userName.contains(" ")) {
                 showSnackbar("You forgot your last name.", 0)
                 registerBinding.userNameTextInputEditText.error = "Please include your last name."
                 registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_surnameNotIncluded_issue")
+
             } else if (userName.length < 3) {
                 registerBinding.userNameTextInputEditText.error = "Please enter your real name."
                 registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_nameTooShort_issue")
+
             } else if (registerBinding.registrationCcp.isValidFullNumber) {
                 //TODO: begin registration process
                 startPhoneNumberVerification(fullFormattedPhoneNumber)

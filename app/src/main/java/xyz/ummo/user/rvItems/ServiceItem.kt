@@ -55,12 +55,12 @@ class ServiceItem(private val service: Service,
     private var upVote: Boolean = false
     private var downVote: Boolean = false
     private var commentedOn: Boolean = false
-    private var bookmarked: Boolean = false
+//    private var bookmarked: Boolean = false
     private var anonymousComment: Boolean = false
     private val isUpvotedEvent = UpvoteServiceEvent()
     private val isDownvotedEvent = DownvoteServiceEvent()
     private val serviceCommentEvent = ServiceCommentEvent()
-    private val isBookmarkedEvent = ServiceBookmarkedEvent()
+//    private val isBookmarkedEvent = ServiceBookmarkedEvent()
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val delegateStateEvent = DelegateStateEvent()
 
@@ -91,7 +91,7 @@ class ServiceItem(private val service: Service,
         upVote = savedUserActions.getBoolean("UP-VOTE")
         downVote = savedUserActions.getBoolean("DOWN-VOTE")
         commentedOn = savedUserActions.getBoolean("COMMENTED-ON")
-        bookmarked = savedUserActions.getBoolean("BOOKMARKED")
+//        bookmarked = savedUserActions.getBoolean("BOOKMARKED")
 
         serviceId = service.serviceId
 
@@ -131,6 +131,7 @@ class ServiceItem(private val service: Service,
         viewHolder.itemView.service_title_text_view.text = service.serviceName //1
         viewHolder.itemView.service_description_text_view.text = service.serviceDescription //2
         viewHolder.itemView.service_eligibility_text_view.text = service.serviceEligibility //3
+
         /** Parsing and displaying the service centres in the Service Centres linear layout **/
         if (service.serviceCentre.isNotEmpty()) {
 //            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
@@ -211,11 +212,11 @@ class ServiceItem(private val service: Service,
             reverseCommentTriggeredChangeStates(viewHolder)
         }
 
-        if (bookmarked) {
+        /*if (bookmarked) {
             bookmarkTriggeredChangeStates(viewHolder)
         } else {
             reverseBookmarkChangeStates(viewHolder)
-        }
+        }*/
 
         viewHolder.itemView.service_info_icon_relative_layout.setOnClickListener {
 
@@ -390,7 +391,7 @@ class ServiceItem(private val service: Service,
         }
 
         /** [4] Save Service Click Handlers **/
-        viewHolder.itemView.save_service_relative_layout.setOnClickListener {
+        /*viewHolder.itemView.save_service_relative_layout.setOnClickListener {
 //            Timber.e("Save Service-Layout!")
 
             if (!bookmarked) {
@@ -433,7 +434,7 @@ class ServiceItem(private val service: Service,
                 mixpanel?.track("serviceCard_serviceBookmarked_undo", serviceItemObject)
                 serviceItemObject.remove("SERVICE_BOOKMARKED_UNDO")
             }
-        }
+        }*/
 
         val countOfDelegatedServices = delegatedServiceViewModel.getCountOfDelegatedServices()
 
@@ -840,7 +841,7 @@ class ServiceItem(private val service: Service,
      * 2. We let them know that they've down-voted by showing them a text;
      * 3. We activate the $upVote option, in case they want to change their minds
      *  TODO: Allow the user to undo their upVote by reversing the action altogether **/
-    private fun bookmarkTriggeredChangeStates(viewHolder: GroupieViewHolder) {
+    /*private fun bookmarkTriggeredChangeStates(viewHolder: GroupieViewHolder) {
         viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_filled_bookmark_24)
         viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
     }
@@ -848,7 +849,7 @@ class ServiceItem(private val service: Service,
     private fun reverseBookmarkChangeStates(viewHolder: GroupieViewHolder) {
         viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_outline_bookmark_border_24)
         viewHolder.itemView.you_saved_this_text_view.visibility = View.INVISIBLE
-    }
+    }*/
 
     /** When the user makes a comment, we want them to immediately see a UI-state change that
      * lets them know that their action has been captured:
@@ -1021,12 +1022,12 @@ class ServiceItem(private val service: Service,
 //        Timber.e("SERVICE COMMENT ${serviceEntity.serviceComments?.size} CAPTURED FOR -> ${serviceEntity.serviceName}!")
     }
 
-    private fun bookmarkService(date: String) {
-        /** Initializing sharedPreferences **/
+    /*private fun bookmarkService(date: String) {
+        *//** Initializing sharedPreferences **//*
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+        *//** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
          * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **/
+         * 2. toggle b/n icons based on user changing their mind on an action **//*
         val serviceBookmarkEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         serviceBookmarkEditor.putBoolean("BOOKMARKED-${serviceEntity.serviceId}", true).apply()
 
@@ -1039,14 +1040,14 @@ class ServiceItem(private val service: Service,
         isBookmarkedEvent.serviceBookmarked = true
         isBookmarkedEvent.serviceId = serviceEntity.serviceId
         EventBus.getDefault().post(isBookmarkedEvent)
-    }
+    }*/
 
-    private fun removeBookmark(date: String) {
-        /** Initializing sharedPreferences **/
+    /*private fun removeBookmark(date: String) {
+        *//** Initializing sharedPreferences **//*
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+        *//** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
          * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **/
+         * 2. toggle b/n icons based on user changing their mind on an action **//*
         val serviceBookmarkEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         serviceBookmarkEditor.putBoolean("BOOKMARKED-${serviceEntity.serviceId}", false).apply()
 
@@ -1059,7 +1060,7 @@ class ServiceItem(private val service: Service,
         EventBus.getDefault().post(isBookmarkedEvent)
 
         //TODO: remove bookmark from user-profile (backend)
-    }
+    }*/
 
     private fun publishServiceBookmark(date: String) {
         val bookmarkObject = JSONObject()

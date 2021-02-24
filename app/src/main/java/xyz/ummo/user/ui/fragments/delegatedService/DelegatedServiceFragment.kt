@@ -17,6 +17,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.kofigyan.stateprogressbar.StateProgressBar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.confirm_service_delivered_view.*
 import kotlinx.android.synthetic.main.confirm_service_delivered_view.view.*
 import org.greenrobot.eventbus.EventBus
@@ -474,8 +475,13 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun takeMeHome() {
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+
         viewBinding.homeButton.setOnClickListener {
             val pagesFragment: Fragment = PagesFragment()
+
+            mixpanel?.track("delegatedServiceFragment_takingUserHome")
 
             val fm: FragmentManager = activity?.supportFragmentManager!!
             val transaction: FragmentTransaction = fm.beginTransaction()
