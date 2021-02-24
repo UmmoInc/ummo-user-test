@@ -183,8 +183,8 @@
     <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
-    <string name="serverUrl">https://stage.ummo.xyz</string>
-    <!--<string name="serverUrl">http://192.168.8.100:3000</string>-->
+    <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
+    <string name="serverUrl">http://192.168.8.100:3000</string>
     <string name="delegation_fee">E100</string>
     <string name="intro_header_text"><![CDATA[Thank you for helping us improve Ummo. We value your advice & we\'ll do our best to learn from you.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>

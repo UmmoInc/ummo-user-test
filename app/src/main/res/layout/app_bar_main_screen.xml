@@ -20,7 +20,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/ummo_3"
                 app:menu="@menu/top_app_bar"
-                app:subtitle="Test Version"
+                app:subtitle="Beta Version"
                 app:subtitleTextColor="@color/White"
                 app:title="Ummo"
                 app:titleTextColor="@color/White"/>

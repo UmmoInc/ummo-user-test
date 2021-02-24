@@ -3,6 +3,7 @@ package xyz.ummo.user.ui
 import android.annotation.SuppressLint
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
@@ -125,6 +126,9 @@ class MainScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        /** Locking screen orientation to [ActivityInfo.SCREEN_ORIENTATION_PORTRAIT] **/
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         currentDate = simpleDateFormat.format(Date())
 
@@ -184,13 +188,6 @@ class MainScreen : AppCompatActivity() {
             feedback()
         }
 
-        /*val delegateIcon = findViewById<ActionMenuItemView>(R.id.delegate_icon)
-        delegateIcon.setOnClickListener {
-            //TODO: Launch Delegate fragment
-            val delegatedServiceFragment = DelegatedServiceFragment()
-            openFragment(delegatedServiceFragment)
-        }*/
-
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -198,6 +195,7 @@ class MainScreen : AppCompatActivity() {
         badge = bottomNavigation.getOrCreateBadge(R.id.bottom_navigation_delegates)
 
         if (bottomNavigation.selectedItemId == R.id.bottom_navigation_delegates) {
+            Timber.e("WHY IS BADGE STILL ON?")
             badge.isVisible = false
         }
         showBadge()
