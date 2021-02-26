@@ -22,7 +22,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentRevenueBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -44,7 +44,7 @@ class RevenueFragment : Fragment() {
     private var serviceViewModel: ServiceViewModel? = null
 
     private var financeServiceId: String = ""
-    private lateinit var revenueService: Service
+    private lateinit var revenueService: ServiceObject
     private lateinit var revenueServiceList: List<ServiceEntity>
 
     /** Shared Preferences for storing user actions **/
@@ -180,7 +180,7 @@ class RevenueFragment : Fragment() {
                 viewCount = revenueServiceList[i].serviceViews!! //13
                 serviceProvider = revenueId
 
-                revenueService = Service(serviceId, serviceName, serviceDescription,
+                revenueService = ServiceObject(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)

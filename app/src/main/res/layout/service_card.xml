@@ -72,7 +72,7 @@
 
             <RelativeLayout
                 android:id="@+id/service_info_icon_relative_layout"
-                android:layout_width="wrap_content"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:gravity="end">
@@ -511,7 +511,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:weightSum="4">
 
                     <RelativeLayout
                         android:id="@+id/approve_service_relative_layout"
@@ -701,7 +701,7 @@
 
                     </RelativeLayout>-->
 
-                    <!--<RelativeLayout
+                    <RelativeLayout
                         android:id="@+id/save_service_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -719,20 +719,18 @@
                             android:layout_margin="4dp"
                             app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
-                        &lt;!&ndash;
-                                                <TextView
-                                                    android:id="@+id/save_count_text_view"
-                                                    android:layout_width="wrap_content"
-                                                    android:layout_height="wrap_content"
-                                                    android:layout_centerVertical="true"
-                                                    android:layout_toEndOf="@+id/save_service_image"
-                                                    android:fontFamily="@font/rubik"
-                                                    android:text="@string/shares_placeholder"
-                                                    android:textSize="12sp"
-                                                    app:fontFamily="@font/rubik" />
-                        &ndash;&gt;
+                        <TextView
+                            android:id="@+id/save_count_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/save_service_image"
+                            android:fontFamily="@font/rubik"
+                            android:text="@string/shares_placeholder"
+                            android:textSize="12sp"
+                            app:fontFamily="@font/rubik" />
 
-                    </RelativeLayout>-->
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -741,7 +739,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/service_actions_linear_layout"
                     android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:weightSum="4">
 
                     <TextView
                         android:id="@+id/you_up_voted_this_text_view"
@@ -795,7 +793,7 @@
                         tools:ignore="SmallSp"
                         tools:visibility="visible" />-->
 
-                    <!--<TextView
+                    <TextView
                         android:id="@+id/you_saved_this_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -806,7 +804,7 @@
                         android:textStyle="italic"
                         android:visibility="invisible"
                         tools:ignore="SmallSp"
-                        tools:visibility="visible" />-->
+                        tools:visibility="visible" />
                 </LinearLayout>
 
             </RelativeLayout>

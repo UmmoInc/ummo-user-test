@@ -84,7 +84,7 @@
     <string name="cost_string">Cost: </string>
     <string name="duration_string">Duration: </string>
     <string name="more_string">more</string>
-    <string name="title_activity_detailed_service">DetailedService</string>
+    <string name="title_activity_detailed_service">Service Details</string>
     <string name="service_description_title">Description</string>
     <string name="service_documents_title_string">Documents</string>
     <string name="service_cost_title_string">Cost</string>
@@ -195,5 +195,6 @@
     <string name="service_interruption_text">There are minor interruptions at the Service Centre. We may be slightly delayed.</string>
     <string name="no_verification_code_msg">It seems we are unable to verify your contact at the moment.</string>
     <string name="verify_later">No worries, we will verify later.</string>
+    <string name="request_agent">Request Agent</string>
 
 </resources>

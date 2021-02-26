@@ -22,7 +22,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentSavedServicesBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
@@ -62,7 +62,7 @@ class SavedServicesFragment : Fragment() {
     private var profileEntity = ProfileEntity()
 
     private lateinit var bookmarkedServicesList: List<ServiceEntity>
-    private lateinit var bookmarkedService: Service
+    private lateinit var bookmarkedService: ServiceObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,7 +158,7 @@ class SavedServicesFragment : Fragment() {
             viewCount = bookmarkedServicesList[i].serviceViews!! //13
             serviceProvider = bookmarkedServicesList[i].serviceProvider!! //14
 
-            bookmarkedService = Service(serviceId, serviceName, serviceDescription,
+            bookmarkedService = ServiceObject(serviceId, serviceName, serviceDescription,
                     serviceEligibility, serviceCentres, delegatable, serviceCost,
                     serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                     serviceComments, commentCount, shareCount, viewCount, serviceProvider)

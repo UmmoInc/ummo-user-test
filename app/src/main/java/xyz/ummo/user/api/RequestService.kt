@@ -21,9 +21,6 @@ abstract class RequestService(context: Context?, user: String, product: String) 
     init {
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
 
-        val completingAlertDialogView = LayoutInflater.from(context)
-                .inflate(R.layout.completing_request_dialog, null)
-
         val errorAlertDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.request_error_dialog, null)
 
@@ -37,38 +34,7 @@ abstract class RequestService(context: Context?, user: String, product: String) 
                     (context as Activity).runOnUiThread {
                         done(response.data, response.statusCode)
 
-                        Timber.e("Request Body->${request.body}")
-                        Timber.e("Response Code->${response.statusCode}")
-                        Timber.e("Result Body->${result}")
-
                         if (response.statusCode == 200) {
-                            alertDialogBuilder.setTitle("Making Request")
-                                    .setIcon(R.drawable.logo)
-                                    .setView(completingAlertDialogView)
-
-                            val alertDialog = alertDialogBuilder.create()
-                            alertDialog.show()
-
-                            val timer = object : CountDownTimer(5000, 1000) {
-                                override fun onTick(p0: Long) {
-
-                                }
-
-                                override fun onFinish() {
-                                    alertDialog.dismiss()
-                                    val bottomNavigationView = context.findViewById<View>(R.id.bottom_nav)
-                                    val snackbar = Snackbar.make(context.findViewById(android.R.id.content),
-                                            "Your request was successful! We'll reach you shortly.", Snackbar.LENGTH_LONG)
-                                    snackbar.setTextColor(context.resources.getColor(R.color.ummo_4))
-                                    val textView = snackbar.view
-                                            .findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-                                    textView.textSize = 14F
-                                    snackbar.anchorView = bottomNavigationView
-                                    snackbar.show()
-                                }
-                            }
-
-                            timer.start()
 
                         } else if (response.statusCode == 500) {
                             alertDialogBuilder.setTitle("Something's Wrong")
@@ -86,15 +52,6 @@ abstract class RequestService(context: Context?, user: String, product: String) 
                             }
 
                             alertDialogBuilder.show()
-
-                            Thread {
-                                try {
-                                    Thread.sleep(5000)
-
-                                } catch (ie: InterruptedException) {
-                                    Timber.e("Thread exception -> $ie")
-                                }
-                            }
                         }
                     }
                 }

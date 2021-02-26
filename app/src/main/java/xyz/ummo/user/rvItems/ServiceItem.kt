@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -19,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import kotlinx.android.synthetic.main.content_detailed_service.view.*
 import kotlinx.android.synthetic.main.service_card.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -29,19 +31,25 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.*
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.MainScreen.Companion.CURRENT_SERVICE_PENDING
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_PENDING
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.AGENT_ID
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.*
+import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ServiceItem(private val service: Service,
+class ServiceItem(private val service: ServiceObject,
                   val context: Context?,
                   savedUserActions: JSONObject) : Item<GroupieViewHolder>() {
 
@@ -63,6 +71,7 @@ class ServiceItem(private val service: Service,
 //    private val isBookmarkedEvent = ServiceBookmarkedEvent()
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val delegateStateEvent = DelegateStateEvent()
+    private val passingServiceEvent = PassingServiceEvent()
 
     private var isUpvotedPref: Boolean = false
     private var isDownvotedPref: Boolean = false
@@ -77,9 +86,6 @@ class ServiceItem(private val service: Service,
             .get(DelegatedServiceViewModel::class.java)
 
     private var serviceEntity = ServiceEntity()
-
-    private var profileViewModel = ViewModelProvider(context as FragmentActivity)
-            .get(ProfileViewModel::class.java)
 
     private var userContactPref = ""
     private val inflater = LayoutInflater.from(context)
@@ -127,28 +133,30 @@ class ServiceItem(private val service: Service,
         userContactPref = serviceItemPrefs.getString("USER_CONTACT", "")!!
 
         isUpvotedPref = serviceItemPrefs.getBoolean("UP-VOTE-${service.serviceId}", false)
+        isDownvotedPref = serviceItemPrefs.getBoolean("DOWN-VOTE-${service.serviceId}", false)
 
         viewHolder.itemView.service_title_text_view.text = service.serviceName //1
         viewHolder.itemView.service_description_text_view.text = service.serviceDescription //2
         viewHolder.itemView.service_eligibility_text_view.text = service.serviceEligibility //3
 
         /** Parsing and displaying the service centres in the Service Centres linear layout **/
-        if (service.serviceCentre.isNotEmpty()) {
+        if (service.serviceCentres.isNotEmpty()) {
+            viewHolder.itemView.service_centres_chip_group.removeAllViews()
 //            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
-            for (i in service.serviceCentre.indices) {
+            for (i in service.serviceCentres.indices) {
 
                 val serviceCentreChipItem = inflater.inflate(R.layout.service_centre_chip_item,
                         null, false) as Chip
 
-                serviceCentreChipItem.text = service.serviceCentre[i]
-                Timber.e("CENTRE_CHIP -> ${service.serviceCentre[i]}")
+                serviceCentreChipItem.text = service.serviceCentres[i]
+                Timber.e("CENTRE_CHIP -> ${service.serviceCentres[i]}")
 
 
                 if (serviceCentreChipItem.isChecked) {
-                    serviceItemObject.put("CENTRE_CHIP", service.serviceCentre)
+                    serviceItemObject.put("CENTRE_CHIP", service.serviceCentres)
                     mixpanel?.track("serviceCard_centreChipChecked", serviceItemObject)
 
-                    Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentre}")
+                    Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentres}")
                 }
 
                 viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
@@ -159,7 +167,7 @@ class ServiceItem(private val service: Service,
 //        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
         /** Parsing and displaying the service requirements in the Service Requirements linear layout **/
         if (service.serviceDocuments.isNotEmpty()) {
-//            viewHolder.itemView.service_requirements_linear_layout.removeAllViews()
+            viewHolder.itemView.service_requirements_chip_group.removeAllViews()
             for (i in service.serviceDocuments.indices) {
                 val serviceRequirementsChipItem = inflater.inflate(R.layout.service_centre_chip_item,
                         null, false) as Chip
@@ -167,6 +175,20 @@ class ServiceItem(private val service: Service,
                 serviceRequirementsChipItem.text = service.serviceDocuments[i]
                 viewHolder.itemView.service_requirements_chip_group.addView(serviceRequirementsChipItem)
             }
+        }
+
+        //TODO: Assign serviceEntity to serviceValues
+        assignServiceEntity(serviceEntity)
+
+        viewHolder.itemView.service_info_title_relative_layout.setOnClickListener {
+            val intent = Intent(context, DetailedServiceActivity::class.java)
+
+            /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
+            intent.putExtra(SERVICE_OBJECT, service as Serializable)
+
+            Timber.e("SAVING SERVICE ENTITY -> $serviceEntity")
+            serviceViewModel.addService(serviceEntity)
+            context.startActivity(intent)
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
@@ -186,11 +208,7 @@ class ServiceItem(private val service: Service,
             viewHolder.itemView.request_agent_button.visibility = View.GONE
         }
 
-
         markDelegatedAlready(viewHolder)
-
-        //TODO: Assign serviceEntity to serviceValues
-        assignServiceEntity(serviceEntity)
 
         /** The below two methods check for any actions the user might have taken before a
          * click-action is lodged:
@@ -226,7 +244,7 @@ class ServiceItem(private val service: Service,
             val serviceExtrasBottomSheetDialogFragment = ServiceExtrasBottomSheetDialogFragment()
             serviceExtrasBottomSheetDialogFragment.arguments = bundle
             serviceExtrasBottomSheetDialogFragment
-                    .show((context as FragmentActivity).supportFragmentManager,
+                    .show(context.supportFragmentManager,
                             ServiceExtrasBottomSheetDialogFragment.TAG)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
@@ -624,9 +642,9 @@ class ServiceItem(private val service: Service,
                                        delegationId: String) {
 
         val bundle = Bundle()
-        bundle.putString("DELEGATED_SERVICE_ID", delegatedServiceId)
-        bundle.putString("SERVICE_AGENT_ID", agentId)
-        bundle.putString("DELEGATION_ID", delegationId)
+        bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
+        bundle.putString(AGENT_ID, agentId)
+        bundle.putString(DELEGATION_ID, delegationId)
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
@@ -874,7 +892,7 @@ class ServiceItem(private val service: Service,
         mServiceEntity.serviceName = service.serviceName //1
         mServiceEntity.serviceDescription = service.serviceDescription //2
         mServiceEntity.serviceEligibility = service.serviceEligibility //3
-        mServiceEntity.serviceCentres = service.serviceCentre //4
+        mServiceEntity.serviceCentres = service.serviceCentres //4
         mServiceEntity.delegatable = service.delegatable //5
         mServiceEntity.serviceCost = service.serviceCost //6
         mServiceEntity.serviceDocuments = service.serviceDocuments //7
@@ -1009,7 +1027,6 @@ class ServiceItem(private val service: Service,
 
         commentDialogBuilder.show()
     }
-
 
     /** With this function, we're:
      * 1. doing the actual saving of the comment to RoomDB

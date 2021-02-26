@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -18,7 +17,6 @@ import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.badge.BadgeDrawable
@@ -31,10 +29,14 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.*
+import xyz.ummo.user.api.User.Companion.DELEGATION_STATE
+import xyz.ummo.user.api.User.Companion.SERVICE_STATE
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -42,17 +44,14 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
-import xyz.ummo.user.api.*
-import xyz.ummo.user.api.User.Companion.DELEGATION_STATE
-import xyz.ummo.user.api.User.Companion.SERVICE_STATE
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.AGENT_ID
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
+import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
-import xyz.ummo.user.ui.fragments.pagesFrags.SavedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
@@ -109,6 +108,10 @@ class MainScreen : AppCompatActivity() {
 
     private lateinit var badge: BadgeDrawable
     private var serviceUpdated = false
+
+    private var delegatedServiceId: String? = null
+    private var delegationId: String? = null
+    private var agentId: String? = null
 
     /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
@@ -247,6 +250,29 @@ class MainScreen : AppCompatActivity() {
         }
 
         introDialogBuilder.show()
+    }
+
+    private fun checkingForDelegatedServiceFromRoom() {
+        val delegatedServiceViewModel = ViewModelProvider(this)
+                .get(DelegatedServiceViewModel::class.java)
+        val countOfDelegatedService = delegatedServiceViewModel.getCountOfDelegatedServices()
+
+        if (countOfDelegatedService == 0)
+            return
+        else {
+            /*delegatedServiceId = intent.getBundleExtra(DELEGATED_SERVICE_ID).toString()
+            delegationId = intent.getBundleExtra(DELEGATION_ID).toString()
+            agentId = intent.getBundleExtra(AGENT_ID).toString()
+
+            Timber.e("TAKING US TO DELEGATION-FRAG")
+            bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
+            bundle.putString(AGENT_ID, agentId)
+            bundle.putString(DELEGATION_ID, delegationId)*/
+            val delegatedServiceFragment = DelegatedServiceFragment()
+//            delegatedServiceFragment.arguments = bundle
+            openFragment(delegatedServiceFragment)
+        }
+
     }
 
     override fun onStart() {
@@ -417,6 +443,7 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkingForDelegatedServiceFromRoom()
     }
 
     fun feedback() {
@@ -517,7 +544,8 @@ class MainScreen : AppCompatActivity() {
 
             /*R.id.bottom_navigation_service -> {
 
-                *//** Modify info card **//*
+                */
+            /** Modify info card **//*
                 *//* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
 
                  sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
@@ -746,6 +774,7 @@ class MainScreen : AppCompatActivity() {
         serviceViewModel?.addService(serviceEntity)
 //        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.top_app_bar, menu)
@@ -818,6 +847,8 @@ class MainScreen : AppCompatActivity() {
         private lateinit var mainScreenPrefs: SharedPreferences
         const val SERVICE_PENDING = "SERVICE_PENDING"
         const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
+        const val SERVICE_ID = "SERVICE_ID"
+        const val SERVICE_OBJECT = "SERVICE_OBJECT"
     }
 
 }

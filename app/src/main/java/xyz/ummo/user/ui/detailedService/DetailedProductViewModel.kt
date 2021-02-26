@@ -31,10 +31,6 @@ class DetailedProductViewModel(application: Application) : AndroidViewModel(appl
         return appRepository.getDelegatedProduct(isDelegated)
     }
 
-    companion object {
-        private const val TAG = "DetailedServiceViewMode"
-    }
-
     init {
         productEntityLiveData = appRepository.productEntityLiveData
     }

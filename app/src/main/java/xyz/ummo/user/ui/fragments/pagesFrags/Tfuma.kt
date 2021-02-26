@@ -25,7 +25,7 @@ import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfumaBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
@@ -38,7 +38,7 @@ class Tfuma : Fragment() {
 
     //    private lateinit var delegatableServicesArrayList: List<ServiceEntity>
     private lateinit var delegatableServicesArrayList: ArrayList<ServiceEntity>
-    private lateinit var delegatableService: Service
+    private lateinit var delegatableService: ServiceObject
     private lateinit var delegatedServicePrefs: SharedPreferences
     private var serviceViewModel: ServiceViewModel? = null
     private var serviceUpVoteBoolean: Boolean = false
@@ -137,7 +137,6 @@ class Tfuma : Fragment() {
         val timer = object : CountDownTimer(10000, 1000) {
             override fun onTick(p0: Long) {
                 checkingAdapterState()
-                Timber.e("CHECKING ADAPTER STATE $p0")
             }
 
             override fun onFinish() {
@@ -220,7 +219,7 @@ class Tfuma : Fragment() {
                                 viewCount = service.getInt("service_view_count") //15
                                 serviceProvider = service.getString("service_provider") //16
 
-                                delegatableService = Service(serviceId, serviceName,
+                                delegatableService = ServiceObject(serviceId, serviceName,
                                         serviceDescription, serviceEligibility, serviceCentres,
                                         delegatable, serviceCost, serviceDocuments, serviceDuration,
                                         approvalCount, disapprovalCount, serviceComments,

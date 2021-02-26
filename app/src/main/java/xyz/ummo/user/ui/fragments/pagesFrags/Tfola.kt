@@ -25,7 +25,7 @@ import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
@@ -44,11 +44,11 @@ class Tfola : Fragment() {
     private var reloadingServicesEvent = ReloadingServicesEvent()
     private lateinit var nonDelegatedServicePrefs: SharedPreferences
     private lateinit var nonDelegatableServicesArrayList: ArrayList<ServiceEntity>
-    private lateinit var nonDelegatedService: Service
+    private lateinit var nonDelegatedService: ServiceObject
     private lateinit var tfolaBinding: FragmentTfolaBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
-    private lateinit var nonDelegatableService: Service
+    private lateinit var nonDelegatableService: ServiceObject
 
     lateinit var serviceId: String //1
     lateinit var serviceName: String //2
@@ -129,7 +129,6 @@ class Tfola : Fragment() {
         val timer = object : CountDownTimer(10000, 1000) {
             override fun onTick(p0: Long) {
                 checkingAdapterState()
-                Timber.e("CHECKING ADAPTER STATE $p0")
             }
 
             override fun onFinish() {
@@ -229,7 +228,7 @@ class Tfola : Fragment() {
                 viewCount = service.getInt("service_view_count") //15
                 serviceProvider = service.getString("service_provider") //16
 
-                nonDelegatableService = Service(serviceId, serviceName,
+                nonDelegatableService = ServiceObject(serviceId, serviceName,
                         serviceDescription, serviceEligibility, serviceCentres,
                         delegatable, serviceCost, serviceDocuments, serviceDuration,
                         approvalCount, disapprovalCount, serviceComments,

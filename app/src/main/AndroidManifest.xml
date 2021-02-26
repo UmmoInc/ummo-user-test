@@ -56,7 +56,7 @@
         </activity>
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
         <activity
-            android:name=".ui.detailedService.DetailedProduct"
+            android:name=".ui.detailedService.DetailedServiceActivity"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
