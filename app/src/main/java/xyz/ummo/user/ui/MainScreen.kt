@@ -204,7 +204,7 @@ class MainScreen : AppCompatActivity() {
 
 //        getServiceProviderData()
 
-        getAllServicesFromServer()
+//        getAllServicesFromServer()
 
         val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
@@ -637,8 +637,9 @@ class MainScreen : AppCompatActivity() {
          * 1. Declaring $presenceRequired value
          * 2. Assigning $presenceRequired value from service JSON value **/
         val delegatable: Boolean?
-        delegatable = mServiceObject/*.getJSONObject("service_requirements")
-                */.getBoolean("delegatable")
+        delegatable = mServiceObject.getBoolean("delegatable")
+
+        Timber.e("$serviceName: DELEGATABLE -> $delegatable")
 
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
@@ -648,8 +649,7 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 7]
          * 1. Declaring $serviceDocuments values
          * 2. TODO: Assigning $serviceDocuments value from service JSON value **/
-        val serviceDocumentsJSONArray: JSONArray = mServiceObject/*.getJSONObject("service_requirements") //7
-                */.getJSONArray("service_documents")
+        val serviceDocumentsJSONArray: JSONArray = mServiceObject.getJSONArray("service_documents")
         val serviceDocumentsArrayList = ArrayList(listOf<String>())
         for (k in 0 until serviceDocumentsJSONArray.length()) {
             serviceDocumentsArrayList.add(serviceDocumentsJSONArray.getString(k))
@@ -663,12 +663,12 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 9]
          * 1. Declaring $downVote value
          * 2. TODO: Assigning $downVote value from service JSON value **/
-        var notUsefulCount = 0
+        var notUsefulCount = mServiceObject.getInt("not_useful_count")
 
         /** [SERVICE-ASSIGNMENT: 10]
          * 1. Declaring $upVote value
          * 2. TODO: Assigning $upVote value from service JSON value **/
-        var usefulCount = 0
+        var usefulCount = mServiceObject.getInt("useful_count")
 
         /** [SERVICE-ASSIGNMENT: 11]
          * 1. Declaring $serviceComments values
@@ -690,7 +690,7 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 13]
          * 1. Declaring $serviceUpdates values
          * 2. TODO: parse through serviceUpdates & get values for enumerated values ["UPVOTE", etc] **/
-        val serviceUpdatesJSONArray = mServiceObject.getJSONArray("service_updates")
+        /*val serviceUpdatesJSONArray = mServiceObject.getJSONArray("service_updates")
         val serviceUpdatesArrayList = ArrayList(listOf<String>())
         var serviceUpdateObject: JSONObject
         var updateType: String
@@ -711,13 +711,12 @@ class MainScreen : AppCompatActivity() {
             }
 
             Timber.e("[$m] $usefulCount UP-VOTES; $notUsefulCount DOWN-VOTES")
-        }
+        }*/
 
         /** [SERVICE-ASSIGNMENT: 14]
          * 1. Declaring $serviceProvider value
          * 2. Assigning $serviceProvider value to service JSON value **/
         val serviceProvider: String = mServiceObject.getString("service_provider") //14
-        Timber.e("SAVING SERVICE BY SERVICE-PROVIDER -> $serviceProvider")
 
         serviceEntity.serviceId = serviceId //0
         serviceEntity.serviceName = serviceName //1
@@ -737,17 +736,16 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.serviceProvider = serviceProvider //14
 //        serviceEntity.bookmarked = bookmarked //15
 
-        /** 1) Checking #serviceProviderId;
-         *  2) Save each service entity by serviceProviderId **/
-
-        val serviceProviders: List<ServiceProviderEntity>? = serviceProviderViewModel
-                ?.getServiceProviderList()
-        Timber.e("SERVICE-PROVIDERS-CHECK -> $serviceProviders")
+        Timber.e("SERVICE - ENTITY [NAME] -> ${serviceEntity.serviceName}")
+        Timber.e("SERVICE - ENTITY [DESCR.] -> ${serviceEntity.serviceDescription}")
+        Timber.e("SERVICE - ENTITY [DELEG.] -> ${serviceEntity.delegatable}")
+        Timber.e("SERVICE - ENTITY [UPVOTE] -> ${serviceEntity.usefulCount}")
+        Timber.e("SERVICE - ENTITY [DOWNVOTE] -> ${serviceEntity.notUsefulCount}")
+        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
 
         serviceViewModel?.addService(serviceEntity)
-        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
+//        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
     }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.top_app_bar, menu)

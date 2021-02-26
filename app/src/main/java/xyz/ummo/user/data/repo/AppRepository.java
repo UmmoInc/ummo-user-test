@@ -553,9 +553,19 @@ public class AppRepository {
 
         @Override
         protected Void doInBackground(ServiceEntity... serviceEntities) {
-            mServiceDao.insertService(serviceEntities[0]);
+
+            for (ServiceEntity serviceEntity : serviceEntities) {
+                mServiceDao.insertService(serviceEntity);
+
+                Timber.e("ASYNC SAVE - NAME %s", serviceEntity.getServiceName());
+                Timber.e("ASYNC SAVE - DEL. %s", serviceEntity.getDelegatable());
+                Timber.e("ASYNC SAVE - COST %s", serviceEntity.getServiceCost());
+                Timber.e("ASYNC SAVE - UPVOTE %s", serviceEntity.getUsefulCount());
+            }
             return null;
         }
+
+
     }
 
     /*private static class incrementApprovalCountAsync extends AsyncTask<ServiceEntity, Void, Void> {

@@ -37,7 +37,7 @@ import static androidx.room.Room.databaseBuilder;
         ProductEntity.class,
         ProfileEntity.class,
         ServiceProviderEntity.class,
-        ServiceEntity.class}, version = 7, exportSchema = false)
+        ServiceEntity.class}, version = 8, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";

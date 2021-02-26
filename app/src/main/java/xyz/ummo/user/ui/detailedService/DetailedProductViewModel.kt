@@ -1,46 +1,41 @@
-package xyz.ummo.user.ui.detailedService;
+package xyz.ummo.user.ui.detailedService
 
-import android.app.Application;
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import timber.log.Timber
+import xyz.ummo.user.data.entity.ProductEntity
+import xyz.ummo.user.data.repo.AppRepository
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-
-import timber.log.Timber;
-import xyz.ummo.user.data.entity.ProductEntity;
-import xyz.ummo.user.data.repo.AppRepository;
-
-public class DetailedProductViewModel extends AndroidViewModel {
-
-    private final AppRepository appRepository;
-    private LiveData<ProductEntity> productEntityLiveData;
-    private static final String TAG = "DetailedServiceViewMode";
-
-    public DetailedProductViewModel(@NonNull Application application) {
-        super(application);
-
-        appRepository = new AppRepository(application);
-        productEntityLiveData = appRepository.getProductEntityLiveData();
+class DetailedProductViewModel(application: Application) : AndroidViewModel(application) {
+    private val appRepository: AppRepository = AppRepository(application)
+    private val productEntityLiveData: LiveData<ProductEntity>
+    fun insertProduct(productEntity: ProductEntity) {
+        appRepository.insertProduct(productEntity)
+        Timber.e("insertProduct: PRODUCT->%s", productEntity.productId)
     }
 
-    public void insertProduct(ProductEntity productEntity){
-        appRepository.insertProduct(productEntity);
-        Timber.e("insertProduct: PRODUCT->%s", productEntity.getProductId());
+    fun updateProduct(productEntity: ProductEntity?) {
+        appRepository.updateProduct(productEntity)
     }
 
-    public void updateProduct(ProductEntity productEntity){
-        appRepository.updateProduct(productEntity);
+    fun deleteAllProduct() {
+        appRepository.deleteAllProducts()
     }
 
-    public void deleteAllProduct(){
-        appRepository.deleteAllProducts();
+    fun getProductEntityLiveDataById(productId: String?): LiveData<ProductEntity> {
+        return appRepository.getProductEntityLiveDataById(productId)
     }
 
-    public LiveData<ProductEntity> getProductEntityLiveDataById(String productId){
-        return appRepository.getProductEntityLiveDataById(productId);
+    fun getDelegatedProduct(isDelegated: Boolean?): LiveData<ProductEntity> {
+        return appRepository.getDelegatedProduct(isDelegated)
     }
 
-    public LiveData<ProductEntity> getDelegatedProduct(Boolean isDelegated){
-        return appRepository.getDelegatedProduct(isDelegated);
+    companion object {
+        private const val TAG = "DetailedServiceViewMode"
+    }
+
+    init {
+        productEntityLiveData = appRepository.productEntityLiveData
     }
 }

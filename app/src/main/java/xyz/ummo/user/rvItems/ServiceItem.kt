@@ -141,6 +141,8 @@ class ServiceItem(private val service: Service,
                         null, false) as Chip
 
                 serviceCentreChipItem.text = service.serviceCentre[i]
+                Timber.e("CENTRE_CHIP -> ${service.serviceCentre[i]}")
+
 
                 if (serviceCentreChipItem.isChecked) {
                     serviceItemObject.put("CENTRE_CHIP", service.serviceCentre)

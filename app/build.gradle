@@ -92,6 +92,9 @@ dependencies {
     //Google Safetynet
     implementation "com.google.android.gms:play-services-safetynet:17.0.0"
 
+    //GSON
+    implementation 'com.google.code.gson:gson:2.8.6'
+
     //Firebase SDK
     implementation platform('com.google.firebase:firebase-bom:26.0.0') //Bill of Materials
     implementation 'com.google.firebase:firebase-analytics'
