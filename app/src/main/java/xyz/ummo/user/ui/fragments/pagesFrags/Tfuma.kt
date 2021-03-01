@@ -248,9 +248,11 @@ class Tfuma : Fragment() {
                                         .put("COMMENTED-ON", serviceCommentBoolean)
                                         .put("BOOKMARKED", serviceBookmarked)
 
-                                gAdapter.add(ServiceItem(delegatableService, context, savedUserActions))
-                                Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
-                                checkingAdapterState()
+                                if (isAdded){
+                                    gAdapter.add(ServiceItem(delegatableService, context, savedUserActions))
+                                    Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
+                                    checkingAdapterState()
+                                }
                             }
                         }
 

@@ -32,7 +32,7 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/gov_logo_2"
+                    android:src="@drawable/esw_gov"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7" />
 
@@ -48,23 +48,30 @@
 
         <include layout="@layout/content_detailed_service" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/request_agent_btn"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="15dp"
-            android:backgroundTint="@color/ummo_1"
-            android:padding="10dp"
-            android:text="@string/request_agent"
-            android:textColor="@color/White"
-            android:textSize="14sp"
-            app:icon="@drawable/ic_agent_add_24"
-            app:iconGravity="textStart"
-            tools:targetApi="lollipop" />
+            android:background="@color/White">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/request_agent_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="15dp"
+                android:backgroundTint="@color/ummo_1"
+                android:padding="10dp"
+                android:text="@string/request_agent"
+                android:textColor="@color/White"
+                android:textSize="14sp"
+                app:icon="@drawable/ic_agent_add_24"
+                app:iconGravity="textStart"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

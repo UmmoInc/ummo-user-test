@@ -169,7 +169,7 @@
     <string name="you_downvoted_this">You downvoted</string>
     <string name="you_commented_on_this">You commented</string>
     <string name="you_shared_this">You shared</string>
-    <string name="you_saved_this">Bookmarked</string>
+    <string name="you_saved_this">Saved Offline</string>
     <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
     <string name="recommend_service_improvements">How would you improve this service?</string>
     <string name="service_centre_selection">(Choose one)</string>
@@ -186,7 +186,7 @@
     <string name="serverUrl">https://stage.ummo.xyz</string>
     <!--<string name="serverUrl">http://192.168.8.100:3000</string>-->
     <string name="delegation_fee">E100</string>
-    <string name="intro_header_text"><![CDATA[Thank you for helping us improve Ummo.]]></string>
+    <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
     <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
     <string name="clean_hands">Made with clean hands. (Don\'t forget to sanitize.)</string>

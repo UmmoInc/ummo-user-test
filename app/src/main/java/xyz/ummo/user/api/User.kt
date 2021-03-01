@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Base64
+import androidx.multidex.MultiDexApplication
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
@@ -24,11 +25,11 @@ import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler
 import java.net.URISyntaxException
 
-class User : Application() {
+class User : MultiDexApplication() {
 
     //public var mSocket: Socket? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
-    val MIXPANEL_TOKEN = "d787d12259b1db03ada420ec6bb9e5af"
+    private val MIXPANEL_TOKEN = "d787d12259b1db03ada420ec6bb9e5af"
     private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private val mode = Activity.MODE_PRIVATE
 

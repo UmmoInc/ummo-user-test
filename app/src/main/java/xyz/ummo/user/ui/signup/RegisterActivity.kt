@@ -371,7 +371,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
         snackbar.show()
     }
 

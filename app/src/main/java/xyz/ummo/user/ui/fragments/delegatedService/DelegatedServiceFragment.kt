@@ -48,6 +48,7 @@ import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
  * Use the [DelegatedServiceFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
 class DelegatedServiceFragment : Fragment {
     // TODO: Rename and change types of parameters
     private val mParam1: String? = null
@@ -112,6 +113,9 @@ class DelegatedServiceFragment : Fragment {
                 .get(DelegatedServiceViewModel::class.java)
 
         countOfDelegatedServices = delegatedServiceViewModel!!.getCountOfDelegatedServices()
+        if (countOfDelegatedServices != 0) {
+            initDelegatedServiceFrag()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -154,9 +158,9 @@ class DelegatedServiceFragment : Fragment {
 
         agentNameTextView?.text = agentName
 
-        initDelegatedServiceFrag()
+//        initDelegatedServiceFrag()
 
-        updateServiceState()
+//        updateServiceState()
 
 //        goToDelegationChat()
 
@@ -165,7 +169,14 @@ class DelegatedServiceFragment : Fragment {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        updateServiceState()
+    }
+
     private fun initDelegatedServiceFrag() {
+        delegatedServicePreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)!!
+
         editor = delegatedServicePreferences.edit()
 
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
@@ -211,12 +222,14 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun checkingForDelegatedServices() {
+        editor = delegatedServicePreferences.edit()
+
         when {
             countOfDelegatedServices == 0 -> {
                 viewBinding.delegationLayout.visibility = View.GONE
                 viewBinding.noDelegationLayout.visibility = View.VISIBLE
                 takeMeHome()
-                editor.remove(DELEGATE_INITIALIZED)
+                editor.remove(DELEGATE_INITIALIZED).apply()
 
             }
             /** Displaying Delegated Service from Room (local) **/
@@ -377,9 +390,13 @@ class DelegatedServiceFragment : Fragment {
         if (serviceViewModel != null) {
             serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
                     .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
-                        delegatedProductNameTextView!!.text = serviceEntity.serviceName
-                        delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
-                        delegatedProductCostTextView!!.text = serviceEntity.serviceCost
+
+                        if (serviceEntity != null) {
+                            delegatedProductNameTextView!!.text = serviceEntity.serviceName
+                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
+                            delegatedProductCostTextView!!.text = serviceEntity.serviceCost
+                        } else
+                            Timber.e("NO SERVICE ENTITY")
                     })
         } else {
             Timber.e("NO SERVICE VIEW MODEL!")

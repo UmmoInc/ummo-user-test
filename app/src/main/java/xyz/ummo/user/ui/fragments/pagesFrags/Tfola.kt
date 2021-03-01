@@ -257,11 +257,13 @@ class Tfola : Fragment() {
                         .put("COMMENTED-ON", serviceCommentBoolean)
                         .put("BOOKMARKED", serviceBookmarked)
 
-                gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
-                Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
-                gAdapter.notifyDataSetChanged()
+                if (isAdded) {
+                    gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
+                    Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
+                    gAdapter.notifyDataSetChanged()
 
-                checkingAdapterState()
+                    checkingAdapterState()
+                }
             }
         }
     }

@@ -159,79 +159,11 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/service_header_layout">
 
-                        <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
-                        <RelativeLayout
-                            android:id="@+id/service_centre_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:id="@+id/service_centre_image_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="8dp"
-                                android:padding="8dp"
-                                app:srcCompat="@drawable/ic_service_centre_24" />
-
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:layout_toEndOf="@+id/service_centre_image_view">
-
-                                <TextView
-                                    android:id="@+id/service_centre_header_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/service_centres"
-                                    android:textColor="@color/Grey"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignBottom="@id/service_centre_header_text_view"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_toEndOf="@id/service_centre_header_text_view"
-                                    android:text="@string/service_centre_selection"
-                                    android:textColor="@color/Grey"
-                                    android:textSize="12sp"
-                                    android:textStyle="italic" />
-
-                                <!--<LinearLayout
-                                    android:id="@+id/service_centres_linear_layout"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_centre_header_text_view"
-                                    android:orientation="horizontal"
-                                    android:paddingStart="4dp"
-                                    android:paddingEnd="8dp"
-                                    android:paddingBottom="4dp">
-
-                                </LinearLayout>-->
-
-                                <com.google.android.material.chip.ChipGroup
-                                    android:id="@+id/service_centres_chip_group"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_below="@+id/service_centre_header_text_view"
-                                    app:chipSpacing="2dp"
-                                    app:chipSpacingHorizontal="2dp"
-                                    app:chipSpacingVertical="2dp"
-                                    app:selectionRequired="true"
-                                    app:singleLine="false" />
-
-                            </RelativeLayout>
-
-                        </RelativeLayout>
-                        <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
-
                         <!-- [START] Service Cost Layout (ID: "service_cost_layout")-->
                         <RelativeLayout
                             android:id="@+id/service_cost_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/service_centre_layout">
+                            android:layout_height="wrap_content">
 
                             <ImageView
                                 android:id="@+id/service_cost_image_view"
@@ -379,12 +311,80 @@
                             </RelativeLayout>
                             <!-- [END] Service Duration Layout (ID: "service_duration_layout"-->
 
+                            <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                            <RelativeLayout
+                                android:id="@+id/service_centre_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/service_duration_layout">
+
+                                <ImageView
+                                    android:id="@+id/service_centre_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_service_centre_24" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_toEndOf="@+id/service_centre_image_view">
+
+                                    <TextView
+                                        android:id="@+id/service_centre_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/service_centres"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignBottom="@id/service_centre_header_text_view"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_toEndOf="@id/service_centre_header_text_view"
+                                        android:text="@string/service_centre_selection"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp"
+                                        android:textStyle="italic" />
+
+                                    <!--<LinearLayout
+                                        android:id="@+id/service_centres_linear_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/service_centre_header_text_view"
+                                        android:orientation="horizontal"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="8dp"
+                                        android:paddingBottom="4dp">
+
+                                    </LinearLayout>-->
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/service_centres_chip_group"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_below="@+id/service_centre_header_text_view"
+                                        app:chipSpacing="2dp"
+                                        app:chipSpacingHorizontal="2dp"
+                                        app:chipSpacingVertical="2dp"
+                                        app:selectionRequired="true"
+                                        app:singleLine="false" />
+
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                            <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+
                             <!-- [START] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
                             <RelativeLayout
                                 android:id="@+id/service_requirements_relative_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/service_duration_layout">
+                                android:layout_below="@+id/service_centre_layout">
 
                                 <ImageView
                                     android:id="@+id/service_requirements_image_view"
@@ -717,7 +717,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+                            app:srcCompat="@drawable/ic_download_for_offline_24" />
 
                         <TextView
                             android:id="@+id/save_count_text_view"
@@ -726,7 +726,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toEndOf="@+id/save_service_image"
                             android:fontFamily="@font/rubik"
-                            android:text="@string/shares_placeholder"
+                            android:text=""
                             android:textSize="12sp"
                             app:fontFamily="@font/rubik" />
 

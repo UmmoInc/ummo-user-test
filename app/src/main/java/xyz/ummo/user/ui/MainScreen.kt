@@ -46,9 +46,6 @@ import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.AGENT_ID
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
@@ -407,13 +404,17 @@ class MainScreen : AppCompatActivity() {
 
     @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
-        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceName}")
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
 
-        val bookmarkingServicesList = serviceViewModel?.getServicesList()
+        if (serviceBookmarkedEvent.serviceBookmarked!!)
+            showSnackbarYellow("Saving ${serviceBookmarkedEvent.serviceName} offline", -1)
+//        else
+//            showSnackbarYellow("Service removed from your bookmarks", -1)
+//        val bookmarkingServicesList = serviceViewModel?.getServicesList()
 
-        for (i in bookmarkingServicesList?.indices!!) {
-            if (serviceBookmarkedEvent.serviceId.equals(bookmarkingServicesList[i].serviceId)) {
+        /*for (i in bookmarkingServicesList?.indices!!) {
+            if (serviceBookmarkedEvent.serviceName.equals(bookmarkingServicesList[i].serviceId)) {
                 serviceEntity.bookmarked = serviceBookmarkedEvent.serviceBookmarked
                 //serviceViewModel?.updateService(serviceEntity)
                 Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
@@ -422,9 +423,8 @@ class MainScreen : AppCompatActivity() {
                     showSnackbarYellow("Service Bookmarked", -1)
                 else
                     showSnackbarYellow("Service removed from your bookmarks", -1)
-
             }
-        }
+        }*/
     }
 
     override fun onStop() {
@@ -818,7 +818,7 @@ class MainScreen : AppCompatActivity() {
          *  **/
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_yellow700))
+        snackbar.setTextColor(resources.getColor(R.color.gold))
 
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
@@ -829,7 +829,7 @@ class MainScreen : AppCompatActivity() {
     private fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav

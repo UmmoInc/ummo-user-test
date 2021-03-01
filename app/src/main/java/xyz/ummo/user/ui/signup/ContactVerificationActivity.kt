@@ -374,7 +374,7 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.show()
@@ -390,7 +390,7 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun showSnackbarGreen(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googgreen400))
+        snackbar.setTextColor(resources.getColor(R.color.lawn_green))
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.show()

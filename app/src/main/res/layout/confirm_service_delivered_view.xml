@@ -78,6 +78,7 @@
                     android:fontFamily="@font/rubik"
                     android:hint="Share your thoughts (optional)"
                     android:lines="1"
+                    android:inputType="textCapSentences"
                     android:textColorHint="@color/ummo_2"
                     android:textCursorDrawable="@drawable/cursor"
                     android:textSize="18sp" />

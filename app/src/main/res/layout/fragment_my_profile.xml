@@ -235,7 +235,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="4dp"
-                android:backgroundTint="@color/quantum_googred"
+                android:backgroundTint="@color/background_color"
                 android:enabled="true"
                 android:text="Log out"
                 android:textColor="@color/White"
@@ -247,7 +247,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:targetApi="lollipop" />
         </RelativeLayout>
-
 
     </ScrollView>
 </layout>

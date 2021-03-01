@@ -388,7 +388,7 @@ class DetailedServiceActivity : AppCompatActivity() {
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
         val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_yellow700))
+        snackbar.setTextColor(resources.getColor(R.color.gold))
 
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F

@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
@@ -42,7 +44,6 @@ import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGA
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
-import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
@@ -58,17 +59,22 @@ class ServiceItem(private val service: ServiceObject,
 
     /** Shared Preferences for storing user actions **/
     private lateinit var serviceItemPrefs: SharedPreferences
+    private lateinit var savingServiceOfflineAnimation: AnimationDrawable
+
     private val mode = Activity.MODE_PRIVATE
     private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private var upVote: Boolean = false
     private var downVote: Boolean = false
     private var commentedOn: Boolean = false
-//    private var bookmarked: Boolean = false
+
+    //    private var bookmarked: Boolean = false
     private var anonymousComment: Boolean = false
     private val isUpvotedEvent = UpvoteServiceEvent()
     private val isDownvotedEvent = DownvoteServiceEvent()
     private val serviceCommentEvent = ServiceCommentEvent()
-//    private val isBookmarkedEvent = ServiceBookmarkedEvent()
+    private val serviceBookmarkedEvent = ServiceBookmarkedEvent()
+
+    //    private val isBookmarkedEvent = ServiceBookmarkedEvent()
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val delegateStateEvent = DelegateStateEvent()
     private val passingServiceEvent = PassingServiceEvent()
@@ -138,6 +144,9 @@ class ServiceItem(private val service: ServiceObject,
         viewHolder.itemView.service_title_text_view.text = service.serviceName //1
         viewHolder.itemView.service_description_text_view.text = service.serviceDescription //2
         viewHolder.itemView.service_eligibility_text_view.text = service.serviceEligibility //3
+
+        checkIfServiceIsSavedOffline(serviceId, viewHolder)
+
 
         /** Parsing and displaying the service centres in the Service Centres linear layout **/
         if (service.serviceCentres.isNotEmpty()) {
@@ -411,6 +420,45 @@ class ServiceItem(private val service: ServiceObject,
         }
 
         /** [4] Save Service Click Handlers **/
+        viewHolder.itemView.save_service_relative_layout.setOnClickListener {
+            Timber.e("SAVING SERVICE ENTITY -> ${serviceEntity.serviceName}")
+            serviceViewModel.addService(serviceEntity)
+            serviceBookmarkedEvent.serviceName = serviceEntity.serviceName
+            serviceBookmarkedEvent.serviceBookmarked = true
+            EventBus.getDefault().post(serviceBookmarkedEvent)
+
+            val timer = object : CountDownTimer(2000, 1000) {
+                override fun onTick(p0: Long) {
+                    //TODO: Show animation
+//                    viewHolder.itemView.save_service_imag
+                }
+
+                override fun onFinish() {
+                    viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
+                }
+            }
+            timer.start()
+        }
+
+        viewHolder.itemView.save_service_image.setOnClickListener {
+            Timber.e("SAVING SERVICE ENTITY -> ${serviceEntity.serviceName}")
+            serviceViewModel.addService(serviceEntity)
+            serviceBookmarkedEvent.serviceName = serviceEntity.serviceName
+            serviceBookmarkedEvent.serviceBookmarked = true
+            EventBus.getDefault().post(serviceBookmarkedEvent)
+
+            val timer = object : CountDownTimer(2000, 1000) {
+                override fun onTick(p0: Long) {
+//                    viewHolder.itemView.save_service_imag
+                }
+
+                override fun onFinish() {
+                    viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
+                }
+            }
+            timer.start()
+        }
+
         /*viewHolder.itemView.save_service_relative_layout.setOnClickListener {
 //            Timber.e("Save Service-Layout!")
 
@@ -488,6 +536,21 @@ class ServiceItem(private val service: ServiceObject,
                 makeRequest()
             }
         }
+
+    }
+
+    private fun checkIfServiceIsSavedOffline(mServiceId: String, viewHolder: GroupieViewHolder) {
+
+        Timber.e("SERVICE ID -> $mServiceId")
+        val offlineServices = serviceViewModel.getServicesList()
+
+        for (i in offlineServices.indices) {
+            if (mServiceId == offlineServices[i].serviceId) {
+                Timber.e("OFFLINE SERVICE -> ${offlineServices[i].serviceName}")
+                viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
+                viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
+            }
+        }
     }
 
     private fun markDelegatedAlready(viewHolder: GroupieViewHolder) {
@@ -497,14 +560,15 @@ class ServiceItem(private val service: ServiceObject,
         val countOfDelegatedServices = delegatedServiceViewModel.getCountOfDelegatedServices()
 
         if (countOfDelegatedServices > 0) {
-            delegatedServiceModel.delegatedServiceEntityLiveData?.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
+            delegatedServiceModel.delegatedServiceEntityLiveData.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
                 val delegatedServiceId = delegatedServiceEntity.delegatedProductId
                 Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
                 if (serviceEntity.serviceId == delegatedServiceId) {
                     Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
                     viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
+
                     viewHolder.itemView.request_agent_button
-                            .setBackgroundColor(context.resources.getColor(R.color.quantum_grey))
+                            .setBackgroundColor(context.resources.getColor(R.color.Grey))
                     viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
                     viewHolder.itemView.request_agent_button.isActivated = false
                 }
@@ -1042,11 +1106,13 @@ class ServiceItem(private val service: ServiceObject,
     }
 
     /*private fun bookmarkService(date: String) {
-        *//** Initializing sharedPreferences **//*
+        */
+    /** Initializing sharedPreferences **//*
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        *//** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
-         * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **//*
+        */
+    /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+     * 1. switch action-icon based on user's previous action
+     * 2. toggle b/n icons based on user changing their mind on an action **//*
         val serviceBookmarkEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         serviceBookmarkEditor.putBoolean("BOOKMARKED-${serviceEntity.serviceId}", true).apply()
 
@@ -1062,11 +1128,13 @@ class ServiceItem(private val service: ServiceObject,
     }*/
 
     /*private fun removeBookmark(date: String) {
-        *//** Initializing sharedPreferences **//*
+        */
+    /** Initializing sharedPreferences **//*
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
-        *//** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
-         * 1. switch action-icon based on user's previous action
-         * 2. toggle b/n icons based on user changing their mind on an action **//*
+        */
+    /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
+     * 1. switch action-icon based on user's previous action
+     * 2. toggle b/n icons based on user changing their mind on an action **//*
         val serviceBookmarkEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         serviceBookmarkEditor.putBoolean("BOOKMARKED-${serviceEntity.serviceId}", false).apply()
 

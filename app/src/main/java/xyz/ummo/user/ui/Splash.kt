@@ -3,8 +3,6 @@ package xyz.ummo.user.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
@@ -57,8 +55,8 @@ class Splash : Activity() {
             finish()
 
             val splashPreferences = getSharedPreferences(splashPrefs, mode)
-            /*val signedUp = splashPreferences.getBoolean("SIGNED_UP", false)
-            if (signedUp) {
+            val signedUp = splashPreferences.getBoolean("SIGNED_UP", false)
+            /*if (signedUp) {
                 Timber.e("onCreate - User has already signed up")
                 startActivity(Intent(this@Splash, MainScreen::class.java))
             } else {
@@ -73,7 +71,7 @@ class Splash : Activity() {
             } else {
                 Timber.e("onCreate - User has not signed up yet!")
 
-                val providers = arrayListOf(AuthUI.IdpConfig.PhoneBuilder().build())
+               /* val providers = arrayListOf(AuthUI.IdpConfig.PhoneBuilder().build())*/
                 startActivity(Intent(this@Splash, RegisterActivity::class.java))
                 /*startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -93,7 +91,7 @@ class Splash : Activity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
@@ -106,11 +104,11 @@ class Splash : Activity() {
             } else {
                 if (response == null) {
                     Timber.e("SIGN-UP CANCELLED!")
-                }/* else if (response.error == ErrorCodes)
-                    Timber.e("NO FIREBASE USER RETURNED!")*/
+                }*//* else if (response.error == ErrorCodes)
+                    Timber.e("NO FIREBASE USER RETURNED!")*//*
             }
         }
-    }
+    }*/
 
     /**
      * Generates a 16-byte nonce with additional data.
