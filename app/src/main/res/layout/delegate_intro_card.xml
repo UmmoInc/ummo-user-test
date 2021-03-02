@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/info_card">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="1dp"
+        app:cardMaxElevation="1dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingTop="4dp"
+        app:strokeColor="@color/ummo_2"
+        app:strokeWidth="1dp">
+
+        <RelativeLayout
+            android:id="@+id/info_card_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp">
+
+            <ImageView
+                android:id="@+id/ummo_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/info_image"
+                app:srcCompat="@drawable/logo" />
+
+            <!--<ImageView
+                android:id="@+id/info_cancel_image_view"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/dismiss_info"
+                app:srcCompat="@drawable/ic_cancel_24"
+                android:clickable="true"
+                android:focusable="true"/>-->
+
+            <TextView
+                android:id="@+id/info_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/ummo_image_view"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/ummo_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Introducing Tfuma"
+                android:textColor="@color/black" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/ummo_image_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/info_eco_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignStart="@id/ummo_image_view"
+                android:layout_alignBottom="@+id/intro_text_view"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/info_image"
+                app:srcCompat="@drawable/ic_eco_24" />
+
+            <TextView
+                android:id="@+id/intro_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_margin="8dp"
+                android:layout_toEndOf="@+id/info_eco_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov."
+                android:textSize="12sp" />
+
+            <RelativeLayout
+                android:id="@+id/intro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/intro_text_view"
+                android:layout_alignStart="@id/ummo_image_view">
+
+                <ImageView
+                    android:id="@+id/vision_image_view"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignBottom="@+id/body_one_text_view"
+                    android:layout_marginStart="5dp"
+                    android:contentDescription="@string/info_image"
+                    app:srcCompat="@drawable/ic_vision_24" />
+
+                <TextView
+                    android:id="@+id/body_one_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_toEndOf="@+id/vision_image_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="The Vision: "
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/body_two_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@+id/body_one_text_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="you should not spend hours at Gov. offices."
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/outro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/intro_relative_layout"
+                android:layout_alignStart="@id/ummo_image_view">
+
+                <ImageView
+                    android:id="@+id/plan_image_view"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignBottom="@+id/outro_one_one_text_view"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="5dp"
+                    android:contentDescription="@string/info_image"
+                    app:srcCompat="@drawable/ic_work_24" />
+
+                <TextView
+                    android:id="@+id/outro_one_one_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_toEndOf="@+id/plan_image_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="The Plan: "
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/outro_two_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_toEndOf="@+id/outro_one_one_text_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="small changes that make a big difference."
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

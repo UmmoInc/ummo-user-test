@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Feedback">
-
+    tools:context=".ui.serviceFeedback.Feedback">
 
     <TextView
         android:id="@+id/service_price"
@@ -17,15 +16,12 @@
         android:textColor="@color/black"
         android:layout_marginTop="50dp"/>
 
-
     <View
         android:id="@+id/view1"
         android:layout_width="fill_parent"
         android:layout_height="1dp"
         android:background="@color/Grey"
         android:layout_below="@id/service_price"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp" />
@@ -38,8 +34,7 @@
         android:text="Agent"
         android:textSize="18sp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="20dp"/>
-
+        android:layout_marginStart="20dp"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
@@ -48,7 +43,6 @@
         android:src="@drawable/profile_pic"
         android:layout_below="@id/agent_title"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"/>
 
     <TextView
@@ -59,9 +53,9 @@
         android:textSize="16sp"
         android:textColor="@color/black"
         android:layout_marginTop="30dp"
-        android:layout_toRightOf="@id/profile_image"
+        android:layout_toEndOf="@id/profile_image"
         android:layout_below="@id/agent_title"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginStart="10dp"/>
 
     <View
         android:id="@+id/view_2"
@@ -69,8 +63,6 @@
         android:layout_height="1dp"
         android:background="@color/Grey"
         android:layout_below="@id/profile_image"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="5dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp" />
@@ -105,7 +97,8 @@
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:layout_below="@id/ratingStars"
-        android:textCursorDrawable="@drawable/cursor" />
+        android:textCursorDrawable="@drawable/cursor"
+        tools:targetApi="lollipop" />
 
     <View
         android:id="@+id/view_3"
@@ -113,14 +106,12 @@
         android:layout_height="1dp"
         android:background="@color/Grey"
         android:layout_below="@id/comment"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp" />
 
     <Button
-        android:id="@+id/request_agent_btn"
+        android:id="@+id/submit_feedback_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -133,6 +124,5 @@
         android:textColor="@color/White"
         android:background="@drawable/register_next_button"
         android:layout_gravity="bottom"/>
-
 
 </RelativeLayout>

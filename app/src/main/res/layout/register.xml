@@ -24,70 +24,84 @@
             android:contentDescription="@string/ummo_logo_descriptor"
             android:src="@drawable/logo" />
 
-        <EditText
-            android:id="@+id/userNameEditText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/userNameTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/logo"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginLeft="40dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="60dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginRight="40dp"
-            android:autofillHints="Enter your full name..."
-            android:backgroundTint="@color/black"
-            android:ems="10"
-            android:hint="@string/name_prompt_hint"
-            android:inputType="textCapWords"
-            android:textColor="@color/black"
-            android:textColorHint="@color/Grey"
-            android:textCursorDrawable="@drawable/cursor"
-            tools:targetApi="o" />
+            android:layout_marginEnd="30dp"
+            android:focusable="true"
+            android:textColorHint="@color/ummo_1"
+            app:boxCornerRadiusBottomEnd="4dp"
+            app:boxCornerRadiusBottomStart="4dp"
+            app:boxCornerRadiusTopEnd="4dp"
+            app:boxCornerRadiusTopStart="4dp"
+            app:boxStrokeColor="@color/ummo_2"
+            app:endIconMode="clear_text"
+            app:hintTextColor="@color/ummo_2"
+            app:startIconDrawable="@drawable/ic_person_black_24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/userNameTextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cursorVisible="true"
+                android:fontFamily="@font/rubik"
+                android:hint="Enter your name &amp; surname"
+                android:inputType="textCapWords"
+                android:lines="1"
+                android:textCursorDrawable="@drawable/cursor"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.hbb20.CountryCodePicker
             android:id="@+id/registration_ccp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/userContactEditText"
+            android:layout_alignBottom="@+id/userContactTextInputLayout"
             android:layout_marginStart="40dp"
+            android:layout_marginBottom="6dp"
             app:ccp_autoDetectCountry="true"
             app:ccp_showFullName="false"
             app:ccp_showNameCode="false"
             app:ccp_showPhoneCode="true" />
 
-        <EditText
-            android:id="@+id/userContactEditText"
-            android:layout_width="280dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/userNameEditText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="40dp"
-            android:layout_toEndOf="@id/registration_ccp"
-            android:autofillHints="Enter your mobile contact..."
-            android:backgroundTint="@color/black"
-            android:ems="10"
-            android:hint="@string/contact_prompt_hint"
-            android:inputType="phone"
-            android:textColor="@color/black"
-            android:textColorHint="@color/Grey"
-            android:textCursorDrawable="@drawable/cursor"
-            tools:targetApi="o" />
-
-        <!--<TextView
-            android:id="@+id/textViewLogin"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/userContactTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/userContactEditText"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="50dp"
-            android:padding="8dp"
-            android:text="@string/already_have_an_account_log_in"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
-            android:textSize="14sp" />-->
+            android:layout_below="@+id/userNameTextInputLayout"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:orientation="horizontal"
+            android:textColorHint="@color/ummo_1"
+            app:boxCornerRadiusBottomEnd="4dp"
+            app:boxCornerRadiusBottomStart="4dp"
+            app:boxCornerRadiusTopEnd="4dp"
+            app:boxCornerRadiusTopStart="4dp"
+            app:boxStrokeColor="@color/ummo_2"
+            app:endIconMode="clear_text"
+            app:hintTextColor="@color/ummo_2">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/userContactTextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cursorVisible="true"
+                android:fontFamily="@font/rubik"
+                android:hint="Enter your contact"
+                android:inputType="phone"
+                android:lines="1"
+                android:paddingStart="120dp"
+                android:paddingEnd="0dp"
+                android:textCursorDrawable="@drawable/cursor"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
     </RelativeLayout>
 
@@ -107,6 +121,21 @@
             android:visibility="gone" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/legal_terms_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/register_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:text="Ummo Terms &amp; Conditions"
+        android:textColor="@color/ummo_2"
+        android:textSize="14sp" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/register_button"
         android:layout_width="300dp"
@@ -125,5 +154,22 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         tools:targetApi="lollipop" />
+
+    <RelativeLayout
+        android:id="@+id/register_progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/register_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"/>
+    </RelativeLayout>
 
 </RelativeLayout><!--</layout>-->

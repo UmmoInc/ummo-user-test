@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,6 +11,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_commerce.view.*
@@ -19,10 +22,13 @@ import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentRevenueBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RevenueFragment : Fragment() {
     // TODO: Rename and change types of parameters
@@ -38,7 +44,7 @@ class RevenueFragment : Fragment() {
     private var serviceViewModel: ServiceViewModel? = null
 
     private var financeServiceId: String = ""
-    private lateinit var revenueService: Service
+    private lateinit var revenueService: ServiceObject
     private lateinit var revenueServiceList: List<ServiceEntity>
 
     /** Shared Preferences for storing user actions **/
@@ -51,8 +57,16 @@ class RevenueFragment : Fragment() {
     private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         gAdapter = GroupAdapter()
 
@@ -65,10 +79,8 @@ class RevenueFragment : Fragment() {
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
-        Timber.e("CREATING REVENUE-FRAGMENT!")
         getRevenueServiceProviderId()
         getRevenueServices(financeServiceId)
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -91,6 +103,22 @@ class RevenueFragment : Fragment() {
         /*if (revenueServiceList.isNotEmpty()) {
             revenueBinding.loadProgressBar.visibility = View.GONE
         }*/
+
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+        val revenueEventObject = JSONObject()
+        revenueEventObject.put("EVENT_DATE_TIME", currentDate)
+        mixpanel?.track("revenueTab_displayed", revenueEventObject)
+
+        /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
+        revenueBinding.revenueSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getRevenueServices(financeServiceId)
+            revenueBinding.revenueSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services reloaded", -1)
+            mixpanel?.track("revenueTab_swipeRefreshed", revenueEventObject)
+        }
 
         return view
     }
@@ -118,7 +146,7 @@ class RevenueFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -140,7 +168,7 @@ class RevenueFragment : Fragment() {
                 serviceDescription = revenueServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = revenueServiceList[i].serviceCentres!! //4
-                presenceRequired = revenueServiceList[i].presenceRequired!! //5
+                delegatable = revenueServiceList[i].delegatable!! //5
                 serviceCost = revenueServiceList[i].serviceCost.toString() //6
                 serviceDocuments = revenueServiceList[i].serviceDocuments!! //7
                 serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
@@ -152,8 +180,8 @@ class RevenueFragment : Fragment() {
                 viewCount = revenueServiceList[i].serviceViews!! //13
                 serviceProvider = revenueId
 
-                revenueService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                revenueService = ServiceObject(serviceId, serviceName, serviceDescription,
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
@@ -198,6 +226,17 @@ class RevenueFragment : Fragment() {
         revenueBinding.loadProgressBar.visibility = View.GONE
 
         recyclerView.adapter = gAdapter
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /** Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     companion object {

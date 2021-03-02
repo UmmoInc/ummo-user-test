@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="true">
+    <item android:drawable="@drawable/ic_download_for_offline_24" android:duration="200" />
+    <item android:drawable="@drawable/ic_downloading_24" android:duration="200" />
+    <item android:drawable="@drawable/ic_saved_offline_pin_24" android:duration="200" />
+</animation-list>

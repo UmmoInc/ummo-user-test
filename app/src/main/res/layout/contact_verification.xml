@@ -81,10 +81,19 @@
         android:enabled="false"
         android:gravity="center"
         android:maxLines="3"
-        android:onClick="resendCode"
         android:text="@string/resend_code"
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp" />
+
+    <Chronometer
+        android:id="@+id/verification_chronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/resend_btn"
+        android:layout_alignBottom="@+id/resend_btn"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
     <ProgressBar
         android:id="@+id/confirmation_loader"
@@ -105,5 +114,22 @@
         app:icon="@drawable/ic_done_all_24"
         app:iconGravity="textEnd"
         tools:targetApi="lollipop" />
+
+    <RelativeLayout
+        android:id="@+id/verify_contact_progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/register_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"/>
+    </RelativeLayout>
 
 </RelativeLayout>

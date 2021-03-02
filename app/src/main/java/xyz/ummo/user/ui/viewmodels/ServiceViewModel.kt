@@ -7,14 +7,17 @@ import timber.log.Timber
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.repo.AppRepository
 
-class ServiceViewModel (application: Application) : AndroidViewModel(application) {
+class ServiceViewModel(application: Application) : AndroidViewModel(application) {
     private val appRepository = AppRepository(application)
 
-    val serviceEntityLiveData: LiveData<ServiceEntity>
+    private val serviceEntityLiveData: LiveData<ServiceEntity>
 
     fun addService(serviceEntity: ServiceEntity?) {
         appRepository.insertService(serviceEntity)
-        Timber.e("ADDING SERVICE TO ROOM -> ${serviceEntity!!.serviceProvider}")
+        Timber.e("ADDING SERVICE TO ROOM [ID] -> ${serviceEntity!!.serviceName}")
+        Timber.e("ADDING SERVICE TO ROOM [DEL] -> ${serviceEntity.delegatable}")
+        Timber.e("ADDING SERVICE TO ROOM [COST] -> ${serviceEntity.serviceCost}")
+        Timber.e("ADDING SERVICE TO ROOM [UPVOTE] -> ${serviceEntity.usefulCount}")
     }
 
     fun updateService(serviceEntity: ServiceEntity?) {
@@ -32,6 +35,14 @@ class ServiceViewModel (application: Application) : AndroidViewModel(application
 
     fun getServiceEntityLiveDataById(serviceId: String): LiveData<ServiceEntity> {
         return appRepository.getServiceEntityLiveDataById(serviceId)
+    }
+
+    fun getDelegatableServices(): List<ServiceEntity> {
+        return appRepository.delegatableServices
+    }
+
+    fun getNonDelegatableServices(): List<ServiceEntity> {
+        return appRepository.nonDelegatableServices
     }
 
     init {

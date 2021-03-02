@@ -109,4 +109,18 @@
         <item name="colorControlActivated">@color/black</item>
     </style>
 
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/ummo_2</item>
+        <item name="android:textColorSecondary">@color/Grey</item>
+    </style>
+
+    <!--<style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/ummo_2</item>
+        <item name="android:textSize">14sp</item>
+
+        &lt;!&ndash; The color of the label when it is collapsed and the text field is active &ndash;&gt;
+        <item name="hintTextColor">?attr/colorPrimary</item>
+
+    </style>-->
+
 </resources>

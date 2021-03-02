@@ -1,25 +1,27 @@
 package xyz.ummo.user.ui.fragments.profile
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.Register
+import xyz.ummo.user.api.Logout
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
-import xyz.ummo.user.databinding.InfoCardBinding
-import xyz.ummo.user.delegate.Logout
 import xyz.ummo.user.ui.signup.RegisterActivity
 
 class ProfileFragment : Fragment() {
@@ -36,10 +38,15 @@ class ProfileFragment : Fragment() {
 
     //ViewBinding
     private lateinit var profileViewBinding: FragmentMyProfileBinding
-    private lateinit var profileInfoCard: InfoCardBinding
+//    private lateinit var profileInfoCard: ProfileInfoCardBinding
 
     private var mAuth: FirebaseAuth? = null
+    private var closeCardImageView: ImageView? = null
+    private var profileIntroCardView: MaterialCardView? = null
 
+    private lateinit var profilePrefs: SharedPreferences
+    private val mode = Activity.MODE_PRIVATE
+    private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +64,11 @@ class ProfileFragment : Fragment() {
         profileViewBinding = DataBindingUtil
                 .inflate(inflater, R.layout.fragment_my_profile, container, false)
 
-        profileInfoCard = DataBindingUtil
-                .inflate(inflater, R.layout.info_card, container, false)
+        /*profileInfoCard = DataBindingUtil
+                .inflate(inflater, R.layout.profile_info_card, container, false)*/
+
+        profilePrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
+        val editor = profilePrefs.edit()
 
         val view = profileViewBinding.root
 
@@ -78,9 +88,30 @@ class ProfileFragment : Fragment() {
             logout()
         }
 
-        dismissInfoCard()
+        closeCardImageView = view.findViewById(R.id.close_card_image_view)
+        profileIntroCardView = view.findViewById(R.id.profile_info_card)
+
+        if (profilePrefs.getBoolean("PROFILE_CARD_CLOSED", false)) {
+            profileIntroCardView!!.visibility = View.GONE
+        } else
+            profileIntroCardView!!.visibility = View.VISIBLE
+
+        closeCardImageView!!.setOnClickListener {
+            Timber.e("CLOSING CARD PROFILE!!!")
+            profileIntroCardView!!.visibility = View.GONE
+            editor.putBoolean("PROFILE_CARD_CLOSED", true).apply()
+        }
 
         return view
+    }
+
+    private fun closeIntroCardImageView() {
+        Timber.e("CLOSING CARD PROFILE!!!")
+        profilePrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
+        val editor = profilePrefs.edit()
+
+        profileIntroCardView!!.visibility = View.GONE
+        editor.putBoolean("PROFILE_CARD_CLOSED", true).apply()
     }
 
     private fun logout() {
@@ -96,11 +127,11 @@ class ProfileFragment : Fragment() {
         // prefManager.unSetFirstTimeLaunch();
     }
 
-    private fun dismissInfoCard() {
+    /*private fun dismissInfoCard() {
         profileInfoCard.infoCancelImageView.setOnClickListener {
             Timber.e("CARD DISMISSED!")
         }
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri?) {

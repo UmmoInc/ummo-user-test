@@ -21,8 +21,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:tabBackground="@color/ummo_3"
-                app:tabGravity="center"
+                app:tabGravity="fill"
                 app:tabInlineLabel="true"
+                app:tabMaxWidth="0dp"
                 app:tabMode="fixed"
                 app:tabTextAppearance="@style/AppTabTextAppearance" />
         </com.google.android.material.appbar.AppBarLayout>

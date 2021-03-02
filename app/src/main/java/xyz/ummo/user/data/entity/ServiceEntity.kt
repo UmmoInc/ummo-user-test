@@ -13,12 +13,15 @@ class ServiceEntity : ServiceModel {
     @ColumnInfo(name = "service_id") //0
     override var serviceId: String? = null
 
+    @NonNull
     @ColumnInfo(name = "service_name") //1
     override var serviceName: String? = null
 
+    @NonNull
     @ColumnInfo(name = "service_description") //2
     override var serviceDescription: String? = null
 
+    @NonNull
     @ColumnInfo(name = "service_eligibility") //3
     override var serviceEligibility: String? = null
 
@@ -26,9 +29,11 @@ class ServiceEntity : ServiceModel {
     override var serviceCentres: ArrayList<String>? = null
 //    override var serviceCentres: String? = null
 
-    @ColumnInfo(name = "presence_required") //5
-    override var presenceRequired: Boolean? = null
+    @NonNull
+    @ColumnInfo(name = "delegatable") //5
+    override var delegatable: Boolean? = null
 
+    @NonNull
     @ColumnInfo(name = "service_cost") //6
     override var serviceCost: String? = null
 

@@ -1,6 +1,6 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_home_affairs.view.*
@@ -20,20 +22,23 @@ import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentHomeAffairsBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.DownvoteServiceEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceCommentEvent
 import xyz.ummo.user.utilities.eventBusEvents.UpvoteServiceEvent
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeAffairsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var homeAffairsBinding: FragmentHomeAffairsBinding
     private lateinit var recyclerView: RecyclerView
@@ -47,14 +52,12 @@ class HomeAffairsFragment : Fragment() {
 
     /** HomeAffairs Service instance && Service ID **/
     private var homeAffairsServiceId: String = ""
-    private lateinit var homeAffairsService: Service
+    private lateinit var homeAffairsService: ServiceObject
 
     private lateinit var homeAffairsServiceList: List<ServiceEntity>
 
     /** Shared Preferences for storing user actions **/
     private lateinit var homeAffairsPrefs: SharedPreferences
-    private val mode = Activity.MODE_PRIVATE
-    private val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
     private var serviceUpVoteBoolean: Boolean = false
     private var serviceDownVoteBoolean: Boolean = false
     private var serviceCommentBoolean: Boolean = false
@@ -62,8 +65,23 @@ class HomeAffairsFragment : Fragment() {
     private var savedUserActions = JSONObject()
     private lateinit var loadProgressBar: ProgressBar
 
+    private var newSession = false
+
+    private lateinit var homeAffairsSwipeRefresher: SwipeRefreshLayout
+
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
+
+        /** [Service-Actions Event] Register for EventBus events **/
+        EventBus.getDefault().register(this)
 
         gAdapter = GroupAdapter()
 
@@ -77,6 +95,7 @@ class HomeAffairsFragment : Fragment() {
                 .get(ServiceViewModel::class.java)
 
         Timber.e("CREATING HOME-AFFAIRS-FRAGMENT!")
+
         getHomeAffairsServiceProviderId()
 
         getHomeAffairsServices(homeAffairsServiceId)
@@ -85,7 +104,6 @@ class HomeAffairsFragment : Fragment() {
 
         if (homeAffairsServiceList.isNotEmpty())
             loadProgressBar.visibility = View.GONE*/
-
     }
 
     @Subscribe
@@ -96,8 +114,7 @@ class HomeAffairsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        /** [Service-Actions Event] Register for EventBus events **/
-        EventBus.getDefault().register(this)
+
     }
 
     override fun onStop() {
@@ -112,8 +129,14 @@ class HomeAffairsFragment : Fragment() {
         Timber.e("SERVICE-DOWNVOTED-EVENT -> ${downvoteServiceEvent.serviceDownvote}")
     }
 
+    @Subscribe
+    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
 
         homeAffairsBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_home_affairs,
@@ -127,7 +150,22 @@ class HomeAffairsFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = gAdapter
 
-//        Timber.e("CREATING HOME-AFFAIRS-VIEW! -> ${homeAffairsServiceList.size}")
+        val homeAffairsEvent = JSONObject()
+        homeAffairsEvent.put("EVENT_DATE_TIME", currentDate)
+        val mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
+        mixpanel?.track("homeAffairsTab_displayed", homeAffairsEvent)
+
+        /** Refreshing HomeAffairs services with `SwipeRefreshLayout **/
+        homeAffairsBinding.homeAffairsSwipeRefresher.setOnRefreshListener {
+            Timber.e("REFRESHING VIEW")
+
+            getHomeAffairsServices(homeAffairsServiceId)
+            homeAffairsBinding.homeAffairsSwipeRefresher.isRefreshing = false
+            showSnackbarBlue("Services refreshed", -1)
+            mixpanel?.track("homeAffairsTab_swipeRefreshed", homeAffairsEvent)
+        }
+
         return view
     }
 
@@ -154,7 +192,7 @@ class HomeAffairsFragment : Fragment() {
         var serviceDescription: String
         var serviceEligibility: String
         var serviceCentres: ArrayList<String>
-        var presenceRequired: Boolean
+        var delegatable: Boolean
         var serviceCost: String
         var serviceDocuments: ArrayList<String>
         var serviceDuration: String
@@ -168,12 +206,10 @@ class HomeAffairsFragment : Fragment() {
 
         val servicesList = serviceViewModel?.getServicesList()
 
-        /* val bookmarkedServiceList = serviceViewModel?.getBookmarkedServiceList()
-         for (i in bookmarkedServiceList?.indices!!)
-             Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServiceList[i].serviceName}")*/
-
         Timber.e("SERVICE-LIST [BEFORE]-> ${servicesList?.size}")
-        for (i in servicesList?.indices!!) {
+        homeAffairsServiceList = servicesList!!
+
+        for (i in servicesList.indices) {
             if (servicesList[i].serviceProvider == homeAffairsId) {
                 Timber.e("SERVICE-LIST [AFTER]-> $servicesList")
                 homeAffairsServiceList = servicesList
@@ -184,7 +220,7 @@ class HomeAffairsFragment : Fragment() {
                 serviceDescription = homeAffairsServiceList[i].serviceDescription.toString() //2
                 serviceEligibility = homeAffairsServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = homeAffairsServiceList[i].serviceCentres!! //4
-                presenceRequired = homeAffairsServiceList[i].presenceRequired!! //5
+                delegatable = homeAffairsServiceList[i].delegatable!! //5
                 serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
                 serviceDocuments = homeAffairsServiceList[i].serviceDocuments!!//7
                 serviceDuration = homeAffairsServiceList[i].serviceDuration.toString() //8
@@ -198,8 +234,8 @@ class HomeAffairsFragment : Fragment() {
 
                 Timber.e("HOME-AFFAIRS-SERVICE-LIST => ${homeAffairsServiceList[i].serviceId}")
 
-                homeAffairsService = Service(serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, presenceRequired, serviceCost,
+                homeAffairsService = ServiceObject(serviceId, serviceName, serviceDescription,
+                        serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
                 Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")

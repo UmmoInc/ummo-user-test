@@ -15,6 +15,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         app:endIconMode="clear_text"
+        app:boxStrokeColor="@color/ummo_2"
         app:hintTextColor="@color/ummo_2"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconContentDescription="Service Comment Icon"
@@ -24,16 +25,14 @@
             android:id="@+id/service_comment_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/screenWhite"
-            android:cursorVisible="true"
             android:fontFamily="@font/rubik"
             android:hint="@string/recommend_service_improvements"
-            android:lines="3"
+            android:lines="2"
             android:textColorHint="@color/ummo_2"
-            android:textSize="18sp" />
+            android:textCursorDrawable="@drawable/cursor"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.checkbox.MaterialCheckBox
