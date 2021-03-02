@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="4dp"
+            android:layout_marginBottom="?android:attr/actionBarSize"
             android:visibility="visible">
 
             <!-- TODO: The view below will be used in a later version of the app -->
@@ -266,7 +267,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/divider_1">
 
-                            <RelativeLayout
+                            <!--<RelativeLayout
                                 android:id="@+id/description_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
@@ -314,13 +315,12 @@
                                 android:layout_below="@id/description_layout"
                                 android:layout_marginStart="30dp"
                                 android:layout_marginEnd="30dp"
-                                android:background="@color/screenWhite" />
+                                android:background="@color/screenWhite" />-->
 
                             <RelativeLayout
                                 android:id="@+id/service_cost_layout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/divider_2">
+                                android:layout_height="wrap_content">
 
                                 <ImageView
                                     android:id="@+id/service_cost_image_view"
@@ -583,7 +583,7 @@
             android:visibility="gone">
 
             <include
-                android:id="@+id/profile_info_card"
+                android:id="@+id/delegated_info_card"
                 layout="@layout/info_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

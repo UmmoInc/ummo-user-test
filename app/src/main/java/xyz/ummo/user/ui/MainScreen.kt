@@ -26,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.xwray.groupie.GroupieViewHolder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
@@ -388,6 +389,16 @@ class MainScreen : AppCompatActivity() {
     fun onServiceUpvoted(serviceUpvoteServiceEvent: UpvoteServiceEvent) {
         if (serviceUpvoteServiceEvent.serviceUpvote!!)
             showSnackbarBlue("Service Upvoted", -1)
+    }
+
+    @Subscribe
+    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
+
+        if (serviceCommentEvent.serviceCommentedOn!!) {
+            showSnackbarBlue("Thank you for helping improve ${serviceCommentEvent.serviceName}.", -1)
+        }
     }
 
     @Subscribe

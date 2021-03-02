@@ -131,9 +131,8 @@ class HomeAffairsFragment : Fragment() {
 
     @Subscribe
     fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
-        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceId}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

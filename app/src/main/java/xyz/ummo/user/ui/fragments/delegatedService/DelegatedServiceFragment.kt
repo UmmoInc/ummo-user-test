@@ -145,7 +145,7 @@ class DelegatedServiceFragment : Fragment {
 
         /** Initializing text-view elements **/
         delegatedProductNameTextView = viewBinding.delegatedServiceHeaderName
-        delegatedProductDescriptionTextView = viewBinding.descriptionTextView
+//        delegatedProductDescriptionTextView = viewBinding.descriptionTextView
         delegatedProductCostTextView = viewBinding.serviceCostTextView
 //        delegatedProductStepsLayout = view/**/Binding.delegatedServiceStepsLayout
         stateProgressBar = viewBinding.delegationStateProgressBar
@@ -391,12 +391,9 @@ class DelegatedServiceFragment : Fragment {
             serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
                     .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
 
-                        if (serviceEntity != null) {
-                            delegatedProductNameTextView!!.text = serviceEntity.serviceName
-                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
-                            delegatedProductCostTextView!!.text = serviceEntity.serviceCost
-                        } else
-                            Timber.e("NO SERVICE ENTITY")
+                        delegatedProductNameTextView!!.text = serviceEntity.serviceName
+//                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
+                        delegatedProductCostTextView!!.text = serviceEntity.serviceCost
                     })
         } else {
             Timber.e("NO SERVICE VIEW MODEL!")

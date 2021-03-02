@@ -314,7 +314,7 @@ class ServiceItem(private val service: ServiceObject,
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {
 
-            upVoteService(currentDate)
+            upVoteService(viewHolder, currentDate)
             /** #UX Trigger icon-change on click **/
             upVoteTriggeredChangeStates(viewHolder)
 
@@ -326,7 +326,7 @@ class ServiceItem(private val service: ServiceObject,
         }
         viewHolder.itemView.approve_service_image.setOnClickListener {
 
-            upVoteService(currentDate)
+            upVoteService(viewHolder, currentDate)
             /** #UX Trigger icon-change on click **/
             upVoteTriggeredChangeStates(viewHolder)
 
@@ -359,7 +359,7 @@ class ServiceItem(private val service: ServiceObject,
 
         /** [2] Disapprove Service Click Handlers **/
         viewHolder.itemView.disapprove_service_relative_layout.setOnClickListener {
-            downVoteService(currentDate)
+            downVoteService(viewHolder, currentDate)
             /** #UX Trigger icon-change on click **/
             downVoteTriggeredChangeStates(viewHolder)
 
@@ -369,7 +369,7 @@ class ServiceItem(private val service: ServiceObject,
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
         viewHolder.itemView.disapprove_service_image.setOnClickListener {
-            downVoteService(currentDate)
+            downVoteService(viewHolder, currentDate)
             /** #UX Trigger icon-change on click **/
             downVoteTriggeredChangeStates(viewHolder)
 
@@ -401,8 +401,8 @@ class ServiceItem(private val service: ServiceObject,
 
         /** [3] Service Feedback Click Handlers **/
         viewHolder.itemView.service_comments_relative_layout.setOnClickListener {
-            makeServiceComment(currentDate)
-            commentTriggeredChangeStates(viewHolder)
+            makeServiceComment(viewHolder, currentDate)
+            //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                     .put("SERVICE_COMMENTED_ON", serviceId)
@@ -410,8 +410,8 @@ class ServiceItem(private val service: ServiceObject,
             serviceItemObject.remove("SERVICE_COMMENTED_ON")
         }
         viewHolder.itemView.service_comments_image.setOnClickListener {
-            makeServiceComment(currentDate)
-            commentTriggeredChangeStates(viewHolder)
+            makeServiceComment(viewHolder, currentDate)
+            //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                     .put("SERVICE_COMMENTED_ON", serviceId)
@@ -723,7 +723,7 @@ class ServiceItem(private val service: ServiceObject,
         serviceEntity.isDelegated = true
         Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
 
-        serviceViewModel.updateService(serviceEntity)
+        serviceViewModel.addService(serviceEntity)
 
         delegatedServiceEntity.delegationId = delegationId
         delegatedServiceEntity.delegatedProductId = delegatedServiceId
@@ -772,11 +772,20 @@ class ServiceItem(private val service: ServiceObject,
         viewHolder.itemView.approve_service_relative_layout.visibility = View.VISIBLE
     }
 
-    private fun upVoteService(date: String) {
+    private fun upVoteService(viewHolder: GroupieViewHolder, date: String) {
 
-        undoServiceDownvote(date)
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        val servicePreviouslyDownvoted = serviceItemPrefs
+                .getBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false)
+
+        Timber.e("SERVICE PREV. DOWNVOTED -> $servicePreviouslyDownvoted")
+
+        /** Undoing a previous downvote by User (for coherence) **/
+        if (servicePreviouslyDownvoted) {
+            undoServiceDownvote(date)
+        }
 
         /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
          * 1. switch action-icon based on user's previous action
@@ -792,7 +801,7 @@ class ServiceItem(private val service: ServiceObject,
         /** Updating Service in [Room] **/
         serviceViewModel.updateService(serviceEntity)
         /** Updating Service [Backend] **/
-        makeServiceUpdate("THUMBS_UP", date)
+        makeServiceUpdate(viewHolder, "THUMBS_UP", date)
 
         /** Publish Upvote Event via EventBus **/
         isUpvotedEvent.serviceUpvote = true
@@ -863,11 +872,17 @@ class ServiceItem(private val service: ServiceObject,
         viewHolder.itemView.disapprove_service_relative_layout.visibility = View.VISIBLE
     }
 
-    private fun downVoteService(date: String) {
+    private fun downVoteService(viewHolder: GroupieViewHolder, date: String) {
 
-        undoServiceUpvote(date)
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+
+        val servicePreviouslyUpvoted = serviceItemPrefs
+                .getBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
+
+        if (servicePreviouslyUpvoted) {
+            undoServiceUpvote(date)
+        }
         /** Capture actions with $editor below && store them in $sharedPrefs for UX purposes; i.e.,:
          * 1. switch action-icon based on user's previous action
          * 2. toggle b/n icons based on user changing their mind on an action **/
@@ -879,7 +894,7 @@ class ServiceItem(private val service: ServiceObject,
 //        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
         serviceViewModel.updateService(serviceEntity)
 
-        makeServiceUpdate("THUMBS_DOWN", date)
+        makeServiceUpdate(viewHolder, "THUMBS_DOWN", date)
 
         /** Publish Downvote Event via EventBus & flip Upvote **/
         isDownvotedEvent.serviceDownvote = true
@@ -970,7 +985,7 @@ class ServiceItem(private val service: ServiceObject,
         mServiceEntity.serviceProvider = service.serviceProvider //15
     }
 
-    private fun makeServiceUpdate(updateType: String, date: String) {
+    private fun makeServiceUpdate(viewHolder: GroupieViewHolder, updateType: String, date: String) {
         val serviceUpdate = JSONObject()
 
         try {
@@ -984,6 +999,7 @@ class ServiceItem(private val service: ServiceObject,
             object : UpdateService(context!!, serviceUpdate) {
                 override fun done(data: ByteArray, code: Number) {
                     if (code == 200) {
+
 //                        Timber.e("SERVICE UPDATED -> ${String(data)}")
                     } else {
                         Timber.e("SERVICE-UPDATE-ERROR-> $code")
@@ -997,7 +1013,7 @@ class ServiceItem(private val service: ServiceObject,
 
     /** This lets us wrap it all up and plug it into the action-triggers that the user taps to
      * trigger the comment process **/
-    private fun makeServiceComment(date: String) {
+    private fun makeServiceComment(viewHolder: GroupieViewHolder, date: String) {
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
@@ -1008,16 +1024,14 @@ class ServiceItem(private val service: ServiceObject,
         serviceCommentEditor.putBoolean("COMMENTED-ON-${serviceEntity.serviceId}", true).apply()
 
         assignServiceEntity(serviceEntity)
-        showCommentDialog(date)
-        makeServiceUpdate("SERVICE_COMMENT", date)
-
+        showCommentDialog(viewHolder, date)
     }
 
     /** This is where we publish the comment captured by #captureServiceComment:
      * 1. $serviceCommentObject takes 4 values: a) serviceId; b) comment; c) date; d) userContact
      * 2. published to the server with the #ServiceComment object override
      * 3. TODO: let the user know that their comment has been published & congratulate them! **/
-    private fun commentOnService(serviceComment: String, date: String) {
+    private fun commentOnService(viewHolder: GroupieViewHolder, serviceComment: String, date: String) {
         val serviceCommentObject = JSONObject()
 
         try {
@@ -1027,14 +1041,15 @@ class ServiceItem(private val service: ServiceObject,
                     .put("anonymous_comment", anonymousComment)
                     .put("user_contact", userContactPref)
 
+            serviceCommentEvent.serviceCommentedOn = true
+            serviceCommentEvent.serviceName = serviceEntity.serviceName
+            EventBus.getDefault().post(serviceCommentEvent)
+
             object : ServiceComment(context!!, serviceCommentObject) {
                 override fun done(data: ByteArray, code: Number) {
                     if (code == 200) {
 //                        Timber.e("SERVICE COMMENT -> ${String(data)}")
-
-                        serviceCommentEvent.serviceCommentedOn = true
-                        serviceCommentEvent.serviceId = serviceEntity.serviceId
-                        EventBus.getDefault().post(serviceCommentEvent)
+                        commentTriggeredChangeStates(viewHolder)
 
                     } else {
                         Timber.e("SERVICE-COMMENT-ERROR-> $code")
@@ -1048,7 +1063,7 @@ class ServiceItem(private val service: ServiceObject,
 
     /** With this function, we're simply displaying the commentDialog  && capturing the comment
      * before inserting it into #captureServiceComment **/
-    private fun showCommentDialog(date: String) {
+    private fun showCommentDialog(viewHolder: GroupieViewHolder, date: String) {
         val commentDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.service_comment_dialog, null)
 
@@ -1063,18 +1078,7 @@ class ServiceItem(private val service: ServiceObject,
                 .findViewById<CheckBox>(R.id.anonymous_comment_check_box)
 
         anonymousCheckBox.setOnClickListener {
-            if (anonymousCheckBox.isChecked) {
-//                Timber.e("GOING ANONYMOUS!")
-                //TODO: change the color of the comment dialog
-                /*if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                commentDialogView.setBackgroundColor(R.color.greyProfile)
-                }*/
-
-                anonymousComment = true
-            } else {
-                anonymousComment = false
-                Timber.e("NOT GOING ANONYMOUS!")
-            }
+            anonymousComment = anonymousCheckBox.isChecked
         }
 
         commentDialogBuilder.setPositiveButton("Comment") { dialogInterface, i ->
@@ -1082,7 +1086,7 @@ class ServiceItem(private val service: ServiceObject,
                     .findViewById<TextInputEditText>(R.id.service_comment_edit_text)
 
             val serviceComment = serviceCommentEditText.text?.trim().toString()
-            captureServiceComment(serviceComment, date)
+            captureServiceComment(viewHolder, serviceComment, date)
         }
 
         commentDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
@@ -1095,13 +1099,13 @@ class ServiceItem(private val service: ServiceObject,
     /** With this function, we're:
      * 1. doing the actual saving of the comment to RoomDB
      * 2. calling #commentOnService to publish the comment to the back-end/server **/
-    private fun captureServiceComment(mServiceComment: String, date: String) {
+    private fun captureServiceComment(viewHolder: GroupieViewHolder, mServiceComment: String, date: String) {
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
 
         serviceEntity.serviceComments?.add(mServiceComment)
         serviceViewModel.updateService(serviceEntity)
-        commentOnService(mServiceComment, date)
+        commentOnService(viewHolder, mServiceComment, date)
 //        Timber.e("SERVICE COMMENT ${serviceEntity.serviceComments?.size} CAPTURED FOR -> ${serviceEntity.serviceName}!")
     }
 
@@ -1173,7 +1177,7 @@ class ServiceItem(private val service: ServiceObject,
 
     @Subscribe
     fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
-        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceId}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
 
         var serviceCommentCount = viewHolder.itemView.service_comments_count_text_view.text.toString().toInt()

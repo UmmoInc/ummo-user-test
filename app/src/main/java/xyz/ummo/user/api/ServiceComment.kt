@@ -4,11 +4,13 @@ import android.app.Activity
 import android.content.Context
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 
 abstract class ServiceComment(context: Context, serviceComment: JSONObject) {
+
     init {
         Timber.e("SERVICE-COMMENT -> $serviceComment")
         Fuel.put("${context.getString(R.string.serverUrl)}/api/service_comment/")
@@ -28,5 +30,4 @@ abstract class ServiceComment(context: Context, serviceComment: JSONObject) {
     }
 
     abstract fun done(data: ByteArray, code: Number)
-
 }
