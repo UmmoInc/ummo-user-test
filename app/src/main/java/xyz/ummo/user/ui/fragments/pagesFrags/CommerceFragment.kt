@@ -118,7 +118,7 @@ class CommerceFragment : Fragment() {
         commerceBinding.commerceSwipeRefresher.setOnRefreshListener {
             Timber.e("REFRESHING VIEW")
 
-            getCommerceServices(commerceServiceId)
+//            getCommerceServices(commerceServiceId)
             commerceBinding.commerceSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed", -1)
 
@@ -174,7 +174,7 @@ class CommerceFragment : Fragment() {
                 serviceEligibility = commerceServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = commerceServiceList[i].serviceCentres!! //4
                 delegatable = commerceServiceList[i].delegatable!! //5
-                serviceCost = commerceServiceList[i].serviceCost.toString() //6
+//                serviceCost = commerceServiceList[i].serviceCost.toString() //6
                 serviceDocuments = commerceServiceList[i].serviceDocuments!! //7
                 serviceDuration = commerceServiceList[i].serviceDuration.toString() //8
                 approvalCount = commerceServiceList[i].usefulCount!! //9
@@ -185,11 +185,11 @@ class CommerceFragment : Fragment() {
                 viewCount = commerceServiceList[i].serviceViews!! //13
                 serviceProvider = commerceServiceId //14
 
-                commerceService = ServiceObject(serviceId, serviceName, serviceDescription,
+                /*commerceService = ServiceObject(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disApprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
-                Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")
+                Timber.e("COMMERCE-SERVICE-BLOB [1] -> $commerceService")*/
 
                 /** 1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
                  *  2. wrapping those values in a JSON Object

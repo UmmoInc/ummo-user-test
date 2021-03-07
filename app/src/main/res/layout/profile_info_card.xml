@@ -91,7 +91,7 @@
                 android:layout_margin="8dp"
                 android:layout_toEndOf="@+id/info_eco_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov. \nPlease advice on how we can best serve you in this space."
+                android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov."
                 android:textSize="12sp" />
 
             <RelativeLayout

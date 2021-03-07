@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -16,8 +17,9 @@
 
             <ImageView
                 android:id="@+id/service_creation_image_view"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_author_info_icon_24" />
 
@@ -27,9 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/service_creation_image_view"
                 android:layout_toEndOf="@id/service_creation_image_view"
-                android:text="@string/service_created"
+                android:text="@string/service_updated"
                 android:textColor="@color/Grey"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/service_creation_date_text_view"
@@ -37,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/service_creation_title_text_view"
                 android:layout_toEndOf="@id/service_creation_image_view"
-                android:text="01 Jan., 2021"
+                android:text="01 March, 2021"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -51,8 +53,9 @@
 
             <ImageView
                 android:id="@+id/service_authenticity_image_view"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_verified_mark_24" />
 
@@ -64,7 +67,7 @@
                 android:layout_toEndOf="@id/service_authenticity_image_view"
                 android:text="@string/service_authenticity"
                 android:textColor="@color/Grey"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/service_authenticity_text_view"
@@ -125,8 +128,9 @@
 
             <ImageView
                 android:id="@+id/service_tips_image_view"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
                 android:layout_margin="8dp"
                 app:srcCompat="@drawable/ic_service_tips_24" />
 
@@ -138,7 +142,7 @@
                 android:layout_toEndOf="@id/service_tips_image_view"
                 android:text="@string/service_tips"
                 android:textColor="@color/Grey"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/service_tips_text_view"
@@ -146,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/service_tips_title_text_view"
                 android:layout_toEndOf="@id/service_tips_image_view"
-                android:text="No Service Tips available yet"
+                android:text="No Service Tips available yet (coming soon)"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
@@ -158,9 +162,9 @@
             android:layout_height="wrap_content"
             android:padding="2dp"
             android:visibility="gone"
-            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/service_tips_relative_layout">
+            app:layout_constraintTop_toBottomOf="@+id/service_tips_relative_layout"
+            tools:visibility="visible">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/request_agent_button"

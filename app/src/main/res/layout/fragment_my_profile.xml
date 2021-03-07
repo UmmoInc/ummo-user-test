@@ -143,7 +143,7 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/contact_verification_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -160,7 +160,7 @@
             android:textColor="@color/Grey"
             android:textSize="10sp"
             android:textStyle="italic"
-            tools:ignore="SmallSp" />
+            tools:ignore="SmallSp" />-->
 
         <View
             android:id="@+id/view3"
@@ -210,20 +210,78 @@
             android:layout_marginRight="20dp"
             android:background="@color/Grey" />
 
-        <TextView
-            android:id="@+id/app_version_text_view"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/personal_touch_relative_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/logout_button"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:layout_marginBottom="50dp"
-            android:fontFamily="@font/rubik"
-            android:paddingTop="10dp"
-            android:text="Version 1.0.1 (Beta)"
-            android:textColor="@color/Grey"
-            android:textSize="12sp"
-            android:textStyle="italic" />
+            android:layout_above="@+id/logout_button">
+
+            <RelativeLayout
+                android:id="@+id/clean_hands_relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/clean_hands_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="5dp"
+                    android:text="Made with clean hands"
+                    android:textColor="@color/Grey"
+                    android:textSize="10sp"
+                    android:textStyle="italic"
+                    tools:ignore="SmallSp" />
+
+                <ImageView
+                    android:id="@+id/clean_hands_image_view"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/clean_hands_text_view"
+                    app:srcCompat="@drawable/ic_clean_hands_24" />
+
+                <TextView
+                    android:id="@+id/made_eswatini_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="5dp"
+                    android:layout_toEndOf="@+id/clean_hands_image_view"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="5dp"
+                    android:text="lakhay'Eswatini"
+                    android:textColor="@color/Grey"
+                    android:textSize="10sp"
+                    android:textStyle="italic"
+                    tools:ignore="SmallSp" />
+
+                <ImageView
+                    android:id="@+id/eswatini_image_view"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/made_eswatini_text_view"
+                    app:srcCompat="@drawable/flag_swaziland" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/app_version_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/clean_hands_relative_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:layout_marginBottom="50dp"
+                android:fontFamily="@font/rubik"
+                android:text="Version 1.0.2 (Beta)"
+                android:textColor="@color/Grey"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                tools:ignore="SmallSp" />
+        </RelativeLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/logout_button"

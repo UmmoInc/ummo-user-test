@@ -8,8 +8,8 @@ data class ServiceObject(var serviceId: String, //0
                          var serviceEligibility: String, //3
                          var serviceCentres: ArrayList<String>, //4
                          var delegatable: Boolean, //5
-                         var serviceCost: String, //6
-                         var serviceDocuments: ArrayList<String>, //7 TODO: upgrade to Array
+                         var serviceCost: ArrayList<ServiceCostModel>, //6
+                         var serviceDocuments: ArrayList<String>, //7
                          var serviceDuration: String, //8
                          var usefulCount: Int, //9
                          var notUsefulCount: Int, //10

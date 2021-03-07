@@ -75,6 +75,7 @@
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:gravity="end">
 
                 <ImageView
@@ -183,18 +184,42 @@
                                     android:id="@+id/service_cost_header_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/service_cost_string"
-                                    android:textColor="@color/Grey"
+                                    android:text="Choose a Cost below..."
+                                    android:textColor="@color/ummo_1"
+                                    android:layout_marginBottom="4dp"
                                     android:textSize="12sp" />
 
-                                <TextView
+                                <Spinner
+                                    android:id="@+id/service_cost_spinner"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <!--<TextView
                                     android:id="@+id/service_cost_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@id/service_cost_header_text_view"
                                     android:text="@string/service_cost_placeholder"
                                     android:textColor="@color/black"
-                                    android:textSize="14sp" />
+                                    android:textSize="14sp" />-->
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/service_query_icon_relative_layout"
+                                android:layout_width="40dp"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:gravity="end">
+
+                                <ImageView
+                                    android:id="@+id/query_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:contentDescription="@string/save_service"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_baseline_help_outline_24" />
                             </RelativeLayout>
 
                         </RelativeLayout>

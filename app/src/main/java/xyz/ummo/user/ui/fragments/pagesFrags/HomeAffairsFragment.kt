@@ -98,7 +98,7 @@ class HomeAffairsFragment : Fragment() {
 
         getHomeAffairsServiceProviderId()
 
-        getHomeAffairsServices(homeAffairsServiceId)
+//        getHomeAffairsServices(homeAffairsServiceId)
 
         /*loadProgressBar = requireActivity().findViewById(R.id.load_progress_bar)
 
@@ -160,7 +160,7 @@ class HomeAffairsFragment : Fragment() {
         homeAffairsBinding.homeAffairsSwipeRefresher.setOnRefreshListener {
             Timber.e("REFRESHING VIEW")
 
-            getHomeAffairsServices(homeAffairsServiceId)
+//            getHomeAffairsServices(homeAffairsServiceId)
             homeAffairsBinding.homeAffairsSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed", -1)
             mixpanel?.track("homeAffairsTab_swipeRefreshed", homeAffairsEvent)
@@ -221,7 +221,7 @@ class HomeAffairsFragment : Fragment() {
                 serviceEligibility = homeAffairsServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = homeAffairsServiceList[i].serviceCentres!! //4
                 delegatable = homeAffairsServiceList[i].delegatable!! //5
-                serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
+//                serviceCost = homeAffairsServiceList[i].serviceCost.toString() //6
                 serviceDocuments = homeAffairsServiceList[i].serviceDocuments!!//7
                 serviceDuration = homeAffairsServiceList[i].serviceDuration.toString() //8
                 approvalCount = homeAffairsServiceList[i].usefulCount!! //9
@@ -234,11 +234,11 @@ class HomeAffairsFragment : Fragment() {
 
                 Timber.e("HOME-AFFAIRS-SERVICE-LIST => ${homeAffairsServiceList[i].serviceId}")
 
-                homeAffairsService = ServiceObject(serviceId, serviceName, serviceDescription,
+                /*homeAffairsService = ServiceObject(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
-                Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")
+                Timber.e("HOME-AFFAIRS-SERVICE-BLOB [1] -> $homeAffairsService")*/
 
                 /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
                  * 2. wrapping those values in a JSON Object

@@ -114,7 +114,7 @@ class RevenueFragment : Fragment() {
         revenueBinding.revenueSwipeRefresher.setOnRefreshListener {
             Timber.e("REFRESHING VIEW")
 
-            getRevenueServices(financeServiceId)
+//            getRevenueServices(financeServiceId)
             revenueBinding.revenueSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services reloaded", -1)
             mixpanel?.track("revenueTab_swipeRefreshed", revenueEventObject)
@@ -169,7 +169,7 @@ class RevenueFragment : Fragment() {
                 serviceEligibility = revenueServiceList[i].serviceEligibility.toString() //3
                 serviceCentres = revenueServiceList[i].serviceCentres!! //4
                 delegatable = revenueServiceList[i].delegatable!! //5
-                serviceCost = revenueServiceList[i].serviceCost.toString() //6
+//                serviceCost = revenueServiceList[i].serviceCost.toString() //6
                 serviceDocuments = revenueServiceList[i].serviceDocuments!! //7
                 serviceDuration = revenueServiceList[i].serviceDuration.toString() //8
                 approvalCount = revenueServiceList[i].usefulCount!! //9
@@ -180,11 +180,11 @@ class RevenueFragment : Fragment() {
                 viewCount = revenueServiceList[i].serviceViews!! //13
                 serviceProvider = revenueId
 
-                revenueService = ServiceObject(serviceId, serviceName, serviceDescription,
+                /*revenueService = ServiceObject(serviceId, serviceName, serviceDescription,
                         serviceEligibility, serviceCentres, delegatable, serviceCost,
                         serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount, serviceProvider)
-                Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")
+                Timber.e("REVENUE-SERVICE-BLOB [1] -> $revenueService")*/
 
                 /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
                  * 2. wrapping those values in a JSON Object

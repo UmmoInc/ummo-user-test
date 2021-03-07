@@ -14,7 +14,8 @@ repositories {
 //[END] OneSignal Integration
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android-extensions' //TODO: Deprecate Extensions
+//apply plugin: 'kotlin-parcelize'
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -23,8 +24,8 @@ android {
         applicationId "xyz.ummo.user"
         minSdkVersion 20
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.0.1"
+        versionCode 6
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 

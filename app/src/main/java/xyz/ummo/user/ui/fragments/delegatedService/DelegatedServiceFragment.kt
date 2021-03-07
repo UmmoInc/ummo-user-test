@@ -33,8 +33,12 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
+import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
+import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
+import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.RatingSentEvent
@@ -93,7 +97,13 @@ class DelegatedServiceFragment : Fragment {
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var delegatedServicePreferences: SharedPreferences
 
+    private lateinit var mixpanel: MixpanelAPI
+
     private var ratingSentEvent = RatingSentEvent()
+
+    private var bundle = Bundle()
+
+    private var delegationFee = ""
 
     constructor(entity: DelegatedServiceEntity) {
         delegatedServiceEntity = entity
@@ -103,6 +113,9 @@ class DelegatedServiceFragment : Fragment {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
 
         confirmReceiptDialog = AlertDialog.Builder(context).create()
         appBarBinding = AppBarDelegatedScreenBinding.inflate(layoutInflater)
@@ -134,6 +147,7 @@ class DelegatedServiceFragment : Fragment {
 
         delegatedServiceId = delegatedServicePreferences.getString(DELEGATED_SERVICE_ID, "")
         serviceState = delegatedServicePreferences.getInt(SERVICE_STATE, 0)
+        delegationFee = delegatedServicePreferences.getString(DELEGATION_FEE, "Couldn't load fee...")!!
 
         serviceViewModel = ViewModelProvider(this).get(ServiceViewModel::class.java)
 
@@ -158,6 +172,11 @@ class DelegatedServiceFragment : Fragment {
 
         agentNameTextView?.text = agentName
 
+        viewBinding.delegationFeeQueryImageView.setOnClickListener { queryDelegationFee() }
+        viewBinding.delegationFeeQueryIconRelativeLayout.setOnClickListener { queryDelegationFee() }
+
+        bundle.putString(SPEC_FEE, delegationFee)
+
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -174,6 +193,14 @@ class DelegatedServiceFragment : Fragment {
         updateServiceState()
     }
 
+    private fun queryDelegationFee() {
+//        bundle.putString(MainScreen.SERVICE_ID, serviceId)
+        val delegationFeeQuery = DelegationFeeQuery()
+        delegationFeeQuery.arguments = bundle
+        delegationFeeQuery.show(fragmentManager!!, ServiceQueryBottomSheetFragment.TAG)
+        mixpanel.track("delegatedServiceFrag_delegationFeeSelfSupport")
+    }
+
     private fun initDelegatedServiceFrag() {
         delegatedServicePreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)!!
 
@@ -183,7 +210,7 @@ class DelegatedServiceFragment : Fragment {
         val completingAlertDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.completing_request_dialog, null)
 
-        alertDialogBuilder.setTitle("Making Request")
+        alertDialogBuilder.setTitle("Making Request...")
                 .setIcon(R.drawable.logo)
                 .setView(completingAlertDialogView)
 
@@ -386,6 +413,8 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun inflateDelegatedServiceView(delegatedServiceId: String?) {
+        delegatedServicePreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)!!
+
         //TODO: cater for null-safety on non-null live-data
         if (serviceViewModel != null) {
             serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
@@ -393,7 +422,8 @@ class DelegatedServiceFragment : Fragment {
 
                         delegatedProductNameTextView!!.text = serviceEntity.serviceName
 //                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
-                        delegatedProductCostTextView!!.text = serviceEntity.serviceCost
+
+                        delegatedProductCostTextView!!.text = "E$delegationFee"
                     })
         } else {
             Timber.e("NO SERVICE VIEW MODEL!")
@@ -402,9 +432,6 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun takeMeHome() {
-        val mixpanel = MixpanelAPI.getInstance(context,
-                resources.getString(R.string.mixpanelToken))
-
         viewBinding.homeButton.setOnClickListener {
             val pagesFragment: Fragment = PagesFragment()
 

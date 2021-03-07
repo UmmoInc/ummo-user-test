@@ -16,7 +16,7 @@ import xyz.ummo.user.R
 
 /** This abstract function takes a User (contact) && Product (ID); then a request
  *  is made with Fuel (HTTP POST) **/
-abstract class RequestService(context: Context?, user: String, product: String) {
+abstract class RequestService(context: Context?, user: String, product: String, delegationFee: JSONObject) {
 
     init {
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
@@ -27,6 +27,7 @@ abstract class RequestService(context: Context?, user: String, product: String) 
         val data = JSONObject()
         data.put("user_id", user)
         data.put("product_id", product)
+        data.put("delegation_fee", delegationFee)
 
         Fuel.post("${context.getString(R.string.serverUrl)}/api/service_request")
                 .jsonBody(data.toString())

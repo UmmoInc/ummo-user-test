@@ -59,7 +59,7 @@
                 android:layout_margin="5dp"
                 android:layout_toEndOf="@+id/info_eco_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="Delegate"
+                android:text="Delegate a Service"
                 android:textColor="@color/black" />
 
             <View
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider2"
                 android:layout_margin="8dp"
-                android:text="Delegate your Government service to a reliable Ummo Agent &amp; protect yourself from COVID-19. \n\n#GovFromHome"
+                android:text="Protect yourself from COVID-19. Request a reliable Ummo Agent to carry out a Gov. service for you. \n\n#GovFromHome"
                 android:textSize="14sp" />
 
         </RelativeLayout>

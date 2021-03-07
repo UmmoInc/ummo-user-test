@@ -15,6 +15,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_tfuma.view.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -25,10 +26,12 @@ import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfumaBinding
+import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 
 
 class Tfuma : Fragment() {
@@ -56,7 +59,11 @@ class Tfuma : Fragment() {
     var serviceCentres = ArrayList<String>() //5
     lateinit var serviceCentresJSONArray: JSONArray //5
     var delegatable: Boolean = false //6
+
     lateinit var serviceCost: String //7
+    lateinit var serviceCostArrayList: ArrayList<ServiceCostModel>
+    lateinit var serviceCostJSONArray: JSONArray
+
     var serviceDocuments = ArrayList<String>() //8
     lateinit var serviceDocumentsJSONArray: JSONArray //8
     lateinit var serviceDuration: String //9
@@ -119,6 +126,17 @@ class Tfuma : Fragment() {
         }
 
         return view
+    }
+
+    @Subscribe
+    fun checkSocketConnectionState(socketStateEvent: SocketStateEvent) {
+        if (!socketStateEvent.socketConnected!!) {
+            loadOfflineServices()
+        }
+    }
+
+    private fun loadOfflineServices() {
+        Timber.e("OFFLINE SERVICES -> $delegatableServicesArrayList")
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
@@ -202,7 +220,11 @@ class Tfuma : Fragment() {
                                 serviceCentres = fromJSONArray(serviceCentresJSONArray)
 
                                 delegatable = service.getBoolean("delegatable") //6
-                                serviceCost = service.getString("service_cost") //7
+                                serviceCostJSONArray = service.getJSONArray("service_cost")
+                                serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
+//                                serviceCost = service.getString("service_cost") //7
+                                Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
+
 //                                serviceDocuments = //8
                                 serviceDocumentsJSONArray = service.getJSONArray("service_documents")
                                 serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
@@ -221,7 +243,7 @@ class Tfuma : Fragment() {
 
                                 delegatableService = ServiceObject(serviceId, serviceName,
                                         serviceDescription, serviceEligibility, serviceCentres,
-                                        delegatable, serviceCost, serviceDocuments, serviceDuration,
+                                        delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
                                         approvalCount, disapprovalCount, serviceComments,
                                         commentCount, shareCount, viewCount, serviceProvider)
 
@@ -274,6 +296,32 @@ class Tfuma : Fragment() {
             tmp.add((array.getString(i)))
         }
 
+        return tmp
+    }
+
+    /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
+    private fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
+        val tmp = ArrayList<ServiceCostModel>()
+        var serviceCostObject: JSONObject
+        var spec: String
+        var cost: Int
+        var serviceCostModel: ServiceCostModel
+        for (i in 0 until array.length()) {
+            /*serviceCostModel = array.get(i) as ServiceCostModel
+            tmp.add(serviceCostModel)*/
+
+            try {
+                serviceCostObject = array.getJSONObject(i)
+                spec = serviceCostObject.getString("service_spec")
+                cost = serviceCostObject.getInt("spec_cost")
+                serviceCostModel = ServiceCostModel(spec, cost)
+                tmp.add(serviceCostModel)
+            } catch (jse: JSONException) {
+                Timber.e("CONVERTING SERVICE COST JSE -> $jse")
+            }
+        }
+
+        Timber.e("SERVICE COST from FUN -> $tmp")
         return tmp
     }
 

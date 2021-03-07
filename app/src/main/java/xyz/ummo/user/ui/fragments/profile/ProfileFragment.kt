@@ -17,12 +17,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
+import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.Logout
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
 import xyz.ummo.user.ui.signup.RegisterActivity
+import xyz.ummo.user.utilities.eventBusEvents.CardDismissedEvent
 
 class ProfileFragment : Fragment() {
     private var profileName: TextView? = null
@@ -47,6 +50,9 @@ class ProfileFragment : Fragment() {
     private lateinit var profilePrefs: SharedPreferences
     private val mode = Activity.MODE_PRIVATE
     private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
+    private lateinit var mixpanel: MixpanelAPI
+
+    private val cardDismissedEvent = CardDismissedEvent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +60,9 @@ class ProfileFragment : Fragment() {
             mParam1 = arguments!!.getString(ARG_PARAM1)
             mParam2 = arguments!!.getString(ARG_PARAM2)
         }
+
+        mixpanel = MixpanelAPI.getInstance(context,
+                resources.getString(R.string.mixpanelToken))
 
         mAuth = FirebaseAuth.getInstance()
     }
@@ -97,9 +106,13 @@ class ProfileFragment : Fragment() {
             profileIntroCardView!!.visibility = View.VISIBLE
 
         closeCardImageView!!.setOnClickListener {
-            Timber.e("CLOSING CARD PROFILE!!!")
+            cardDismissedEvent.cardDismissed = true
+            EventBus.getDefault().post(cardDismissedEvent)
+
             profileIntroCardView!!.visibility = View.GONE
             editor.putBoolean("PROFILE_CARD_CLOSED", true).apply()
+
+            mixpanel.track("profileFrag_cardDismissed")
         }
 
         return view

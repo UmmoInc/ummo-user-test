@@ -105,8 +105,8 @@
                 android:id="@+id/delegation_cost_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_below="@id/service_cost_layout">
+                android:layout_below="@id/service_cost_layout"
+                android:layout_marginBottom="4dp">
 
                 <ImageView
                     android:id="@+id/delegation_cost_image_view"
@@ -120,8 +120,8 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
                     android:layout_toEndOf="@+id/delegation_cost_image_view">
 
                     <TextView
@@ -176,8 +176,8 @@
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
                     android:layout_toEndOf="@+id/total_cost_image_view">
 
                     <TextView
@@ -201,6 +201,53 @@
 
             </RelativeLayout>
             <!--ProductModel Cost Layout End-->
+
+            <!--<RelativeLayout
+                android:id="@+id/delegate_service_centre_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/total_cost_layout">
+
+                <ImageView
+                    android:id="@+id/delegate_service_centre_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_service_centre_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/delegate_service_centre_image_view">
+
+                    <TextView
+                        android:id="@+id/select_service_centre_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Please choose one location closest to you"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/delegate_service_centre_chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/select_service_centre_text_view"
+                        app:chipSpacing="2dp"
+                        app:chipSpacingHorizontal="2dp"
+                        app:chipSpacingVertical="2dp"
+                        app:selectionRequired="true"
+                        app:singleLine="false"
+                        app:singleSelection="true" />
+                </RelativeLayout>
+
+            </RelativeLayout>-->
         </RelativeLayout>
 
         <com.google.android.material.checkbox.MaterialCheckBox
@@ -210,137 +257,10 @@
             android:layout_below="@id/cost_layout"
             android:layout_margin="8dp"
             android:padding="8dp"
-            android:text="Confirm Payment T's &amp; C's"
+            android:text="I will pay the Delegation fee once my service is delivered."
             android:textColor="@color/ummo_2"
-            android:textSize="10sp"
+            android:textSize="12sp"
             tools:ignore="SmallSp" />
-
-        <!--ProductModel Duration Layout Start-->
-        <!--<RelativeLayout
-            android:id="@+id/service_duration_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/service_cost_layout">
-            <ImageView
-                android:id="@+id/service_duration_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_stat_duration_icon"
-                android:layout_margin="8dp"
-                android:padding="8dp"/>
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/service_duration_image_view">
-                <TextView
-                    android:id="@+id/duration_header_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Service Duration"
-                    android:textSize="18sp"
-                    android:textColor="@color/black"/>
-                <TextView
-                    android:id="@+id/service_duration_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Service Duration"
-                    android:textSize="16sp"
-                    android:layout_below="@id/duration_header_text_view"/>
-            </RelativeLayout>
-
-        </RelativeLayout>-->
-        <!--ProductModel Duration Layout End-->
-
-        <!--ProductModel Docs Layout Start-->
-        <!--<RelativeLayout
-            android:id="@+id/service_docs_relative_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/service_duration_layout">
-            <ImageView
-                android:id="@+id/service_docs_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_stat_docs_icon"
-                android:layout_margin="8dp"
-                android:padding="8dp"/>
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/service_docs_image_view">
-                <TextView
-                    android:id="@+id/docs_header_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Requirements"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"/>
-                <LinearLayout
-                    android:id="@+id/service_docs_linear_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="16dp"
-                    android:layout_below="@+id/docs_header_text_view">
-
-                </LinearLayout>
-                &lt;!&ndash;<TextView
-                    android:id="@+id/service_docs_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Docs"
-                    android:textSize="14sp"
-                    android:layout_below="@id/docs_header_text_view"/>&ndash;&gt;
-            </RelativeLayout>
-        </RelativeLayout>-->
-        <!--ProductModel Docs Layout End-->
-
-        <!--ProductModel Steps Layout Start-->
-        <!--<RelativeLayout
-            android:id="@+id/service_steps_relative_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/service_docs_relative_layout">
-            <ImageView
-                android:id="@+id/service_steps_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_action_steps"
-                android:layout_margin="8dp"
-                android:padding="8dp"/>
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/service_steps_image_view">
-                <TextView
-                    android:id="@+id/steps_header_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Procurement Steps"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"/>
-                <LinearLayout
-                    android:id="@+id/service_steps_linear_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="8dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="16dp"
-                    android:layout_below="@+id/steps_header_text_view">
-
-                </LinearLayout>
-                </RelativeLayout>
-        </RelativeLayout>-->
-        <!--ProductModel Steps Layout End-->
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

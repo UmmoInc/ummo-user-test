@@ -25,6 +25,7 @@ import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
+import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -57,9 +58,14 @@ class Tfola : Fragment() {
     var serviceCentres = ArrayList<String>() //5
     lateinit var serviceCentresJSONArray: JSONArray //5
     var delegatable: Boolean = false //6
-    lateinit var serviceCost: String //7
+
+    lateinit var serviceCost: ArrayList<ServiceCostModel> //7
+    lateinit var serviceCostArrayList: ArrayList<ServiceCostModel> //7
+    lateinit var serviceCostJSONArray: JSONArray //7
+
     var serviceDocuments = ArrayList<String>() //8
     lateinit var serviceDocumentsJSONArray: JSONArray //8
+
     lateinit var serviceDuration: String //9
     var approvalCount: Int = 0 //10
     var disapprovalCount: Int = 0 //11
@@ -211,7 +217,11 @@ class Tfola : Fragment() {
                 serviceCentres = fromJSONArray(serviceCentresJSONArray)
 
                 delegatable = service.getBoolean("delegatable") //6
-                serviceCost = service.getString("service_cost") //7
+                //TODO: ATTEND TO ASAP
+//                serviceCost = service.getJSONArray("service_cost") //7
+                serviceCostJSONArray = service.getJSONArray("service_cost")
+                serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
+                Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
 //                                serviceDocuments = //8
                 serviceDocumentsJSONArray = service.getJSONArray("service_documents")
                 serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
@@ -230,7 +240,7 @@ class Tfola : Fragment() {
 
                 nonDelegatableService = ServiceObject(serviceId, serviceName,
                         serviceDescription, serviceEligibility, serviceCentres,
-                        delegatable, serviceCost, serviceDocuments, serviceDuration,
+                        delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
                         approvalCount, disapprovalCount, serviceComments,
                         commentCount, shareCount, viewCount, serviceProvider)
 
@@ -276,6 +286,19 @@ class Tfola : Fragment() {
             tmp.add((array.getString(i)))
         }
 
+        return tmp
+    }
+
+    /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
+    private fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
+        val tmp = ArrayList<ServiceCostModel>()
+        var serviceCostModel: ServiceCostModel
+        for (i in 0 until array.length()) {
+            serviceCostModel = array.get(i) as ServiceCostModel
+            tmp.add(serviceCostModel)
+        }
+
+        Timber.e("SERVICE COST from FUN -> $tmp")
         return tmp
     }
 

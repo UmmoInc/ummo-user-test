@@ -408,6 +408,13 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onCardClosedEvent(cardDismissedEvent: CardDismissedEvent) {
+        if (cardDismissedEvent.cardDismissed == true) {
+            showSnackbarBlue("Card closed", -1)
+        }
+    }
+
+    @Subscribe
     fun onServiceDownvoted(serviceDownvoteServiceEvent: DownvoteServiceEvent) {
         if (serviceDownvoteServiceEvent.serviceDownvote!!)
             showSnackbarRed("Service Downvoted", -1)
@@ -683,7 +690,7 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
          * 2. TODO: Assigning $serviceCost value to service JSON value **/
-        val serviceCost = mServiceObject.getString("service_cost")
+        val serviceCostJSONArray = mServiceObject.getJSONArray("service_cost")
 
         /** [SERVICE-ASSIGNMENT: 7]
          * 1. Declaring $serviceDocuments values
@@ -757,13 +764,15 @@ class MainScreen : AppCompatActivity() {
          * 2. Assigning $serviceProvider value to service JSON value **/
         val serviceProvider: String = mServiceObject.getString("service_provider") //14
 
+        //TODO: undo 8
+/*
         serviceEntity.serviceId = serviceId //0
         serviceEntity.serviceName = serviceName //1
         serviceEntity.serviceDescription = serviceDescription //2
         serviceEntity.serviceEligibility = serviceEligibility //3
         serviceEntity.serviceCentres = serviceCentresArrayList //4
         serviceEntity.delegatable = delegatable //5
-        serviceEntity.serviceCost = serviceCost //6
+        serviceEntity.serviceCost = serviceCostJSONArray //6
         serviceEntity.serviceDocuments = serviceDocumentsArrayList //7
         serviceEntity.serviceDuration = serviceDuration //8
         serviceEntity.notUsefulCount = notUsefulCount //9
@@ -772,7 +781,7 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.commentCount = commentsArrayList.size //11
         serviceEntity.serviceViews = serviceViews //12
         serviceEntity.serviceShares = serviceShares //13
-        serviceEntity.serviceProvider = serviceProvider //14
+        serviceEntity.serviceProvider = serviceProvider //14*/
 //        serviceEntity.bookmarked = bookmarked //15
 
         Timber.e("SERVICE - ENTITY [NAME] -> ${serviceEntity.serviceName}")
@@ -780,7 +789,8 @@ class MainScreen : AppCompatActivity() {
         Timber.e("SERVICE - ENTITY [DELEG.] -> ${serviceEntity.delegatable}")
         Timber.e("SERVICE - ENTITY [UPVOTE] -> ${serviceEntity.usefulCount}")
         Timber.e("SERVICE - ENTITY [DOWNVOTE] -> ${serviceEntity.notUsefulCount}")
-        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
+        //TODO: undo 17
+//        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
 
         serviceViewModel?.addService(serviceEntity)
 //        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
@@ -860,6 +870,12 @@ class MainScreen : AppCompatActivity() {
         const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
         const val SERVICE_ID = "SERVICE_ID"
         const val SERVICE_OBJECT = "SERVICE_OBJECT"
+        const val DELEGATION_FEE = "DELEGATION_FEE"
+        const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
+        const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
+        const val AGENT_ID = "AGENT_ID"
+        const val SPEC_FEE = "SPEC_FEE"
+
     }
 
 }

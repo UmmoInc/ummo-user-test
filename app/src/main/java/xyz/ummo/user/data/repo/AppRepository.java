@@ -559,12 +559,10 @@ public class AppRepository {
 
                 Timber.e("ASYNC SAVE - NAME %s", serviceEntity.getServiceName());
                 Timber.e("ASYNC SAVE - DEL. %s", serviceEntity.getDelegatable());
-                Timber.e("ASYNC SAVE - COST %s", serviceEntity.getServiceCost());
                 Timber.e("ASYNC SAVE - UPVOTE %s", serviceEntity.getUsefulCount());
             }
             return null;
         }
-
 
     }
 

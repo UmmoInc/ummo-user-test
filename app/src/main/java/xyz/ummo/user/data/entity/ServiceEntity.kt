@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import xyz.ummo.user.data.model.ServiceModel
+import xyz.ummo.user.models.ServiceCostModel
 
 @Entity(tableName = "service")
 class ServiceEntity : ServiceModel {
@@ -33,9 +34,9 @@ class ServiceEntity : ServiceModel {
     @ColumnInfo(name = "delegatable") //5
     override var delegatable: Boolean? = null
 
-    @NonNull
+    /*@NonNull
     @ColumnInfo(name = "service_cost") //6
-    override var serviceCost: String? = null
+    override var serviceCost: ArrayList<ServiceCostModel>? = null*/
 
     @ColumnInfo(name = "service_documents") //7
     override var serviceDocuments: ArrayList<String>? = null
