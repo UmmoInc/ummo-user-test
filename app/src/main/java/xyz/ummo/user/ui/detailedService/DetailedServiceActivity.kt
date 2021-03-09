@@ -28,8 +28,11 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
+import kotlinx.android.synthetic.main.service_card.view.*
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import timber.log.Timber
@@ -43,11 +46,15 @@ import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.ui.MainScreen.Companion.CHOSEN_SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
+import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
+import xyz.ummo.user.ui.MainScreen.Companion.TOTAL_DELEGATION_FEE
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -93,13 +100,17 @@ class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var detailedServiceBinding: ActivityDetailedServiceBinding
     private lateinit var detailedServiceContentBinding: ContentDetailedServiceBinding
     private lateinit var serviceObject: ServiceObject
+
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
+    private val serviceSpecifiedEvent = ServiceSpecifiedEvent()
+
     private lateinit var detailedServicePrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var mixpanel: MixpanelAPI
 
     private var serviceCostAdapter: ArrayAdapter<ServiceCostModel>? = null
     private var serviceCostSpinner: Spinner? = null
+    private var serviceCostTextInputLayout: TextInputLayout? = null
     private var serviceCostArrayList = ArrayList<ServiceCostModel>()
     private lateinit var serviceCostItem: ServiceCostModel
     private var serviceSpec = ""
@@ -161,26 +172,63 @@ class DetailedServiceActivity : AppCompatActivity() {
         delegatedServiceViewModel = ViewModelProvider(this).get(DelegatedServiceViewModel::class.java)
 
         /** Instantiating Service Cost Spinner **/
-        addListenerOnSpinnerItemSelected()
-        serviceCostSpinner = findViewById(R.id.detailed_service_cost_spinner)
-        serviceCostSpinner!!.prompt = "Choose your Service Cost"
-        serviceCostAdapter = ArrayAdapter(this,
+//TODO: undo        addListenerOnSpinnerItemSelected()
+//        serviceCostSpinner = findViewById(R.id.detailed_service_cost_dropdown)
+
+        serviceCostTextInputLayout = findViewById(R.id.detailed_service_cost_dropdown)
+        /*serviceCostAdapter = ArrayAdapter(this,
                 R.layout.support_simple_spinner_dropdown_item, serviceCostArrayList)
-        serviceCostSpinner?.adapter = serviceCostAdapter
+        serviceCostSpinner?.adapter = serviceCostAdapter*/
+        selectingServiceSpec()
 
         checkForDelegatedServiceAndCompare()
 
-        requestAgentBtn!!.setOnClickListener {
+        /*requestAgentBtn!!.setOnClickListener {
 
             mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
             makeRequest()
-        }
+        }*/
 
         mCollapsingToolbarLayout!!.title = _serviceName
         mCollapsingToolbarLayout!!.setExpandedTitleTextAppearance(R.style.ExpandedAppBar)
         mCollapsingToolbarLayout!!.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar)
 
         detailedServiceFeeQuery()
+    }
+
+    private fun selectingServiceSpec() {
+        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.detailed_service_cost_text_View)
+
+        serviceCostAdapter = ArrayAdapter(this,
+                R.layout.list_item, serviceCostArrayList)
+
+        autoCompleteTextView?.setAdapter(serviceCostAdapter)
+        autoCompleteTextView?.setOnItemClickListener { adapterView, autoView, i, l ->
+            val selectedText = autoCompleteTextView.text.toString()
+            var currencyIndex = 0
+
+            /** Parsing through the selectedText to pull out the [specCost] **/
+            for (j in selectedText.indices) {
+                val char = selectedText[j]
+                if (char == 'E')
+                    currencyIndex = j
+            }
+
+            Timber.e("CURRENCY INDEX -> $currencyIndex")
+            serviceSpec = selectedText.substring(0, currencyIndex - 2)
+            specCost = selectedText.substring(currencyIndex + 1)
+
+            Timber.e("SPEC-COST -> $specCost")
+            Timber.e("SERVICE-SPEC -> $serviceSpec")
+
+            val serviceSpecCost = JSONObject()
+            serviceSpecCost
+                    .put("SERVICE_SPEC", serviceSpec)
+                    .put("SPEC_COST", specCost)
+            mixpanel.track("detailed_serviceSpecSelected", serviceSpecCost)
+
+            checkForDelegatedServiceAndCompare()
+        }
     }
 
     private fun checkForDelegatedServiceAndCompare() {
@@ -205,7 +253,22 @@ class DetailedServiceActivity : AppCompatActivity() {
             })
 
         } else {
-            Timber.e("NO DELEGATED SERVICES")
+            Timber.e("SERVICE COST SELECTED [0] -> $specCost")
+
+            if (specCost.isEmpty()) {
+                Timber.e("NO SERVICE COST SELECTED!")
+                requestAgentBtn!!.setOnClickListener {
+                    showSnackbarYellow("Please select your vehicle weight first", -1)
+
+                    return@setOnClickListener
+                }
+            } else {
+                Timber.e("SERVICE COST SELECTED [1] -> $specCost")
+                requestAgentBtn!!.setOnClickListener {
+                    mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
+                    makeRequest()
+                }
+            }
         }
     }
 
@@ -224,7 +287,8 @@ class DetailedServiceActivity : AppCompatActivity() {
         mixpanel.track("detailedService_serviceFeeSelfSupport")
 
     }
-    private fun addListenerOnSpinnerItemSelected() {
+
+    /*private fun addListenerOnSpinnerItemSelected() {
 
         serviceCostSpinner = findViewById(R.id.detailed_service_cost_spinner)
         serviceCostSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -247,7 +311,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                 Timber.e("NOTHING SELECTED!")
             }
         }
-    }
+    }*/
 
     override fun onBackPressed() {
         finish()
@@ -373,8 +437,8 @@ class DetailedServiceActivity : AppCompatActivity() {
         val totalCostInt = serviceCostInt + 100
         totalCostTextView.text = "E$totalCostInt"
 
-        delegationFee.put("chosen_service_spec", serviceSpec)
-                .put("total_delegation_fee", totalCostInt)
+        delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
+                .put(TOTAL_DELEGATION_FEE, totalCostInt)
 
         alertDialogBuilder.setTitle("Request Agent")
                 .setIcon(R.drawable.logo)
@@ -441,7 +505,8 @@ class DetailedServiceActivity : AppCompatActivity() {
                             //TODO: remove after service is done
                             editor.putString(DELEGATED_SERVICE_ID, serviceId)
                             editor.putString(SERVICE_AGENT_ID, serviceAgent)
-                            editor.putString(DELEGATION_FEE, mDelegationFee.getString("total_delegation_fee"))
+                            editor.putString(DELEGATION_FEE, mDelegationFee.getString(TOTAL_DELEGATION_FEE))
+                            editor.putString(DELEGATION_SPEC, mDelegationFee.getString(CHOSEN_SERVICE_SPEC))
                             editor.apply()
 
                             launchDelegatedService(this@DetailedServiceActivity,
@@ -501,10 +566,11 @@ class DetailedServiceActivity : AppCompatActivity() {
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
         val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
+        val requestAgentButton = findViewById<Button>(R.id.request_agent_btn)
         snackbar.setTextColor(resources.getColor(R.color.gold))
-
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
+        snackbar.anchorView = requestAgentButton
         snackbar.show()
     }
 

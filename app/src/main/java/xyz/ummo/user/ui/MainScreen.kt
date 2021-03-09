@@ -352,6 +352,13 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onServiceSpecifiedEvent(serviceSpecifiedEvent: ServiceSpecifiedEvent) {
+        if (!serviceSpecifiedEvent.specifiedEvent) {
+            showSnackbarYellow("Please select your vehicle weight first", -1)
+        }
+    }
+
+    @Subscribe
     fun onServiceUpdatedEvent(serviceUpdateEvents: ServiceUpdateEvents) {
         if (serviceUpdateEvents.serviceUpdatedEvent!!) {
             serviceUpdated = true
@@ -869,12 +876,19 @@ class MainScreen : AppCompatActivity() {
         const val SERVICE_PENDING = "SERVICE_PENDING"
         const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
         const val SERVICE_ID = "SERVICE_ID"
+        const val DELEGATION_ID = "DELEGATION_ID"
         const val SERVICE_OBJECT = "SERVICE_OBJECT"
         const val DELEGATION_FEE = "DELEGATION_FEE"
+        const val DELEGATION_SPEC = "DELEGATION_SPEC"
         const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
         const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
         const val AGENT_ID = "AGENT_ID"
+
         const val SPEC_FEE = "SPEC_FEE"
+        const val SERVICE_SPEC = "SERVICE_SPEC"
+
+        const val CHOSEN_SERVICE_SPEC = "chosen_service_spec"
+        const val TOTAL_DELEGATION_FEE = "total_delegation_fee"
 
     }
 

@@ -94,7 +94,7 @@
                 android:text="Thank you for testing Ummo - we are building this product to help you get the most from Gov."
                 android:textSize="12sp" />
 
-            <RelativeLayout
+            <!--<RelativeLayout
                 android:id="@+id/intro_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -133,13 +133,13 @@
                     android:fontFamily="@font/rubik"
                     android:text="you should not spend hours at Gov. offices."
                     android:textSize="12sp" />
-            </RelativeLayout>
+            </RelativeLayout>-->
 
             <RelativeLayout
                 android:id="@+id/outro_relative_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/intro_relative_layout"
+                android:layout_below="@id/intro_text_view"
                 android:layout_alignStart="@id/ummo_image_view">
 
                 <ImageView

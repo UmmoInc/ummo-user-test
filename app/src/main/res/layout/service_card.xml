@@ -180,46 +180,45 @@
                                 android:layout_centerInParent="true"
                                 android:layout_toEndOf="@+id/service_cost_image_view">
 
-                                <TextView
-                                    android:id="@+id/service_cost_header_text_view"
-                                    android:layout_width="wrap_content"
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/card_service_cost_dropdown"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Choose a Cost below..."
-                                    android:textColor="@color/ummo_1"
                                     android:layout_marginBottom="4dp"
-                                    android:textSize="12sp" />
+                                    android:layout_toStartOf="@+id/service_query_icon_relative_layout"
+                                    android:hint="Select your vehicle weight"
+                                    app:boxStrokeColor="@color/ummo_2"
+                                    app:hintTextColor="@color/ummo_2">
 
-                                <Spinner
-                                    android:id="@+id/service_cost_spinner"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
-                                <!--<TextView
-                                    android:id="@+id/service_cost_text_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/service_cost_header_text_view"
-                                    android:text="@string/service_cost_placeholder"
-                                    android:textColor="@color/black"
-                                    android:textSize="14sp" />-->
-                            </RelativeLayout>
+                                    <AutoCompleteTextView
+                                        android:id="@+id/card_service_cost_text_View"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="none"
+                                        android:text="Tap for vehicle weights"
+                                        android:textSize="16sp" />
 
-                            <RelativeLayout
-                                android:id="@+id/service_query_icon_relative_layout"
-                                android:layout_width="40dp"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:gravity="end">
+                                </com.google.android.material.textfield.TextInputLayout>
 
-                                <ImageView
-                                    android:id="@+id/query_image_view"
-                                    android:layout_width="wrap_content"
+                                <RelativeLayout
+                                    android:id="@+id/service_query_icon_relative_layout"
+                                    android:layout_width="40dp"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
                                     android:layout_centerVertical="true"
-                                    android:contentDescription="@string/save_service"
-                                    android:padding="8dp"
-                                    app:srcCompat="@drawable/ic_baseline_help_outline_24" />
+                                    android:gravity="end">
+
+                                    <ImageView
+                                        android:id="@+id/query_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_centerVertical="true"
+                                        android:contentDescription="@string/save_service"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_baseline_help_outline_24" />
+                                </RelativeLayout>
                             </RelativeLayout>
 
                         </RelativeLayout>

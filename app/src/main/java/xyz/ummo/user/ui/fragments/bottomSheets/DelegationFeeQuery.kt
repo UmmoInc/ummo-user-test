@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_delegation_fee_query.view.*
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentDelegationFeeQueryBinding
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
 
 private const val DELEGATION_FEE = "delegation_fee"
@@ -43,7 +44,7 @@ class DelegationFeeQuery : BottomSheetDialogFragment() {
         val view = viewBinding.root
 
         val delegatedServiceFeeDetails = view.delegated_service_fee_support_text_view
-        val delegatedDetails = arguments?.getString(SPEC_FEE, "SPEC FEE")
+        val delegatedDetails = arguments?.getString(SERVICE_SPEC, "SERVICE SPEC")
         val delegationDetailsText = String.format(resources.getString(R.string.delegated_service_fee_query_support_text), delegatedDetails)
         delegatedServiceFeeDetails.text = delegationDetailsText
 

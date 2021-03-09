@@ -61,12 +61,23 @@
                 android:layout_toEndOf="@id/service_fee_support_image_view"
                 android:text="@string/service_fee_support_text"
                 android:textColor="@color/black"
+                android:layout_marginBottom="8dp"
                 android:textSize="12sp" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="8dp"
+                android:layout_below="@id/service_fee_support_text_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/service_fee_support_text_view"
+                android:layout_below="@+id/divider2"
                 android:layout_alignStart="@+id/service_fee_support_text_view"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"

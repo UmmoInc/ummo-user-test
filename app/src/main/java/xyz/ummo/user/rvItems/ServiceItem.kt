@@ -83,6 +83,7 @@ class ServiceItem(private val service: ServiceObject,
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val delegateStateEvent = DelegateStateEvent()
     private val passingServiceEvent = PassingServiceEvent()
+    private val serviceSpecifiedEvent = ServiceSpecifiedEvent()
 
     private var isUpvotedPref: Boolean = false
     private var isDownvotedPref: Boolean = false
@@ -197,12 +198,14 @@ class ServiceItem(private val service: ServiceObject,
         /** Parsing Service Costs**/
         parseServiceCostBySpec(service)
         /** Listening for Item Selected **/
-        addListenerOnSpinnerItemSelected(viewHolder)
+        /*addListenerOnSpinnerItemSelected(viewHolder)
 //        viewHolder.itemView.service_cost_text_view.text = service.serviceCost //6
         serviceCostSpinner = viewHolder.itemView.service_cost_spinner
         serviceCostAdapter = ArrayAdapter(context,
                 R.layout.support_simple_spinner_dropdown_item, serviceCostArrayList)
-        serviceCostSpinner?.adapter = serviceCostAdapter
+        serviceCostSpinner?.adapter = serviceCostAdapter*/
+
+        selectingServiceSpec(viewHolder)
 
         viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
 //        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
@@ -508,87 +511,61 @@ class ServiceItem(private val service: ServiceObject,
             timer.start()
         }
 
-        /*viewHolder.itemView.save_service_relative_layout.setOnClickListener {
-//            Timber.e("Save Service-Layout!")
+        requestingAgent(viewHolder)
 
-            if (!bookmarked) {
-                bookmarkService(currentDate)
-                bookmarkTriggeredChangeStates(viewHolder)
+    }
 
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_BOOKMARKED", serviceId)
-                mixpanel?.track("serviceCard_serviceBookmarked", serviceItemObject)
-                serviceItemObject.remove("SERVICE_BOOKMARKED")
-
-            } else {
-                removeBookmark(currentDate)
-                reverseBookmarkChangeStates(viewHolder)
-
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_BOOKMARKED_UNDO", serviceId)
-                mixpanel?.track("serviceCard_serviceBookmarked_undo", serviceItemObject)
-                serviceItemObject.remove("SERVICE_BOOKMARKED_UNDO")
-            }
-        }
-        viewHolder.itemView.save_service_image.setOnClickListener {
-//            Timber.e("Save Service-Image!")
-
-            if (!bookmarked) {
-                bookmarkService(currentDate)
-                bookmarkTriggeredChangeStates(viewHolder)
-
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_BOOKMARKED", serviceId)
-                mixpanel?.track("serviceCard_serviceBookmarked", serviceItemObject)
-                serviceItemObject.remove("SERVICE_BOOKMARKED")
-
-            } else {
-                removeBookmark(currentDate)
-                reverseBookmarkChangeStates(viewHolder)
-
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_BOOKMARKED_UNDO", serviceId)
-                mixpanel?.track("serviceCard_serviceBookmarked_undo", serviceItemObject)
-                serviceItemObject.remove("SERVICE_BOOKMARKED_UNDO")
-            }
-        }*/
+    private fun requestingAgent(viewHolder: GroupieViewHolder) {
+        val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
+                .get(DelegatedServiceViewModel::class.java)
 
         val countOfDelegatedServices = delegatedServiceViewModel.getCountOfDelegatedServices()
 
         /** Preventing User from delegating more than one service at a time. **/
         if (countOfDelegatedServices > 0) {
-            delegatedServiceViewModel.delegatedServiceEntityLiveData.observe(context, { delegatedServiceEntity: DelegatedServiceEntity ->
+            delegatedServiceViewModel.delegatedServiceEntityLiveData.observe(context!!) { delegatedServiceEntity: DelegatedServiceEntity ->
                 val delegatedServiceId = delegatedServiceEntity.delegatedProductId
 
-                when {
-                    serviceEntity.serviceId != delegatedServiceId -> {
-                        viewHolder.itemView.request_agent_button.text = "Service pending..."
-                        viewHolder.itemView.request_agent_button
-                                .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
-                        viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_service_locked_24)
+                if (delegatedServiceEntity != null) {
 
-                        viewHolder.itemView.request_agent_button.setOnClickListener {
-                            delegateStateEvent.delegateStateEvent = SERVICE_PENDING
-                            EventBus.getDefault().post(delegateStateEvent)
+                    when {
+                        serviceEntity.serviceId != delegatedServiceId -> {
+                            viewHolder.itemView.request_agent_button!!.text = "Service pending..."
+                            viewHolder.itemView.request_agent_button
+                                    .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
+                            viewHolder.itemView.request_agent_button!!.icon = context.resources.getDrawable(R.drawable.ic_service_locked_24)
+
+                            viewHolder.itemView.request_agent_button.setOnClickListener {
+                                delegateStateEvent.delegateStateEvent = SERVICE_PENDING
+                                EventBus.getDefault().post(delegateStateEvent)
+                            }
                         }
-                    }
-                    serviceEntity.serviceId.equals(delegatedServiceId) -> {
-                        viewHolder.itemView.request_agent_button.setOnClickListener {
-                            delegateStateEvent.delegateStateEvent = CURRENT_SERVICE_PENDING
-                            EventBus.getDefault().post(delegateStateEvent)
+                        serviceEntity.serviceId.equals(delegatedServiceId) -> {
+                            viewHolder.itemView.request_agent_button.setOnClickListener {
+                                delegateStateEvent.delegateStateEvent = CURRENT_SERVICE_PENDING
+                                EventBus.getDefault().post(delegateStateEvent)
+                            }
                         }
                     }
                 }
-            })
+            }
         } else {
-            viewHolder.itemView.request_agent_button.setOnClickListener {
+            Timber.e("SERVICE COST SELECTED [0] -> $specCost")
 
-                Timber.e("SELECTED SERVICE COST ITEM -> $serviceSpec")
-                Timber.e("SELECTED SERVICE COST ITEM -> $specCost")
-                makeRequest()
+            if (specCost.isEmpty()) {
+                Timber.e("NO SERVICE COST SELECTED!")
+                viewHolder.itemView.request_agent_button.setOnClickListener {
+                    serviceSpecifiedEvent.specifiedEvent = false
+                    EventBus.getDefault().post(serviceSpecifiedEvent)
+                    return@setOnClickListener
+                }
+            } else {
+                Timber.e("SERVICE COST SELECTED [1] -> $specCost")
+                viewHolder.itemView.request_agent_button.setOnClickListener {
+                    makeRequest()
+                }
             }
         }
-
     }
 
     private fun parseServiceCostBySpec(serviceObject: ServiceObject) {
@@ -596,7 +573,7 @@ class ServiceItem(private val service: ServiceObject,
         Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
     }
 
-    private fun addListenerOnSpinnerItemSelected(viewHolder: GroupieViewHolder) {
+    /*private fun addListenerOnSpinnerItemSelected(viewHolder: GroupieViewHolder) {
 
         val mixpanel = MixpanelAPI.getInstance(context,
                 context?.resources?.getString(R.string.mixpanelToken))
@@ -625,7 +602,7 @@ class ServiceItem(private val service: ServiceObject,
 
             }
         }
-    }
+    }*/
 
     private fun checkIfServiceIsSavedOffline(mServiceId: String, viewHolder: GroupieViewHolder) {
 
@@ -649,16 +626,20 @@ class ServiceItem(private val service: ServiceObject,
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceModel.delegatedServiceEntityLiveData.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
-                val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
-                if (serviceEntity.serviceId == delegatedServiceId) {
-                    Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
-                    viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
 
-                    viewHolder.itemView.request_agent_button
-                            .setBackgroundColor(context.resources.getColor(R.color.Grey))
-                    viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
-                    viewHolder.itemView.request_agent_button.isActivated = false
+                if (delegatedServiceEntity != null) {
+
+                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                    Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+                    if (serviceEntity.serviceId == delegatedServiceId) {
+                        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                        viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
+
+                        viewHolder.itemView.request_agent_button
+                                .setBackgroundColor(context.resources.getColor(R.color.Grey))
+                        viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                        viewHolder.itemView.request_agent_button.isActivated = false
+                    }
                 }
             })
         } else {
@@ -852,6 +833,7 @@ class ServiceItem(private val service: ServiceObject,
 
         serviceViewModel.addService(serviceEntity)
 
+        //TODO
         delegatedServiceEntity.delegationId = delegationId
         delegatedServiceEntity.delegatedProductId = delegatedServiceId
         delegatedServiceEntity.serviceAgentId = agentId
@@ -897,6 +879,48 @@ class ServiceItem(private val service: ServiceObject,
         /** Toggling b/n Approved & Approve (soon to be Upvoted & Upvote) **/
         viewHolder.itemView.approved_service_relative_layout.visibility = View.GONE
         viewHolder.itemView.approve_service_relative_layout.visibility = View.VISIBLE
+    }
+
+    private fun selectingServiceSpec(viewHolder: GroupieViewHolder) {
+        val mixpanel = MixpanelAPI.getInstance(context,
+                context?.resources?.getString(R.string.mixpanelToken))
+
+        val autoCompleteTextView = viewHolder.itemView.findViewById<AutoCompleteTextView>(R.id.card_service_cost_text_View)
+
+        serviceCostAdapter = ArrayAdapter(context!!,
+                R.layout.list_item, serviceCostArrayList)
+
+        autoCompleteTextView?.setAdapter(serviceCostAdapter)
+        autoCompleteTextView?.setOnItemClickListener { adapterView, autoView, i, l ->
+            val selectedText = autoCompleteTextView.text.toString()
+            var currencyIndex = 0
+
+            /** Parsing through the selectedText to pull out the [specCost] **/
+            for (j in selectedText.indices) {
+                val char = selectedText[j]
+                if (char == 'E')
+                    currencyIndex = j
+            }
+
+            Timber.e("CURRENCY INDEX -> $currencyIndex")
+            serviceSpec = selectedText.substring(0, currencyIndex - 2)
+            specCost = selectedText.substring(currencyIndex + 1)
+
+            Timber.e("SPEC-COST -> $specCost")
+            Timber.e("SERVICE-SPEC -> $serviceSpec")
+
+            serviceSpecifiedEvent.specifiedEvent = true
+            EventBus.getDefault().post(serviceSpecifiedEvent)
+
+            val serviceSpecCost = JSONObject()
+            serviceSpecCost
+                    .put("SERVICE_SPEC", serviceSpec)
+                    .put("SPEC_COST", specCost)
+            mixpanel.track("serviceCard_serviceSpecSelected", serviceSpecCost)
+
+
+            requestingAgent(viewHolder)
+        }
     }
 
     private fun upVoteService(viewHolder: GroupieViewHolder, date: String) {

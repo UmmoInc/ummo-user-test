@@ -114,6 +114,14 @@
         <item name="android:textColorSecondary">@color/Grey</item>
     </style>
 
+    <style name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="materialThemeOverlay">
+            @style/ThemeOverlay.MaterialComponents.AutoCompleteTextView.OutlinedBox
+        </item>
+        <item name="endIconMode">dropdown_menu</item>
+        <item name="endIconDrawable">@drawable/ic_baseline_arrow_drop_down_24</item>
+    </style>
+
     <!--<style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/ummo_2</item>
         <item name="android:textSize">14sp</item>

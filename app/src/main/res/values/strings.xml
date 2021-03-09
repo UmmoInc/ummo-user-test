@@ -112,7 +112,7 @@
     <string name="code_prompt_title">Let\'s verify your phone</string>
     <string name="resend_code">Resend code in: </string>
     <string name="description_default_string">Default Product Description</string>
-    <string name="no_delegated_service">You have not Delegated a Service yet…</string>
+    <string name="no_delegated_service">You have not delegated a service yet…</string>
     <string name="nav_drawer_delegated_service">Delegated Service</string>
     <string name="nav_drawer_service_history">Service History</string>
     <string name="nav_drawer_payment_methods">Payment Methods</string>
@@ -183,8 +183,8 @@
     <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
-    <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
-    <string name="serverUrl">http://192.168.8.108:3000</string>
+    <string name="serverUrl">https://stage.ummo.xyz</string>
+    <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
     <string name="delegation_fee">E100</string>
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
@@ -196,8 +196,8 @@
     <string name="no_verification_code_msg">It seems we are unable to verify your contact at the moment.</string>
     <string name="verify_later">No worries, we will verify later.</string>
     <string name="request_agent">Request Agent</string>
-    <string name="delegated_service_fee_query_support_text">This fee is for the Delegated Service E%1$s.</string>
-    <string name="service_fee_support_text">This service has multiple options to select. Select the specification that meets your needs. \n\n\n(Please make sure you select the right one.)</string>
+    <string name="delegated_service_fee_query_support_text">This fee is for the Delegated Service specified by: %1$s.</string>
+    <string name="service_fee_support_text">This service has multiple options to choose from. Select the option that best meets your needs. \n\n\n(Please make sure you select the right one.)</string>
     <string name="delegated_service_fee_query_support_text_two"> which costs %1$s.</string>
 
 </resources>

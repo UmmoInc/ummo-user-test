@@ -34,6 +34,9 @@ import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
+import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_ID
+import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
@@ -104,6 +107,7 @@ class DelegatedServiceFragment : Fragment {
     private var bundle = Bundle()
 
     private var delegationFee = ""
+    private var delegationSpec = ""
 
     constructor(entity: DelegatedServiceEntity) {
         delegatedServiceEntity = entity
@@ -145,9 +149,12 @@ class DelegatedServiceFragment : Fragment {
 
         delegatedServicePreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)!!
 
+        delegationId = delegatedServicePreferences.getString(DELEGATION_ID, "")
+
         delegatedServiceId = delegatedServicePreferences.getString(DELEGATED_SERVICE_ID, "")
         serviceState = delegatedServicePreferences.getInt(SERVICE_STATE, 0)
         delegationFee = delegatedServicePreferences.getString(DELEGATION_FEE, "Couldn't load fee...")!!
+        delegationSpec = delegatedServicePreferences.getString(DELEGATION_SPEC, "Couldn't load service spec...")!!
 
         serviceViewModel = ViewModelProvider(this).get(ServiceViewModel::class.java)
 
@@ -172,11 +179,11 @@ class DelegatedServiceFragment : Fragment {
 
         agentNameTextView?.text = agentName
 
+        bundle.putString(SPEC_FEE, delegationFee)
+        bundle.putString(SERVICE_SPEC, delegationSpec)
+
         viewBinding.delegationFeeQueryImageView.setOnClickListener { queryDelegationFee() }
         viewBinding.delegationFeeQueryIconRelativeLayout.setOnClickListener { queryDelegationFee() }
-
-        bundle.putString(SPEC_FEE, delegationFee)
-
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -288,7 +295,8 @@ class DelegatedServiceFragment : Fragment {
                     Timber.e("RATING VALUE -> ${delegationRatingBar.rating}")
                     Timber.e("CONFIRMING DELIVERY -> ${delegationFeedbackText.text?.trim()}")
 
-                    rateDelegation("6028fe03c5f96eff464ab55b",
+                    Timber.e("DELEGATION ID CONFIRMATION -> $delegationId")
+                    rateDelegation(delegationId!!,
                             delegationRatingBar.rating.toInt(),
                             delegationFeedbackText.text?.trim().toString())
 
@@ -435,7 +443,7 @@ class DelegatedServiceFragment : Fragment {
         viewBinding.homeButton.setOnClickListener {
             val pagesFragment: Fragment = PagesFragment()
 
-            mixpanel?.track("delegatedServiceFragment_takingUserHome")
+            mixpanel.track("delegatedServiceFragment_takingUserHome")
 
             val fm: FragmentManager = activity?.supportFragmentManager!!
             val transaction: FragmentTransaction = fm.beginTransaction()
