@@ -1,5 +1,7 @@
 package xyz.ummo.user.data.model
 
+import xyz.ummo.user.models.ServiceCostModel
+
 interface ServiceModel {
     var serviceId: String? //0
     var serviceName: String? //1
@@ -8,7 +10,7 @@ interface ServiceModel {
     var serviceCentres: ArrayList<String>? //4
     //    var serviceCentres: String?
     var delegatable: Boolean? //5
-    var serviceCost: String? //6
+//    var serviceCost: ArrayList<ServiceCostModel>? //6
     var serviceDocuments: ArrayList<String>? //7
     var serviceDuration: String? //8
     var notUsefulCount: Int? //9

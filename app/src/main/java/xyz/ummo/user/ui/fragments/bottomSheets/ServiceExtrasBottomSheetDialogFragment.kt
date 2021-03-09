@@ -31,7 +31,7 @@ class ServiceExtrasBottomSheetDialogFragment : BottomSheetDialogFragment(){
         if (arguments != null) {
             Timber.e("Arguments available -> $arguments")
             if (arguments!!["SERVICE_DELEGATABLE"] == true) {
-                requestAgentRelativeLayout.visibility = View.VISIBLE
+                requestAgentRelativeLayout.visibility = View.GONE //TODO: Meant to be View.VISIBLE
             } else
                 requestAgentRelativeLayout.visibility = View.GONE
         } else {

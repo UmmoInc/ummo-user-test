@@ -12,7 +12,7 @@
     <string name="ummo_logo_text">Ummo Logo</string>
     <string name="next_registration_button">Next</string>
     <string name="email_prompt">What\'s your email?</string>
-    <string name="email_prompt2">Enter your email address (required)</string>
+    <string name="email_prompt2">Your email will be used for User Support purposes only.</string>
     <string name="enter_email">Email address</string>
     <string name="sign_up_button">Sign-Up</string>
     <string name="search_location_string">Search location</string>
@@ -84,7 +84,7 @@
     <string name="cost_string">Cost: </string>
     <string name="duration_string">Duration: </string>
     <string name="more_string">more</string>
-    <string name="title_activity_detailed_service">DetailedService</string>
+    <string name="title_activity_detailed_service">Service Details</string>
     <string name="service_description_title">Description</string>
     <string name="service_documents_title_string">Documents</string>
     <string name="service_cost_title_string">Cost</string>
@@ -110,9 +110,9 @@
     <string name="logout">Log out</string>
     <string name="search">Search</string>
     <string name="code_prompt_title">Let\'s verify your phone</string>
-    <string name="resend_code">Resend code in</string>
+    <string name="resend_code">Resend code in: </string>
     <string name="description_default_string">Default Product Description</string>
-    <string name="no_delegated_service">No Delegated Service Found</string>
+    <string name="no_delegated_service">You have not delegated a service yet…</string>
     <string name="nav_drawer_delegated_service">Delegated Service</string>
     <string name="nav_drawer_service_history">Service History</string>
     <string name="nav_drawer_payment_methods">Payment Methods</string>
@@ -129,7 +129,7 @@
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>
     <string name="retry_agent_request">RETRY AGENT REQUEST</string>
     <string name="profile_nav_title">Profile</string>
-    <string name="service_nav_title">My Services</string>
+    <string name="service_nav_title">Bookmarks</string>
     <string name="save_service">Save Service</string>
     <string name="service_centre_image">Service Centre Image</string>
     <string name="product_requirements">What you will need:</string>
@@ -137,14 +137,14 @@
     <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
     <string name="request_ummo_agent">Request an Ummo Agent for %1$s</string>
 
-    <string name="product_cost">Product Cost</string>
+    <string name="product_cost">Total (including Delegation Fee)</string>
 
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>
     <string name="info_body_text">This is an example tip that will be shown to users when they use the app. It will be used to share important info for the user.</string>
     <string name="dismiss_info">Dismiss Info</string>
     <string name="feedback">Feedback</string>
-    <string name="request_message">This might take a few seconds…</string>
+    <string name="request_message">Just a second…</string>
     <string name="request_error_image_description">Request Error</string>
     <string name="call_for_bug_assistance">Please try again, or help us fix it by reporting the issue in Feedback.</string>
     <string name="registration_continue">Continue</string>
@@ -169,26 +169,35 @@
     <string name="you_downvoted_this">You downvoted</string>
     <string name="you_commented_on_this">You commented</string>
     <string name="you_shared_this">You shared</string>
-    <string name="you_saved_this">Bookmarked</string>
+    <string name="you_saved_this">Saved Offline</string>
     <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
     <string name="recommend_service_improvements">How would you improve this service?</string>
     <string name="service_centre_selection">(Choose one)</string>
     <string name="request_agent_text">Request Agent</string>
-    <string name="service_created">Service Created…</string>
+    <string name="service_updated">Service Updated…</string>
     <string name="service_authenticity">Service Authenticity</string>
-    <string name="verified_by">Verified by: </string>
+    <string name="verified_by">Sourced from: </string>
     <string name="service_verifier">Ministry of Public Service</string>
     <string name="service_tips">Service Tips</string>
 
     <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
-    <!--<string name="serverUrl">https://ummo-delegate.herokuapp.com</string>-->
-    <string name="serverUrl">http://192.168.8.103:3000</string>
+    <string name="serverUrl">https://stage.ummo.xyz</string>
+    <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
     <string name="delegation_fee">E100</string>
-    <string name="intro_header_text"><![CDATA[Thank you for helping us improve Ummo. We value your advice & we\'ll do our best to learn from you.]]></string>
+    <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
     <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
     <string name="clean_hands">Made with clean hands. (Don\'t forget to sanitize.)</string>
+    <string name="delegate">Delegate</string>
+    <string name="bottom_nav_delegated">Delegated</string>
+    <string name="service_interruption_text">There are minor interruptions at the Service Centre. We may be slightly delayed.</string>
+    <string name="no_verification_code_msg">It seems we are unable to verify your contact at the moment.</string>
+    <string name="verify_later">No worries, we will verify later.</string>
+    <string name="request_agent">Request Agent</string>
+    <string name="delegated_service_fee_query_support_text">This fee is for the Delegated Service specified by: %1$s.</string>
+    <string name="service_fee_support_text">This service has multiple options to choose from. Select the option that best meets your needs. \n\n\n(Please make sure you select the right one.)</string>
+    <string name="delegated_service_fee_query_support_text_two"> which costs %1$s.</string>
 
 </resources>

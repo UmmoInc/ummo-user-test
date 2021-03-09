@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.signup
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -25,13 +26,16 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.CompleteSignUpBinding
-import xyz.ummo.user.delegate.Login
-import xyz.ummo.user.delegate.SocketIO
+import xyz.ummo.user.api.Login
+import xyz.ummo.user.api.SocketIO
 import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CompleteSignUpActivity : AppCompatActivity() {
@@ -52,8 +56,10 @@ class CompleteSignUpActivity : AppCompatActivity() {
         setContentView(view)
 
         val intent = intent
-        userContact = intent.getStringExtra("USER_CONTACT")!!
-        userName = intent.getStringExtra("USER_NAME")!!
+        userContact = intent.getStringExtra(USER_CONTACT)!!
+        userName = intent.getStringExtra(USER_NAME)!!
+
+        Timber.e("BUNDLE -> ${intent.extras}")
 
         /** Hiding the toolbar **/
         try {
@@ -140,7 +146,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
             when {
                 Patterns.EMAIL_ADDRESS.matcher(userEmail).matches().not() -> {
                     emailField.error = "Please use a valid email..."
-                    emailField.requestFocus();
+                    emailField.requestFocus()
                 }
                 emailField.length() == 0 -> {
                     emailField.error = "Please provide an email..."
@@ -211,7 +217,13 @@ class CompleteSignUpActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun signUp(name: String, email: String, contact: String, playerId: String) {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+        val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        val currentDate = simpleDateFormat.format(Date())
+
         object : Login(applicationContext, name, email, contact, playerId) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
@@ -228,6 +240,16 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     editor.putBoolean("NEW_SESSION", true)
                     editor.apply()
 
+                    /** [MixpanelAPI] 1. Identifying User by contact &&
+                     *                2. Tracking sign_up activity **/
+                    val userObject = JSONObject()
+                    userObject.put("USER_NAME", name)
+                    userObject.put("USER_CONTACT", contact)
+                    userObject.put("USER_EMAIL", email)
+                    userObject.put("SIGN_UP_DATE", currentDate)
+
+                    mixpanel?.people?.identify(contact)
+                    mixpanel?.track("userRegistering_userDetails", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
                 } else {
                     Timber.e("Something happened... $code +  $data  + ${String(data)}")
@@ -262,7 +284,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
         snackbar.show()
     }
 

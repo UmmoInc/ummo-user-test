@@ -22,7 +22,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentSavedServicesBinding
-import xyz.ummo.user.models.Service
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
@@ -62,7 +62,7 @@ class SavedServicesFragment : Fragment() {
     private var profileEntity = ProfileEntity()
 
     private lateinit var bookmarkedServicesList: List<ServiceEntity>
-    private lateinit var bookmarkedService: Service
+    private lateinit var bookmarkedService: ServiceObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +102,7 @@ class SavedServicesFragment : Fragment() {
 
         getBookmarkedServicesFromSharedPrefs()
 
-        getBookmarkedServices()
+//        getBookmarkedServices()
 
         return view
     }
@@ -147,7 +147,7 @@ class SavedServicesFragment : Fragment() {
             serviceEligibility = bookmarkedServicesList[i].serviceEligibility!! //3
             serviceCentres = bookmarkedServicesList[i].serviceCentres!! //4
             delegatable = bookmarkedServicesList[i].delegatable!! //5
-            serviceCost = bookmarkedServicesList[i].serviceCost!! //6
+//            serviceCost = bookmarkedServicesList[i].serviceCost!! //6
             serviceDocuments = bookmarkedServicesList[i].serviceDocuments!! //7
             serviceDuration = bookmarkedServicesList[i].serviceDuration!! //8
             approvalCount = bookmarkedServicesList[i].usefulCount!! //9
@@ -158,10 +158,10 @@ class SavedServicesFragment : Fragment() {
             viewCount = bookmarkedServicesList[i].serviceViews!! //13
             serviceProvider = bookmarkedServicesList[i].serviceProvider!! //14
 
-            bookmarkedService = Service(serviceId, serviceName, serviceDescription,
+            /*bookmarkedService = ServiceObject(serviceId, serviceName, serviceDescription,
                     serviceEligibility, serviceCentres, delegatable, serviceCost,
                     serviceDocuments, serviceDuration, approvalCount, disapprovalCount,
-                    serviceComments, commentCount, shareCount, viewCount, serviceProvider)
+                    serviceComments, commentCount, shareCount, viewCount, serviceProvider)*/
 
             /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB,
              * using the $serviceId
@@ -217,7 +217,7 @@ class SavedServicesFragment : Fragment() {
             serviceEntity.serviceEligibility = services[i].serviceEligibility //3
             serviceEntity.serviceCentres = services[i].serviceCentres //4
             serviceEntity.delegatable = services[i].delegatable //5
-            serviceEntity.serviceCost = services[i].serviceCost //6
+//            serviceEntity.serviceCost = services[i].serviceCost //6
             serviceEntity.serviceDocuments = services[i].serviceDocuments //7
             serviceEntity.serviceDuration = services[i].serviceDuration //8
             serviceEntity.notUsefulCount = services[i].notUsefulCount //9
@@ -244,10 +244,10 @@ class SavedServicesFragment : Fragment() {
 
     @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
-        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceName}")
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
 
-        getBookmarkedServices()
+//        getBookmarkedServices()
     }
 
     companion object {

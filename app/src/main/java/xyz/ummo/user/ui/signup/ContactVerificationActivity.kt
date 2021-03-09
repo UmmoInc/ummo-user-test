@@ -3,8 +3,15 @@ package xyz.ummo.user.ui.signup
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.SystemClock
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
@@ -12,11 +19,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.mixpanel.android.mpmetrics.MixpanelAPI
+import kotlinx.android.synthetic.main.content_delegation_progress.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.ContactVerificationBinding
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
+import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
@@ -27,6 +38,7 @@ class ContactVerificationActivity : AppCompatActivity() {
     private lateinit var viewBinding: ContactVerificationBinding
     private var userContact: String = ""
     private var userName: String = ""
+    private var bundle = Bundle()
 
     //Firebase Auth Variable
     private lateinit var mAuth: FirebaseAuth
@@ -55,8 +67,8 @@ class ContactVerificationActivity : AppCompatActivity() {
         }
         //Retrieving user's contact from intentExtras
         val intent = intent
-        userName = intent.getStringExtra("USER_NAME")!!
-        userContact = intent.getStringExtra("USER_CONTACT")!!
+        userName = intent.getStringExtra(USER_NAME)!!
+        userContact = intent.getStringExtra(USER_CONTACT)!!
 
         val promptText: String = String.format(resources.getString(R.string.code_prompt_text), userContact)
         viewBinding.codePrompt.text = promptText
@@ -64,6 +76,8 @@ class ContactVerificationActivity : AppCompatActivity() {
         initCallback()
         startPhoneNumberVerification(userContact)
         verifyCode()
+
+        skippingVerification()
     }
 
     override fun onStart() {
@@ -72,6 +86,70 @@ class ContactVerificationActivity : AppCompatActivity() {
          * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    private fun skippingVerification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            viewBinding.verificationChronometer.isCountDown = true
+        }
+        viewBinding.verificationChronometer.base = SystemClock.elapsedRealtime() + 30000
+        viewBinding.verificationChronometer.start()
+
+        val timer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(p0: Long) {
+
+            }
+
+            override fun onFinish() {
+                viewBinding.verificationChronometer.stop()
+                noVerificationCode()
+            }
+        }
+
+        timer.start()
+    }
+
+    private fun noVerificationCode() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        val noVerificationCodeDialogBuilder = MaterialAlertDialogBuilder(this)
+        val noVerificationCodeView = LayoutInflater.from(this)
+                .inflate(R.layout.no_verification_code_view, null)
+
+        noVerificationCodeDialogBuilder
+                .setTitle("No Verification Code?")
+                .setIcon(R.drawable.logo)
+                .setView(noVerificationCodeView)
+                .setPositiveButton("Continue") { dialogInterface, i ->
+                    Timber.e("VERIFY LATER")
+                    viewBinding.verifyContact.text = "I'LL VERIFY LATER"
+                    viewBinding.verifyContact.setBackgroundColor(resources.getColor(R.color.ummo_4))
+                    /** Indicating that the User has not confirmed their contact yet**/
+                    bundle.putInt(CONFIRMED, 0)
+                    mixpanel?.track("contactVerification_skippingVerification")
+                }
+                .setNegativeButton("Try Again") { dialogInterface, i ->
+
+                    /** Taking User back to [RegisterActivity] to correct contact entry **/
+                    val intent = Intent(this, RegisterActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+                    intent.putExtra(TRYING_AGAIN, 1)
+                    intent.putExtra(USER_NAME, userName)
+                    intent.putExtra(USER_CONTACT, userContact)
+                    startActivity(intent)
+
+                    mixpanel?.track("contactVerification_repeatingRegistration")
+
+                    finish()
+                }
+
+        /** Checking if the Activity is active - without this check, we'll crash because it may
+         * show the dialog when the Activity isn't active **/
+        if (!isFinishing) {
+            noVerificationCodeDialogBuilder.show()
+        }
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
@@ -95,12 +173,20 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun verifyCode() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         viewBinding.verifyContact.setOnClickListener {
             val code = viewBinding.confirmationCode.text.toString()
 //            val code = "123456"
             Timber.e("Verifying code -> $code!")
 
+            //TODO: java.lang.IllegalArgumentException: Cannot create PhoneAuthCredential
+            // without either verificationProof, sessionInfo, temporary proof, or enrollment ID.
             verifyPhoneNumberWithCode(mVerificationId!!.toString(), code)
+
+//            mixpanel?.track("contactVerification_")
+
         }
     }
 
@@ -112,23 +198,68 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun verifyPhoneNumberWithCode(verificationId: String, code: String) {
-        val credential = PhoneAuthProvider.getCredential(verificationId, code)
-        signInWithPhoneAuthCredential(credential)
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+        when {
+            code.isBlank() -> {
+                /** Checking if the User has confirmed Later Verification & not just jumping to skip
+                 * the verification process - [bundle] will contain [CONFIRMED] **/
+                if (bundle.getInt(CONFIRMED) != 0) {
+                    showSnackbarRed("Please enter your verification code first", 0)
+                } else {
+                    showSnackbarRed("TO BE VERIFIED LATER", 0)
+                    val timer = object : CountDownTimer(1000, 1000) {
+                        override fun onTick(p0: Long) {
+                            viewBinding.verifyContactProgressBarLayout.visibility = View.VISIBLE
+                        }
+
+                        override fun onFinish() {
+                            viewBinding.verifyContactProgressBarLayout.visibility = View.GONE
+                            mixpanel?.track("registration_takingUserToFinalStep")
+                            takeUserToFinalStep()
+                        }
+                    }
+                    timer.start()
+                }
+            }
+            code.length != 6 -> {
+                showSnackbarRed("Please make sure you enter the complete code", 0)
+            }
+            else -> {
+
+                try {
+                    val credential = PhoneAuthProvider.getCredential(verificationId, code)
+                    signInWithPhoneAuthCredential(credential)
+                } catch (ex: Exception) {
+                    showSnackbarRed("EXC -> $ex", 0)
+                }
+            }
+        }
     }
 
     @Subscribe
-    fun onRecaptchaStateEvent(recaptchaStateEvent: RecaptchaStateEvent){
+    fun onRecaptchaStateEvent(recaptchaStateEvent: RecaptchaStateEvent) {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         Timber.e("Recaptcha State -> $recaptchaStateEvent")
 
         if (recaptchaStateEvent.recaptchaPassed!!) {
             showSnackbarGreen("Security check passed", -1)
+            /** [MixpanelAPI] Tracking recaptcha success */
+            mixpanel?.track("contactVerification_recaptchaPassed")
         } else {
             showSnackbarRed("Security issues detected. Try again.", -2)
+            /** [MixpanelAPI] Tracking recaptcha failure */
+            mixpanel?.track("contactVerification_recaptchaFailed")
         }
     }
 
     //TODO: track this event with Mixpanel
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         mAuth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 //Sign user in, update UI
@@ -136,24 +267,13 @@ class ContactVerificationActivity : AppCompatActivity() {
                 val user = task.result?.user
                 Timber.e("Signing in, user -> $user")
 
-                startActivity(Intent(this, CompleteSignUpActivity::class.java)
-                        .putExtra("USER_CONTACT", userContact)
-                        .putExtra("USER_NAME", userName))
+                mixpanel?.track("contactSuccessfullyVerified")
 
-                Timber.e("User Name -> $userName")
-                Timber.e("User Contact -> $userContact")
-
-                finish()
+                takeUserToFinalStep()
             } else {
-                showSnackbar("[FIX] Illegally signing in")
-                startActivity(Intent(this, CompleteSignUpActivity::class.java)
-                        .putExtra("USER_CONTACT", userContact)
-                        .putExtra("USER_NAME", userName))
+                mixpanel?.track("skippingVerification")
 
-                Timber.e("User Name -> $userName")
-                Timber.e("User Contact -> $userContact")
-
-                finish()
+                takeUserToFinalStep()
 
                 //TODO: Revive this integrity check to filter out fake numbers
                 /*if (task.exception is FirebaseAuthInvalidCredentialsException) {
@@ -164,6 +284,14 @@ class ContactVerificationActivity : AppCompatActivity() {
                 showSnackbar("Sign in failed! ${task.exception}")*/
             }
         }
+    }
+
+    private fun takeUserToFinalStep() {
+        startActivity(Intent(this, CompleteSignUpActivity::class.java)
+                .putExtra(USER_CONTACT, userContact)
+                .putExtra(USER_NAME, userName))
+
+        finish()
     }
 
     private fun initCallback() {
@@ -246,19 +374,30 @@ class ContactVerificationActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
     }
 
     private fun showSnackbarGreen(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googgreen400))
+        snackbar.setTextColor(resources.getColor(R.color.lawn_green))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.show()
+    }
+
+    companion object {
+        const val TRYING_AGAIN = "TRYING_AGAIN"
+        const val CONFIRMED = "CONFIRMED"
     }
 }

@@ -10,6 +10,7 @@
         tools:context=".ui.MainScreen">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/main_app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -19,12 +20,10 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/ummo_3"
                 app:menu="@menu/top_app_bar"
-                app:subtitle="Test Version"
+                app:subtitle="Beta Version"
                 app:subtitleTextColor="@color/White"
                 app:title="Ummo"
-                app:titleTextColor="@color/White">
-
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:titleTextColor="@color/White"/>
 
             <!--<View
                 android:layout_width="match_parent"
@@ -32,6 +31,19 @@
                 android:background="@color/black" />-->
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <ProgressBar
+            android:id="@+id/toolbar_progress_bar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/ummo_1"
+            android:indeterminateTintMode="src_in"
+            android:visibility="gone"
+            app:layout_anchor="@id/main_app_bar"
+            app:layout_anchorGravity="bottom"
+            tools:targetApi="lollipop" />
 
         <FrameLayout
             android:id="@+id/frame"

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contribution_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:id="@+id/safety_precaution_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/safety_precaution_image_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_safety_precaution_34" />
+        </RelativeLayout>
+
+        <!-- Header Layout-->
+        <RelativeLayout
+            android:id="@+id/service_caution_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/safety_precaution_relative_layout">
+
+            <ImageView
+                android:id="@+id/service_caution_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_baseline_warning_24" />
+
+            <TextView
+                android:id="@+id/service_caution_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/service_caution_image_view"
+                android:layout_toEndOf="@id/service_caution_image_view"
+                android:text="Note:"
+                android:textColor="@color/Grey"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/service_caution_date_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/service_caution_title_text_view"
+                android:layout_toEndOf="@id/service_caution_image_view"
+                android:text="This service info might not be accurate. \n\nEither because Gov. has recently changed it, or the info has not been published yet."
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/update_invitation_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/service_caution_relative_layout">
+
+            <ImageView
+                android:id="@+id/update_invitation_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+            <TextView
+                android:id="@+id/update_invitation_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/update_invitation_image_view"
+                android:layout_toEndOf="@id/update_invitation_image_view"
+                android:text="Know something we don't?"
+                android:textColor="@color/Grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/update_invitation_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/update_invitation_title_text_view"
+                android:layout_toEndOf="@id/update_invitation_image_view"
+                android:text="Please share any new info you might have on this service."
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <!--<TextView
+                android:id="@+id/service_eligibility_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/update_invitation_title_text_view"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/update_invitation_text_view"
+                android:text="@string/service_verifier"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic" />-->
+
+        </RelativeLayout>
+
+        <!--<RelativeLayout
+            android:id="@+id/service_tips_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/service_authenticity_relative_layout">
+
+            <ImageView
+                android:id="@+id/service_tips_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_service_tips_24" />
+
+            <TextView
+                android:id="@+id/service_tips_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/service_tips_image_view"
+                android:layout_toEndOf="@id/service_tips_image_view"
+                android:text="@string/service_tips"
+                android:textColor="@color/Grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/service_tips_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/service_tips_title_text_view"
+                android:layout_toEndOf="@id/service_tips_image_view"
+                android:text="No Service Tips available yet (coming soon)"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+        </RelativeLayout>-->
+
+        <!--<RelativeLayout
+            android:id="@+id/service_update_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/update_invitation_relative_layout"
+            tools:layout_editor_absoluteX="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/feedbackTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/White"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:boxStrokeColor="@color/ummo_2"
+                app:endIconMode="clear_text"
+                app:hintTextColor="@color/ummo_2"
+                app:startIconContentDescription="Feedback Icon"
+                app:startIconDrawable="@drawable/message_toolbar_icon">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/feedbackEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:cursorVisible="true"
+                    android:fontFamily="@font/rubik"
+                    android:hint="What might be missing here?"
+                    android:inputType="textCapSentences"
+                    android:lines="1"
+                    android:textColorHint="@color/ummo_2"
+                    android:textCursorDrawable="@drawable/cursor"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </RelativeLayout>-->
+        <LinearLayout
+            android:id="@+id/service_update_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="12"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/update_invitation_relative_layout"
+            tools:layout_editor_absoluteX="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/contribution_text_input_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="11.5"
+                android:background="@color/White"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:boxStrokeColor="@color/ummo_2"
+                app:endIconMode="clear_text"
+                app:hintTextColor="@color/ummo_2"
+                app:startIconContentDescription="Feedback Icon"
+                app:startIconDrawable="@drawable/message_toolbar_icon">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/contribution_text_input_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:cursorVisible="true"
+                    android:fontFamily="@font/rubik"
+                    android:hint="What might be missing?"
+                    android:inputType="textCapSentences"
+                    android:lines="1"
+                    android:textColorHint="@color/ummo_2"
+                    android:textCursorDrawable="@drawable/cursor"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/contribute_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="0.5"
+                app:srcCompat="@drawable/ic_send_black_24dp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/sending_contribution_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:id="@+id/contribution_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="false"
+                android:padding="50dp" />
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

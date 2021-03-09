@@ -7,13 +7,32 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <!--<com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/delegated_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/delegated_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/White"
+                app:title="Delegated Service"
+                app:titleTextColor="@color/ummo_2">
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>-->
+
         <!-- Layout displayed when there is a service under delegation-->
         <RelativeLayout
             android:id="@+id/delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
-            android:padding="4dp">
+            android:padding="4dp"
+            android:layout_marginBottom="?android:attr/actionBarSize"
+            android:visibility="visible">
 
             <!-- TODO: The view below will be used in a later version of the app -->
             <!--<com.google.android.material.card.MaterialCardView
@@ -127,11 +146,51 @@
 
             </com.google.android.material.card.MaterialCardView>-->
 
+            <!--<com.google.android.material.appbar.AppBarLayout
+
+                android:id="@+id/app_bar_del_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar_delegated_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:navigationIcon="?attr/homeAsUpIndicator"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:title="Delegated Service"
+                    app:titleTextAppearance="@style/Toolbar.TitleText"
+                    app:titleTextColor="@color/ummo_2">
+
+                    <ProgressBar
+                        android:id="@+id/circular_progressbar_btn"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="right"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progress="50"
+                        android:progressDrawable="@drawable/circular_progress_bar"
+                        android:secondaryProgress="100"
+                        android:visibility="visible" />
+
+                </androidx.appcompat.widget.Toolbar>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black" />
+
+            </com.google.android.material.appbar.AppBarLayout>-->
+
             <include
                 android:id="@+id/service_info_card"
                 layout="@layout/info_card"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/delegated_service_card_view"
@@ -196,10 +255,10 @@
                             android:id="@+id/divider_1"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/screenWhite"
                             android:layout_below="@id/delegated_service_header_layout"
                             android:layout_marginStart="30dp"
-                            android:layout_marginEnd="30dp"/>
+                            android:layout_marginEnd="30dp"
+                            android:background="@color/screenWhite" />
 
                         <!-- Body Layout-->
                         <RelativeLayout
@@ -208,7 +267,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@id/divider_1">
 
-                            <RelativeLayout
+                            <!--<RelativeLayout
                                 android:id="@+id/description_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
@@ -242,8 +301,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/description_header_text_view"
                                         android:layout_marginTop="0dp"
-                                        android:textColor="@color/black"
                                         android:text="@string/description_default_string"
+                                        android:textColor="@color/black"
                                         android:textSize="16sp" />
                                 </RelativeLayout>
 
@@ -253,16 +312,15 @@
                                 android:id="@+id/divider_2"
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="@color/screenWhite"
                                 android:layout_below="@id/description_layout"
                                 android:layout_marginStart="30dp"
-                                android:layout_marginEnd="30dp"/>
+                                android:layout_marginEnd="30dp"
+                                android:background="@color/screenWhite" />-->
 
                             <RelativeLayout
                                 android:id="@+id/service_cost_layout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@id/divider_2">
+                                android:layout_height="wrap_content">
 
                                 <ImageView
                                     android:id="@+id/service_cost_image_view"
@@ -292,8 +350,29 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/cost_header_text_view"
                                         android:text="@string/cost"
-                                        android:textColor="@color/black"
+                                        android:textColor="@color/ummo_2"
                                         android:textSize="16sp" />
+
+                                    <RelativeLayout
+                                        android:id="@+id/delegation_fee__query_icon_relative_layout"
+                                        android:layout_width="40dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_centerVertical="true"
+                                        android:gravity="end">
+
+                                        <ImageView
+                                            android:id="@+id/delegation_fee_query_image_view"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_centerVertical="true"
+                                            android:contentDescription="@string/save_service"
+                                            android:padding="8dp"
+                                            app:srcCompat="@drawable/ic_baseline_help_outline_24" />
+                                    </RelativeLayout>
+
+
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -302,10 +381,10 @@
                                 android:id="@+id/divider_3"
                                 android:layout_width="match_parent"
                                 android:layout_height="1dp"
-                                android:background="@color/screenWhite"
                                 android:layout_below="@id/service_cost_layout"
                                 android:layout_marginStart="30dp"
-                                android:layout_marginEnd="30dp"/>
+                                android:layout_marginEnd="30dp"
+                                android:background="@color/screenWhite" />
 
                             <!--<RelativeLayout
                                 android:id="@+id/service_duration_layout"
@@ -416,17 +495,17 @@
                                         android:id="@+id/progress_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Service Progress"
-                                        android:textColor="@color/black"
-                                        android:textSize="16sp" />
+                                        android:text="Service State"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
 
-                                    <ProgressBar
+                                    <!--<ProgressBar
                                         android:id="@+id/service_progress_bar"
                                         style="?android:attr/progressBarStyleHorizontal"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_below="@+id/process_description_text_view"
-                                        android:layout_marginEnd="30dp" />
+                                        android:layout_marginEnd="30dp" />-->
 
                                     <TextView
                                         android:id="@+id/process_description_text_view"
@@ -435,19 +514,66 @@
                                         android:layout_below="@+id/progress_header_text_view"
                                         android:paddingTop="8dp"
                                         android:paddingBottom="8dp"
-                                        android:text="Track your Agent's progress below..."
+                                        android:text="Track the state of your service below"
                                         android:textSize="14sp" />
 
-                                    <LinearLayout
+                                    <!--<LinearLayout
                                         android:id="@+id/delegated_service_steps_layout"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_below="@+id/process_description_text_view"
                                         android:orientation="vertical">
+                                    </LinearLayout>-->
 
-                                    </LinearLayout>
                                 </RelativeLayout>
 
+                            </RelativeLayout>
+
+                            <com.kofigyan.stateprogressbar.StateProgressBar
+                                android:id="@+id/delegation_state_progress_bar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/service_progress_layout"
+                                android:layout_margin="8dp"
+                                android:layout_marginEnd="0dp"
+                                app:spb_animateToCurrentProgressState="true"
+                                app:spb_checkStateCompleted="true"
+                                app:spb_currentStateDescriptionColor="@color/colorAccent"
+                                app:spb_maxStateNumber="four"
+                                app:spb_stateBackgroundColor="#BDBDBD"
+                                app:spb_stateDescriptionColor="#808080"
+                                app:spb_stateForegroundColor="@color/colorPrimaryDark"
+                                app:spb_stateNumberBackgroundColor="#808080"
+                                app:spb_stateNumberForegroundColor="#eeeeee" />
+
+                            <RelativeLayout
+                                android:id="@+id/service_interrupted_relative_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/delegation_state_progress_bar"
+                                android:layout_margin="8dp"
+                                android:background="@drawable/rounded_border_transparent_yellow"
+                                android:padding="4dp"
+                                android:visibility="gone"
+                                tools:visibility="visible">
+
+                                <ImageView
+                                    android:id="@+id/service_interruption_image"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginEnd="4dp"
+                                    app:srcCompat="@drawable/ic_work_24" />
+
+                                <TextView
+                                    android:id="@+id/service_interruption_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_toEndOf="@+id/service_interruption_image"
+                                    android:text="@string/service_interruption_text"
+                                    android:textColor="@color/black"
+                                    android:textSize="14sp"
+                                    android:textStyle="italic" />
                             </RelativeLayout>
 
                         </RelativeLayout>
@@ -464,8 +590,13 @@
             android:id="@+id/no_delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:visibility="gone">
+
+            <include
+                android:id="@+id/delegated_info_card"
+                layout="@layout/info_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <ImageView
                 android:id="@+id/no_delegation_image_view"
@@ -483,6 +614,21 @@
                 android:padding="8dp"
                 android:text="@string/no_delegated_service"
                 android:textSize="20sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_delegation_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Take me home"
+                android:textColor="@color/White"
+                app:icon="@drawable/home_icon_button"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
         </RelativeLayout>
 
     </RelativeLayout>

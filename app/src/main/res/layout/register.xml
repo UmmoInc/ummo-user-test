@@ -24,27 +24,6 @@
             android:contentDescription="@string/ummo_logo_descriptor"
             android:src="@drawable/logo" />
 
-        <!--<EditText
-            android:id="@+id/userNameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/logo"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginRight="40dp"
-            android:autofillHints="Enter your full name..."
-            android:backgroundTint="@color/black"
-            android:ems="10"
-            android:hint="@string/name_prompt_hint"
-            android:inputType="textCapWords"
-            android:textColor="@color/black"
-            android:textColorHint="@color/Grey"
-            android:textCursorDrawable="@drawable/cursor"
-            tools:targetApi="o" />-->
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/userNameTextInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -175,5 +154,22 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         tools:targetApi="lollipop" />
+
+    <RelativeLayout
+        android:id="@+id/register_progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/register_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"/>
+    </RelativeLayout>
 
 </RelativeLayout><!--</layout>-->

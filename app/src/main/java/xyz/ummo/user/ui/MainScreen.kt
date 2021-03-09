@@ -1,11 +1,11 @@
 package xyz.ummo.user.ui
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -17,22 +17,27 @@ import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.xwray.groupie.GroupieViewHolder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.*
+import xyz.ummo.user.api.User.Companion.DELEGATION_STATE
+import xyz.ummo.user.api.User.Companion.SERVICE_STATE
+import xyz.ummo.user.api.User.Companion.mode
+import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -40,19 +45,21 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
-import xyz.ummo.user.delegate.*
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
-import xyz.ummo.user.ui.fragments.pagesFrags.SavedServicesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
+import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MainScreen : AppCompatActivity() {
 
@@ -72,11 +79,8 @@ class MainScreen : AppCompatActivity() {
     private var feedbackIcon: ImageView? = null
 //    private var circularProgressBarButton: ProgressBar? = null
 
-    private var anyServiceInProgress = false
-    private var serviceProgress = 0
     private var mAuth: FirebaseAuth? = null
 
-    private var mHandler: Handler? = null
     private val delegatedServiceEntity = DelegatedServiceEntity()
 
     /**Values for launching DelegatedServiceFragment**/
@@ -85,11 +89,6 @@ class MainScreen : AppCompatActivity() {
     var delegatedProductId = ""
     var serviceAgentId = ""
     var progress: ArrayList<String> = ArrayList()
-
-    /** Shared Prefs **/
-    private var sharedPrefServiceId: String = ""
-    private var sharedPrefAgentId: String = ""
-    private var sharedPrefProductId: String = ""
 
     /** User Preferences & VM **/
     private var sharedPrefUserName: String = ""
@@ -105,6 +104,13 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarBinding: AppBarMainScreenBinding
     private lateinit var infoCardBinding: InfoCardBinding
 
+    private lateinit var badge: BadgeDrawable
+    private var serviceUpdated = false
+
+    private var delegatedServiceId: String? = null
+    private var delegationId: String? = null
+    private var agentId: String? = null
+
     /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
@@ -113,8 +119,19 @@ class MainScreen : AppCompatActivity() {
     /** [EventBus] Event-values for Service Actions: UP-VOTE, DOWN-VOTE, COMMENT, BOOKMARK **/
     private var serviceBookmarkJSONObject = JSONObject()
 
+    /** Date-time values for tracking events **/
+    private lateinit var simpleDateFormat: SimpleDateFormat
+    private var currentDate: String = ""
+
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /** Locking screen orientation to [ActivityInfo.SCREEN_ORIENTATION_PORTRAIT] **/
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        currentDate = simpleDateFormat.format(Date())
 
         /** Initializing view binders **/
         mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
@@ -133,9 +150,6 @@ class MainScreen : AppCompatActivity() {
         serviceViewModel = ViewModelProvider(this)
                 .get(ServiceViewModel::class.java)
 
-        var mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
         toolbar = appBarBinding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Ummo"
@@ -151,15 +165,9 @@ class MainScreen : AppCompatActivity() {
 
         mAuth = FirebaseAuth.getInstance()
 
-//        logoutClick() //TODO: to reconsider implementation
-
-        mHandler = Handler()
-
         if (savedInstanceState == null) {
             navItemIndex = 0
-
             CURRENT_TAG = TAG_HOME
-
         }
 
         /** Getting Shared Pref Values for the user - to use in various scenarios to follow**/
@@ -184,15 +192,40 @@ class MainScreen : AppCompatActivity() {
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 
+        badge = bottomNavigation.getOrCreateBadge(R.id.bottom_navigation_delegates)
+
+        if (bottomNavigation.selectedItemId == R.id.bottom_navigation_delegates) {
+            Timber.e("WHY IS BADGE STILL ON?")
+            badge.isVisible = false
+        }
+        showBadge()
+        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
-        getServiceProviderData()
+//        getServiceProviderData()
 
+//        getAllServicesFromServer()
+
+        val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
+        val delegationState = intent.extras?.getString(DELEGATION_STATE)
+        val delegatedServiceFragment = DelegatedServiceFragment()
+
+        if (openDelegation == 1) {
+            openFragment(DelegatedServiceFragment())
+            Timber.e("$DELEGATION_STATE -> $delegationState")
+        }
+    }
+
+    private fun showBadge() {
+        if (serviceUpdated)
+            badge.isVisible = true
     }
 
     private fun welcomeUserAboard() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
         introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
 
@@ -207,9 +240,37 @@ class MainScreen : AppCompatActivity() {
             openFragment(pagesFragment)
             val editor = mainScreenPrefs.edit()
             editor.putBoolean("NEW_SESSION", false).apply()
+
+            /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
+            val welcomeEventObject = JSONObject()
+            welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
+            mixpanel?.track("welcomePromptUser_userConfirmation", welcomeEventObject)
         }
 
         introDialogBuilder.show()
+    }
+
+    private fun checkingForDelegatedServiceFromRoom() {
+        val delegatedServiceViewModel = ViewModelProvider(this)
+                .get(DelegatedServiceViewModel::class.java)
+        val countOfDelegatedService = delegatedServiceViewModel.getCountOfDelegatedServices()
+
+        if (countOfDelegatedService == 0)
+            return
+        else {
+            /*delegatedServiceId = intent.getBundleExtra(DELEGATED_SERVICE_ID).toString()
+            delegationId = intent.getBundleExtra(DELEGATION_ID).toString()
+            agentId = intent.getBundleExtra(AGENT_ID).toString()
+
+            Timber.e("TAKING US TO DELEGATION-FRAG")
+            bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
+            bundle.putString(AGENT_ID, agentId)
+            bundle.putString(DELEGATION_ID, delegationId)*/
+            val delegatedServiceFragment = DelegatedServiceFragment()
+//            delegatedServiceFragment.arguments = bundle
+            openFragment(delegatedServiceFragment)
+        }
+
     }
 
     override fun onStart() {
@@ -221,6 +282,43 @@ class MainScreen : AppCompatActivity() {
 
         /** [NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().register(this)
+    }
+
+    @Subscribe
+    fun onServicesReloaded(reloadingServicesEvent: ReloadingServicesEvent) {
+        if (reloadingServicesEvent.reloadingServices == true) {
+            showSnackbarBlue("Reloading services...", -1)
+            getAllServicesFromServer()
+        }
+    }
+
+    @Subscribe
+    fun onServiceStateChange(serviceUpdateEvents: ServiceUpdateEvents) {
+
+        val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
+        val editor = sharedPreferences!!.edit()
+
+        when (serviceUpdateEvents.serviceObject.getString("status")) {
+            "PENDING" -> {
+                editor.putInt(SERVICE_STATE, 0).apply()
+            }
+            "STARTED" -> {
+                editor.putInt(SERVICE_STATE, 1).apply()
+
+            }
+            "DELAYING" -> {
+                editor.putInt(SERVICE_STATE, -1).apply()
+
+            }
+            "DONE" -> {
+                editor.putInt(SERVICE_STATE, 2).apply()
+
+            }
+            "DELIVERED" -> {
+                editor.putInt(SERVICE_STATE, 3).apply()
+
+            }
+        }
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
@@ -254,25 +352,104 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onServiceSpecifiedEvent(serviceSpecifiedEvent: ServiceSpecifiedEvent) {
+        if (!serviceSpecifiedEvent.specifiedEvent) {
+            showSnackbarYellow("Please select your vehicle weight first", -1)
+        }
+    }
+
+    @Subscribe
+    fun onServiceUpdatedEvent(serviceUpdateEvents: ServiceUpdateEvents) {
+        if (serviceUpdateEvents.serviceUpdatedEvent!!) {
+            serviceUpdated = true
+            val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
+            val editor = sharedPreferences!!.edit()
+
+            editor.putInt("SERVICE_STATE", 0).apply()
+        }
+    }
+
+    @Subscribe
+    fun onRatingSentEvent(ratingSentEvent: RatingSentEvent) {
+        if (ratingSentEvent.ratingSent == true) {
+            val editor: SharedPreferences.Editor
+            val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
+            editor = sharedPreferences!!.edit()
+
+            if (sharedPreferences.getInt(SERVICE_STATE, 0) == 3)
+                editor.remove(SERVICE_STATE).apply()
+
+            showSnackbarBlue("Thank you, your rating has been sent", -1)
+        }
+    }
+
+    @Subscribe
+    fun onDelegateStateEvent(delegateStateEvent: DelegateStateEvent) {
+        if (delegateStateEvent.delegateStateEvent.equals(SERVICE_PENDING)) {
+            showSnackbarYellow("Please wait for your other service to finish", -1)
+        } else if (delegateStateEvent.delegateStateEvent.equals(CURRENT_SERVICE_PENDING)) {
+            openFragment(DelegatedServiceFragment())
+        }
+    }
+
+    @Subscribe
+    fun onServiceUpvoted(serviceUpvoteServiceEvent: UpvoteServiceEvent) {
+        if (serviceUpvoteServiceEvent.serviceUpvote!!)
+            showSnackbarBlue("Service Upvoted", -1)
+    }
+
+    @Subscribe
+    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
+        Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
+
+        if (serviceCommentEvent.serviceCommentedOn!!) {
+            showSnackbarBlue("Thank you for helping improve ${serviceCommentEvent.serviceName}.", -1)
+        }
+    }
+
+    @Subscribe
+    fun onPaymentTermsConfirmed(paymentTermsEvent: ConfirmPaymentTermsEvent) {
+        if (paymentTermsEvent.paymentTermsConfirmed == false)
+            showSnackbarYellow("Please confirm Payment Terms first", -1)
+    }
+
+    @Subscribe
+    fun onCardClosedEvent(cardDismissedEvent: CardDismissedEvent) {
+        if (cardDismissedEvent.cardDismissed == true) {
+            showSnackbarBlue("Card closed", -1)
+        }
+    }
+
+    @Subscribe
+    fun onServiceDownvoted(serviceDownvoteServiceEvent: DownvoteServiceEvent) {
+        if (serviceDownvoteServiceEvent.serviceDownvote!!)
+            showSnackbarRed("Service Downvoted", -1)
+    }
+
+    @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {
-        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceId}")
+        Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceName}")
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
 
-        val bookmarkingServicesList = serviceViewModel?.getServicesList()
+        if (serviceBookmarkedEvent.serviceBookmarked!!)
+            showSnackbarYellow("Saving ${serviceBookmarkedEvent.serviceName} offline", -1)
+//        else
+//            showSnackbarYellow("Service removed from your bookmarks", -1)
+//        val bookmarkingServicesList = serviceViewModel?.getServicesList()
 
-        for (i in bookmarkingServicesList?.indices!!) {
-            if (serviceBookmarkedEvent.serviceId.equals(bookmarkingServicesList[i].serviceId)) {
+        /*for (i in bookmarkingServicesList?.indices!!) {
+            if (serviceBookmarkedEvent.serviceName.equals(bookmarkingServicesList[i].serviceId)) {
                 serviceEntity.bookmarked = serviceBookmarkedEvent.serviceBookmarked
                 //serviceViewModel?.updateService(serviceEntity)
                 Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceId}: ${serviceEntity.bookmarked}")
 
                 if (serviceBookmarkedEvent.serviceBookmarked!!)
-                    showSnackbarBlue("${serviceEntity.serviceName} bookmarked", -1)
+                    showSnackbarYellow("Service Bookmarked", -1)
                 else
-                    showSnackbarBlue("${serviceEntity.serviceName} removed from your bookmarks", -1)
-
+                    showSnackbarYellow("Service removed from your bookmarks", -1)
             }
-        }
+        }*/
     }
 
     override fun onStop() {
@@ -291,9 +468,12 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkingForDelegatedServiceFromRoom()
     }
 
     fun feedback() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         val feedbackDialogView = LayoutInflater.from(this)
                 .inflate(R.layout.feedback_dialog, null)
@@ -311,8 +491,16 @@ class MainScreen : AppCompatActivity() {
             Timber.e("Feedback Submitted-> $feedbackText")
             if (feedbackText.isNotEmpty()) {
                 submitFeedback(feedbackText, sharedPrefUserContact)
+
+                /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
+                val feedbackEventObject = JSONObject()
+                feedbackEventObject.put("EVENT_DATE_TIME", currentDate)
+                        .put("FEEDBACK", feedbackText)
+                mixpanel?.track("feedback_submitted", feedbackEventObject)
+
             } else {
                 showSnackbarRed("You forgot your feedback", -1)
+                mixpanel?.track("feedback_cancelled")
             }
 
         }
@@ -328,7 +516,7 @@ class MainScreen : AppCompatActivity() {
      * It's used by #feedback **/
     private fun submitFeedback(feedbackString: String, userContact: String) {
 
-        object : Feedback(this, feedbackString, userContact) {
+        object : GeneralFeedback(this, feedbackString, userContact) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
                     Timber.e("Feedback Submitted -> ${String(data)}")
@@ -345,9 +533,6 @@ class MainScreen : AppCompatActivity() {
         val mixpanel = MixpanelAPI.getInstance(applicationContext,
                 resources.getString(R.string.mixpanelToken))
 
-        val delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
-
         when (item.itemId) {
 
             R.id.bottom_navigation_home -> {
@@ -362,14 +547,31 @@ class MainScreen : AppCompatActivity() {
                 val pagesFragment = PagesFragment()
                 openFragment(pagesFragment)
 
-                mixpanel?.track("homeTapped_bottomNav")
+                val homeEventObject = JSONObject()
+                homeEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
+
                 return@OnNavigationItemSelectedListener true
             }
 
-            R.id.bottom_navigation_service -> {
+            R.id.bottom_navigation_delegates -> {
+                val delegatedServiceFragment = DelegatedServiceFragment()
+                openFragment(delegatedServiceFragment)
 
-                /** Modify info card **/
-                /* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
+                badge.isVisible = false
+
+                val delegatedServiceEventObject = JSONObject()
+                delegatedServiceEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_delegatedServiceTapped", delegatedServiceEventObject)
+
+                return@OnNavigationItemSelectedListener true
+            }
+
+            /*R.id.bottom_navigation_service -> {
+
+                */
+            /** Modify info card **//*
+                *//* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
 
                  sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
                  sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
@@ -386,23 +588,27 @@ class MainScreen : AppCompatActivity() {
                      launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
                  }
 
-                 mixpanel?.track("getService_bottomNav")*/
+                 mixpanel?.track("getService_bottomNav")*//*
 
                 supportActionBar?.title = "Your Service Bookmarks"
 
                 val savedServicesFragment = SavedServicesFragment()
                 openFragment(savedServicesFragment)
 
-                mixpanel?.track("bookmarkedServices_bottomNav")
+                val bookmarkEventObject = JSONObject()
+                bookmarkEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_bookmarksTapped", bookmarkEventObject)
 
                 return@OnNavigationItemSelectedListener true
-            }
+            }*/
 
             R.id.bottom_navigation_profile -> {
                 val profileFragment = ProfileFragment()
                 openFragment(profileFragment)
 
-                mixpanel?.track("profile_bottomNav")
+                val profileEventObject = JSONObject()
+                profileEventObject.put("EVENT_DATE_TIME", currentDate)
+                mixpanel?.track("bottomNavigation_profileTapped", profileEventObject)
 
                 return@OnNavigationItemSelectedListener true
             }
@@ -427,112 +633,6 @@ class MainScreen : AppCompatActivity() {
         transaction.commit()
     }
 
-    /** The following section is reserved for fetching, rendering & storing Service Providers and
-     * the services they're associated with.
-     * We're using these values for the PagesFragment - I find it suitable doing all of this here,
-     * instead of on the PagesFragment itself (this fragment shouldn't worry about this kind of work
-     * simply focus on hosting the three fragments under it **/
-
-    /** This function fetches service-providers && #decomposes them with
-     * `decomposeServiceProviderData(arrayList)`
-     * TODO: since its a network operation, it needs to be moved away from the UI to another class**/
-    private fun getServiceProviderData() {
-
-        object : GetServiceProvider(this) {
-
-            override fun done(data: List<ServiceProviderData>, code: Number) {
-
-                if (code == 200) {
-                    serviceProviderData.addAll(data)
-                    Timber.e(" GETTING SERVICE PROVIDER DATA ->%s", serviceProviderData)
-
-                    decomposeServiceProviderData(serviceProviderData)
-
-                } else {
-                    Timber.e("No PublicService READY!")
-                }
-            }
-        }
-    }
-
-    /** The `decomposeServiceProviderData` function takes an arrayList of #ServiceProviderData;
-     * then, for each serviceProvider, we store that data with `storeServiceProviderData` **/
-    private fun decomposeServiceProviderData(mServiceProviderData: ArrayList<ServiceProviderData>) {
-        Timber.e("DECOMPOSING SERVICE PROVIDER DATA -> $mServiceProviderData")
-        serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)
-
-        for (i in 0 until mServiceProviderData.size) {
-            Timber.e("SERVICE-PROVIDER-DATA i->[$i] -> ${mServiceProviderData[i]}")
-            /** Storing [serviceProviderData] below  **/
-            storeServiceProviderData(mServiceProviderData[i])
-
-            /** When getting services by serviceProvider, we often encounter a bug that jumbles up
-             * the services' destination: e.g., `Passport Service` will sometimes get stored under
-             * the `Revenue` tab.
-             * We might have to try wrapping them up before saving them **/
-            Timber.e("SERVICE-PROVIDER-NAME -> ${mServiceProviderData[i].serviceProviderName}")
-
-            when (mServiceProviderData[i].serviceProviderName) {
-                "Ministry Of Home Affairs" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-                "Ministry Of Finance" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-                "Ministry Of Commerce" -> {
-                    getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-                }
-            }
-
-//            getServicesFromServerByServiceProviderId(mServiceProviderData[i].serviceProviderId)
-//            getServicesFromServerByServiceProviderId("5faab29cacc12a05daa75b42")
-        }
-    }
-
-    private fun storeServiceProviderData(mSingleServiceProviderData: ServiceProviderData) {
-        /*serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)*/
-
-        serviceProviderEntity.serviceProviderId = mSingleServiceProviderData.serviceProviderId
-        serviceProviderEntity.serviceProviderName = mSingleServiceProviderData.serviceProviderName
-        serviceProviderEntity.serviceProviderDescription = mSingleServiceProviderData.serviceProviderDescription
-        serviceProviderEntity.serviceProviderContact = mSingleServiceProviderData.serviceProviderContact
-        serviceProviderEntity.serviceProviderEmail = mSingleServiceProviderData.serviceProviderEmail
-        serviceProviderEntity.serviceProviderAddress = mSingleServiceProviderData.serviceProviderAddress
-
-        Timber.e("STORING SERVICE PROVIDER DATA [ID]-> ${serviceProviderEntity.serviceProviderId}")
-        Timber.e("STORING SERVICE PROVIDER DATA [NAME] -> ${serviceProviderEntity.serviceProviderName}")
-        serviceProviderViewModel?.addServiceProvider(serviceProviderEntity)
-    }
-
-    /** This function gets services from a given service provider (via serviceProviderID).
-     * Likewise, it needs to be moved to a different class that handles network requests **/
-    private fun getServicesFromServerByServiceProviderId(serviceProviderId: String) {
-
-        object : GetServicesByServiceProviderId(this, serviceProviderId) {
-            override fun done(data: ByteArray, code: Number) {
-                if (code == 200) {
-                    try {
-                        val servicesArray = JSONArray(String(data))
-
-                        Timber.e("SERVICES-ARRAY -> $servicesArray")
-
-                        for (i in 0 until servicesArray.length()) {
-                            serviceObject = servicesArray.getJSONObject(i)
-
-                            Timber.e("SERVICE-ASSIGNED [$i] -> $serviceObject")
-                            captureServicesByServiceProvider(serviceObject)
-                        }
-
-                    } catch (jse: JSONException) {
-                        Timber.e("FAILED TO GET SERVICES -> $jse")
-                    }
-                }
-            }
-        }
-    }
-
     private fun getAllServicesFromServer() {
         object : GetAllServices(this) {
             override fun done(data: ByteArray, code: Number) {
@@ -543,6 +643,7 @@ class MainScreen : AppCompatActivity() {
                     for (i in 0 until allServices.length()) {
                         serviceObject = allServices.getJSONObject(i)
                         Timber.e("GETTING ALL SERVICES [$i] -> $serviceObject")
+                        saveServicesLocally(serviceObject)
                     }
                 } else {
                     Timber.e("ERROR GETTING ALL SERVICES -> $code")
@@ -551,7 +652,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private fun captureServicesByServiceProvider(mServiceObject: JSONObject) {
+    private fun saveServicesLocally(mServiceObject: JSONObject) {
 
         val serviceViews = 0 //13
         Timber.e("TESTING SERVICE-DATA-> $mServiceObject")
@@ -589,19 +690,19 @@ class MainScreen : AppCompatActivity() {
          * 1. Declaring $presenceRequired value
          * 2. Assigning $presenceRequired value from service JSON value **/
         val delegatable: Boolean?
-        delegatable = mServiceObject/*.getJSONObject("service_requirements")
-                */.getBoolean("delegatable")
+        delegatable = mServiceObject.getBoolean("delegatable")
+
+        Timber.e("$serviceName: DELEGATABLE -> $delegatable")
 
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
          * 2. TODO: Assigning $serviceCost value to service JSON value **/
-        val serviceCost = mServiceObject.getString("service_cost")
+        val serviceCostJSONArray = mServiceObject.getJSONArray("service_cost")
 
         /** [SERVICE-ASSIGNMENT: 7]
          * 1. Declaring $serviceDocuments values
          * 2. TODO: Assigning $serviceDocuments value from service JSON value **/
-        val serviceDocumentsJSONArray: JSONArray = mServiceObject/*.getJSONObject("service_requirements") //7
-                */.getJSONArray("service_documents")
+        val serviceDocumentsJSONArray: JSONArray = mServiceObject.getJSONArray("service_documents")
         val serviceDocumentsArrayList = ArrayList(listOf<String>())
         for (k in 0 until serviceDocumentsJSONArray.length()) {
             serviceDocumentsArrayList.add(serviceDocumentsJSONArray.getString(k))
@@ -615,12 +716,12 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 9]
          * 1. Declaring $downVote value
          * 2. TODO: Assigning $downVote value from service JSON value **/
-        var notUsefulCount = 0
+        var notUsefulCount = mServiceObject.getInt("not_useful_count")
 
         /** [SERVICE-ASSIGNMENT: 10]
          * 1. Declaring $upVote value
          * 2. TODO: Assigning $upVote value from service JSON value **/
-        var usefulCount = 0
+        var usefulCount = mServiceObject.getInt("useful_count")
 
         /** [SERVICE-ASSIGNMENT: 11]
          * 1. Declaring $serviceComments values
@@ -642,7 +743,7 @@ class MainScreen : AppCompatActivity() {
         /** [SERVICE-ASSIGNMENT: 13]
          * 1. Declaring $serviceUpdates values
          * 2. TODO: parse through serviceUpdates & get values for enumerated values ["UPVOTE", etc] **/
-        val serviceUpdatesJSONArray = mServiceObject.getJSONArray("service_updates")
+        /*val serviceUpdatesJSONArray = mServiceObject.getJSONArray("service_updates")
         val serviceUpdatesArrayList = ArrayList(listOf<String>())
         var serviceUpdateObject: JSONObject
         var updateType: String
@@ -663,21 +764,22 @@ class MainScreen : AppCompatActivity() {
             }
 
             Timber.e("[$m] $usefulCount UP-VOTES; $notUsefulCount DOWN-VOTES")
-        }
+        }*/
 
         /** [SERVICE-ASSIGNMENT: 14]
          * 1. Declaring $serviceProvider value
          * 2. Assigning $serviceProvider value to service JSON value **/
         val serviceProvider: String = mServiceObject.getString("service_provider") //14
-        Timber.e("SAVING SERVICE BY SERVICE-PROVIDER -> $serviceProvider")
 
+        //TODO: undo 8
+/*
         serviceEntity.serviceId = serviceId //0
         serviceEntity.serviceName = serviceName //1
         serviceEntity.serviceDescription = serviceDescription //2
         serviceEntity.serviceEligibility = serviceEligibility //3
         serviceEntity.serviceCentres = serviceCentresArrayList //4
         serviceEntity.delegatable = delegatable //5
-        serviceEntity.serviceCost = serviceCost //6
+        serviceEntity.serviceCost = serviceCostJSONArray //6
         serviceEntity.serviceDocuments = serviceDocumentsArrayList //7
         serviceEntity.serviceDuration = serviceDuration //8
         serviceEntity.notUsefulCount = notUsefulCount //9
@@ -686,123 +788,19 @@ class MainScreen : AppCompatActivity() {
         serviceEntity.commentCount = commentsArrayList.size //11
         serviceEntity.serviceViews = serviceViews //12
         serviceEntity.serviceShares = serviceShares //13
-        serviceEntity.serviceProvider = serviceProvider //14
+        serviceEntity.serviceProvider = serviceProvider //14*/
 //        serviceEntity.bookmarked = bookmarked //15
 
-        /** 1) Checking #serviceProviderId;
-         *  2) Save each service entity by serviceProviderId **/
-
-        val serviceProviders: List<ServiceProviderEntity>? = serviceProviderViewModel
-                ?.getServiceProviderList()
-        Timber.e("SERVICE-PROVIDERS-CHECK -> $serviceProviders")
+        Timber.e("SERVICE - ENTITY [NAME] -> ${serviceEntity.serviceName}")
+        Timber.e("SERVICE - ENTITY [DESCR.] -> ${serviceEntity.serviceDescription}")
+        Timber.e("SERVICE - ENTITY [DELEG.] -> ${serviceEntity.delegatable}")
+        Timber.e("SERVICE - ENTITY [UPVOTE] -> ${serviceEntity.usefulCount}")
+        Timber.e("SERVICE - ENTITY [DOWNVOTE] -> ${serviceEntity.notUsefulCount}")
+        //TODO: undo 17
+//        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
 
         serviceViewModel?.addService(serviceEntity)
-        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceId} FROM -> ${serviceEntity.serviceProvider}")
-    }
-
-    private fun checkForAndLaunchDelegatedFragment() {
-        Timber.e("StartFragment->$startFragmentExtra")
-
-        if (startFragmentExtra == 1) {
-            Timber.e("Starting DelegatedServiceFrag!")
-            val delegatedServiceFragment = DelegatedServiceFragment()
-
-            delegatedProductId = intent.extras?.getString("DELEGATED_PRODUCT_ID")!!
-            serviceAgentId = intent.extras!!.getString("SERVICE_AGENT_ID")!!
-            serviceId = intent.extras!!.getString("SERVICE_ID")!!
-            Timber.e("SERVICE-ID -> $serviceId")
-
-            bundle.putString("SERVICE_ID", serviceId)
-            bundle.putString("SERVICE_AGENT_ID", serviceAgentId)
-            bundle.putString("DELEGATED_PRODUCT_ID", delegatedProductId)
-
-//            bundle.putString("DELEGATED_PRODUCT_ID", intent.extras!!.getString("DELEGATED_PRODUCT_ID"))
-            delegatedServiceFragment.arguments = bundle
-            val delegatedServiceViewModel = ViewModelProvider(this)
-                    .get(DelegatedServiceViewModel::class.java)
-
-            delegatedServiceEntity.serviceId = serviceId
-            delegatedServiceEntity.delegatedProductId = delegatedProductId
-            delegatedServiceEntity.serviceAgentId = serviceAgentId
-            delegatedServiceEntity.serviceProgress = progress
-
-//                delegatedServiceEntity.serviceProgress = serviceProgress //TODO: add real progress
-            Timber.e("Populating ServiceEntity: Agent->${
-                delegatedServiceEntity
-                        .serviceAgentId
-            }; ProductModel->${delegatedServiceEntity.delegatedProductId}")
-
-            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-            val fragmentTransaction = supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-            fragmentTransaction.commit()
-            // return
-        } else {
-
-            //TODO: replace this process with equivalent conversion
-            /*object : PublicService(this) {
-                override fun done(data: List<PublicServiceData>, code: Number) {
-                    if (code == 200) {
-
-                        val serviceCentreFragment = ServiceCentresFragment()
-                        //openFragment(serviceCentreFragment)
-                    }
-
-                    //Timber.e("PUBLIC SERVICE DATA -> $data")
-                    //Do something with list of services
-                }
-            }*/
-        }
-    }
-
-    private fun listFromJSONArray(arr: JSONArray): ArrayList<String> {
-        return try {
-            val tbr = ArrayList<String>()
-            for (i in 0 until arr.length()) {
-                tbr.add(arr.getString(i))
-            }
-            tbr
-        } catch (e: JSONException) {
-            ArrayList()
-        }
-
-    }
-
-    private fun launchDelegatedServiceWithArgs(serviceId: String, agentId: String, productId: String) {
-        val bundle = Bundle()
-        bundle.putString("SERVICE_ID", serviceId)
-        bundle.putString("DELEGATED_PRODUCT_ID", productId)
-        bundle.putString("SERVICE_AGENT_ID", agentId)
-
-        val progress = java.util.ArrayList<String>()
-        val delegatedServiceEntity = DelegatedServiceEntity()
-        val delegatedServiceViewModel = ViewModelProvider((this as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
-
-        delegatedServiceEntity.serviceId = serviceId
-        delegatedServiceEntity.delegatedProductId = productId
-        delegatedServiceEntity.serviceAgentId = agentId
-        delegatedServiceEntity.serviceProgress = progress
-        delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
-
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
-    }
-
-    private fun launchDelegatedServiceWithoutArgs() {
-        val fragmentActivity = this as FragmentActivity
-        val fragmentManager = fragmentActivity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val delegatedServiceFragment = DelegatedServiceFragment()
-        delegatedServiceFragment.arguments = bundle
-        fragmentTransaction.replace(R.id.frame, delegatedServiceFragment)
-        fragmentTransaction.commit()
+//        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -824,7 +822,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private fun showSnackbarBlue(message: String, length: Int) {
+    fun showSnackbarBlue(message: String, length: Int) {
         /**
          * Length is 0 for Snackbar.LENGTH_LONG
          *  Length is -1 for Snackbar.LENGTH_SHORT
@@ -840,10 +838,28 @@ class MainScreen : AppCompatActivity() {
         snackbar.show()
     }
 
+    private fun showSnackbarYellow(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.gold))
+
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
     private fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -857,8 +873,23 @@ class MainScreen : AppCompatActivity() {
         // index to identify current nav menu item
         var navItemIndex = 0
         private lateinit var mainScreenPrefs: SharedPreferences
-        private const val mode = Activity.MODE_PRIVATE
-        private const val ummoUserPreferences: String = "UMMO_USER_PREFERENCES"
+        const val SERVICE_PENDING = "SERVICE_PENDING"
+        const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
+        const val SERVICE_ID = "SERVICE_ID"
+        const val DELEGATION_ID = "DELEGATION_ID"
+        const val SERVICE_OBJECT = "SERVICE_OBJECT"
+        const val DELEGATION_FEE = "DELEGATION_FEE"
+        const val DELEGATION_SPEC = "DELEGATION_SPEC"
+        const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
+        const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
+        const val AGENT_ID = "AGENT_ID"
+
+        const val SPEC_FEE = "SPEC_FEE"
+        const val SERVICE_SPEC = "SERVICE_SPEC"
+
+        const val CHOSEN_SERVICE_SPEC = "chosen_service_spec"
+        const val TOTAL_DELEGATION_FEE = "total_delegation_fee"
+
     }
 
 }

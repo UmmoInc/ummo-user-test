@@ -35,12 +35,12 @@ import java.util.Objects;
 
 import xyz.ummo.user.ui.animations.ExpandOrCollapse;
 import xyz.ummo.user.R;
-import xyz.ummo.user.delegate.GetService;
+import xyz.ummo.user.api.GetService;
 
 
 import xyz.ummo.user.adapters.MessageAdapter;
-import xyz.ummo.user.delegate.SendChatMessage;
-import xyz.ummo.user.delegate.SocketIO;
+import xyz.ummo.user.api.SendChatMessage;
+import xyz.ummo.user.api.SocketIO;
 
 public class DelegationChat extends AppCompatActivity {
 

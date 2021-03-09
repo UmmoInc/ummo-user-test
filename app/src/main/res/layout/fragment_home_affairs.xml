@@ -55,12 +55,15 @@
                 android:id="@+id/offlineTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="We're having trouble "
-                android:textColor="@color/quantum_googred"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:fontFamily="@font/rubik"
+                android:text="We're currently having trouble loading services for you. \nPlease try restarting Ummo."
+                android:textColor="@color/ummo_2"
                 android:textSize="14sp" />
 
             <Button
-                android:id="@+id/reloadServicesButton"
+                android:id="@+id/reload_services_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/offlineTextView"

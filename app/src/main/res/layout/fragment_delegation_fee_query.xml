@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/delegation_fee_query_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/delegation_fee_query_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_query_support_24" />
+
+        <TextView
+            android:id="@+id/ummo_support_centre_text"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ummo_2"
+            android:text="Self Support Centre"
+            android:layout_below="@+id/delegation_fee_query_icon"
+            android:fontFamily="@font/rubik"/>
+
+        <RelativeLayout
+            android:id="@+id/delegate_support_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ummo_support_centre_text">
+
+            <ImageView
+                android:id="@+id/delegate_support_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_delegate_24" />
+
+            <TextView
+                android:id="@+id/delegate_support_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/delegate_support_image_view"
+                android:layout_toEndOf="@id/delegate_support_image_view"
+                android:text="Delegation Fee"
+                android:textColor="@color/Grey"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/delegate_support_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/delegate_support_title_text_view"
+                android:layout_toEndOf="@id/delegate_support_image_view"
+                android:text="Ummo charges a standard Delegation Fee of E100. "
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <!--<TextView
+                android:id="@+id/service_eligibility_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/update_invitation_title_text_view"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/update_invitation_text_view"
+                android:text="@string/service_verifier"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic" />-->
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/delegated_service_fee_support_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/delegate_support_relative_layout">
+
+            <ImageView
+                android:id="@+id/delegated_service_fee_support_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_stat_docs_icon" />
+
+            <TextView
+                android:id="@+id/delegated_service_fee_support_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/delegated_service_fee_support_image_view"
+                android:layout_toEndOf="@id/delegated_service_fee_support_image_view"
+                android:text="Delegated Service Fee"
+                android:textColor="@color/Grey"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/delegated_service_fee_support_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/delegated_service_fee_support_title_text_view"
+                android:layout_toEndOf="@id/delegated_service_fee_support_image_view"
+                android:text="@string/delegated_service_fee_query_support_text"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_below="@+id/delegated_service_fee_support_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                android:layout_marginTop="8dp"
+                android:layout_alignStart="@+id/delegated_service_fee_support_text_view"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="GAZETTED IN ACCORDANCE WITH THE FINANCE ACT 2019. READ WITH THE ROAD TRAFFIC ACT NO. 6 of 2007"
+                android:textColor="@color/dim_gray"
+                tools:ignore="SmallSp" />
+
+            <!--<TextView
+                android:id="@+id/service_eligibility_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/update_invitation_title_text_view"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/update_invitation_text_view"
+                android:text="@string/service_verifier"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic" />-->
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</layout>

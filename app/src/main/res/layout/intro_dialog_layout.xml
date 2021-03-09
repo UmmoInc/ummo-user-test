@@ -12,7 +12,7 @@
 
         <!--Intro Header Layout Start-->
         <RelativeLayout
-            android:id="@+id/intro_header_relative_layout"
+            android:id="@+id/no_code_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -50,7 +50,7 @@
             android:id="@+id/intro_body_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/intro_header_relative_layout"
+            android:layout_below="@id/no_code_relative_layout"
             android:layout_marginTop="8dp">
 
             <ImageView
@@ -84,10 +84,44 @@
 
         <!--Intro Header Layout Start-->
         <RelativeLayout
-            android:id="@+id/intro_footer_relative_layout"
+            android:id="@+id/feedback_intro_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/intro_body_relative_layout">
+
+            <ImageView
+                android:id="@+id/feedback_intro_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                app:srcCompat="@drawable/message_intro_icon" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/feedback_intro_image_view">
+
+                <TextView
+                    android:id="@+id/feedback_intro_description_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="We'd love to hear from you. Send us as much feedback as your thumbs can afford. (Top Right Corner)"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <!--Intro Header Layout Start-->
+
+        <!--Intro Header Layout Start-->
+        <RelativeLayout
+            android:id="@+id/intro_footer_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/feedback_intro_relative_layout">
 
             <ImageView
                 android:id="@+id/intro_footer_image_view"

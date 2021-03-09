@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/service_fee_query_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/service_fee_query_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_query_support_24" />
+
+        <TextView
+            android:id="@+id/ummo_support_centre_text"
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ummo_2"
+            android:text="Self Support Centre"
+            android:layout_below="@+id/service_fee_query_icon"
+            android:fontFamily="@font/rubik"/>
+
+        <RelativeLayout
+            android:id="@+id/service_fee_support_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ummo_support_centre_text">
+
+            <ImageView
+                android:id="@+id/service_fee_support_image_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_stat_docs_icon" />
+
+            <TextView
+                android:id="@+id/service_fee_support_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/service_fee_support_image_view"
+                android:layout_toEndOf="@id/service_fee_support_image_view"
+                android:text="About the Service Fee"
+                android:textColor="@color/Grey"
+                android:layout_marginBottom="10dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/service_fee_support_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/service_fee_support_title_text_view"
+                android:layout_toEndOf="@id/service_fee_support_image_view"
+                android:text="@string/service_fee_support_text"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp"
+                android:textSize="12sp" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="8dp"
+                android:layout_below="@id/service_fee_support_text_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_alignStart="@+id/service_fee_support_text_view"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="GAZETTED IN ACCORDANCE WITH THE FINANCE ACT 2019. READ WITH THE ROAD TRAFFIC ACT NO. 6 of 2007"
+                android:textColor="@color/dim_gray"
+                android:textSize="10sp"
+                android:textStyle="italic"
+                tools:ignore="SmallSp" />
+
+            <!--<TextView
+                android:id="@+id/service_eligibility_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/update_invitation_title_text_view"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/update_invitation_text_view"
+                android:text="@string/service_verifier"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic" />-->
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</layout>

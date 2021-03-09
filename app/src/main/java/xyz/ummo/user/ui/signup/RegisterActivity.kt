@@ -5,15 +5,11 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.webkit.CookieManager
-import android.webkit.WebSettings
-import android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-import android.webkit.WebView
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
@@ -24,20 +20,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.SafetyNetReCAPTCHA
 import xyz.ummo.user.databinding.RegisterBinding
-import xyz.ummo.user.delegate.SafetyNetReCAPTCHA
 import xyz.ummo.user.ui.legal.PrivacyPolicy
+import xyz.ummo.user.ui.signup.ContactVerificationActivity.Companion.TRYING_AGAIN
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
-import java.io.File
 import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {
@@ -83,28 +80,20 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun termsAndConditions() {
-
-        val legalIntent = Intent(this, PrivacyPolicy::class.java)
-        legalIntent.action = Intent.ACTION_VIEW
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         registerBinding.legalTermsTextView.isClickable = true
         registerBinding.legalTermsTextView.movementMethod = LinkMovementMethod.getInstance()
-        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='file:///android_asset/www/terms_and_conditions.html'>Terms of Use</a> & <a href='file:///android_asset/www/privacy_policy.html'> Privacy Policy </a></div>"
+        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms of Use</a> & <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy </a></div>"
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms, Html.FROM_HTML_MODE_LEGACY)
+
             Timber.e("USING HTML FLAG")
         } else {
             registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms)
             Timber.e("NOT USING HTML FLAG")
-        }
-
-        registerBinding.legalTermsTextView.setOnClickListener {
-
-            Timber.e("LEGAL TERMS CLICKED!")
-            Toast.makeText(this, "Link loading...", Toast.LENGTH_SHORT).show()
-
-            startActivity(legalIntent)
-            //TODO: track legal terms clicked event with Mixpanel
         }
     }
 
@@ -152,13 +141,26 @@ class RegisterActivity : AppCompatActivity() {
     //TODO: Reload user details from savedInstanceState bundle - instead of re-typing
     override fun onResume() {
         super.onResume()
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        intent.getIntExtra(TRYING_AGAIN, 0)
+
+        if (intent.getIntExtra(TRYING_AGAIN, 0) == 1) {
+            registerBinding.userNameTextInputEditText.setText(intent.getStringExtra(USER_NAME))
+            registerBinding.userContactTextInputEditText.error = "Please try again."
+            registerBinding.userNameTextInputEditText.requestFocus()
+
+            mixpanel?.track("registration_tryingAgain")
+        }
+        Timber.e("WE'RE BACK")
     }
 
     /** Begin Phone Number Verification with PhoneAuthProvider from Firebase **/
     private fun startPhoneNumberVerification(phoneNumber: String) {
         PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, this, mCallbacks)
         mVerificationInProgress = true
-        Timber.i("Verification started!")
+        Timber.e("Verification started!")
     }
 
     /** Signing up with PhoneAuth Credential - with Firebase's Auth instance (mAuth);
@@ -254,29 +256,65 @@ class RegisterActivity : AppCompatActivity() {
      * checking it against the international standards for mobile numbers
      * **/
     private fun register() {
+        var nameApproved = false
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         registerBinding.registerButton.setOnClickListener {
 
             registerBinding.registrationCcp.registerCarrierNumberEditText(registerBinding.userContactTextInputEditText)
             fullFormattedPhoneNumber = registerBinding.registrationCcp.fullNumberWithPlus.toString().trim()
             userName = registerBinding.userNameTextInputEditText.text.toString().trim()
 
-            if (registerBinding.registrationCcp.isValidFullNumber) {
+            if (userName.isBlank()) {
+                showSnackbar("Please enter your name.", 0)
+                registerBinding.userNameTextInputEditText.error = "Enter your name here."
+                registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_nameLeftBlank_issue")
+
+            } else if (!userName.contains(" ")) {
+                showSnackbar("You forgot your last name.", 0)
+                registerBinding.userNameTextInputEditText.error = "Please include your last name."
+                registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_surnameNotIncluded_issue")
+
+            } else if (userName.length < 3) {
+                registerBinding.userNameTextInputEditText.error = "Please enter your real name."
+                registerBinding.userNameTextInputEditText.requestFocus()
+                mixpanel?.track("registrationStarted_nameTooShort_issue")
+
+            } else if (registerBinding.registrationCcp.isValidFullNumber) {
                 //TODO: begin registration process
                 startPhoneNumberVerification(fullFormattedPhoneNumber)
 
                 val intent = Intent(this, ContactVerificationActivity::class.java)
 
-                Timber.e("User Name -> $userName")
-                Timber.e("User Contact -> $fullFormattedPhoneNumber")
+                intent.putExtra(USER_CONTACT, fullFormattedPhoneNumber)
+                intent.putExtra(USER_NAME, userName)
 
-                intent.putExtra("USER_CONTACT", fullFormattedPhoneNumber)
-                intent.putExtra("USER_NAME", userName)
-                startActivity(intent)
+                /** Delaying [startActivity] for 2 seconds **/
+                val timer = object : CountDownTimer(1000, 1000) {
+                    override fun onTick(p0: Long) {
+//                        Timber.e("SKIPPING VERIF. $p0")
+                        registerBinding.registerProgressBarLayout.visibility = View.VISIBLE
+                    }
 
-                reCAPTCHA()
+                    override fun onFinish() {
+                        registerBinding.registerProgressBarLayout.visibility = View.GONE
 
-                finish()
+                        startActivity(intent)
+                        reCAPTCHA()
+                        mixpanel?.track("registrationStarted_nextButton")
+
+                        finish()
+                    }
+                }
+
+                timer.start()
+
             } else {
+                mixpanel?.track("registrationStarted_incorrectContact")
+
                 showSnackbar("Please enter a correct number.", 0)
                 registerBinding.userContactTextInputEditText.error = "Edit your contact."
             }
@@ -292,10 +330,6 @@ class RegisterActivity : AppCompatActivity() {
                     val userResponseToken = response.tokenResult
                     if (response.tokenResult?.isNotEmpty() == true) {
                         Timber.e("reCAPTCHA Token -> $userResponseToken")
-
-/*                        Thread {
-                            verifyCaptchaFromServer(userResponseToken)
-                        }.start()*/
 
                         GlobalScope.launch {
                             Timber.e("reCAPTCHA Token -> $userResponseToken")
@@ -326,7 +360,6 @@ class RegisterActivity : AppCompatActivity() {
                     EventBus.getDefault().post(recaptchaStateEvent)
                     Timber.e("reCAPTCHA could NOT be verified -> ${String(data)}")
                 }
-
             }
         }
     }
@@ -338,7 +371,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
-        snackbar.setTextColor(resources.getColor(R.color.quantum_googred600))
+        snackbar.setTextColor(resources.getColor(R.color.orange_red))
         snackbar.show()
     }
 
@@ -346,5 +379,10 @@ class RegisterActivity : AppCompatActivity() {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
+    }
+
+    companion object {
+        const val USER_CONTACT = "USER_CONTACT"
+        const val USER_NAME = "USER_NAME"
     }
 }
