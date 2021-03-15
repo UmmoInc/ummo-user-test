@@ -233,17 +233,9 @@ class ServiceItem(private val service: ServiceObject,
         assignServiceEntity(serviceEntity)
 
         viewHolder.itemView.service_info_title_relative_layout.setOnClickListener {
-            val intent = Intent(context, DetailedServiceActivity::class.java)
+            showServiceDetails()
+
             val mixpanelServiceObject = JSONObject()
-
-            /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
-            intent.putExtra(SERVICE_OBJECT, service as Serializable)
-
-            Timber.e("SAVING SERVICE ENTITY -> $service")
-            Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
-            serviceViewModel.addService(serviceEntity)
-            context.startActivity(intent)
-
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
             mixpanel?.track("serviceCard_cardTitleTapped", mixpanelServiceObject)
         }
@@ -316,24 +308,32 @@ class ServiceItem(private val service: ServiceObject,
         /** Expand Service Card to reveal more info - Layout-Click... **/
         viewHolder.itemView.action_layout.setOnClickListener {
             if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
+                /*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
                 viewHolder.itemView.expand_image_view.visibility = View.GONE
                 viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"
+                viewHolder.itemView.action_text_view.text = "CLOSE"*/
 
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_ID", serviceId)
+                showServiceDetails()
+
+                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
+
                 mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
+                /*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
                 viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.collapse_image_view.visibility = View.GONE
                 viewHolder.itemView.action_text_view.text = "MORE INFO"
 
                 serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                         .put("SERVICE_ID", serviceId)
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
+                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)*/
+
+                showServiceDetails()
+
+                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
+
+                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             }
         }
@@ -341,23 +341,24 @@ class ServiceItem(private val service: ServiceObject,
         /** Expand Service Card to reveal more info - Text-Click... **/
         viewHolder.itemView.action_text_view.setOnClickListener {
             if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
+                /*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
                 viewHolder.itemView.expand_image_view.visibility = View.GONE
                 viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"
+                viewHolder.itemView.action_text_view.text = "CLOSE"*/
 
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_ID", serviceId)
+                showServiceDetails()
+
+                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
                 mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
+                /*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
                 viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.collapse_image_view.visibility = View.GONE
-                viewHolder.itemView.action_text_view.text = "MORE INFO"
+                viewHolder.itemView.action_text_view.text = "MORE INFO"*/
 
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_ID", serviceId)
+                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
+
                 mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
 
             }
@@ -513,6 +514,16 @@ class ServiceItem(private val service: ServiceObject,
 
         requestingAgent(viewHolder)
 
+    }
+
+    private fun showServiceDetails() {
+        val intent = Intent(context, DetailedServiceActivity::class.java)
+
+        /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
+        intent.putExtra(SERVICE_OBJECT, service as Serializable)
+
+        serviceViewModel.addService(serviceEntity)
+        context!!.startActivity(intent)
     }
 
     private fun requestingAgent(viewHolder: GroupieViewHolder) {
@@ -684,7 +695,7 @@ class ServiceItem(private val service: ServiceObject,
         }
 
         val serviceCostInt = Integer.parseInt(formattedServiceCost)
-        val totalCostInt = serviceCostInt + 100
+        val totalCostInt = serviceCostInt + 50
         totalCostTextView.text = "E$totalCostInt"
 
         delegationFee.put("chosen_service_spec", serviceSpec)

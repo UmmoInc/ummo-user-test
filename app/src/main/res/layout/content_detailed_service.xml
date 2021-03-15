@@ -171,7 +171,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_toStartOf="@+id/detailed_service_query_icon_relative_layout"
-                                            android:hint="Select your vehicle weight"
+                                            android:hint="@string/service_type_selection_string"
                                             app:boxStrokeColor="@color/ummo_2"
                                             app:hintTextColor="@color/ummo_2">
 
@@ -180,7 +180,7 @@
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:inputType="none"
-                                                android:text="Tap for vehicle weights"
+                                                android:text="@string/tap_specify_your_service"
                                                 android:textSize="16sp" />
 
                                         </com.google.android.material.textfield.TextInputLayout>

@@ -1,10 +1,13 @@
 package xyz.ummo.user.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -60,6 +63,7 @@ import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class MainScreen : AppCompatActivity() {
 
@@ -187,6 +191,11 @@ class MainScreen : AppCompatActivity() {
         val feedbackIcon = findViewById<ActionMenuItemView>(R.id.feedback_icon)
         feedbackIcon.setOnClickListener {
             feedback()
+        }
+
+        val userSupportIcon = findViewById<ActionMenuItemView>(R.id.user_support)
+        userSupportIcon.setOnClickListener {
+            userSupport()
         }
 
         /** Instantiating the Bottom Navigation View **/
@@ -511,6 +520,63 @@ class MainScreen : AppCompatActivity() {
 
         feedbackDialogBuilder.show()
     }
+
+    private fun userSupport() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        val userSupportDialogView = LayoutInflater.from(this)
+                .inflate(R.layout.user_support_dialog, null)
+
+        val whatsAppImageView = userSupportDialogView.findViewById<ImageView>(R.id.chat_image_view)
+        val whatsAppTextView = userSupportDialogView.findViewById<TextView>(R.id.chat_text_view)
+        val callImageView = userSupportDialogView.findViewById<ImageView>(R.id.call_image_view)
+        val callTextView = userSupportDialogView.findViewById<TextView>(R.id.call_text_view)
+
+        val userDialogBuilder = MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.logo)
+                .setView(userSupportDialogView)
+
+        whatsAppImageView.setOnClickListener { launchWhatsApp() }
+        whatsAppTextView.setOnClickListener { launchWhatsApp() }
+        callImageView.setOnClickListener { launchPhoneDialer() }
+        callTextView.setOnClickListener { launchPhoneDialer() }
+
+        userDialogBuilder.show()
+
+    }
+
+    private fun launchWhatsApp() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        val contact = "+26876804065"
+
+        val url = "https://api.whatsapp.com/send?phone=$contact"
+        try {
+            val pm: PackageManager = this.packageManager
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+            mixpanel.track("supportCentre_whatsAppChatInitiated")
+        } catch (e: PackageManager.NameNotFoundException) {
+            showSnackbarYellow("WhatsApp not installed.", -1)
+            e.printStackTrace()
+        }
+    }
+
+    private fun launchPhoneDialer() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        mixpanel.track("supportCentre_phoneDialerInitiated")
+
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:+26876804065")
+        startActivity(intent)
+    }
+
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/

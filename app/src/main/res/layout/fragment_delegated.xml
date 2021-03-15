@@ -30,8 +30,8 @@
             android:id="@+id/delegation_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="4dp"
             android:layout_marginBottom="?android:attr/actionBarSize"
+            android:padding="4dp"
             android:visibility="visible">
 
             <!-- TODO: The view below will be used in a later version of the app -->
@@ -544,7 +544,8 @@
                                 app:spb_stateDescriptionColor="#808080"
                                 app:spb_stateForegroundColor="@color/colorPrimaryDark"
                                 app:spb_stateNumberBackgroundColor="#808080"
-                                app:spb_stateNumberForegroundColor="#eeeeee" />
+                                app:spb_stateNumberForegroundColor="#eeeeee"
+                                app:spb_stateDescriptionSize="12sp"/>
 
                             <RelativeLayout
                                 android:id="@+id/service_interrupted_relative_layout"

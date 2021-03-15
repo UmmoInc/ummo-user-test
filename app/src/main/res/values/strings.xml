@@ -172,7 +172,7 @@
     <string name="you_saved_this">Saved Offline</string>
     <string name="anonymous_comment">Don\'t share my info (anonymous comment)</string>
     <string name="recommend_service_improvements">How would you improve this service?</string>
-    <string name="service_centre_selection">(Choose one)</string>
+    <string name="service_centre_selection">(Choose one closest to you)</string>
     <string name="request_agent_text">Request Agent</string>
     <string name="service_updated">Service Updated…</string>
     <string name="service_authenticity">Service Authenticity</string>
@@ -185,7 +185,7 @@
 
     <string name="serverUrl">https://stage.ummo.xyz</string>
     <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
-    <string name="delegation_fee">E100</string>
+    <string name="delegation_fee">E50</string>
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
     <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
@@ -199,5 +199,10 @@
     <string name="delegated_service_fee_query_support_text">This fee is for the Delegated Service specified by: %1$s.</string>
     <string name="service_fee_support_text">This service has multiple options to choose from. Select the option that best meets your needs. \n\n\n(Please make sure you select the right one.)</string>
     <string name="delegated_service_fee_query_support_text_two"> which costs %1$s.</string>
+    <string name="service_actions_title_text">Help improve this service by rating it</string>
+    <string name="service_type_selection_string">Select your Service Type</string>
+    <string name="tap_specify_your_service">Tap to specify service</string>
+    <string name="support">Support</string>
+    <string name="user_support_text">• Do you have any questions about your service? \n\n• Are you interested in knowing more about us? \n\n• We would love to talk.</string>
 
 </resources>

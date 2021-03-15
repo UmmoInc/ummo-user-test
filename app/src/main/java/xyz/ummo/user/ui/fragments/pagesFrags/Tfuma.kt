@@ -120,6 +120,7 @@ class Tfuma : Fragment() {
         /** Refreshing services with [tfuma_swipe_refresher] **/
         tfumaBinding.tfumaSwipeRefresher.setOnRefreshListener {
             delegatableServicesArrayList.clear()
+            gAdapter.clear()
             getDelegatableServicesFromServer()
             tfumaBinding.tfumaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)

@@ -292,10 +292,23 @@ class Tfola : Fragment() {
     /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
     private fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
         val tmp = ArrayList<ServiceCostModel>()
+        var serviceCostObject: JSONObject
+        var spec: String
+        var cost: Int
         var serviceCostModel: ServiceCostModel
         for (i in 0 until array.length()) {
-            serviceCostModel = array.get(i) as ServiceCostModel
-            tmp.add(serviceCostModel)
+            /*serviceCostModel = array.get(i) as ServiceCostModel
+            tmp.add(serviceCostModel)*/
+
+            try {
+                serviceCostObject = array.getJSONObject(i)
+                spec = serviceCostObject.getString("service_spec")
+                cost = serviceCostObject.getInt("spec_cost")
+                serviceCostModel = ServiceCostModel(spec, cost)
+                tmp.add(serviceCostModel)
+            } catch (jse: JSONException) {
+                Timber.e("CONVERTING SERVICE COST JSE -> $jse")
+            }
         }
 
         Timber.e("SERVICE COST from FUN -> $tmp")

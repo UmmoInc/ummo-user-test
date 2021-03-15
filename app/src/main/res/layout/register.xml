@@ -57,51 +57,62 @@
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.hbb20.CountryCodePicker
-            android:id="@+id/registration_ccp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/userContactTextInputLayout"
-            android:layout_marginStart="40dp"
-            android:layout_marginBottom="6dp"
-            app:ccp_autoDetectCountry="true"
-            app:ccp_showFullName="false"
-            app:ccp_showNameCode="false"
-            app:ccp_showPhoneCode="true" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/userContactTextInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/userNameTextInputLayout"
             android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
-            android:orientation="horizontal"
-            android:textColorHint="@color/ummo_1"
-            app:boxCornerRadiusBottomEnd="4dp"
-            app:boxCornerRadiusBottomStart="4dp"
-            app:boxCornerRadiusTopEnd="4dp"
-            app:boxCornerRadiusTopStart="4dp"
-            app:boxStrokeColor="@color/ummo_2"
-            app:endIconMode="clear_text"
-            app:hintTextColor="@color/ummo_2">
+            android:background="@drawable/rounded_border_transparent_ummo_blue"
+            android:weightSum="10">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/userContactTextInputEditText"
-                android:layout_width="match_parent"
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/registration_ccp"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="3"
+                android:paddingTop="10dp"
+                app:ccp_autoDetectCountry="true"
+                app:ccp_showFullName="false"
+                app:ccp_showNameCode="false"
+                app:ccp_showPhoneCode="true" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/userContactTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.White"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:cursorVisible="true"
-                android:fontFamily="@font/rubik"
-                android:hint="Enter your contact"
-                android:inputType="phone"
-                android:lines="1"
-                android:paddingStart="120dp"
-                android:paddingEnd="0dp"
-                android:textCursorDrawable="@drawable/cursor"
-                android:textSize="18sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginStart="5dp"
+                android:layout_weight="7"
+                android:orientation="horizontal"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="@color/White"
+                android:textColorHint="@color/ummo_1"
+                app:boxCornerRadiusBottomEnd="4dp"
+                app:boxCornerRadiusBottomStart="4dp"
+                app:boxCornerRadiusTopEnd="4dp"
+                app:boxCornerRadiusTopStart="4dp"
+                app:endIconMode="clear_text"
+                app:hintTextColor="@color/ummo_2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/userContactTextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:cursorVisible="true"
+                    android:fontFamily="@font/rubik"
+                    android:hint="Enter your contact"
+                    android:inputType="phone"
+                    android:lines="1"
+                    android:textCursorDrawable="@drawable/cursor"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
 
     </RelativeLayout>
 
@@ -169,7 +180,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="false"/>
+            android:layout_centerVertical="false" />
     </RelativeLayout>
 
 </RelativeLayout><!--</layout>-->

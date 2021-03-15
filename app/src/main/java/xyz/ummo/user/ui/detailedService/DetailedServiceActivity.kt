@@ -434,7 +434,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         val serviceCostInt = Integer.parseInt(formattedServiceCost)
-        val totalCostInt = serviceCostInt + 100
+        val totalCostInt = serviceCostInt + 50
         totalCostTextView.text = "E$totalCostInt"
 
         delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
