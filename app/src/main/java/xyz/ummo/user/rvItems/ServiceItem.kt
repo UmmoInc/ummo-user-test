@@ -46,6 +46,7 @@ import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGA
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -537,25 +538,22 @@ class ServiceItem(private val service: ServiceObject,
             delegatedServiceViewModel.delegatedServiceEntityLiveData.observe(context!!) { delegatedServiceEntity: DelegatedServiceEntity ->
                 val delegatedServiceId = delegatedServiceEntity.delegatedProductId
 
-                if (delegatedServiceEntity != null) {
+                when {
+                    serviceEntity.serviceId != delegatedServiceId -> {
+                        viewHolder.itemView.request_agent_button!!.text = "Service pending..."
+                        viewHolder.itemView.request_agent_button
+                                .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
+                        viewHolder.itemView.request_agent_button!!.icon = context.resources.getDrawable(R.drawable.ic_service_locked_24)
 
-                    when {
-                        serviceEntity.serviceId != delegatedServiceId -> {
-                            viewHolder.itemView.request_agent_button!!.text = "Service pending..."
-                            viewHolder.itemView.request_agent_button
-                                    .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
-                            viewHolder.itemView.request_agent_button!!.icon = context.resources.getDrawable(R.drawable.ic_service_locked_24)
-
-                            viewHolder.itemView.request_agent_button.setOnClickListener {
-                                delegateStateEvent.delegateStateEvent = SERVICE_PENDING
-                                EventBus.getDefault().post(delegateStateEvent)
-                            }
+                        viewHolder.itemView.request_agent_button.setOnClickListener {
+                            delegateStateEvent.delegateStateEvent = SERVICE_PENDING
+                            EventBus.getDefault().post(delegateStateEvent)
                         }
-                        serviceEntity.serviceId.equals(delegatedServiceId) -> {
-                            viewHolder.itemView.request_agent_button.setOnClickListener {
-                                delegateStateEvent.delegateStateEvent = CURRENT_SERVICE_PENDING
-                                EventBus.getDefault().post(delegateStateEvent)
-                            }
+                    }
+                    serviceEntity.serviceId.equals(delegatedServiceId) -> {
+                        viewHolder.itemView.request_agent_button.setOnClickListener {
+                            delegateStateEvent.delegateStateEvent = CURRENT_SERVICE_PENDING
+                            EventBus.getDefault().post(delegateStateEvent)
                         }
                     }
                 }
@@ -563,19 +561,26 @@ class ServiceItem(private val service: ServiceObject,
         } else {
             Timber.e("SERVICE COST SELECTED [0] -> $specCost")
 
-            if (specCost.isEmpty()) {
+           /* if (specCost.isEmpty()) {
                 Timber.e("NO SERVICE COST SELECTED!")
                 viewHolder.itemView.request_agent_button.setOnClickListener {
                     serviceSpecifiedEvent.specifiedEvent = false
                     EventBus.getDefault().post(serviceSpecifiedEvent)
                     return@setOnClickListener
                 }
-            } else {
-                Timber.e("SERVICE COST SELECTED [1] -> $specCost")
+            } else {*/
                 viewHolder.itemView.request_agent_button.setOnClickListener {
-                    makeRequest()
+//                    makeRequest()
+                    /** Creating bottomSheet service request **/
+                    val requestBundle = Bundle()
+                    requestBundle.putSerializable(SERVICE_OBJECT, service)
+                    val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
+                    serviceRequestBottomSheetDialog.arguments = requestBundle
+                    serviceRequestBottomSheetDialog
+                            .show(context!!.supportFragmentManager,
+                                    ServiceRequestBottomSheet.TAG)
                 }
-            }
+//            }
         }
     }
 
@@ -638,19 +643,16 @@ class ServiceItem(private val service: ServiceObject,
         if (countOfDelegatedServices > 0) {
             delegatedServiceModel.delegatedServiceEntityLiveData.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
 
-                if (delegatedServiceEntity != null) {
+                val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+                if (serviceEntity.serviceId == delegatedServiceId) {
+                    Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                    viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
 
-                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                    Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
-                    if (serviceEntity.serviceId == delegatedServiceId) {
-                        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
-                        viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
-
-                        viewHolder.itemView.request_agent_button
-                                .setBackgroundColor(context.resources.getColor(R.color.Grey))
-                        viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
-                        viewHolder.itemView.request_agent_button.isActivated = false
-                    }
+                    viewHolder.itemView.request_agent_button
+                            .setBackgroundColor(context.resources.getColor(R.color.Grey))
+                    viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                    viewHolder.itemView.request_agent_button.isActivated = false
                 }
             })
         } else {
@@ -761,7 +763,7 @@ class ServiceItem(private val service: ServiceObject,
             Timber.e("Clicked Cancel!")
         }
 
-        alertDialogBuilder.show() //TODO: BIG BUG!!!
+//        alertDialogBuilder.show() //TODO: BIG BUG!!!
 //            alertDialog.dismiss()
     }
 
@@ -773,7 +775,7 @@ class ServiceItem(private val service: ServiceObject,
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
-            object : RequestService(context, User.getUserId(jwt!!), mServiceId, mDelegationFee) {
+            object : RequestService(context, User.getUserId(jwt!!), mServiceId, mDelegationFee, "Default") {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
                     Timber.e("delegatedService: Status Code->%s", code)

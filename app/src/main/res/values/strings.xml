@@ -183,9 +183,10 @@
     <string name="safety_net_api_key">AIzaSyBzqqPTLxlo6__Ow-mtgb8U9e77VNjLdDU</string>
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
-    <string name="serverUrl">https://stage.ummo.xyz</string>
-    <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
+    <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
+    <string name="serverUrl">http://192.168.8.103:3000</string>
     <string name="delegation_fee">E50</string>
+    <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
     <string name="bug_bounty">We\'ve worked hard to squash all bugs, but if you meet any survivors, please let us know.</string>
     <string name="bug_reward">For every bug you find, we\'ll discount you E5 from your .</string>
@@ -204,5 +205,10 @@
     <string name="tap_specify_your_service">Tap to specify service</string>
     <string name="support">Support</string>
     <string name="user_support_text">• Do you have any questions about your service? \n\n• Are you interested in knowing more about us? \n\n• We would love to talk.</string>
+    <string name="scan_to_check_in">Scan to check in</string>
+    <string name="service_created">Service Created</string>
+    <string name="service_requirements_detailed_info">What you need for this service:</string>
+    <string name="service_duration_detailed_info">How long it usually takes:</string>
+    <string name="service_name_detailed_info">Service Name</string>
 
 </resources>

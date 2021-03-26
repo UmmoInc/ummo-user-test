@@ -17,8 +17,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
-import io.sentry.core.Sentry
-import io.sentry.core.protocol.User
+import io.sentry.Sentry
+import io.sentry.protocol.User
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONException
@@ -325,6 +325,6 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
     companion object {
         private const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
-        private const val mode = Activity.MODE_PRIVATE
+        private const val mode = MODE_PRIVATE
     }
 }

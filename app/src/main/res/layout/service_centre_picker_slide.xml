@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/service_request_instructional_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/service_request_instructional_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/rubik"
+                android:text="What's the closest Service Centre?"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+        <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+        <RelativeLayout
+            android:id="@+id/service_centre_layout_dialog_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/service_request_instructional_layout"
+            app:layout_constraintTop_toBottomOf="@+id/service_request_instructional_layout">
+
+            <ImageView
+                android:id="@+id/service_centre_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_service_centre_24" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/service_centre_image_view">
+
+                <TextView
+                    android:id="@+id/service_centre_header_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/service_centres"
+                    android:textColor="@color/Grey"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/service_centre_header_text_view"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/service_centre_header_text_view"
+                    android:text="@string/service_centre_selection"
+                    android:textColor="@color/Grey"
+                    android:textSize="12sp"
+                    android:textStyle="italic" />
+
+                <RadioGroup
+                    android:id="@+id/service_centre_radio_group_dialog_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_centre_header_text_view"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="vertical" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

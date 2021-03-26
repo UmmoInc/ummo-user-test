@@ -7,7 +7,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
@@ -24,8 +27,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -67,8 +68,13 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceDurationTextView: TextView? = null
     var serviceDocsTextView: TextView? = null
     var serviceStepsTextView: TextView? = null
-    var serviceDocsChipGroup: ChipGroup? = null
-    var serviceCentresChipGroup: ChipGroup? = null
+
+    //    var serviceDocsChipGroup: ChipGroup? = null
+    var serviceDocsLayout: LinearLayout? = null
+
+    //    var serviceCentresChipGroup: ChipGroup? = null
+    var serviceCentresRadioGroup: RadioGroup? = null
+    var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
 
@@ -115,6 +121,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var serviceCostItem: ServiceCostModel
     private var serviceSpec = ""
     private var specCost = ""
+    private var chosenServiceCentre = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,8 +154,9 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceDescriptionTextView = findViewById(R.id.detailed_description_text_view)
 //        serviceCostTextView = findViewById(R.id.detailed_service_cost_text_view)
         serviceDurationTextView = findViewById(R.id.detailed_service_duration_text_view)
-        serviceDocsChipGroup = findViewById(R.id.detailed_service_docs_chip_group)
-        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
+        serviceDocsLayout = findViewById(R.id.service_requirements_linear_layout)
+//        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
+        serviceCentresRadioGroup = findViewById(R.id.service_centre_radio_group)
 
         appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
             if (mCollapsingToolbarLayout!!.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(mCollapsingToolbarLayout!!)) {
@@ -176,18 +184,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 //        serviceCostSpinner = findViewById(R.id.detailed_service_cost_dropdown)
 
         serviceCostTextInputLayout = findViewById(R.id.detailed_service_cost_dropdown)
-        /*serviceCostAdapter = ArrayAdapter(this,
-                R.layout.support_simple_spinner_dropdown_item, serviceCostArrayList)
-        serviceCostSpinner?.adapter = serviceCostAdapter*/
+
         selectingServiceSpec()
 
         checkForDelegatedServiceAndCompare()
-
-        /*requestAgentBtn!!.setOnClickListener {
-
-            mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
-            makeRequest()
-        }*/
 
         mCollapsingToolbarLayout!!.title = _serviceName
         mCollapsingToolbarLayout!!.setExpandedTitleTextAppearance(R.style.ExpandedAppBar)
@@ -203,6 +203,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                 R.layout.list_item, serviceCostArrayList)
 
         autoCompleteTextView?.setAdapter(serviceCostAdapter)
+
         autoCompleteTextView?.setOnItemClickListener { adapterView, autoView, i, l ->
             val selectedText = autoCompleteTextView.text.toString()
             var currencyIndex = 0
@@ -214,12 +215,12 @@ class DetailedServiceActivity : AppCompatActivity() {
                     currencyIndex = j
             }
 
-            Timber.e("CURRENCY INDEX -> $currencyIndex")
+//            Timber.e("CURRENCY INDEX -> $currencyIndex")
             serviceSpec = selectedText.substring(0, currencyIndex - 2)
             specCost = selectedText.substring(currencyIndex + 1)
 
-            Timber.e("SPEC-COST -> $specCost")
-            Timber.e("SERVICE-SPEC -> $serviceSpec")
+//            Timber.e("SPEC-COST -> $specCost")
+//            Timber.e("SERVICE-SPEC -> $serviceSpec")
 
             val serviceSpecCost = JSONObject()
             serviceSpecCost
@@ -349,15 +350,19 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
-
-            serviceDocsChipGroup!!.removeAllViews()
+//            serviceDocsChipGroup!!.removeAllViews()
+            serviceDocsLayout!!.removeAllViews()
             for (i in docsList!!.indices) {
-                val serviceDocsChipItem = LayoutInflater.from(this)
-                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip
-
-                serviceDocsChipItem.text = docsList!![i].replace("\"\"", "")
+                /*val serviceDocsChipItem = LayoutInflater.from(this)
+                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip*/
+                /*serviceDocsChipItem.text = docsList!![i].replace("\"\"", "")
                 serviceDocsChipItem.textSize = 12F
-                serviceDocsChipGroup!!.addView(serviceDocsChipItem)
+                serviceDocsChipGroup!!.addView(serviceDocsChipItem)*/
+                serviceDocsTextView = TextView(applicationContext)
+                serviceDocsTextView!!.id = i
+                serviceDocsTextView!!.text = "\u25CF " + docsList!![i].replace("\"\"", "")
+                serviceDocsTextView!!.textSize = 14F
+                serviceDocsLayout!!.addView(serviceDocsTextView)
             }
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
@@ -369,14 +374,31 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         if (serviceCentresList!!.isNotEmpty()) {
 
-            serviceCentresChipGroup!!.removeAllViews()
+            serviceCentresRadioGroup!!.removeAllViews()
             for (i in serviceCentresList!!.indices) {
-                val serviceCentreChipItem = LayoutInflater.from(this)
-                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip
+                /*val serviceCentreChipItem = LayoutInflater.from(this)
+                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip*/
+                serviceCentreRadioButton = RadioButton(applicationContext)
+                serviceCentreRadioButton!!.id = i
+                serviceCentreRadioButton!!.text = serviceCentresList!![i].replace("\"\"", "")
+                serviceCentreRadioButton!!.textSize = 14F
 
-                serviceCentreChipItem.text = serviceCentresList!![i].replace("\"\"", "")
-                serviceCentreChipItem.textSize = 12F
-                serviceCentresChipGroup!!.addView(serviceCentreChipItem)
+                /** Setting RadioButton color state-list **/
+                if (Build.VERSION.SDK_INT >= 21) {
+                    val colorStateList = ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),
+                            intArrayOf(android.R.attr.state_enabled)), intArrayOf(
+                            Color.GRAY//disabled
+                            , resources.getColor(R.color.ummo_1) //enabled
+                    ))
+                    serviceCentreRadioButton!!.buttonTintList = colorStateList
+                }
+                serviceCentresRadioGroup!!.addView(serviceCentreRadioButton)
+                serviceCentresRadioGroup!!.setOnCheckedChangeListener { radioGroup, checkedId ->
+
+                    val checkedBox = radioGroup.findViewById<RadioButton>(checkedId)
+                    chosenServiceCentre = checkedBox.text.toString()
+                    Timber.e("CHECKED BOX -> ${chosenServiceCentre}")
+                }
             }
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
@@ -464,8 +486,12 @@ class DetailedServiceActivity : AppCompatActivity() {
                 showSnackbarYellow("Please confirm Payment Ts & Cs", -1)
                 mixpanel?.track("requestAgentDialog_unconfirmedCheckBox")
             } else {
-                requestAgentDelegate(serviceId!!, delegationFee)
-                mixpanel?.track("requestAgentDialog_confirmedCheckBox")
+                if (chosenServiceCentre.isNotEmpty()) {
+                    requestAgentDelegate(serviceId!!, delegationFee, chosenServiceCentre)
+                    mixpanel?.track("requestAgentDialog_confirmedCheckBox")
+                } else {
+                    showSnackbarYellow("Please choose your nearest service centre", -1)
+                }
             }
         }
 
@@ -478,13 +504,13 @@ class DetailedServiceActivity : AppCompatActivity() {
     }
 
     /** Requesting Agent Delegate **/
-    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject) {
+    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject, mChosenServiceCentre: String) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "")
 
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
-            object : RequestService(this, User.getUserId(jwt), mServiceId, mDelegationFee) {
+            object : RequestService(this, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre) {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
                     Timber.e("delegatedService: Status Code->%s", code)

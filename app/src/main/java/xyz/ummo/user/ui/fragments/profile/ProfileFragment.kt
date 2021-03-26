@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.card.MaterialCardView
@@ -24,6 +25,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.Logout
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentMyProfileBinding
+import xyz.ummo.user.ui.fragments.scanner.CheckIn
 import xyz.ummo.user.ui.signup.RegisterActivity
 import xyz.ummo.user.utilities.eventBusEvents.CardDismissedEvent
 
@@ -97,6 +99,8 @@ class ProfileFragment : Fragment() {
             logout()
         }
 
+//        profileViewBinding.launchScannerFAB.setOnClickListener { launchCheckInScanner() }
+
         closeCardImageView = view.findViewById(R.id.close_card_image_view)
         profileIntroCardView = view.findViewById(R.id.profile_info_card)
 
@@ -116,6 +120,16 @@ class ProfileFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun launchCheckInScanner() {
+        Timber.e("LAUNCHING SCANNER")
+        val checkInFragment = CheckIn()
+        val fragmentActivity = context as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.frame, checkInFragment)
+        fragmentTransaction.commit()
     }
 
     private fun closeIntroCardImageView() {

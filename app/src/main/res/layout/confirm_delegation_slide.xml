@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/cost_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+            <!--ProductModel Cost Layout Start-->
+            <RelativeLayout
+                android:id="@+id/service_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/service_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_stat_cost_icon" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/service_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/cost_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Service Cost (Gov. Fee)"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <TextView
+                        android:id="@+id/service_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/cost_header_text_view"
+                        android:text="E50"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+            <!--ProductModel Cost Layout End-->
+
+            <!--ProductModel Cost Layout Start-->
+            <RelativeLayout
+                android:id="@+id/delegation_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/service_cost_layout"
+                android:layout_marginBottom="4dp">
+
+                <ImageView
+                    android:id="@+id/delegation_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_agent_cost_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/delegation_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/delegation_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delegation Cost (Flat Agent Fee)"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <TextView
+                        android:id="@+id/delegation_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/delegation_header_text_view"
+                        android:text="E50"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <!--ProductModel Cost Layout End-->
+            <View
+                android:id="@+id/divider_1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/delegation_cost_layout"
+                android:background="@color/Grey"
+                android:padding="20dp" />
+            <!--ProductModel Total Cost Layout Start-->
+
+            <RelativeLayout
+                android:id="@+id/total_cost_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_1"
+                android:background="@color/linkWhite"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/total_cost_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_total_payment_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/total_cost_image_view">
+
+                    <TextView
+                        android:id="@+id/total_header_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total"
+                        android:textColor="@color/Grey"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/total_cost_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/total_header_text_view"
+                        android:text="E150"
+                        android:textColor="#15B60A"
+                        android:textSize="14sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+            <!--ProductModel Cost Layout End-->
+
+            <!--<RelativeLayout
+                android:id="@+id/delegate_service_centre_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/total_cost_layout">
+
+                <ImageView
+                    android:id="@+id/delegate_service_centre_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_service_centre_24" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/delegate_service_centre_image_view">
+
+                    <TextView
+                        android:id="@+id/select_service_centre_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Please choose one location closest to you"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/delegate_service_centre_chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/select_service_centre_text_view"
+                        app:chipSpacing="2dp"
+                        app:chipSpacingHorizontal="2dp"
+                        app:chipSpacingVertical="2dp"
+                        app:selectionRequired="true"
+                        app:singleLine="false"
+                        app:singleSelection="true" />
+                </RelativeLayout>
+
+            </RelativeLayout>-->
+        </RelativeLayout>
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/confirm_payment_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/cost_layout"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:text="I will pay the Delegation fee once my service is delivered."
+            android:textColor="@color/ummo_2"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cost_layout"
+            tools:ignore="SmallSp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
