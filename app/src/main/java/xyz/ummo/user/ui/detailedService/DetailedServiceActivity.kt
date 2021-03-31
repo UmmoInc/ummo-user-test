@@ -1,10 +1,8 @@
 package xyz.ummo.user.ui.detailedService
 
 //import kotlinx.android.synthetic.main.service_card.view.*
-import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
@@ -12,8 +10,6 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -27,19 +23,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
 import kotlinx.android.synthetic.main.service_card.view.*
-import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.api.RequestService
-import xyz.ummo.user.api.User
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
@@ -47,12 +39,9 @@ import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.MainScreen.Companion.CHOSEN_SERVICE_SPEC
-import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
-import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
-import xyz.ummo.user.ui.MainScreen.Companion.TOTAL_DELEGATION_FEE
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
@@ -254,21 +243,16 @@ class DetailedServiceActivity : AppCompatActivity() {
             })
 
         } else {
-            Timber.e("SERVICE COST SELECTED [0] -> $specCost")
-
-            if (specCost.isEmpty()) {
-                Timber.e("NO SERVICE COST SELECTED!")
-                requestAgentBtn!!.setOnClickListener {
-                    showSnackbarYellow("Please select your vehicle weight first", -1)
-
-                    return@setOnClickListener
-                }
-            } else {
-                Timber.e("SERVICE COST SELECTED [1] -> $specCost")
-                requestAgentBtn!!.setOnClickListener {
-                    mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
-                    makeRequest()
-                }
+            requestAgentBtn!!.setOnClickListener {
+                mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
+                /** Creating bottomSheet service request **/
+                val requestBundle = Bundle()
+                requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
+                val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
+                serviceRequestBottomSheetDialog.arguments = requestBundle
+                serviceRequestBottomSheetDialog
+                        .show(this.supportFragmentManager,
+                                ServiceRequestBottomSheet.TAG)
             }
         }
     }
@@ -288,31 +272,6 @@ class DetailedServiceActivity : AppCompatActivity() {
         mixpanel.track("detailedService_serviceFeeSelfSupport")
 
     }
-
-    /*private fun addListenerOnSpinnerItemSelected() {
-
-        serviceCostSpinner = findViewById(R.id.detailed_service_cost_spinner)
-        serviceCostSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                serviceCostItem = ServiceCostModel(serviceCostArrayList[position].serviceSpec,
-                        serviceCostArrayList[position].specCost)
-
-                Timber.e("SELECTED SERVICE-COST -> $serviceCostItem")
-                serviceSpec = serviceCostItem.serviceSpec
-                specCost = serviceCostItem.specCost.toString()
-
-                val serviceSpecCost = JSONObject()
-                serviceSpecCost
-                        .put("SERVICE_SPEC", serviceSpec)
-                        .put("SPEC_COST", specCost)
-                mixpanel.track("detailedService_serviceSpecSelected", serviceSpecCost)
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                Timber.e("NOTHING SELECTED!")
-            }
-        }
-    }*/
 
     override fun onBackPressed() {
         finish()
@@ -350,14 +309,8 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
-//            serviceDocsChipGroup!!.removeAllViews()
             serviceDocsLayout!!.removeAllViews()
             for (i in docsList!!.indices) {
-                /*val serviceDocsChipItem = LayoutInflater.from(this)
-                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip*/
-                /*serviceDocsChipItem.text = docsList!![i].replace("\"\"", "")
-                serviceDocsChipItem.textSize = 12F
-                serviceDocsChipGroup!!.addView(serviceDocsChipItem)*/
                 serviceDocsTextView = TextView(applicationContext)
                 serviceDocsTextView!!.id = i
                 serviceDocsTextView!!.text = "\u25CF " + docsList!![i].replace("\"\"", "")
@@ -376,8 +329,6 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             serviceCentresRadioGroup!!.removeAllViews()
             for (i in serviceCentresList!!.indices) {
-                /*val serviceCentreChipItem = LayoutInflater.from(this)
-                        .inflate(R.layout.service_centre_chip_item, null, false) as Chip*/
                 serviceCentreRadioButton = RadioButton(applicationContext)
                 serviceCentreRadioButton!!.id = i
                 serviceCentreRadioButton!!.text = serviceCentresList!![i].replace("\"\"", "")
@@ -413,147 +364,6 @@ class DetailedServiceActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun makeRequest() {
-        val mixpanel = MixpanelAPI.getInstance(this,
-                resources.getString(R.string.mixpanelToken))
-
-        val alertDialogBuilder = MaterialAlertDialogBuilder(this)
-
-        val alertDialogView = LayoutInflater.from(this)
-                .inflate(R.layout.delegate_agent_dialog, null)
-
-        val delegationFee = JSONObject()
-
-        /** Formatting and appending service texts to alertDialog **/
-        val requestAgentText = String.format(this.resources.getString(R.string.request_ummo_agent), serviceObject.serviceName)
-        val requestAgentTextView = alertDialogView.findViewById<TextView>(R.id.request_description_text_view)
-        val serviceCostTextView = alertDialogView.findViewById<TextView>(R.id.service_cost_text_view)
-        val delegationCostTextView = alertDialogView.findViewById<TextView>(R.id.delegation_cost_text_view)
-        val totalCostTextView = alertDialogView.findViewById<TextView>(R.id.total_cost_text_view)
-        val confirmPaymentCheckBox = alertDialogView.findViewById<CheckBox>(R.id.confirm_payment_check_box)
-
-        requestAgentTextView.text = requestAgentText
-
-        serviceCostTextView.text = "E$specCost"
-        /** Hard coding Delegation Cost (temporarily) **/
-        delegationCostTextView.text = this.getString(R.string.delegation_fee)
-
-        /** 1) Removing the currency from the fee
-         *  2) Converting fee string to int
-         *  3) Adding [Delegation Fee] to get Total Cost (int)
-         *  4) Displaying Total Cost**/
-
-        val serviceCost: String = specCost
-        val formattedServiceCost: String
-
-        formattedServiceCost = if (serviceCost.contains(",")) {
-            serviceCost.replace(",", "")
-        } else {
-            serviceCost
-        }
-
-        val serviceCostInt = Integer.parseInt(formattedServiceCost)
-        val totalCostInt = serviceCostInt + 50
-        totalCostTextView.text = "E$totalCostInt"
-
-        delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
-                .put(TOTAL_DELEGATION_FEE, totalCostInt)
-
-        alertDialogBuilder.setTitle("Request Agent")
-                .setIcon(R.drawable.logo)
-                .setView(alertDialogView)
-
-        confirmPaymentCheckBox.setOnClickListener {
-            if (confirmPaymentCheckBox.isChecked) {
-                paymentTermsEvent.paymentTermsConfirmed = true
-                EventBus.getDefault().post(paymentTermsEvent)
-
-            } else {
-                alertDialogBuilder.setPositiveButton("Req") { dialogInterface, i ->
-//                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.YELLOW)
-                }
-            }
-        }
-
-        alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
-            Timber.e("Clicked Confirm!")
-//                detailedProduct.requestAgentDelegate(productId)
-
-            if (!confirmPaymentCheckBox.isChecked) {
-                showSnackbarYellow("Please confirm Payment Ts & Cs", -1)
-                mixpanel?.track("requestAgentDialog_unconfirmedCheckBox")
-            } else {
-                if (chosenServiceCentre.isNotEmpty()) {
-                    requestAgentDelegate(serviceId!!, delegationFee, chosenServiceCentre)
-                    mixpanel?.track("requestAgentDialog_confirmedCheckBox")
-                } else {
-                    showSnackbarYellow("Please choose your nearest service centre", -1)
-                }
-            }
-        }
-
-        alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
-            Timber.e("Clicked Cancel!")
-        }
-
-        alertDialogBuilder.show() //TODO: BIG BUG!!!
-//            alertDialog.dismiss()
-    }
-
-    /** Requesting Agent Delegate **/
-    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject, mChosenServiceCentre: String) {
-        val jwt = PreferenceManager.getDefaultSharedPreferences(this).getString("jwt", "")
-
-        Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
-
-        if (jwt != null) {
-            object : RequestService(this, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre) {
-                override fun done(data: ByteArray, code: Int) {
-                    Timber.e("delegatedService: Done->%s", String(data))
-                    Timber.e("delegatedService: Status Code->%s", code)
-
-                    when (code) {
-                        200 -> {
-//                            alertDialogBuilder.dismiss()
-
-                            Timber.e("CODE IS $code")
-
-                            val delegation = JSONObject(String(data))
-                            Timber.e("SERVICE OBJ -> $delegation")
-                            val delegatedServiceId = delegation.getString("product")
-                            val delegationId = delegation.getString("_id")
-                            val serviceAgent = delegation.getString("agent")
-
-                            editor.putString("DELEGATION_ID", delegationId)
-                            //TODO: remove after service is done
-                            editor.putString(DELEGATED_SERVICE_ID, serviceId)
-                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
-                            editor.putString(DELEGATION_FEE, mDelegationFee.getString(TOTAL_DELEGATION_FEE))
-                            editor.putString(DELEGATION_SPEC, mDelegationFee.getString(CHOSEN_SERVICE_SPEC))
-                            editor.apply()
-
-                            launchDelegatedService(this@DetailedServiceActivity,
-                                    delegatedServiceId, serviceAgent, delegationId)
-
-                        }
-                        404 -> {
-                            Timber.e("CODE IS $code")
-
-                            agentRequestDialog!!.setTitle("Meh")
-                            agentRequestDialog!!.setMessage("Blah Blah Blah")
-                            agentRequestDialog!!.setPositiveButton("Continue...")
-                            { dialogInterface: DialogInterface?, i: Int ->
-                                Timber.e("GOING OFF!")
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun launchDelegatedService(context: Context?,

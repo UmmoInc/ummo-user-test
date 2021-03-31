@@ -122,7 +122,8 @@
                     <RelativeLayout
                         android:id="@+id/service_header_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/delegated_service_header_image_view"
@@ -165,7 +166,8 @@
                         <RelativeLayout
                             android:id="@+id/service_cost_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:id="@+id/service_cost_image_view"
@@ -574,7 +576,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_up_blue_24" />
+                            app:srcCompat="@drawable/ic_outline_thumb_up_grey_24" />
 
                         <TextView
                             android:id="@+id/approve_count_text_view"
@@ -638,7 +640,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
+                            app:srcCompat="@drawable/ic_outline_thumb_down_grey_24" />
 
                         <TextView
                             android:id="@+id/disapprove_count_text_view"
@@ -699,7 +701,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_marginStart="4dp"
-                            app:srcCompat="@drawable/ic_outline_chat_bubble_blue_24" />
+                            app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
 
                         <TextView
                             android:id="@+id/service_comments_count_text_view"
@@ -761,7 +763,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_download_for_offline_24" />
+                            app:srcCompat="@drawable/ic_download_for_offline_grey_24" />
 
                         <TextView
                             android:id="@+id/save_count_text_view"

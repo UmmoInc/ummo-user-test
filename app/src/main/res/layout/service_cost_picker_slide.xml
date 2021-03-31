@@ -48,7 +48,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <RelativeLayout
+                <!--<RelativeLayout
                     android:id="@+id/service_query_icon_relative_layout"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
                         android:contentDescription="@string/save_service"
                         android:padding="8dp"
                         app:srcCompat="@drawable/ic_baseline_help_outline_24" />
-                </RelativeLayout>
+                </RelativeLayout>-->
             </RelativeLayout>
 
         </RelativeLayout>

@@ -3,7 +3,6 @@ package xyz.ummo.user.rvItems
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.AnimationDrawable
@@ -16,7 +15,6 @@ import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -35,7 +33,6 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.MainScreen.Companion.AGENT_ID
 import xyz.ummo.user.ui.MainScreen.Companion.CURRENT_SERVICE_PENDING
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_ID
@@ -342,10 +339,6 @@ class ServiceItem(private val service: ServiceObject,
         /** Expand Service Card to reveal more info - Text-Click... **/
         viewHolder.itemView.action_text_view.setOnClickListener {
             if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
-                viewHolder.itemView.expand_image_view.visibility = View.GONE
-                viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"*/
 
                 showServiceDetails()
 
@@ -353,10 +346,6 @@ class ServiceItem(private val service: ServiceObject,
                 mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
-                viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.collapse_image_view.visibility = View.GONE
-                viewHolder.itemView.action_text_view.text = "MORE INFO"*/
 
                 serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
 
@@ -512,9 +501,7 @@ class ServiceItem(private val service: ServiceObject,
             }
             timer.start()
         }
-
         requestingAgent(viewHolder)
-
     }
 
     private fun showServiceDetails() {
@@ -561,25 +548,25 @@ class ServiceItem(private val service: ServiceObject,
         } else {
             Timber.e("SERVICE COST SELECTED [0] -> $specCost")
 
-           /* if (specCost.isEmpty()) {
-                Timber.e("NO SERVICE COST SELECTED!")
-                viewHolder.itemView.request_agent_button.setOnClickListener {
-                    serviceSpecifiedEvent.specifiedEvent = false
-                    EventBus.getDefault().post(serviceSpecifiedEvent)
-                    return@setOnClickListener
-                }
-            } else {*/
-                viewHolder.itemView.request_agent_button.setOnClickListener {
+            /* if (specCost.isEmpty()) {
+                 Timber.e("NO SERVICE COST SELECTED!")
+                 viewHolder.itemView.request_agent_button.setOnClickListener {
+                     serviceSpecifiedEvent.specifiedEvent = false
+                     EventBus.getDefault().post(serviceSpecifiedEvent)
+                     return@setOnClickListener
+                 }
+             } else {*/
+            viewHolder.itemView.request_agent_button.setOnClickListener {
 //                    makeRequest()
-                    /** Creating bottomSheet service request **/
-                    val requestBundle = Bundle()
-                    requestBundle.putSerializable(SERVICE_OBJECT, service)
-                    val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
-                    serviceRequestBottomSheetDialog.arguments = requestBundle
-                    serviceRequestBottomSheetDialog
-                            .show(context!!.supportFragmentManager,
-                                    ServiceRequestBottomSheet.TAG)
-                }
+                /** Creating bottomSheet service request **/
+                val requestBundle = Bundle()
+                requestBundle.putSerializable(SERVICE_OBJECT, service)
+                val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
+                serviceRequestBottomSheetDialog.arguments = requestBundle
+                serviceRequestBottomSheetDialog
+                        .show(context!!.supportFragmentManager,
+                                ServiceRequestBottomSheet.TAG)
+            }
 //            }
         }
     }
@@ -588,37 +575,6 @@ class ServiceItem(private val service: ServiceObject,
         serviceCostArrayList = serviceObject.serviceCost
         Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
     }
-
-    /*private fun addListenerOnSpinnerItemSelected(viewHolder: GroupieViewHolder) {
-
-        val mixpanel = MixpanelAPI.getInstance(context,
-                context?.resources?.getString(R.string.mixpanelToken))
-
-        serviceCostSpinner = viewHolder.itemView.service_cost_spinner
-        serviceCostSpinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                serviceCostItem = ServiceCostModel(serviceCostArrayList[position].serviceSpec,
-                        serviceCostArrayList[position].specCost)
-
-                Timber.e("SELECTED SERVICE-COST -> $serviceCostItem")
-                serviceSpec = serviceCostItem.serviceSpec
-                specCost = serviceCostItem.specCost.toString()
-
-                val serviceSpecCost = JSONObject()
-                serviceSpecCost
-                        .put("SERVICE_SPEC", serviceSpec)
-                        .put("SPEC_COST", specCost)
-                mixpanel?.track("serviceCard_serviceSpecSelected", serviceSpecCost)
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                Timber.e("NOTHING SELECTED!")
-                viewHolder.itemView.request_agent_button.text = "SELECT SERVICE FEE FIRST"
-                mixpanel?.track("serviceCard_serviceSpecSelection_abandoned")
-
-            }
-        }
-    }*/
 
     private fun checkIfServiceIsSavedOffline(mServiceId: String, viewHolder: GroupieViewHolder) {
 
@@ -657,167 +613,6 @@ class ServiceItem(private val service: ServiceObject,
             })
         } else {
             Timber.e("NOTHING DELEGATED YET")
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun makeRequest() {
-        val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
-
-        val alertDialogView = LayoutInflater.from(context)
-                .inflate(R.layout.delegate_agent_dialog, null)
-
-        val delegationFee = JSONObject()
-
-        /** Formatting and appending service texts to alertDialog **/
-        val requestAgentText = String.format(context.resources.getString(R.string.request_ummo_agent), service.serviceName)
-        val requestAgentTextView = alertDialogView.findViewById<TextView>(R.id.request_description_text_view)
-        val serviceCostTextView = alertDialogView.findViewById<TextView>(R.id.service_cost_text_view)
-//        val serviceCostSpinner =
-        val delegationCostTextView = alertDialogView.findViewById<TextView>(R.id.delegation_cost_text_view)
-        val totalCostTextView = alertDialogView.findViewById<TextView>(R.id.total_cost_text_view)
-        val confirmPaymentCheckBox = alertDialogView.findViewById<CheckBox>(R.id.confirm_payment_check_box)
-//        val selectServiceCentreTextView = alertDialogView.findViewById<TextView>(R.id.select_service_centre_text_view)
-//        val selectServiceCentreChipGroup = alertDialogView.findViewById<ChipGroup>(R.id.delegate_service_centre_chip_group)
-
-        requestAgentTextView.text = requestAgentText
-        serviceCostTextView.text = "E$specCost"
-        /** Hard coding Delegation Cost (temporarily) **/
-        delegationCostTextView.text = context.getString(R.string.delegation_fee)
-
-        /** 1) Removing the currency from the fee
-         *  2) Converting fee string to int
-         *  3) Adding [Delegation Fee] to get Total Cost (int)
-         *  4) Displaying Total Cost**/
-//        val serviceCost: String = specCost.subSequence(1, specCost.length) as String
-        val formattedServiceCost: String = if (specCost.contains(",")) {
-            specCost.replace(",", "")
-        } else {
-            specCost
-        }
-
-        val serviceCostInt = Integer.parseInt(formattedServiceCost)
-        val totalCostInt = serviceCostInt + 50
-        totalCostTextView.text = "E$totalCostInt"
-
-        delegationFee.put("chosen_service_spec", serviceSpec)
-                .put("total_delegation_fee", totalCostInt)
-
-        /** Parsing [ServiceObject.serviceCentres] and adding them to the dialog's [ChipGroup] **/
-        var indexChecked: Int? = null
-
-        /*if (service.serviceCentres.isNotEmpty()) {
-            selectServiceCentreChipGroup.removeAllViews()
-
-            for (i in service.serviceCentres.indices) {
-                val serviceCentreChipItem = inflater
-                        .inflate(R.layout.service_centre_chip_item,
-                                null, false) as Chip
-                serviceCentreChipItem.text = service.serviceCentres[i]
-                selectServiceCentreChipGroup.addView(serviceCentreChipItem)
-
-                serviceCentreChipItem.setOnCheckedChangeListener { compoundButton, b ->
-                    Timber.e("CHECKED SERVICE CENTRE -> ${service.serviceCentres[i]}")
-                    Timber.e("CHECKED SERVICE CENTRE compound-button-> $compoundButton")
-
-                    for (j in service.serviceCentres.indices) {
-                        if (j != i) {
-//                            selectServiceCentreChipGroup.
-                        }
-                    }
-                }
-            }
-
-            Timber.e("INDEX CHECKED [1] -> $indexChecked")
-
-        }*/
-
-        alertDialogBuilder.setTitle("Request Agent")
-                .setIcon(R.drawable.logo)
-                .setView(alertDialogView)
-
-        confirmPaymentCheckBox.setOnClickListener {
-            if (confirmPaymentCheckBox.isChecked) {
-                paymentTermsEvent.paymentTermsConfirmed = true
-                EventBus.getDefault().post(paymentTermsEvent)
-
-            } else {
-                alertDialogBuilder.setPositiveButton("Req") { dialogInterface, i ->
-//                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.YELLOW)
-                }
-            }
-        }
-
-        alertDialogBuilder.setPositiveButton("Request") { dialogInterface, i ->
-            Timber.e("Clicked Confirm!")
-//                detailedProduct.requestAgentDelegate(productId)
-
-            if (!confirmPaymentCheckBox.isChecked) {
-                paymentTermsEvent.paymentTermsConfirmed = false
-                EventBus.getDefault().post(paymentTermsEvent)
-            } else
-                requestAgentDelegate(serviceId, delegationFee)
-        }
-
-        alertDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
-            Timber.e("Clicked Cancel!")
-        }
-
-//        alertDialogBuilder.show() //TODO: BIG BUG!!!
-//            alertDialog.dismiss()
-    }
-
-    /** Requesting Agent Delegate **/
-    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject) {
-
-        val editor: SharedPreferences.Editor = serviceItemPrefs.edit()
-
-        Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
-
-        if (jwt != null) {
-            object : RequestService(context, User.getUserId(jwt!!), mServiceId, mDelegationFee, "Default") {
-                override fun done(data: ByteArray, code: Int) {
-                    Timber.e("delegatedService: Done->%s", String(data))
-                    Timber.e("delegatedService: Status Code->%s", code)
-
-                    when (code) {
-                        200 -> {
-//                            alertDialogBuilder.dismiss()
-
-                            Timber.e("CODE IS $code")
-
-                            val delegation = JSONObject(String(data))
-                            Timber.e("SERVICE OBJ -> $delegation")
-                            val delegatedServiceId = delegation.getString("product")
-                            val delegationId = delegation.getString("_id")
-                            val serviceAgent = delegation.getString("agent")
-
-                            editor.putString("DELEGATION_ID", delegationId)
-                            //TODO: remove after service is done
-                            editor.putString("DELEGATED_SERVICE_ID", serviceId)
-                            editor.putString("SERVICE_AGENT_ID", serviceAgent)
-                            editor.putString(MainScreen.DELEGATION_FEE,
-                                    mDelegationFee.getString("total_delegation_fee"))
-                            editor.apply()
-
-                            launchDelegatedService(context, delegatedServiceId,
-                                    serviceAgent, delegationId)
-
-                        }
-                        404 -> {
-                            Timber.e("CODE IS $code")
-
-                            agentRequestDialog.setTitle("Meh")
-                            agentRequestDialog.setMessage("Blah Blah Blah")
-                            agentRequestDialog.setPositiveButton("Continue...")
-                            { dialogInterface: DialogInterface?, i: Int ->
-                                Timber.e("GOING OFF!")
-
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -1126,8 +921,8 @@ class ServiceItem(private val service: ServiceObject,
 
     private fun reverseCommentTriggeredChangeStates(viewHolder: GroupieViewHolder) {
         //TODO: undo 18
-//        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
-        viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_outline_chat_bubble_blue_24)
+        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
+        viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_outline_chat_bubble_grey_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.INVISIBLE
     }
 
