@@ -184,7 +184,8 @@
     <string name="safety_net_recaptcha_key">6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno</string>
 
     <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
-    <string name="serverUrl">http://192.168.8.103:3000</string>
+    <!--<string name="serverUrl">https://ummo-stage-server.herokuapp.com</string>-->
+    <string name="serverUrl">http://192.168.8.110:3000</string>
     <string name="delegation_fee">E50</string>
     <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
@@ -210,5 +211,6 @@
     <string name="service_requirements_detailed_info">What you need for this service:</string>
     <string name="service_duration_detailed_info">How long it usually takes:</string>
     <string name="service_name_detailed_info">Service Name</string>
+    <string name="view_service_prices">View Service Prices</string>
 
 </resources>

@@ -180,7 +180,7 @@
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:inputType="none"
-                                                android:text="@string/tap_specify_your_service"
+                                                android:text="@string/view_service_prices"
                                                 android:textSize="16sp" />
 
                                         </com.google.android.material.textfield.TextInputLayout>
@@ -195,12 +195,12 @@
 
                                             <ImageView
                                                 android:id="@+id/detailed_query_image_view"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
                                                 android:layout_alignParentEnd="true"
+                                                android:padding="4dp"
                                                 android:layout_centerVertical="true"
                                                 android:contentDescription="@string/save_service"
-                                                android:padding="8dp"
                                                 app:srcCompat="@drawable/ic_baseline_help_outline_24" />
                                         </RelativeLayout>
 
@@ -297,24 +297,6 @@
                                             android:layout_margin="5dp"
                                             android:orientation="vertical" />
 
-                                        <!--<com.google.android.material.chip.ChipGroup
-                                            android:id="@+id/detailed_service_docs_chip_group"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:layout_below="@+id/docs_header_text_view"
-                                            app:chipSpacing="2dp"
-                                            app:chipSpacingHorizontal="2dp"
-                                            app:chipSpacingVertical="2dp"
-                                            app:selectionRequired="true"
-                                            app:singleLine="false" />-->
-
-                                        <!--<TextView
-                                            android:id="@+id/service_docs_text_view"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Docs"
-                                            android:textSize="14sp"
-                                            android:layout_below="@id/docs_header_text_view"/>-->
                                     </RelativeLayout>
                                 </RelativeLayout>
                                 <!--ProductModel Docs Layout End-->
@@ -370,13 +352,13 @@
                                             app:selectionRequired="true"
                                             app:singleLine="false" />-->
 
-                                        <RadioGroup
-                                            android:id="@+id/service_centre_radio_group"
+                                        <LinearLayout
+                                            android:id="@+id/service_centre_linear_layout"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_below="@+id/service_centre_header_text_view"
-                                            android:layout_marginBottom="5dp"
                                             android:layout_marginTop="5dp"
+                                            android:layout_marginBottom="5dp"
                                             android:orientation="vertical" />
 
                                     </RelativeLayout>

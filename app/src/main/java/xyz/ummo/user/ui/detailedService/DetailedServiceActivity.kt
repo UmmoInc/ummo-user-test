@@ -56,13 +56,14 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceCostTextView: TextView? = null
     var serviceDurationTextView: TextView? = null
     var serviceDocsTextView: TextView? = null
+    var serviceCentresTextView: TextView? = null
     var serviceStepsTextView: TextView? = null
 
     //    var serviceDocsChipGroup: ChipGroup? = null
     var serviceDocsLayout: LinearLayout? = null
 
     //    var serviceCentresChipGroup: ChipGroup? = null
-    var serviceCentresRadioGroup: RadioGroup? = null
+    var serviceCentresLinearLayout: LinearLayout? = null
     var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
@@ -145,7 +146,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceDurationTextView = findViewById(R.id.detailed_service_duration_text_view)
         serviceDocsLayout = findViewById(R.id.service_requirements_linear_layout)
 //        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
-        serviceCentresRadioGroup = findViewById(R.id.service_centre_radio_group)
+        serviceCentresLinearLayout = findViewById(R.id.service_centre_linear_layout)
 
         appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
             if (mCollapsingToolbarLayout!!.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(mCollapsingToolbarLayout!!)) {
@@ -327,29 +328,15 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         if (serviceCentresList!!.isNotEmpty()) {
 
-            serviceCentresRadioGroup!!.removeAllViews()
+            serviceCentresLinearLayout!!.removeAllViews()
             for (i in serviceCentresList!!.indices) {
-                serviceCentreRadioButton = RadioButton(applicationContext)
-                serviceCentreRadioButton!!.id = i
-                serviceCentreRadioButton!!.text = serviceCentresList!![i].replace("\"\"", "")
-                serviceCentreRadioButton!!.textSize = 14F
+                serviceCentresTextView = TextView(applicationContext)
+                serviceCentresTextView!!.id = i
 
-                /** Setting RadioButton color state-list **/
-                if (Build.VERSION.SDK_INT >= 21) {
-                    val colorStateList = ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),
-                            intArrayOf(android.R.attr.state_enabled)), intArrayOf(
-                            Color.GRAY//disabled
-                            , resources.getColor(R.color.ummo_1) //enabled
-                    ))
-                    serviceCentreRadioButton!!.buttonTintList = colorStateList
-                }
-                serviceCentresRadioGroup!!.addView(serviceCentreRadioButton)
-                serviceCentresRadioGroup!!.setOnCheckedChangeListener { radioGroup, checkedId ->
-
-                    val checkedBox = radioGroup.findViewById<RadioButton>(checkedId)
-                    chosenServiceCentre = checkedBox.text.toString()
-                    Timber.e("CHECKED BOX -> ${chosenServiceCentre}")
-                }
+                serviceCentresTextView!!.text = "\u25CB " + serviceCentresList!![i].replace("\"\"", "")
+                serviceCentresTextView!!.textSize = 14F
+                serviceCentresTextView!!.setTextColor(resources.getColor(R.color.ummo_2))
+                serviceCentresLinearLayout!!.addView(serviceCentresTextView)
             }
         } else {
             Timber.e("onCreate: docsList is EMPTY!")

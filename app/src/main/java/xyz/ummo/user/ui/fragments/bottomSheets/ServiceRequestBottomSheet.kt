@@ -19,11 +19,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.adapters.ServiceRequestPagerAdapter
 import xyz.ummo.user.api.RequestService
 import xyz.ummo.user.api.User
 import xyz.ummo.user.api.User.Companion.mode
@@ -37,6 +40,10 @@ import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import java.io.Serializable
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
@@ -47,13 +54,13 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private var layouts: IntArray? = null
     var serviceCentresRadioGroup: RadioGroup? = null
     var serviceCentreRadioButton: RadioButton? = null
-    private var serviceViewPagerAdapter: ServiceRequestPagerAdapter? = null
     private var serviceCentresList: ArrayList<String>? = null
     private var serviceLayoutInflater: LayoutInflater? = null
     private var serviceCostArrayList = ArrayList<ServiceCostModel>()
     private var serviceSpec = ""
     private var specCost = ""
     private var chosenServiceCentre = ""
+    private var currentSelectedDate: Long? = null
 
     private var serviceCostAdapter: ArrayAdapter<ServiceCostModel>? = null
 
@@ -173,12 +180,67 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                     .put("SPEC_COST", specCost)
             mixpanel.track("detailed_serviceSpecSelected", serviceSpecCost)*/
 
-            viewBinding.confirmServiceRelativeLayout.visibility = View.VISIBLE
+            viewBinding.serviceBookingRelativeLayout.visibility = View.VISIBLE
+            serviceRequestStepThree()
+        }
+    }
+
+    private fun serviceRequestStepThree() {
+        val pickDateButton: MaterialButton = viewBinding.reserveDateButton
+
+        val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+
+        val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
+//                .setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
+                .setCalendarConstraints(constraintsBuilder.build())
+                .setTitleText("Pick a Date for your Service")
+
+        dateBuilder.setTitleText("Pick a Date for your Service")
+        val datePicker = dateBuilder.build()
+
+        pickDateButton.setOnClickListener {
+            datePicker.show(this.childFragmentManager, datePicker.toString())
+        }
+
+        datePicker.addOnPositiveButtonClickListener {
+            viewBinding.selectedDateTextView.visibility = View.VISIBLE
+            viewBinding.selectedDateTextView.text = datePicker.headerText
+            Timber.e("DATE PICKER -> ${datePicker.headerText}")
+            viewBinding.reserveDateButton.text = "Choose another date?"
+
             confirmServiceRequest()
         }
     }
 
+    private fun showDatePicker() {
+        /*val selectedDateInMillis = currentSelectedDate ?: System.currentTimeMillis()
+
+        MaterialDatePicker.Builder.datePicker().setSelection(selectedDateInMillis).build().apply {
+            addOnPositiveButtonClickListener { dateInMillis -> onDateSelected(dateInMillis) }
+        }.show(this.childFragmentManager, MaterialDatePicker::class.java.canonicalName)*/
+
+    }
+
+    private fun onDateSelected(dateTimeStampInMillis: Long) {
+        currentSelectedDate = dateTimeStampInMillis
+        val dateTime: LocalDateTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(currentSelectedDate!!), ZoneId.systemDefault())
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+
+        val dateAsFormattedText: String = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        viewBinding.selectedDateTextView.visibility = View.VISIBLE
+        viewBinding.selectedDateTextView.text = dateAsFormattedText
+        viewBinding.reserveDateButton.text = "Choose another date?"
+
+        confirmServiceRequest()
+    }
+
     private fun confirmServiceRequest() {
+        viewBinding.confirmServiceRelativeLayout.visibility = View.VISIBLE
+
         val confirmServiceCostTextView = viewBinding.confirmServiceCostTextView
         val delegationCostTextView = viewBinding.confirmDelegationCostTextView
         val totalCostTextView = viewBinding.confirmTotalCostTextView
@@ -195,9 +257,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
          *  4) Displaying Total Cost**/
 
         val serviceCost: String = specCost
-        val formattedServiceCost: String
 
-        formattedServiceCost = if (serviceCost.contains(",")) {
+        val formattedServiceCost: String = if (serviceCost.contains(",")) {
             serviceCost.replace(",", "")
         } else {
             serviceCost
@@ -236,6 +297,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject, mChosenServiceCentre: String) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
 
+        viewBinding.confirmRequestButton.setBackgroundColor(resources.getColor(R.color.ummo_3))
+        viewBinding.confirmRequestButton.text = "Requesting..."
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {

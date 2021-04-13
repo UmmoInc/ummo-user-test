@@ -17,6 +17,7 @@
         <!-- AlertDialog -->
         <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
         <!-- Material Button-->
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.DatePicker</item>
     </style>
 
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">
@@ -144,6 +145,13 @@
         <item name="shapeAppearanceOverlay">
             @style/ShapeAppearanceOverlay.MaterialComponents.TextInputLayout.FilledBox
         </item>
+    </style>
+
+    <style name="ThemeOverlay.App.DatePicker" parent="@style/ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorPrimary">@color/ummo_2</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Customize text field of the text input mode. -->
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
     </style>
 
     <!--<style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
