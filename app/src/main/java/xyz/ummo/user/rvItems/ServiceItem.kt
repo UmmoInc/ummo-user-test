@@ -558,6 +558,10 @@ class ServiceItem(private val service: ServiceObject,
              } else {*/
             viewHolder.itemView.request_agent_button.setOnClickListener {
 //                    makeRequest()
+
+                /** Saving selected [service] to RoomDB **/
+                serviceViewModel.addService(serviceEntity)
+
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
                 requestBundle.putSerializable(SERVICE_OBJECT, service)

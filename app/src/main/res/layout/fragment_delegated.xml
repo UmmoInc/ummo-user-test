@@ -237,7 +237,7 @@
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Delegated Service"
                                 android:textColor="@color/Grey"
-                                android:textSize="12sp" />
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_name"
@@ -247,7 +247,7 @@
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Service Name"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="20sp" />
 
                         </RelativeLayout>
 
@@ -334,6 +334,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
+                                    android:layout_marginEnd="8dp"
                                     android:layout_toEndOf="@+id/service_cost_image_view">
 
                                     <TextView
@@ -386,16 +387,16 @@
                                 android:layout_marginEnd="30dp"
                                 android:background="@color/screenWhite" />
 
-                            <!--<RelativeLayout
-                                android:id="@+id/service_duration_layout"
+                            <RelativeLayout
+                                android:id="@+id/service_schedule_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/service_cost_layout">
+                                android:layout_below="@+id/divider_3">
                                 <ImageView
                                     android:id="@+id/service_duration_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_stat_duration_icon"
+                                    app:srcCompat="@drawable/ic_service_booking_24"
                                     android:layout_margin="8dp"
                                     android:padding="8dp"/>
 
@@ -403,24 +404,37 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
+                                    android:layout_marginEnd="8dp"
                                     android:layout_toEndOf="@+id/service_duration_image_view">
                                     <TextView
                                         android:id="@+id/duration_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Service Duration"
-                                        android:textSize="16sp"
-                                        android:textColor="@color/black"/>
+                                        android:text="Service Date"
+                                        android:textSize="12sp"
+                                        android:textColor="@color/Grey"/>
                                     <TextView
-                                        android:id="@+id/service_duration_text_view"
+                                        android:id="@+id/service_schedule_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Service Duration"
+                                        android:text="Thursday, 14 May 2021"
                                         android:textSize="14sp"
+                                        android:textColor="@color/ummo_2"
+                                        android:layout_below="@id/duration_header_text_view"/>
+
+                                    <TextView
+                                        android:id="@+id/reschedule_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Reschedule"
+                                        android:textSize="14sp"
+                                        android:textColor="#15B60A"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_alignParentEnd="true"
                                         android:layout_below="@id/duration_header_text_view"/>
                                 </RelativeLayout>
 
-                            </RelativeLayout>-->
+                            </RelativeLayout>
 
                             <!--<RelativeLayout
                                 android:id="@+id/service_docs_relative_layout"
@@ -468,11 +482,20 @@
                                 </RelativeLayout>
                             </RelativeLayout>-->
 
+                            <View
+                                android:id="@+id/divider_4"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_below="@id/service_schedule_layout"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginEnd="30dp"
+                                android:background="@color/screenWhite" />
+
                             <RelativeLayout
                                 android:id="@+id/service_progress_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/divider_3"
+                                android:layout_below="@id/divider_4"
                                 android:layout_marginTop="8dp">
 
                                 <ImageView

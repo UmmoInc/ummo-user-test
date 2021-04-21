@@ -1,7 +1,5 @@
 package xyz.ummo.user.data.model;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 
 public interface DelegatedServiceModel {
@@ -11,5 +9,5 @@ public interface DelegatedServiceModel {
     String getDelegatedProductId();
     ArrayList getServiceProgress();
     String getServiceAgentId();
-
+    String getServiceDate();
 }

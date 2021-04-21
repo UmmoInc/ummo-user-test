@@ -185,7 +185,7 @@
 
     <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
     <!--<string name="serverUrl">https://ummo-stage-server.herokuapp.com</string>-->
-    <string name="serverUrl">http://192.168.8.110:3000</string>
+    <string name="serverUrl">http://192.168.8.102:3000</string>
     <string name="delegation_fee">E50</string>
     <!--<string name="serverUrl">http://192.168.8.108:3000</string>-->
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>

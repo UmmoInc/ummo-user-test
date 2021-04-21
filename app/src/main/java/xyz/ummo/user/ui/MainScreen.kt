@@ -931,6 +931,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     companion object {
+
         // tags used to attach the fragments
         private const val TAG_HOME = "home"
         var CURRENT_TAG = TAG_HOME
@@ -952,6 +953,7 @@ class MainScreen : AppCompatActivity() {
 
         const val SPEC_FEE = "SPEC_FEE"
         const val SERVICE_SPEC = "SERVICE_SPEC"
+        const val SERVICE_DATE = "SERVICE_DATE"
 
         const val CHOSEN_SERVICE_SPEC = "chosen_service_spec"
         const val TOTAL_DELEGATION_FEE = "total_delegation_fee"

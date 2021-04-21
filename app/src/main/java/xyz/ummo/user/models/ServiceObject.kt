@@ -17,5 +17,6 @@ data class ServiceObject(var serviceId: String, //0
                          var serviceCommentCount: Int, //12
                          var serviceShareCount: Int, //13
                          var serviceViewCount: Int, //14
-                         var serviceProvider: String) //15
+                         var serviceProvider: String, //15
+                         var serviceLink: String) //16
     : Serializable

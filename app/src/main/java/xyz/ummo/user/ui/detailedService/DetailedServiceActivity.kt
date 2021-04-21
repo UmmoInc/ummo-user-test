@@ -5,10 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -40,6 +37,7 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
+import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
@@ -67,6 +65,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
+    var webViewLink: TextView? = null
 
     private val greenResponse = false
     private var detailedProductViewModel: DetailedProductViewModel? = null
@@ -138,6 +137,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         nestedScrollView = findViewById(R.id.nested_scrollview)
         requestAgentBtn = findViewById(R.id.request_agent_btn)
+        webViewLink = findViewById(R.id.link_source_text_view)
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout)
         val appBar = findViewById<AppBarLayout>(R.id.app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
@@ -158,6 +158,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         /** Assigning [serviceObject] with the [serviceObject] we receive from ServiceItem **/
         serviceObject = intent.extras!!.get(SERVICE_OBJECT) as ServiceObject
+        Timber.e("SERVICE OBJECT -> ${serviceObject.serviceLink}")
         serviceId = serviceObject.serviceId
 
         populateDetailedServiceElements(serviceObject)
@@ -184,6 +185,24 @@ class DetailedServiceActivity : AppCompatActivity() {
         mCollapsingToolbarLayout!!.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar)
 
         detailedServiceFeeQuery()
+
+        /** Launching Service Web Links from User tapping on either the link or the surrounding
+         * environment.**/
+        webViewLink!!.setOnClickListener { openWebLink() }
+        service_link_relative_layout.setOnClickListener { openWebLink() }
+    }
+
+    private fun openWebLink() {
+        val webViewIntent = Intent(this, WebViewActivity::class.java)
+        webViewIntent.putExtra("LINK", serviceObject.serviceLink)
+        Timber.e("WEB LINK -> ${serviceObject.serviceLink}")
+        if (serviceObject.serviceLink.isNotEmpty()) {
+            showSnackbarWhite("Opening link...", -1)
+            startActivity(webViewIntent)
+            mixpanel.track("detailedService_serviceLinkOpened")
+        } else {
+            showSnackbarYellow("No link for '${serviceObject.serviceName}' found", -1)
+        }
     }
 
     private fun selectingServiceSpec() {
@@ -294,6 +313,12 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceNameTextView!!.text = mService.serviceName
         serviceDescriptionTextView!!.text = mService.serviceDescription
 
+        /** Checking if [mService] has ServiceLink **/
+        if (mService.serviceLink.isNotEmpty())
+            webViewLink!!.text = mService.serviceLink
+        else
+            webViewLink!!.text = "No link found for this service..."
+
         /** Filling up [serviceCostArrayList] with [mService]'s serviceCost **/
 
         serviceCostArrayList = mService.serviceCost
@@ -380,6 +405,21 @@ class DetailedServiceActivity : AppCompatActivity() {
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
         startActivity(Intent(this, MainScreen::class.java).putExtras(bundle))
+    }
+
+    private fun showSnackbarWhite(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
+        val requestAgentButton = findViewById<Button>(R.id.request_agent_btn)
+        snackbar.setTextColor(resources.getColor(R.color.appleWhite))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = requestAgentButton
+        snackbar.show()
     }
 
     private fun showSnackbarYellow(message: String, length: Int) {

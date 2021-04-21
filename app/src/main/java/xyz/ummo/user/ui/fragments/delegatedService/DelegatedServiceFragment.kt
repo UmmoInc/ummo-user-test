@@ -15,6 +15,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -36,6 +39,7 @@ import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_DATE
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
@@ -68,9 +72,12 @@ class DelegatedServiceFragment : Fragment {
     //    private var delegatedProductId: String? = null
     private var delegatedServiceId: String? = null
     private var serviceState: Int = 0
+    private var serviceDate: String? = null
+    private var rescheduledServiceDate: String? = null
     private var agentNameTextView: TextView? = null
     private var agentStatusTextView: TextView? = null
     private var delegatedProductNameTextView: TextView? = null
+    private var delegationScheduleTextView: TextView? = null
     private var delegatedProductDescriptionTextView: TextView? = null
     private var delegatedProductCostTextView: TextView? = null
 
@@ -155,7 +162,7 @@ class DelegatedServiceFragment : Fragment {
         serviceState = delegatedServicePreferences.getInt(SERVICE_STATE, 0)
         delegationFee = delegatedServicePreferences.getString(DELEGATION_FEE, "Couldn't load fee...")!!
         delegationSpec = delegatedServicePreferences.getString(DELEGATION_SPEC, "Couldn't load service spec...")!!
-
+        serviceDate = delegatedServicePreferences.getString(SERVICE_DATE, "Couldn't load Service Date...")
         serviceViewModel = ViewModelProvider(this).get(ServiceViewModel::class.java)
 
         /** The commented block below will be used in a later version of the app **/
@@ -166,6 +173,8 @@ class DelegatedServiceFragment : Fragment {
 
         /** Initializing text-view elements **/
         delegatedProductNameTextView = viewBinding.delegatedServiceHeaderName
+        delegationScheduleTextView = viewBinding.serviceScheduleTextView
+        delegationScheduleTextView!!.text = serviceDate
 //        delegatedProductDescriptionTextView = viewBinding.descriptionTextView
         delegatedProductCostTextView = viewBinding.serviceCostTextView
 //        delegatedProductStepsLayout = view/**/Binding.delegatedServiceStepsLayout
@@ -184,6 +193,7 @@ class DelegatedServiceFragment : Fragment {
 
         viewBinding.delegationFeeQueryImageView.setOnClickListener { queryDelegationFee() }
         viewBinding.delegationFeeQueryIconRelativeLayout.setOnClickListener { queryDelegationFee() }
+        viewBinding.rescheduleTextView.setOnClickListener { rescheduleService() }
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -193,6 +203,36 @@ class DelegatedServiceFragment : Fragment {
         checkingForDelegatedServices()
 
         return view
+    }
+
+    private fun rescheduleService() {
+
+        Timber.e("CURRENT SERVICE-DATE -> $serviceDate")
+        /** For a better UX, we need the User to not accidentally select a date from the past **/
+        val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+        /** Creating a MaterialDateBuilder object **/
+        val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
+                .setCalendarConstraints(constraintsBuilder.build())
+                .setTitleText("Pick a Date for your Service")
+
+        val datePicker = dateBuilder.build()
+        datePicker.show(this.childFragmentManager, datePicker.tag)
+
+        /** Removing old Service Date from [delegatedServicePreferences] **/
+        editor = delegatedServicePreferences.edit()
+        editor.remove(SERVICE_DATE)
+
+        datePicker.addOnPositiveButtonClickListener {
+            viewBinding.serviceScheduleTextView.text = datePicker.headerText
+            rescheduledServiceDate = datePicker.headerText
+            delegatedServiceEntity.serviceDate = rescheduledServiceDate
+            delegatedServiceViewModel!!.updateDelegatedService(delegatedServiceEntity)
+            Timber.e("RESCHEDULED SERVICE DATE -> $rescheduledServiceDate")
+            /** Updating the [delegatedServicePreferences] value for Service Date **/
+            editor.putString(SERVICE_DATE, rescheduledServiceDate).apply()
+        }
+
     }
 
     override fun onStart() {

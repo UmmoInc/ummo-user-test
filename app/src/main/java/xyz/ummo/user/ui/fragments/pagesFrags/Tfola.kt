@@ -75,7 +75,7 @@ class Tfola : Fragment() {
     var shareCount: Int = 0 //14
     var viewCount: Int = 0 //15
     lateinit var serviceProvider: String //16
-
+    var serviceLink = "" //17
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -238,11 +238,16 @@ class Tfola : Fragment() {
                 viewCount = service.getInt("service_view_count") //15
                 serviceProvider = service.getString("service_provider") //16
 
+                serviceLink = if (service.getString("service_link").isNotEmpty())
+                    service.getString("service_link") //17
+                else
+                    ""
+
                 nonDelegatableService = ServiceObject(serviceId, serviceName,
                         serviceDescription, serviceEligibility, serviceCentres,
                         delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
                         approvalCount, disapprovalCount, serviceComments,
-                        commentCount, shareCount, viewCount, serviceProvider)
+                        commentCount, shareCount, viewCount, serviceProvider, serviceLink)
 
                 Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
 

@@ -46,6 +46,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
+    private var serviceDate: String? = null
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -188,15 +190,15 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun serviceRequestStepThree() {
         val pickDateButton: MaterialButton = viewBinding.reserveDateButton
 
+        /** For a better UX, we need the User to not accidentally select a date from the past **/
         val constraintsBuilder = CalendarConstraints.Builder()
                 .setValidator(DateValidatorPointForward.now())
 
+        /** Creating a MaterialDateBuilder object **/
         val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
-//                .setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
                 .setCalendarConstraints(constraintsBuilder.build())
                 .setTitleText("Pick a Date for your Service")
 
-        dateBuilder.setTitleText("Pick a Date for your Service")
         val datePicker = dateBuilder.build()
 
         pickDateButton.setOnClickListener {
@@ -206,6 +208,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         datePicker.addOnPositiveButtonClickListener {
             viewBinding.selectedDateTextView.visibility = View.VISIBLE
             viewBinding.selectedDateTextView.text = datePicker.headerText
+            serviceDate = datePicker.headerText
             Timber.e("DATE PICKER -> ${datePicker.headerText}")
             viewBinding.reserveDateButton.text = "Choose another date?"
 
@@ -254,7 +257,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         /** 1) Removing the currency from the fee
          *  2) Converting fee string to int
          *  3) Adding [Delegation Fee] to get Total Cost (int)
-         *  4) Displaying Total Cost**/
+         *  4) Displaying Total Cost **/
 
         val serviceCost: String = specCost
 
@@ -302,7 +305,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
-            object : RequestService(context, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre) {
+            object : RequestService(context, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre, serviceDate) {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
                     Timber.e("delegatedService: Status Code->%s", code)
@@ -326,6 +329,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor.putString(DetailedServiceActivity.SERVICE_AGENT_ID, serviceAgent)
                             editor.putString(MainScreen.DELEGATION_FEE, mDelegationFee.getString(MainScreen.TOTAL_DELEGATION_FEE))
                             editor.putString(MainScreen.DELEGATION_SPEC, mDelegationFee.getString(MainScreen.CHOSEN_SERVICE_SPEC))
+                            editor.putString(MainScreen.SERVICE_DATE, serviceDate)
                             editor.apply()
 
                             launchDelegatedService(context,
@@ -355,6 +359,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
         Timber.e("SERVICE_AGENT_ID -> $agentId")
+        Timber.e("SERVICE_DATE -> $serviceDate")
 
         val progress = java.util.ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
@@ -366,6 +371,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         delegatedServiceEntity.delegatedProductId = delegatedServiceId
         delegatedServiceEntity.serviceAgentId = agentId
         delegatedServiceEntity.serviceProgress = progress
+        delegatedServiceEntity.serviceDate = serviceDate
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
         val intent = Intent(activity, MainScreen::class.java)

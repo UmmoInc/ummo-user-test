@@ -366,6 +366,81 @@
                                 </RelativeLayout>
                                 <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
 
+                                <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                                <RelativeLayout
+                                    android:id="@+id/service_link_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_centre_layout">
+
+                                    <ImageView
+                                        android:id="@+id/service_link_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="8dp"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_web_link_24" />
+
+                                    <RelativeLayout
+                                        android:id="@+id/service_link_relative_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:layout_toEndOf="@+id/service_link_image_view">
+
+                                        <TextView
+                                            android:id="@+id/service_link_header_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Verify online"
+                                            android:textColor="@color/Grey"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:id="@+id/link_source_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_below="@+id/service_link_header_text_view"
+                                            android:text=""
+                                            android:textColor="@color/green"
+                                            android:textSize="14sp"
+                                            android:textStyle="italic" />
+
+                                        <ImageView
+                                            android:id="@+id/launch_link_image_view"
+                                            android:layout_width="10dp"
+                                            android:layout_height="10dp"
+                                            android:layout_marginStart="5dp"
+                                            android:layout_toEndOf="@+id/link_source_text_view"
+                                            android:layout_alignBottom="@+id/link_source_text_view"
+                                            app:srcCompat="@drawable/ic_launch_link_24" />
+
+                                        <!--<com.google.android.material.chip.ChipGroup
+                                            android:id="@+id/detailed_service_centres_chip_group"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_below="@+id/service_centre_header_text_view"
+                                            app:chipSpacing="2dp"
+                                            app:chipSpacingHorizontal="2dp"
+                                            app:chipSpacingVertical="2dp"
+                                            app:selectionRequired="true"
+                                            app:singleLine="false" />-->
+
+                                        <LinearLayout
+                                            android:id="@+id/service_link_linear_layout"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/service_link_header_text_view"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_marginBottom="5dp"
+                                            android:orientation="vertical" />
+
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+                                <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+
                                 <!--ProductModel Steps Layout Start-->
                                 <!--<RelativeLayout
                                     android:id="@+id/service_steps_relative_layout"
