@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_web_view.*
 import timber.log.Timber
 import xyz.ummo.user.R
 
-class WebViewActivity : AppCompatActivity() {
+class WebViewActivity : AppCompatActivity(){
 
     private var webViewToolbar: androidx.appcompat.widget.Toolbar? = null
 

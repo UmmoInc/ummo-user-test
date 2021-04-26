@@ -1,5 +1,6 @@
 package xyz.ummo.user.models
 
+import org.json.JSONObject
 import java.io.Serializable
 
 data class ServiceObject(var serviceId: String, //0
@@ -18,5 +19,8 @@ data class ServiceObject(var serviceId: String, //0
                          var serviceShareCount: Int, //13
                          var serviceViewCount: Int, //14
                          var serviceProvider: String, //15
-                         var serviceLink: String) //16
+                         var serviceLink: String, //16
+                         var serviceAttachmentName: String,
+                         var serviceAttachmentSize: String,
+                         var serviceAttachmentURL: String) //17
     : Serializable

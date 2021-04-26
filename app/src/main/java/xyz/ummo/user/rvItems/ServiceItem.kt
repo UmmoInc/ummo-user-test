@@ -509,6 +509,7 @@ class ServiceItem(private val service: ServiceObject,
 
         /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
         intent.putExtra(SERVICE_OBJECT, service as Serializable)
+        Timber.e("SHOWING SERVICE DETAILS -> $service")
 
         serviceViewModel.addService(serviceEntity)
         context!!.startActivity(intent)

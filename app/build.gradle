@@ -102,6 +102,9 @@ dependencies {
     //GSON
     implementation 'com.google.code.gson:gson:2.8.6'
 
+    //Permission Handler
+    implementation 'gun0912.ted:tedpermission:2.2.3'
+
     //Firebase SDK
     implementation platform('com.google.firebase:firebase-bom:26.0.0') //Bill of Materials
     implementation 'com.google.firebase:firebase-analytics'

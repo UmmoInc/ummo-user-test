@@ -76,6 +76,11 @@ class Tfuma : Fragment() {
     var viewCount: Int = 0 //15
     lateinit var serviceProvider: String //16
     var serviceLink: String = "" //17
+    var serviceAttachmentJSONArray = JSONArray()
+    var serviceAttachmentJSONObject = JSONObject()
+    var serviceAttachmentName = ""
+    var serviceAttachmentSize = ""
+    var serviceAttachmentURL = ""
 
     val delegatableServiceJSONObject = JSONObject()
 
@@ -248,11 +253,26 @@ class Tfuma : Fragment() {
                                 else
                                     ""
 
+                                try {
+                                    serviceAttachmentJSONArray = service.getJSONArray("service_attachment_objects")
+
+                                    for (x in 0 until serviceAttachmentJSONArray.length()) {
+                                        serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
+                                        serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
+                                        serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
+                                        serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
+                                    }
+                                } catch (jse: JSONException) {
+                                    Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
+                                }
+
                                 delegatableService = ServiceObject(serviceId, serviceName,
                                         serviceDescription, serviceEligibility, serviceCentres,
-                                        delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
-                                        approvalCount, disapprovalCount, serviceComments,
-                                        commentCount, shareCount, viewCount, serviceProvider, serviceLink)
+                                        delegatable, serviceCostArrayList, serviceDocuments,
+                                        serviceDuration, approvalCount, disapprovalCount,
+                                        serviceComments, commentCount, shareCount, viewCount,
+                                        serviceProvider, serviceLink, serviceAttachmentName,
+                                        serviceAttachmentSize, serviceAttachmentURL)
 
                                 Timber.e("DELEGATED---SERVICE -> $delegatableService")
 
@@ -277,7 +297,7 @@ class Tfuma : Fragment() {
                                         .put("COMMENTED-ON", serviceCommentBoolean)
                                         .put("BOOKMARKED", serviceBookmarked)
 
-                                if (isAdded){
+                                if (isAdded) {
                                     gAdapter.add(ServiceItem(delegatableService, context, savedUserActions))
                                     Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
                                     checkingAdapterState()

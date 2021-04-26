@@ -76,6 +76,11 @@ class Tfola : Fragment() {
     var viewCount: Int = 0 //15
     lateinit var serviceProvider: String //16
     var serviceLink = "" //17
+    var serviceAttachmentJSONArray = JSONArray()
+    var serviceAttachmentJSONObject = JSONObject() //18
+    var serviceAttachmentName = ""
+    var serviceAttachmentSize = ""
+    var serviceAttachmentURL = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -243,11 +248,26 @@ class Tfola : Fragment() {
                 else
                     ""
 
+                try {
+                    serviceAttachmentJSONArray = service.getJSONArray("service_attachment_objects")
+
+                    for (x in 0 until serviceDocumentsJSONArray.length()) {
+                        serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
+                        serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
+                        serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
+                        serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
+                    }
+
+                } catch (jse: JSONException) {
+                    Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
+                }
+
                 nonDelegatableService = ServiceObject(serviceId, serviceName,
                         serviceDescription, serviceEligibility, serviceCentres,
                         delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
                         approvalCount, disapprovalCount, serviceComments,
-                        commentCount, shareCount, viewCount, serviceProvider, serviceLink)
+                        commentCount, shareCount, viewCount, serviceProvider, serviceLink,
+                        serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL)
 
                 Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
 
