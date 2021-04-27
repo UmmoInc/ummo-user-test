@@ -392,9 +392,9 @@ class DetailedServiceActivity : AppCompatActivity() {
             attachmentNameTextView.layoutParams = nameTextViewParams
 
             /** Setting AttachmentSizeTextView's parameters **/
-            attachmentSizeTextView.text = mService.serviceAttachmentSize + " MB"
+            attachmentSizeTextView.text = mService.serviceAttachmentSize
             attachmentSizeTextView.textSize = 8F
-            attachmentNameTextView.id = mService.serviceAttachmentSize.toInt()
+            attachmentNameTextView.id = mService.serviceAttachmentName.length
             attachmentSizeTextView.setTextColor(resources.getColor(R.color.black))
 
             /** Setting TextView's layout parameters: setting it below ImageView's **/
@@ -407,6 +407,13 @@ class DetailedServiceActivity : AppCompatActivity() {
             attachmentSizeTextView.layoutParams = sizeTextViewParams
 
             attachmentImageView.setOnClickListener {
+                val attachmentObject = JSONObject()
+                attachmentObject
+                        .put("FILE_NAME", serviceObject.serviceAttachmentName)
+                        .put("FILE_URL", serviceObject.serviceAttachmentURL)
+
+                mixpanel.track("attachment_downloadTapped", attachmentObject)
+
                 /** Checking if attachment has been downloaded; handling UX appropriately **/
                 if (!attachmentDownloaded) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -415,7 +422,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         downloadAttachment(mService.serviceAttachmentURL)
                     }
                 } else {
-                    showSnackbarYellow("Check your 'Downloads' folder", 0)
+                    showSnackbarYellow("File already saved in your 'Downloads' folder", 0)
                 }
             }
 
@@ -525,9 +532,9 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             val downloadRequest = DownloadManager
                     .Request(Uri.parse(attachmentLink))
-                    .setTitle("${serviceObject.serviceName} File")
+                    .setTitle(serviceObject.serviceAttachmentName)
                     .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                            serviceObject.serviceName + "-file.pdf")
+                            serviceObject.serviceAttachmentName)
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                     .setAllowedOverMetered(true)
             val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -550,10 +557,15 @@ class DetailedServiceActivity : AppCompatActivity() {
         val broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
                 val id: Long? = p1?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                val attachmentObject = JSONObject()
+                attachmentObject.put("file_url", attachmentLink)
+                        .put("file_name", serviceObject.serviceAttachmentName)
 
                 if (id == attachmentDownloadId) {
                     showSnackbarGreen("Download complete", -1)
                     editor.putBoolean(ATTACHMENT_DOWNLOADED, true).apply()
+                    mixpanel.track("attachment_downloaded", attachmentObject)
+
                 }
             }
         }

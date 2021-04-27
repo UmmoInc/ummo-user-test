@@ -243,6 +243,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
     private fun confirmServiceRequest() {
         viewBinding.confirmServiceRelativeLayout.visibility = View.VISIBLE
+        viewBinding.confirmPaymentCheckBox.visibility = View.VISIBLE
 
         val confirmServiceCostTextView = viewBinding.confirmServiceCostTextView
         val delegationCostTextView = viewBinding.confirmDelegationCostTextView

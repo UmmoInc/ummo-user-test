@@ -11,8 +11,8 @@
             android:id="@+id/delegated_service_body_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_above="@+id/confirm_request_relative_layout"
+            android:padding="8dp">
 
             <View
                 android:id="@+id/divider_1"
@@ -65,534 +65,555 @@
 
             </RelativeLayout>
 
-            <!-- [START] Service Centre Layout (ID: "service_centre_relative_layout")-->
-            <RelativeLayout
-                android:id="@+id/service_centre_relative_layout"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/service_request_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/description_layout_bottom_sheet">
 
                 <RelativeLayout
-                    android:id="@+id/service_request_instructional_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/service_request_instructional_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/rubik"
-                        android:text="1. Pick the closest Service Centre?"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/service_centre_layout_dialog_fragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/service_request_instructional_layout"
-                    app:layout_constraintTop_toBottomOf="@+id/service_request_instructional_layout">
-
-                    <ImageView
-                        android:id="@+id/service_centre_image_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:padding="8dp"
-                        app:srcCompat="@drawable/ic_service_centre_24" />
-
+                    android:layout_height="match_parent">
+                    <!-- [START] Service Centre Layout (ID: "service_centre_relative_layout")-->
                     <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_toEndOf="@+id/service_centre_image_view">
-
-                        <!--<TextView
-                            android:id="@+id/service_centre_header_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/service_centres"
-                            android:textColor="@color/Grey"
-                            android:textSize="12sp" />-->
-
-                        <!--<TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBottom="@id/service_centre_header_text_view"
-                            android:layout_marginStart="10dp"
-                            android:layout_toEndOf="@id/service_centre_header_text_view"
-                            android:text="@string/service_centre_selection"
-                            android:textColor="@color/Grey"
-                            android:textSize="12sp"
-                            android:textStyle="italic" />-->
-
-                        <RadioGroup
-                            android:id="@+id/service_centre_radio_group_dialog_fragment"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/service_centre_header_text_view"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:orientation="vertical" />
-
-                    </RelativeLayout>
-
-                </RelativeLayout>
-            </RelativeLayout>
-            <!-- [END] Service Centre Layout (ID: "service_centre_relative_layout")-->
-
-            <!-- [START] Service Cost Layout (ID: "service_cost_relative_layout")-->
-            <RelativeLayout
-                android:id="@+id/service_cost_relative_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/service_centre_relative_layout"
-                android:visibility="invisible"
-                tools:visibility="visible">
-
-                <RelativeLayout
-                    android:id="@+id/service_cost_instructional_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/service_cost_instructional_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/rubik"
-                        android:text="2. Choose one from below"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/service_cost_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/service_cost_instructional_layout"
-                    android:layout_margin="8dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/service_cost_image_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:padding="8dp"
-                        app:srcCompat="@drawable/ic_stat_cost_icon" />
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_toEndOf="@+id/service_cost_image_view">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/sheet_service_cost_dropdown"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
-                            android:layout_toStartOf="@+id/service_query_icon_relative_layout"
-                            android:hint="@string/service_type_selection_string"
-                            app:boxStrokeColor="@color/ummo_2"
-                            app:hintTextColor="@color/ummo_2">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/sheet_service_cost_text_View"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="none"
-                                android:text="@string/tap_specify_your_service"
-                                android:textSize="16sp" />
-
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                    </RelativeLayout>
-
-                </RelativeLayout>
-            </RelativeLayout>
-            <!-- [END] Service Cost Layout (ID: "service_cost_relative_layout")-->
-
-            <!-- [START] Service Cost Layout (ID: "service_booking_relative_layout")-->
-            <RelativeLayout
-                android:id="@+id/service_booking_relative_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/service_cost_relative_layout"
-                android:visibility="invisible"
-                tools:visibility="visible">
-
-                <RelativeLayout
-                    android:id="@+id/service_booking_instructional_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/service_booking_instructional_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/rubik"
-                        android:text="3. When would you like your service?"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/service_booking_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/service_booking_instructional_layout"
-                    android:layout_margin="8dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/service_booking_image_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:padding="8dp"
-                        app:srcCompat="@drawable/ic_service_booking_24" />
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_toEndOf="@+id/service_booking_image_view">
-
-                        <TextView
-                            android:id="@+id/selected_date_text_view"
-                            android:layout_width="wrap_content"
-                            android:text="Monday"
-                            android:textColor="@color/black"
-                            android:fontFamily="@font/rubik"
-                            android:textStyle="italic"
-                            android:textSize="16sp"
-                            android:layout_marginBottom="5dp"
-                            android:visibility="gone"
-                            tools:visibility="visible"
-                            android:layout_height="wrap_content"/>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/reserve_date_button"
-                            android:layout_below="@+id/selected_date_text_view"
-                            style="?attr/materialButtonOutlinedStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginEnd="10dp"
-                            android:backgroundTint="@color/ummo_1"
-                            android:text="PICK DATE"
-                            android:textColor="@color/White"
-                            android:textSize="14sp"
-                            tools:targetApi="lollipop" />
-                    </RelativeLayout>
-
-                </RelativeLayout>
-            </RelativeLayout>
-            <!-- [END] Service Cost Layout (ID: "service_booking_relative_layout")-->
-
-            <!-- [START] Service Request Confirmation Layout (ID: "confirm_service_relative_layout") -->
-            <RelativeLayout
-                android:id="@+id/confirm_service_relative_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/service_booking_relative_layout"
-                android:visibility="invisible"
-                tools:visibility="visible">
-
-                <RelativeLayout
-                    android:id="@+id/confirm_service_cost_instructional_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/confirm_service_cost_instructional_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/rubik"
-                        android:text="4. Confirm request"
-                        android:textColor="@color/black"
-                        android:textSize="16sp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/confirm_service_request_relative_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_below="@+id/confirm_service_cost_instructional_layout">
-                    <!--ProductModel Cost Layout Start-->
-                    <RelativeLayout
-                        android:id="@+id/confirm_service_cost_layout"
+                        android:id="@+id/service_centre_relative_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <ImageView
-                            android:id="@+id/confirm_service_cost_image_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:padding="8dp"
-                            app:srcCompat="@drawable/ic_stat_cost_icon" />
-
                         <RelativeLayout
+                            android:id="@+id/service_request_instructional_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_toEndOf="@+id/confirm_service_cost_image_view">
+                            android:layout_margin="4dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="4dp"
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <TextView
-                                android:id="@+id/cost_header_text_view"
+                                android:id="@+id/service_request_instructional_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Service Cost (Gov. Fee)"
+                                android:fontFamily="@font/rubik"
+                                android:text="1. What's the closest Service Centre?"
                                 android:textColor="@color/black"
-                                android:textSize="12sp"
-                                android:textStyle="italic"
-                                tools:ignore="SmallSp" />
-                            <TextView
-                                android:id="@+id/cost_header_sub_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@+id/cost_header_text_view"
-                                android:text="Before service starts"
-                                android:textColor="@color/Grey"
-                                android:textSize="10sp"
-                                android:textStyle="italic"
-                                tools:ignore="SmallSp" />
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
 
-                            <TextView
-                                android:id="@+id/confirm_service_cost_text_view"
+                        <RelativeLayout
+                            android:id="@+id/service_centre_layout_dialog_fragment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/service_request_instructional_layout"
+                            app:layout_constraintTop_toBottomOf="@+id/service_request_instructional_layout">
+
+                            <ImageView
+                                android:id="@+id/service_centre_image_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:text="E50"
-                                android:layout_marginEnd="8dp"
-                                android:layout_alignParentEnd="true"
-                                android:textColor="@color/ummo_2"
-                                android:textSize="14sp" />
+                                android:layout_margin="4dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_service_centre_24" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_centre_image_view">
+
+                                <!--<TextView
+                                    android:id="@+id/service_centre_header_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/service_centres"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="12sp" />-->
+
+                                <!--<TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignBottom="@id/service_centre_header_text_view"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_toEndOf="@id/service_centre_header_text_view"
+                                    android:text="@string/service_centre_selection"
+                                    android:textColor="@color/Grey"
+                                    android:textSize="12sp"
+                                    android:textStyle="italic" />-->
+
+                                <RadioGroup
+                                    android:id="@+id/service_centre_radio_group_dialog_fragment"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_centre_header_text_view"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:orientation="vertical" />
+
+                            </RelativeLayout>
+
                         </RelativeLayout>
-
                     </RelativeLayout>
-                    <!--ProductModel Cost Layout End-->
+                    <!-- [END] Service Centre Layout (ID: "service_centre_relative_layout")-->
 
-                    <!--ProductModel Cost Layout Start-->
+                    <!-- [START] Service Cost Layout (ID: "service_cost_relative_layout")-->
                     <RelativeLayout
-                        android:id="@+id/delegation_cost_layout"
+                        android:id="@+id/service_cost_relative_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/confirm_service_cost_layout"
-                        android:layout_marginBottom="4dp">
-
-                        <ImageView
-                            android:id="@+id/delegation_cost_image_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:padding="8dp"
-                            app:srcCompat="@drawable/ic_agent_cost_24" />
+                        android:layout_below="@+id/service_centre_relative_layout"
+                        android:visibility="invisible"
+                        tools:visibility="visible">
 
                         <RelativeLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/service_cost_instructional_layout"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_marginStart="4dp"
-                            android:layout_margin="8dp"
-                            android:layout_toEndOf="@+id/delegation_cost_image_view">
+                            android:layout_margin="4dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="4dp"
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <TextView
-                                android:id="@+id/delegation_header_text_view"
+                                android:id="@+id/service_cost_instructional_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Delegation Cost"
+                                android:fontFamily="@font/rubik"
+                                android:text="2. Choose one from below"
                                 android:textColor="@color/black"
-                                android:textSize="12sp"
-                                android:textStyle="italic"
-                                tools:ignore="SmallSp" />
-                            <TextView
-                                android:id="@+id/delegation_header_sub_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@+id/delegation_header_text_view"
-                                android:text="After service ends"
-                                android:textColor="@color/Grey"
-                                android:textSize="10sp"
-                                android:textStyle="italic"
-                                tools:ignore="SmallSp" />
-
-                            <TextView
-                                android:id="@+id/confirm_delegation_cost_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="E50"
-                                android:layout_marginEnd="8dp"
-                                android:textColor="@color/ummo_2"
-                                android:textSize="14sp" />
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
                         </RelativeLayout>
 
+                        <RelativeLayout
+                            android:id="@+id/service_cost_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/service_cost_instructional_layout"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/service_cost_image_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="4dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_stat_cost_icon" />
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_cost_image_view">
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    android:id="@+id/sheet_service_cost_dropdown"
+                                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:layout_toStartOf="@+id/service_query_icon_relative_layout"
+                                    android:hint="@string/service_type_selection_string"
+                                    app:boxStrokeColor="@color/ummo_2"
+                                    app:hintTextColor="@color/ummo_2">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/sheet_service_cost_text_View"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="none"
+                                        android:text="@string/tap_specify_your_service"
+                                        android:textSize="16sp" />
+
+                                </com.google.android.material.textfield.TextInputLayout>
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
                     </RelativeLayout>
+                    <!-- [END] Service Cost Layout (ID: "service_cost_relative_layout")-->
 
-                    <!--ProductModel Cost Layout End-->
-                    <View
-                        android:id="@+id/divider_2"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_below="@+id/delegation_cost_layout"
-                        android:background="@color/Grey"
-                        android:padding="20dp" />
-                    <!--ProductModel Total Cost Layout Start-->
-
+                    <!-- [START] Service Cost Layout (ID: "service_booking_relative_layout")-->
                     <RelativeLayout
-                        android:id="@+id/confirm_total_cost_layout"
+                        android:id="@+id/service_booking_relative_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/divider_2"
-                        android:background="@color/linkWhite"
-                        android:paddingBottom="8dp">
-
-                        <ImageView
-                            android:id="@+id/total_cost_image_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:padding="8dp"
-                            app:srcCompat="@drawable/ic_total_payment_24" />
+                        android:layout_below="@+id/service_cost_relative_layout"
+                        android:visibility="invisible"
+                        tools:visibility="visible">
 
                         <RelativeLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/service_booking_instructional_layout"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_marginStart="4dp"
-                            android:layout_toEndOf="@+id/total_cost_image_view">
+                            android:layout_margin="4dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="4dp"
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <TextView
-                                android:id="@+id/total_header_text_view"
+                                android:id="@+id/service_booking_instructional_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Total"
+                                android:fontFamily="@font/rubik"
+                                android:text="3. When would you like your service?"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
-
-                            <TextView
-                                android:id="@+id/confirm_total_cost_text_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="E150"
-                                android:layout_alignParentEnd="true"
-                                android:textColor="#15B60A"
-                                android:layout_marginEnd="8dp"
-                                android:textSize="14sp"
-                                android:textStyle="normal" />
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
                         </RelativeLayout>
 
-                    </RelativeLayout>
-
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/confirm_payment_check_box"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/confirm_total_cost_layout"
-                        android:layout_margin="8dp"
-                        android:padding="8dp"
-                        android:text="I have confirmed the Service details above."
-                        android:textColor="@color/ummo_2"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:ignore="SmallSp" />
-
-                    <!--ProductModel Cost Layout End-->
-
-                    <!--<RelativeLayout
-                        android:id="@+id/delegate_service_centre_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/total_cost_layout">
-
-                        <ImageView
-                            android:id="@+id/delegate_service_centre_image_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="8dp"
-                            android:padding="8dp"
-                            app:srcCompat="@drawable/ic_service_centre_24" />
-
                         <RelativeLayout
-                            android:layout_width="wrap_content"
+                            android:id="@+id/service_booking_layout"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_marginStart="4dp"
-                            android:layout_toEndOf="@+id/delegate_service_centre_image_view">
+                            android:layout_below="@+id/service_booking_instructional_layout"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                            <TextView
-                                android:id="@+id/select_service_centre_text_view"
+                            <ImageView
+                                android:id="@+id/service_booking_image_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Please choose one location closest to you"
-                                android:textColor="@color/Grey"
-                                android:textSize="10sp"
-                                android:textStyle="italic"
-                                tools:ignore="SmallSp" />
+                                android:layout_centerVertical="true"
+                                android:layout_margin="4dp"
+                                android:padding="8dp"
+                                app:srcCompat="@drawable/ic_service_booking_24" />
 
-                            <com.google.android.material.chip.ChipGroup
-                                android:id="@+id/delegate_service_centre_chip_group"
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@+id/service_booking_image_view">
+
+                                <TextView
+                                    android:id="@+id/selected_date_text_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="5dp"
+                                    android:fontFamily="@font/rubik"
+                                    android:text="Monday"
+                                    android:textColor="@color/ummo_2"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/reserve_date_button"
+                                    style="?attr/materialButtonOutlinedStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="40dp"
+                                    android:layout_below="@+id/selected_date_text_view"
+                                    android:layout_marginEnd="10dp"
+                                    android:backgroundTint="@color/ummo_1"
+                                    android:text="PICK DATE"
+                                    android:textColor="@color/White"
+                                    android:textSize="14sp"
+                                    tools:targetApi="lollipop" />
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+                    <!-- [END] Service Cost Layout (ID: "service_booking_relative_layout")-->
+
+                    <!-- [START] Service Request Confirmation Layout (ID: "confirm_service_relative_layout") -->
+                    <RelativeLayout
+                        android:id="@+id/confirm_service_relative_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/service_booking_relative_layout"
+                        android:visibility="invisible"
+                        tools:visibility="visible">
+
+                        <RelativeLayout
+                            android:id="@+id/confirm_service_cost_instructional_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="4dp"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:id="@+id/confirm_service_cost_instructional_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/rubik"
+                                android:text="4. Confirm request"
+                                android:textColor="@color/black"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/confirm_service_request_relative_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/confirm_service_cost_instructional_layout">
+                            <!--ProductModel Cost Layout Start-->
+                            <RelativeLayout
+                                android:id="@+id/confirm_service_cost_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:id="@+id/confirm_service_cost_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_stat_cost_icon" />
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_toEndOf="@+id/confirm_service_cost_image_view">
+
+                                    <TextView
+                                        android:id="@+id/cost_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Service Cost (Gov. Fee)"
+                                        android:textColor="@color/black"
+                                        android:textSize="12sp"
+                                        android:textStyle="italic"
+                                        tools:ignore="SmallSp" />
+
+                                    <TextView
+                                        android:id="@+id/cost_header_sub_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/cost_header_text_view"
+                                        android:text="Before service starts"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="10sp"
+                                        android:textStyle="italic"
+                                        tools:ignore="SmallSp" />
+
+                                    <TextView
+                                        android:id="@+id/confirm_service_cost_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginEnd="8dp"
+                                        android:text="E50"
+                                        android:textColor="@color/ummo_2"
+                                        android:textSize="14sp" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+                            <!--ProductModel Cost Layout End-->
+
+                            <!--ProductModel Cost Layout Start-->
+                            <RelativeLayout
+                                android:id="@+id/delegation_cost_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/select_service_centre_text_view"
-                                app:chipSpacing="2dp"
-                                app:chipSpacingHorizontal="2dp"
-                                app:chipSpacingVertical="2dp"
-                                app:selectionRequired="true"
-                                app:singleLine="false"
-                                app:singleSelection="true" />
+                                android:layout_below="@id/confirm_service_cost_layout"
+                                android:layout_marginBottom="4dp">
+
+                                <ImageView
+                                    android:id="@+id/delegation_cost_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_agent_cost_24" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_toEndOf="@+id/delegation_cost_image_view">
+
+                                    <TextView
+                                        android:id="@+id/delegation_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Delegation Cost"
+                                        android:textColor="@color/black"
+                                        android:textSize="12sp"
+                                        android:textStyle="italic"
+                                        tools:ignore="SmallSp" />
+
+                                    <TextView
+                                        android:id="@+id/delegation_header_sub_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/delegation_header_text_view"
+                                        android:text="After service ends"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="10sp"
+                                        android:textStyle="italic"
+                                        tools:ignore="SmallSp" />
+
+                                    <TextView
+                                        android:id="@+id/confirm_delegation_cost_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_marginEnd="8dp"
+                                        android:text="E50"
+                                        android:textColor="@color/ummo_2"
+                                        android:textSize="14sp" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+
+                            <!--ProductModel Cost Layout End-->
+                            <View
+                                android:id="@+id/divider_2"
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_below="@+id/delegation_cost_layout"
+                                android:background="@color/Grey" />
+                            <!--ProductModel Total Cost Layout Start-->
+
+                            <RelativeLayout
+                                android:id="@+id/confirm_total_cost_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/divider_2"
+                                android:background="@color/linkWhite">
+
+                                <ImageView
+                                    android:id="@+id/total_cost_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_total_payment_24" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:layout_toEndOf="@+id/total_cost_image_view">
+
+                                    <TextView
+                                        android:id="@+id/total_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Total"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:id="@+id/confirm_total_cost_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_marginEnd="8dp"
+                                        android:text="E150"
+                                        android:textColor="#15B60A"
+                                        android:textSize="14sp"
+                                        android:textStyle="normal" />
+                                </RelativeLayout>
+                            </RelativeLayout>
+                            <!--ProductModel Cost Layout End-->
+
+                            <!--<RelativeLayout
+                                android:id="@+id/delegate_service_centre_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/total_cost_layout">
+
+                                <ImageView
+                                    android:id="@+id/delegate_service_centre_image_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="8dp"
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_service_centre_24" />
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_toEndOf="@+id/delegate_service_centre_image_view">
+
+                                    <TextView
+                                        android:id="@+id/select_service_centre_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Please choose one location closest to you"
+                                        android:textColor="@color/Grey"
+                                        android:textSize="10sp"
+                                        android:textStyle="italic"
+                                        tools:ignore="SmallSp" />
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/delegate_service_centre_chip_group"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/select_service_centre_text_view"
+                                        app:chipSpacing="2dp"
+                                        app:chipSpacingHorizontal="2dp"
+                                        app:chipSpacingVertical="2dp"
+                                        app:selectionRequired="true"
+                                        app:singleLine="false"
+                                        app:singleSelection="true" />
+                                </RelativeLayout>
+
+                            </RelativeLayout>-->
                         </RelativeLayout>
-
-                    </RelativeLayout>-->
+                    </RelativeLayout>
+                    <!-- [END] Service Request Confirmation Layout (ID: "confirm_service_relative_layout") -->
                 </RelativeLayout>
-            </RelativeLayout>
-            <!-- [END] Service Request Confirmation Layout (ID: "confirm_service_relative_layout") -->
-
+            </androidx.core.widget.NestedScrollView>
         </RelativeLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/confirm_request_button"
-            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+        <RelativeLayout
+            android:id="@+id/confirm_request_relative_layout"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/greyProfile"
-            android:text="REQUEST"
-            android:textColor="@color/White"
-            android:textSize="16sp"
-            app:icon="@drawable/ic_send_white_24"
-            app:iconGravity="textEnd"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:targetApi="lollipop" />
+            android:layout_height="100dp">
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/confirm_payment_check_box"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:text="I have confirmed the Service details above."
+                android:textColor="@color/ummo_2"
+                android:textSize="12sp"
+                android:visibility="invisible"
+                tools:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="SmallSp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirm_request_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_below="@+id/confirm_payment_check_box"
+                android:backgroundTint="@color/greyProfile"
+                android:text="REQUEST"
+                android:textColor="@color/White"
+                android:textSize="16sp"
+                app:icon="@drawable/ic_send_white_24"
+                app:iconGravity="textEnd"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
     </RelativeLayout>
 </layout>

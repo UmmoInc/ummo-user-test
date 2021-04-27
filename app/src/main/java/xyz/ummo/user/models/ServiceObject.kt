@@ -1,6 +1,5 @@
 package xyz.ummo.user.models
 
-import org.json.JSONObject
 import java.io.Serializable
 
 data class ServiceObject(var serviceId: String, //0

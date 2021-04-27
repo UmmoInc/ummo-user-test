@@ -477,7 +477,7 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkingForDelegatedServiceFromRoom()
+        //checkingForDelegatedServiceFromRoom()
     }
 
     fun feedback() {
