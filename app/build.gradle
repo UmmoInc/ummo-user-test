@@ -75,19 +75,19 @@ dependencies {
     def multidex_version = "2.0.1"
     implementation "androidx.multidex:multidex:$multidex_version"
 
-    implementation 'com.google.firebase:firebase-crashlytics:17.3.1'
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
     def lifecycle_version = '2.2.0'
     def room_version = '2.2.6'
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0'
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.google.android.material:material:1.4.0-alpha01'
+    implementation 'com.google.android.material:material:1.4.0-alpha02'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
@@ -101,9 +101,6 @@ dependencies {
 
     //GSON
     implementation 'com.google.code.gson:gson:2.8.6'
-
-    //Permission Handler
-    implementation 'gun0912.ted:tedpermission:2.2.3'
 
     //Firebase SDK
     implementation platform('com.google.firebase:firebase-bom:26.0.0') //Bill of Materials

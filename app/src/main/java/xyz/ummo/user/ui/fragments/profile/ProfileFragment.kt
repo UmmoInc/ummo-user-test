@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.Keep
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -29,6 +30,7 @@ import xyz.ummo.user.ui.fragments.scanner.CheckIn
 import xyz.ummo.user.ui.signup.RegisterActivity
 import xyz.ummo.user.utilities.eventBusEvents.CardDismissedEvent
 
+@Keep
 class ProfileFragment : Fragment() {
     private var profileName: TextView? = null
     private var profileContact: TextView? = null

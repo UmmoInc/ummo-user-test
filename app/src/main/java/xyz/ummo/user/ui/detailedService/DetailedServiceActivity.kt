@@ -255,7 +255,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             serviceSpecCost
                     .put("SERVICE_SPEC", serviceSpec)
                     .put("SPEC_COST", specCost)
-            mixpanel.track("detailed_serviceSpecSelected", serviceSpecCost)
+            mixpanel.track("detailedService_serviceSpecSelected", serviceSpecCost)
 
             checkForDelegatedServiceAndCompare()
         }
@@ -266,6 +266,10 @@ class DetailedServiceActivity : AppCompatActivity() {
                 .get(DelegatedServiceViewModel::class.java)
 
         val countOfDelegatedServices = delegatedServiceViewModel!!.getCountOfDelegatedServices()
+
+        /** Declaring [serviceObject] for request event tracking **/
+        val serviceRequestObject = JSONObject()
+        serviceRequestObject.put("REQUESTING", serviceObject.serviceName)
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceViewModel!!.delegatedServiceEntityLiveData
@@ -282,12 +286,14 @@ class DetailedServiceActivity : AppCompatActivity() {
                                 launchDelegatedService(this@DetailedServiceActivity,
                                         delegatedServiceId, serviceAgent, delegationId)
                             }
+
+                            /** Tracking a repeat request **/
+                            mixpanel.track("detailedService_repeatingRequest", serviceRequestObject)
                         }
                     })
 
         } else {
             requestAgentBtn!!.setOnClickListener {
-                mixpanel.track("detailedServiceAct_requestAgentButtonTapped")
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
                 requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
@@ -296,6 +302,8 @@ class DetailedServiceActivity : AppCompatActivity() {
                 serviceRequestBottomSheetDialog
                         .show(this.supportFragmentManager,
                                 ServiceRequestBottomSheet.TAG)
+
+                mixpanel.track("detailedService_requestingService", serviceRequestObject)
             }
         }
     }
@@ -308,6 +316,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         detailedServiceFeeQueryIcon.setOnClickListener { openServiceFeeSelfSupport() }
     }
 
+    /** Querying Service Fee Self Support **/
     private fun openServiceFeeSelfSupport() {
         val serviceFeeQuery = ServiceFeeQuery()
         serviceFeeQuery.show(this.supportFragmentManager, ServiceFeeQuery.TAG)
@@ -316,6 +325,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        mixpanel.track("detailedService_navigateBack")
         finish()
     }
 
@@ -478,7 +488,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
                 serviceCentresTextView!!.text = "\u25CB " + serviceCentresList!![i].replace("\"\"", "")
                 serviceCentresTextView!!.textSize = 14F
-                serviceCentresTextView!!.setTextColor(resources.getColor(R.color.ummo_2))
+                serviceCentresTextView!!.setTextColor(resources.getColor(R.color.black))
                 serviceCentresLinearLayout!!.addView(serviceCentresTextView)
             }
         } else {
@@ -510,7 +520,6 @@ class DetailedServiceActivity : AppCompatActivity() {
                         .setPositiveButton("Accept") { dialog, id ->
                             ActivityCompat.requestPermissions(this,
                                     arrayOf(WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
-                            finish()
                         }
                         .setNegativeButton("Deny") { dialog, id -> dialog.cancel() }
                         .show()
@@ -564,7 +573,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                 if (id == attachmentDownloadId) {
                     showSnackbarGreen("Download complete", -1)
                     editor.putBoolean(ATTACHMENT_DOWNLOADED, true).apply()
-                    mixpanel.track("attachment_downloaded", attachmentObject)
+                    mixpanel.track("detailedService_attachmentDownloaded", attachmentObject)
 
                 }
             }

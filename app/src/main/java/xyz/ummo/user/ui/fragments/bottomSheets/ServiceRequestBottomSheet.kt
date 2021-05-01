@@ -71,9 +71,11 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private lateinit var serviceRequestBottomSheetPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var mixpanel: MixpanelAPI
+    private val serviceBeingRequested = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         arguments?.let {
         }
 
@@ -87,6 +89,9 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 R.layout.fragment_service_request_bottom_sheet, container, false)
 
         val view = viewBinding.root
+
+        mixpanel = MixpanelAPI.getInstance(requireContext(),
+                resources.getString(R.string.mixpanelToken))
 
         /** Unpacking [ServiceObject] from [getArguments]**/
         serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
@@ -140,10 +145,12 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                     chosenServiceCentre = checkedBox.text.toString()
                     Timber.e("CHECKED BOX -> $chosenServiceCentre")
 
+                    serviceBeingRequested.put("CHOSEN_CENTRE", chosenServiceCentre)
+                    mixpanel.track("requestBottomSheet_pickingServiceCentre", serviceBeingRequested)
+
                     viewBinding.serviceCostRelativeLayout.visibility = View.VISIBLE
                 }
             }
-
 
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
@@ -176,11 +183,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
             Timber.e("SPEC-COST -> $specCost")
             Timber.e("SERVICE-SPEC -> $serviceSpec")
 
-            val serviceSpecCost = JSONObject()
-            /*serviceSpecCost
-                    .put("SERVICE_SPEC", serviceSpec)
-                    .put("SPEC_COST", specCost)
-            mixpanel.track("detailed_serviceSpecSelected", serviceSpecCost)*/
+            serviceBeingRequested.put("CHOSEN_SPEC", specCost)
+            mixpanel.track("requestBottomSheet_pickingCostSpec", serviceBeingRequested)
 
             viewBinding.serviceBookingRelativeLayout.visibility = View.VISIBLE
             serviceRequestStepThree()
@@ -210,18 +214,23 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
             viewBinding.selectedDateTextView.text = datePicker.headerText
             serviceDate = datePicker.headerText
             Timber.e("DATE PICKER -> ${datePicker.headerText}")
-            viewBinding.reserveDateButton.text = "Choose another date?"
+            viewBinding.reserveDateButton.text = "Change date..."
+            viewBinding.reserveDateButton.setBackgroundColor(resources.getColor(R.color.ummo_3))
+
+            serviceBeingRequested.put("CHOSEN_DATE", datePicker.headerText)
 
             confirmServiceRequest()
+
+            mixpanel.track("requestBottomSheet_pickingServiceDate", serviceBeingRequested)
         }
     }
 
-    private fun showDatePicker() {
-        /*val selectedDateInMillis = currentSelectedDate ?: System.currentTimeMillis()
+    /*private fun showDatePicker() {
+        *//*val selectedDateInMillis = currentSelectedDate ?: System.currentTimeMillis()
 
         MaterialDatePicker.Builder.datePicker().setSelection(selectedDateInMillis).build().apply {
             addOnPositiveButtonClickListener { dateInMillis -> onDateSelected(dateInMillis) }
-        }.show(this.childFragmentManager, MaterialDatePicker::class.java.canonicalName)*/
+        }.show(this.childFragmentManager, MaterialDatePicker::class.java.canonicalName)*//*
 
     }
 
@@ -239,7 +248,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         viewBinding.reserveDateButton.text = "Choose another date?"
 
         confirmServiceRequest()
-    }
+    }*/
 
     private fun confirmServiceRequest() {
         viewBinding.confirmServiceRelativeLayout.visibility = View.VISIBLE
@@ -283,6 +292,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 confirmRequestButton.isClickable = true
                 confirmRequestButton.isActivated = true
                 confirmRequestButton.isEnabled = true
+
+                mixpanel.track("requestBottomSheet_confirmingPaymentTerms", serviceBeingRequested)
 
                 confirmRequestButton.setOnClickListener {
                     requestAgentDelegate(serviceObject!!.serviceId, delegationFee, chosenServiceCentre)
@@ -335,6 +346,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                             launchDelegatedService(context,
                                     delegatedServiceId, serviceAgent, delegationId)
+
+                            mixpanel.track("requestBottomSheet_completingRequest", serviceBeingRequested)
 
                         }
                         404 -> {

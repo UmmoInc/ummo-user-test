@@ -52,7 +52,7 @@
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
                     android:textColor="@color/ummo_2"
-                    android:textSize="16sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -140,8 +140,9 @@
                             android:layout_alignTop="@+id/delegated_service_header_image_view"
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility"
-                            android:textColor="@color/Grey"
-                            android:textSize="12sp" />
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/service_eligibility_text_view"

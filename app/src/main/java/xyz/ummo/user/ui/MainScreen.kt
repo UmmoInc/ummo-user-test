@@ -115,6 +115,8 @@ class MainScreen : AppCompatActivity() {
     private var delegationId: String? = null
     private var agentId: String? = null
 
+    private lateinit var mixpanel: MixpanelAPI
+
     /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
     private val apiKey = "2dzwMEoC3CB59FFu28tvXODHNtShmtDVopoFRqCtkD0hukYlsr5DqWacviLG9vXA"
@@ -167,6 +169,10 @@ class MainScreen : AppCompatActivity() {
 
         //checkForAndLaunchDelegatedFragment()
 
+
+        mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
         mAuth = FirebaseAuth.getInstance()
 
         if (savedInstanceState == null) {
@@ -195,6 +201,7 @@ class MainScreen : AppCompatActivity() {
 
         val userSupportIcon = findViewById<ActionMenuItemView>(R.id.user_support)
         userSupportIcon.setOnClickListener {
+            mixpanel.track("supportCentre_launched")
             userSupport()
         }
 
@@ -232,8 +239,6 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun welcomeUserAboard() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
         introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
@@ -547,8 +552,6 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun launchWhatsApp() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         val contact = "+26876804065"
 
@@ -567,8 +570,6 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun launchPhoneDialer() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         mixpanel.track("supportCentre_phoneDialerInitiated")
 
@@ -913,7 +914,6 @@ class MainScreen : AppCompatActivity() {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.gold))
-
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav

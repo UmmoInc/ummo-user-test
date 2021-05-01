@@ -6,11 +6,13 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_tfola.view.*
@@ -113,12 +115,16 @@ class Tfola : Fragment() {
 
         reloadServices()
 
+        val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                resources.getString(R.string.mixpanelToken))
+
         /** Refreshing services with [tfola_swipe_refresher] **/
         tfolaBinding.tfolaSwipeRefresher.setOnRefreshListener {
             getNonDelegatableServicesFromServer()
             tfolaBinding.tfolaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
 
+            mixpanel?.track("discoverFragment_refreshed")
         }
 
         return view
@@ -172,12 +178,24 @@ class Tfola : Fragment() {
         tfolaBinding.loadProgressBar.visibility = View.GONE
         tfolaBinding.offlineLayout.visibility = View.VISIBLE
 
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                    resources.getString(R.string.mixpanelToken))
+            mixpanel?.track("discoverFragment_showingOffline")
+        }
+
     }
 
     private fun hideOfflineState() {
         tfolaBinding.offlineLayout.visibility = View.GONE
         tfolaBinding.loadProgressBar.visibility = View.GONE
         tfolaBinding.tfolaSwipeRefresher.visibility = View.VISIBLE
+
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                    resources.getString(R.string.mixpanelToken))
+            mixpanel?.track("discoverFragment_hidingOffline")
+        }
     }
 
     private fun getNonDelegatableServicesFromServer() {
@@ -347,6 +365,8 @@ class Tfola : Fragment() {
         val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }

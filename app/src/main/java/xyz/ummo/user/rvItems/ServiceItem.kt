@@ -477,6 +477,11 @@ class ServiceItem(private val service: ServiceObject,
                 }
 
                 override fun onFinish() {
+                    /** Tracking "SERVICE_DOWNLOAD" event **/
+                    serviceItemObject.put("SERVICE_DOWNLOADED", service.serviceName)
+                    serviceItemObject.put("SERVICE_ID", service.serviceId)
+                    mixpanel?.track("serviceCard_serviceDownloaded", serviceItemObject)
+
                     viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
                 }
             }
@@ -496,6 +501,11 @@ class ServiceItem(private val service: ServiceObject,
                 }
 
                 override fun onFinish() {
+                    /** Tracking "SERVICE_DOWNLOAD" event **/
+                    serviceItemObject.put("SERVICE_DOWNLOADED", service.serviceName)
+                    serviceItemObject.put("SERVICE_ID", service.serviceId)
+                    mixpanel?.track("serviceCard_serviceDownloaded", serviceItemObject)
+
                     viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
                 }
             }
@@ -519,6 +529,11 @@ class ServiceItem(private val service: ServiceObject,
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
                 .get(DelegatedServiceViewModel::class.java)
 
+        val mixpanel = MixpanelAPI.getInstance(context,
+                context?.resources?.getString(R.string.mixpanelToken))
+
+        val serviceItemObject = JSONObject()
+
         val countOfDelegatedServices = delegatedServiceViewModel.getCountOfDelegatedServices()
 
         /** Preventing User from delegating more than one service at a time. **/
@@ -537,6 +552,10 @@ class ServiceItem(private val service: ServiceObject,
                             delegateStateEvent.delegateStateEvent = SERVICE_PENDING
                             EventBus.getDefault().post(delegateStateEvent)
                         }
+
+                        /** Tracking a repeat request **/
+                        serviceItemObject.put("REQUESTING", service.serviceName)
+                        mixpanel?.track("serviceCard_repeatingRequest", serviceItemObject)
                     }
                     serviceEntity.serviceId.equals(delegatedServiceId) -> {
                         viewHolder.itemView.request_agent_button.setOnClickListener {
@@ -559,6 +578,10 @@ class ServiceItem(private val service: ServiceObject,
              } else {*/
             viewHolder.itemView.request_agent_button.setOnClickListener {
 //                    makeRequest()
+
+                /** Tracking a new service request **/
+                serviceItemObject.put("REQUESTING", service.serviceName)
+                mixpanel?.track("serviceCard_requestingService", serviceItemObject)
 
                 /** Saving selected [service] to RoomDB **/
                 serviceViewModel.addService(serviceEntity)
