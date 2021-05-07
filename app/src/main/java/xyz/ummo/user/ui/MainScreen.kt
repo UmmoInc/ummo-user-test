@@ -866,7 +866,9 @@ class MainScreen : AppCompatActivity() {
         //TODO: undo 17
 //        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
 
-        serviceViewModel?.addService(serviceEntity)
+        if (serviceEntity.serviceId != null)
+            serviceViewModel?.addService(serviceEntity)
+
 //        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
     }
 

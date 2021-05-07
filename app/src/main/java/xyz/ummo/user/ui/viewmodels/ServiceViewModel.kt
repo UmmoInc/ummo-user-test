@@ -10,7 +10,7 @@ import xyz.ummo.user.data.repo.AppRepository
 class ServiceViewModel(application: Application) : AndroidViewModel(application) {
     private val appRepository = AppRepository(application)
 
-    private val serviceEntityLiveData: LiveData<ServiceEntity>
+    private val serviceEntityLiveData: LiveData<ServiceEntity> = appRepository.serviceEntityLiveData
 
     fun addService(serviceEntity: ServiceEntity?) {
         appRepository.insertService(serviceEntity)
@@ -44,7 +44,4 @@ class ServiceViewModel(application: Application) : AndroidViewModel(application)
         return appRepository.nonDelegatableServices
     }
 
-    init {
-        serviceEntityLiveData = appRepository.serviceEntityLiveData
-    }
 }
