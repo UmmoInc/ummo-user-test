@@ -23,17 +23,22 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
+import xyz.ummo.user.api.GetServiceProvider
 import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
+import xyz.ummo.user.databinding.ServiceFilterChipLayoutBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 
 class Tfola : Fragment() {
+    private lateinit var allServices: JSONArray
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -49,6 +54,7 @@ class Tfola : Fragment() {
     private lateinit var nonDelegatableServicesArrayList: ArrayList<ServiceEntity>
     private lateinit var nonDelegatedService: ServiceObject
     private lateinit var tfolaBinding: FragmentTfolaBinding
+    private lateinit var serviceFilterChipBinding: ServiceFilterChipLayoutBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
     private lateinit var nonDelegatableService: ServiceObject
@@ -76,6 +82,8 @@ class Tfola : Fragment() {
     var commentCount: Int = 0 //13
     var shareCount: Int = 0 //14
     var viewCount: Int = 0 //15
+    lateinit var serviceProviderData: ServiceProviderData
+    lateinit var serviceProviderList: List<ServiceProviderData>
     lateinit var serviceProvider: String //16
     var serviceLink = "" //17
     var serviceAttachmentJSONArray = JSONArray()
@@ -105,6 +113,11 @@ class Tfola : Fragment() {
                 container,
                 false)
 
+        serviceFilterChipBinding = DataBindingUtil.inflate(inflater,
+                R.layout.service_filter_chip_layout,
+                container,
+                false)
+
         val view = tfolaBinding.root
         recyclerView = view.tfola_services_recycler_view
         recyclerView.setHasFixedSize(true)
@@ -114,6 +127,12 @@ class Tfola : Fragment() {
         getNonDelegatableServicesFromServer()
 
         reloadServices()
+
+        if (isAdded) {
+            getServiceProviderData()
+        }
+
+        filterServicesByCategory()
 
         val mixpanel = MixpanelAPI.getInstance(requireContext(),
                 resources.getString(R.string.mixpanelToken))
@@ -128,6 +147,57 @@ class Tfola : Fragment() {
         }
 
         return view
+    }
+
+    private fun filterServicesByCategory() {
+
+        tfolaBinding.serviceCategoryChipGroup.setOnCheckedChangeListener { group, checkedId ->
+            Timber.e("CHECKED GROUP -> $group")
+            Timber.e("CHECKED CHIP -> $checkedId")
+
+            when (checkedId) {
+
+                2131361939 -> {
+                    Timber.e("CHECKED ALL")
+                    Timber.e("SERVICE PROVIDER -> $serviceProviderList")
+                    getNonDelegatableServicesFromServer()
+
+                }
+                2131362251 -> {
+                    Timber.e("CHECKED HOME AFFAIRS")
+                    displayServiceByCategory("601268725ad77100154da834")
+                }
+                2131362041 -> {
+                    Timber.e("CHECKED COMMERCE")
+                    displayServiceByCategory("601266be5ad77100154da833")
+                }
+                2131362498 -> {
+                    Timber.e("CHECKED REVENUE")
+                    displayServiceByCategory("601268ff5ad77100154da835")
+                }
+            }
+        }
+
+        Timber.e("CHIP GROUP -> ${tfolaBinding.serviceCategoryChipGroup.checkedChipId}")
+        Timber.e("CHIP GROUP -> ${tfolaBinding.serviceCategoryChipGroup}")
+    }
+
+    private fun getServiceProviderData() {
+        object : GetServiceProvider(requireActivity()) {
+            override fun done(data: List<ServiceProviderData>, code: Number) {
+                if (code == 200) {
+                    Timber.e("SERVICE-PROVIDERS -> $data")
+                    serviceProviderList = data
+
+                    for (i in data.indices) {
+                        serviceProviderData = data[i]
+                        Timber.e("SERVICE-PROVIDER -> $serviceProviderData")
+                    }
+                } else {
+                    Timber.e("NO SERVICE PROVIDERS FOUND -> $code")
+                }
+            }
+        }
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
@@ -202,7 +272,7 @@ class Tfola : Fragment() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    val allServices = JSONArray(String(data))
+                    allServices = JSONArray(String(data))
 
                     gAdapter.clear()
 
@@ -229,98 +299,117 @@ class Tfola : Fragment() {
             delegatable = service.getBoolean("delegatable")
 
             if (!delegatable) {
-                Timber.e("DELEGATABLE -> $service")
-
-                serviceId = service.getString("_id") //1
-                serviceName = service.getString("service_name") //2
-                serviceDescription = service.getString("service_description") //3
-                serviceEligibility = service.getString("service_eligibility") //4
-//                                serviceCentres //5
-                serviceCentresJSONArray = service.getJSONArray("service_centres")
-                serviceCentres = fromJSONArray(serviceCentresJSONArray)
-
-                delegatable = service.getBoolean("delegatable") //6
-                //TODO: ATTEND TO ASAP
-//                serviceCost = service.getJSONArray("service_cost") //7
-                serviceCostJSONArray = service.getJSONArray("service_cost")
-                serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
-                Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
-//                                serviceDocuments = //8
-                serviceDocumentsJSONArray = service.getJSONArray("service_documents")
-                serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
-
-                serviceDuration = service.getString("service_duration") //9
-                approvalCount = service.getInt("useful_count") //10
-                disapprovalCount = service.getInt("not_useful_count") //11
-//                                serviceComments = s //12
-                serviceCommentsJSONArray = service.getJSONArray("service_comments")
-                serviceComments = fromJSONArray(serviceCommentsJSONArray)
-
-                commentCount = service.getInt("service_comment_count") //13
-                shareCount = service.getInt("service_share_count") //14
-                viewCount = service.getInt("service_view_count") //15
-                serviceProvider = service.getString("service_provider") //16
-
-                serviceLink = if (service.getString("service_link").isNotEmpty())
-                    service.getString("service_link") //17
-                else
-                    ""
-
-                try {
-                    serviceAttachmentJSONArray = service.getJSONArray("service_attachment_objects")
-
-                    for (x in 0 until serviceDocumentsJSONArray.length()) {
-                        serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
-                        serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
-                        serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
-                        serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
-                    }
-
-                } catch (jse: JSONException) {
-                    Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
-                }
-
-                nonDelegatableService = ServiceObject(serviceId, serviceName,
-                        serviceDescription, serviceEligibility, serviceCentres,
-                        delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
-                        approvalCount, disapprovalCount, serviceComments,
-                        commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-                        serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL)
-
-                Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
-
-                /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
-                 * 2. wrapping those values in a JSON Object
-                 * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
-                serviceUpVoteBoolean = nonDelegatedServicePrefs
-                        .getBoolean("UP-VOTE-${serviceId}", false)
-
-                serviceDownVoteBoolean = nonDelegatedServicePrefs
-                        .getBoolean("DOWN-VOTE-${serviceId}", false)
-
-                serviceCommentBoolean = nonDelegatedServicePrefs
-                        .getBoolean("COMMENTED-ON-${serviceId}", false)
-
-                serviceBookmarked = nonDelegatedServicePrefs
-                        .getBoolean("BOOKMARKED-${serviceId}", false)
-
-                savedUserActions
-                        .put("UP-VOTE", serviceUpVoteBoolean)
-                        .put("DOWN-VOTE", serviceDownVoteBoolean)
-                        .put("COMMENTED-ON", serviceCommentBoolean)
-                        .put("BOOKMARKED", serviceBookmarked)
-
-                if (isAdded) {
-                    gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
-                    Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
-                    gAdapter.notifyDataSetChanged()
-
-                    checkingAdapterState()
-                }
+                parseSingleService(service)
             }
         }
     }
 
+    private fun parseSingleService(serviceJSONObject: JSONObject) {
+
+        serviceId = serviceJSONObject.getString("_id") //1
+        serviceName = serviceJSONObject.getString("service_name") //2
+        serviceDescription = serviceJSONObject.getString("service_description") //3
+        serviceEligibility = serviceJSONObject.getString("service_eligibility") //4
+//                                serviceCentres //5
+        serviceCentresJSONArray = serviceJSONObject.getJSONArray("service_centres")
+        serviceCentres = fromJSONArray(serviceCentresJSONArray)
+
+        delegatable = serviceJSONObject.getBoolean("delegatable") //6
+        //TODO: ATTEND TO ASAP
+//                serviceCost = service.getJSONArray("service_cost") //7
+        serviceCostJSONArray = serviceJSONObject.getJSONArray("service_cost")
+        serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
+        Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
+//                                serviceDocuments = //8
+        serviceDocumentsJSONArray = serviceJSONObject.getJSONArray("service_documents")
+        serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
+
+        serviceDuration = serviceJSONObject.getString("service_duration") //9
+        approvalCount = serviceJSONObject.getInt("useful_count") //10
+        disapprovalCount = serviceJSONObject.getInt("not_useful_count") //11
+//                                serviceComments = s //12
+        serviceCommentsJSONArray = serviceJSONObject.getJSONArray("service_comments")
+        serviceComments = fromJSONArray(serviceCommentsJSONArray)
+
+        commentCount = serviceJSONObject.getInt("service_comment_count") //13
+        shareCount = serviceJSONObject.getInt("service_share_count") //14
+        viewCount = serviceJSONObject.getInt("service_view_count") //15
+        serviceProvider = serviceJSONObject.getString("service_provider") //16
+
+        serviceLink = if (serviceJSONObject.getString("service_link").isNotEmpty())
+            serviceJSONObject.getString("service_link") //17
+        else
+            ""
+
+        try {
+            serviceAttachmentJSONArray = serviceJSONObject.getJSONArray("service_attachment_objects")
+
+            for (x in 0 until serviceDocumentsJSONArray.length()) {
+                serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
+                serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
+                serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
+                serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
+            }
+
+        } catch (jse: JSONException) {
+            Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
+        }
+
+        nonDelegatableService = ServiceObject(serviceId, serviceName,
+                serviceDescription, serviceEligibility, serviceCentres,
+                delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
+                approvalCount, disapprovalCount, serviceComments,
+                commentCount, shareCount, viewCount, serviceProvider, serviceLink,
+                serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL)
+
+        Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
+
+        /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+         * 2. wrapping those values in a JSON Object
+         * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+        serviceUpVoteBoolean = nonDelegatedServicePrefs
+                .getBoolean("UP-VOTE-${serviceId}", false)
+
+        serviceDownVoteBoolean = nonDelegatedServicePrefs
+                .getBoolean("DOWN-VOTE-${serviceId}", false)
+
+        serviceCommentBoolean = nonDelegatedServicePrefs
+                .getBoolean("COMMENTED-ON-${serviceId}", false)
+
+        serviceBookmarked = nonDelegatedServicePrefs
+                .getBoolean("BOOKMARKED-${serviceId}", false)
+
+        savedUserActions
+                .put("UP-VOTE", serviceUpVoteBoolean)
+                .put("DOWN-VOTE", serviceDownVoteBoolean)
+                .put("COMMENTED-ON", serviceCommentBoolean)
+                .put("BOOKMARKED", serviceBookmarked)
+
+        if (isAdded) {
+            gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
+            Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
+            gAdapter.notifyDataSetChanged()
+
+            checkingAdapterState()
+        }
+    }
+
+    private fun displayServiceByCategory(categoryId: String) {
+        gAdapter.clear()
+        gAdapter.notifyDataSetChanged()
+
+        var categoryService: JSONObject
+
+        pollingAdapterState()
+
+        for (i in 0 until allServices.length()) {
+            categoryService = allServices[i] as JSONObject
+            Timber.e("CATEGORY SERVICES -> $categoryService")
+            if (categoryService.getString("service_provider") == categoryId) {
+                parseSingleService(categoryService)
+            }
+        }
+    }
 
     /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
     private fun fromJSONArray(array: JSONArray): ArrayList<String> {

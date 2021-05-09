@@ -45,6 +45,7 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
+import xyz.ummo.user.data.model.ServiceProviderModel
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.InfoCardBinding
@@ -63,7 +64,6 @@ import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class MainScreen : AppCompatActivity() {
 
@@ -219,7 +219,7 @@ class MainScreen : AppCompatActivity() {
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
-//        getServiceProviderData()
+        getServiceProviderData()
 
 //        getAllServicesFromServer()
 
@@ -236,6 +236,24 @@ class MainScreen : AppCompatActivity() {
     private fun showBadge() {
         if (serviceUpdated)
             badge.isVisible = true
+    }
+
+    private fun getServiceProviderData() {
+        object : GetServiceProvider(this) {
+            override fun done(data: List<ServiceProviderData>, code: Number) {
+                if (code == 200) {
+                    Timber.e("SERVICE-PROVIDERS -> $data")
+                    var serviceProvider: ServiceProviderData
+
+                    for (i in data.indices) {
+                        serviceProvider = data[i]
+                        Timber.e("SERVICE-PROVIDER -> $serviceProvider")
+                    }
+                } else {
+                    Timber.e("NO SERVICE PROVIDERS FOUND -> $code")
+                }
+            }
+        }
     }
 
     private fun welcomeUserAboard() {
