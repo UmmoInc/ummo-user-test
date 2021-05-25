@@ -34,6 +34,7 @@ import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 
 class Tfola : Fragment() {
@@ -50,6 +51,7 @@ class Tfola : Fragment() {
     private var serviceBookmarked: Boolean = false
     private var savedUserActions = JSONObject()
     private var reloadingServicesEvent = ReloadingServicesEvent()
+    private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
     private lateinit var nonDelegatedServicePrefs: SharedPreferences
     private lateinit var nonDelegatableServicesArrayList: ArrayList<ServiceEntity>
     private lateinit var nonDelegatedService: ServiceObject
@@ -91,32 +93,39 @@ class Tfola : Fragment() {
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
+    lateinit var mixpanel: MixpanelAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         serviceViewModel = ViewModelProvider(this)
-                .get(ServiceViewModel::class.java)
+            .get(ServiceViewModel::class.java)
 
         gAdapter = GroupAdapter()
 
         nonDelegatedServicePrefs = this.requireActivity()
-                .getSharedPreferences(ummoUserPreferences, mode)
+            .getSharedPreferences(ummoUserPreferences, mode)
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
-        tfolaBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_tfola,
-                container,
-                false)
+        tfolaBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_tfola,
+            container,
+            false
+        )
 
-        serviceFilterChipBinding = DataBindingUtil.inflate(inflater,
-                R.layout.service_filter_chip_layout,
-                container,
-                false)
+        serviceFilterChipBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.service_filter_chip_layout,
+            container,
+            false
+        )
 
         val view = tfolaBinding.root
         recyclerView = view.tfola_services_recycler_view
@@ -134,8 +143,10 @@ class Tfola : Fragment() {
 
         filterServicesByCategory()
 
-        val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                resources.getString(R.string.mixpanelToken))
+        mixpanel = MixpanelAPI.getInstance(
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
+        )
 
         /** Refreshing services with [tfola_swipe_refresher] **/
         tfolaBinding.tfolaSwipeRefresher.setOnRefreshListener {
@@ -166,14 +177,26 @@ class Tfola : Fragment() {
                 2131362251 -> {
                     Timber.e("CHECKED HOME AFFAIRS")
                     displayServiceByCategory("601268725ad77100154da834")
+                    mixpanel.track("discoverFragment_homeAffairs_selected")
+                    loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
                 2131362041 -> {
                     Timber.e("CHECKED COMMERCE")
                     displayServiceByCategory("601266be5ad77100154da833")
+                    mixpanel.track("discoverFragment_commerce_selected")
+                    loadingCategoryServicesEvent.categoryLoading = "Commerce"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
                 2131362498 -> {
                     Timber.e("CHECKED REVENUE")
                     displayServiceByCategory("601268ff5ad77100154da835")
+                    mixpanel.track("discoverFragment_revenue_selected")
+                    loadingCategoryServicesEvent.categoryLoading = "Revenue"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
             }
         }
@@ -249,8 +272,10 @@ class Tfola : Fragment() {
         tfolaBinding.offlineLayout.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                    resources.getString(R.string.mixpanelToken))
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
             mixpanel?.track("discoverFragment_showingOffline")
         }
 
@@ -262,8 +287,10 @@ class Tfola : Fragment() {
         tfolaBinding.tfolaSwipeRefresher.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                    resources.getString(R.string.mixpanelToken))
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
             mixpanel?.track("discoverFragment_hidingOffline")
         }
     }
@@ -342,7 +369,8 @@ class Tfola : Fragment() {
             ""
 
         try {
-            serviceAttachmentJSONArray = serviceJSONObject.getJSONArray("service_attachment_objects")
+            serviceAttachmentJSONArray =
+                serviceJSONObject.getJSONArray("service_attachment_objects")
 
             for (x in 0 until serviceDocumentsJSONArray.length()) {
                 serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
@@ -355,12 +383,14 @@ class Tfola : Fragment() {
             Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
         }
 
-        nonDelegatableService = ServiceObject(serviceId, serviceName,
-                serviceDescription, serviceEligibility, serviceCentres,
-                delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
-                approvalCount, disapprovalCount, serviceComments,
-                commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-                serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL)
+        nonDelegatableService = ServiceObject(
+            serviceId, serviceName,
+            serviceDescription, serviceEligibility, serviceCentres,
+            delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
+            approvalCount, disapprovalCount, serviceComments,
+            commentCount, shareCount, viewCount, serviceProvider, serviceLink,
+            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL
+        )
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
 
@@ -368,22 +398,22 @@ class Tfola : Fragment() {
          * 2. wrapping those values in a JSON Object
          * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
         serviceUpVoteBoolean = nonDelegatedServicePrefs
-                .getBoolean("UP-VOTE-${serviceId}", false)
+            .getBoolean("UP-VOTE-${serviceId}", false)
 
         serviceDownVoteBoolean = nonDelegatedServicePrefs
-                .getBoolean("DOWN-VOTE-${serviceId}", false)
+            .getBoolean("DOWN-VOTE-${serviceId}", false)
 
         serviceCommentBoolean = nonDelegatedServicePrefs
-                .getBoolean("COMMENTED-ON-${serviceId}", false)
+            .getBoolean("COMMENTED-ON-${serviceId}", false)
 
         serviceBookmarked = nonDelegatedServicePrefs
-                .getBoolean("BOOKMARKED-${serviceId}", false)
+            .getBoolean("BOOKMARKED-${serviceId}", false)
 
         savedUserActions
-                .put("UP-VOTE", serviceUpVoteBoolean)
-                .put("DOWN-VOTE", serviceDownVoteBoolean)
-                .put("COMMENTED-ON", serviceCommentBoolean)
-                .put("BOOKMARKED", serviceBookmarked)
+            .put("UP-VOTE", serviceUpVoteBoolean)
+            .put("DOWN-VOTE", serviceDownVoteBoolean)
+            .put("COMMENTED-ON", serviceCommentBoolean)
+            .put("BOOKMARKED", serviceBookmarked)
 
         if (isAdded) {
             gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
@@ -452,9 +482,11 @@ class Tfola : Fragment() {
          *  Length is -1 for Snackbar.LENGTH_SHORT
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
         val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        val snackbar =
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
@@ -472,8 +504,8 @@ class Tfola : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                Tfola().apply {
+            Tfola().apply {
 
-                }
+            }
     }
 }

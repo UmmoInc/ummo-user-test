@@ -325,6 +325,13 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
+    fun onServiceCategorySelection(loadingCategoryServicesEvent: LoadingCategoryServicesEvent) {
+        if (loadingCategoryServicesEvent.loadingService == true) {
+            showSnackbarBlue("Loading ${loadingCategoryServicesEvent.categoryLoading} services", -1)
+        }
+    }
+
+    @Subscribe
     fun onServiceStateChange(serviceUpdateEvents: ServiceUpdateEvents) {
 
         val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
