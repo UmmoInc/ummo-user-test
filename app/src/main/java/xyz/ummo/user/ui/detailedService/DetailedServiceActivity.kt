@@ -175,7 +175,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         /** Assigning [serviceObject] with the [serviceObject] we receive from ServiceItem **/
         serviceObject = intent.extras!!.get(SERVICE_OBJECT) as ServiceObject
-        Timber.e("SERVICE OBJECT -> ${serviceObject}")
+        Timber.e("SERVICE OBJECT -> $serviceObject")
         serviceId = serviceObject.serviceId
 
         populateDetailedServiceElements(serviceObject)

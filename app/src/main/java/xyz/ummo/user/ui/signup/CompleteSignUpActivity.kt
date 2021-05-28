@@ -33,6 +33,7 @@ import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
 import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.PrefManager
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.text.SimpleDateFormat
@@ -99,6 +100,15 @@ class CompleteSignUpActivity : AppCompatActivity() {
          * - to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(connectivityReceiver, intentFilter)
+    }
+
+    @Subscribe
+    fun onContactAutoVerificationEvent(contactAutoVerificationEvent: ContactAutoVerificationEvent) {
+        Timber.e("CONTACT AUTO-VERIFIED -> ${contactAutoVerificationEvent.contactAutoVerified}")
+
+        if (contactAutoVerificationEvent.contactAutoVerified!!) {
+            showSnackbarBlue("Contact auto verified", -1)
+        }
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
