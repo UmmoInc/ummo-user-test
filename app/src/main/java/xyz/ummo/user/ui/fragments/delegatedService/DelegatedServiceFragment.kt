@@ -1,8 +1,11 @@
 package xyz.ummo.user.ui.fragments.delegatedService
 
 import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -48,6 +51,7 @@ import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 import xyz.ummo.user.utilities.eventBusEvents.RatingSentEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
 
@@ -194,6 +198,8 @@ class DelegatedServiceFragment : Fragment {
         viewBinding.delegationFeeQueryImageView.setOnClickListener { queryDelegationFee() }
         viewBinding.delegationFeeQueryIconRelativeLayout.setOnClickListener { queryDelegationFee() }
         viewBinding.rescheduleTextView.setOnClickListener { rescheduleService() }
+
+        viewBinding.shareDelegationCard.shareDelegationTextView.setOnClickListener {shareServiceProgress() }
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -203,6 +209,25 @@ class DelegatedServiceFragment : Fragment {
         checkingForDelegatedServices()
 
         return view
+    }
+
+    private fun shareServiceProgress() {
+        val shareServiceProgressIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "Sharing your service progress for ... ")
+            type = "text/plain"
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(context, 0,
+            Intent(context, ShareBroadCastReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val shareIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            Intent.createChooser(shareServiceProgressIntent, "Share service progress...", pendingIntent.intentSender)
+        } else {
+            Intent.createChooser(shareServiceProgressIntent, "Share service progress...")
+        }
+
+        context!!.startActivity(shareIntent)
     }
 
     private fun rescheduleService() {
@@ -302,6 +327,7 @@ class DelegatedServiceFragment : Fragment {
             countOfDelegatedServices == 0 -> {
                 viewBinding.delegationLayout.visibility = View.GONE
                 viewBinding.noDelegationLayout.visibility = View.VISIBLE
+                viewBinding.shareDelegationCard.shareDelegationCard.visibility = View.GONE
                 takeMeHome()
                 editor.remove(DELEGATE_INITIALIZED).apply()
 
@@ -310,6 +336,7 @@ class DelegatedServiceFragment : Fragment {
             countOfDelegatedServices != 0 -> {
                 viewBinding.delegationLayout.visibility = View.VISIBLE
                 viewBinding.noDelegationLayout.visibility = View.GONE
+                viewBinding.serviceIntroCard.delegationIntroCardView.visibility = View.GONE
                 Timber.e("DELEGATED---SERVICE---ID-> $delegatedServiceId")
                 inflateDelegatedServiceView(delegatedServiceId)
             }

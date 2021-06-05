@@ -25,6 +25,8 @@
         tools:overrideLibrary="com.mongodb.stitch.android"
         tools:replace="android:allowBackup">
 
+        <receiver android:name=".utilities.broadcastreceivers.ShareBroadCastReceiver" android:exported="false"/>
+
         <meta-data
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />

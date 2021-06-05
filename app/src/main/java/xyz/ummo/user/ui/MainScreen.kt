@@ -45,10 +45,9 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
-import xyz.ummo.user.data.model.ServiceProviderModel
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
-import xyz.ummo.user.databinding.InfoCardBinding
+import xyz.ummo.user.databinding.DelegationIntroCardBinding
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -106,7 +105,7 @@ class MainScreen : AppCompatActivity() {
     /** View Binding for Main Screen and App Bar **/
     private lateinit var mainScreenBinding: ActivityMainScreenBinding
     private lateinit var appBarBinding: AppBarMainScreenBinding
-    private lateinit var infoCardBinding: InfoCardBinding
+    private lateinit var delegationIntroCardBinding: DelegationIntroCardBinding
 
     private lateinit var badge: BadgeDrawable
     private var serviceUpdated = false
@@ -142,7 +141,7 @@ class MainScreen : AppCompatActivity() {
         /** Initializing view binders **/
         mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
         appBarBinding = AppBarMainScreenBinding.inflate(layoutInflater)
-        infoCardBinding = DataBindingUtil.setContentView(this, R.layout.info_card)
+        delegationIntroCardBinding = DataBindingUtil.setContentView(this, R.layout.delegation_intro_card)
 
         val view = mainScreenBinding.root
 
@@ -631,9 +630,6 @@ class MainScreen : AppCompatActivity() {
                 supportActionBar?.title = "Ummo"
 
                 /** Modify info card **/
-//                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
-                infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
-//                val homeFragment = HomeFragment()
                 Timber.e("Going to SERVICE-PROVIDERS FRAG")
 //                val serviceCentreFragment = ServiceCentresFragment()
                 val pagesFragment = PagesFragment()

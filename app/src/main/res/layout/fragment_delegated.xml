@@ -187,8 +187,14 @@
             </com.google.android.material.appbar.AppBarLayout>-->
 
             <include
-                android:id="@+id/service_info_card"
-                layout="@layout/info_card"
+                android:id="@+id/service_intro_card"
+                layout="@layout/delegation_intro_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <include
+                android:id="@+id/share_delegation_card"
+                layout="@layout/share_delegation_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -196,7 +202,7 @@
                 android:id="@+id/delegated_service_card_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/service_info_card"
+                android:layout_below="@id/share_delegation_card"
                 android:layout_margin="4dp"
                 app:cardBackgroundColor="@color/White"
                 app:cardCornerRadius="4dp"
@@ -392,13 +398,14 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/divider_3">
+
                                 <ImageView
                                     android:id="@+id/service_duration_image_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/ic_service_booking_24"
                                     android:layout_margin="8dp"
-                                    android:padding="8dp"/>
+                                    android:padding="8dp"
+                                    app:srcCompat="@drawable/ic_service_booking_24" />
 
                                 <RelativeLayout
                                     android:layout_width="wrap_content"
@@ -406,32 +413,34 @@
                                     android:layout_centerInParent="true"
                                     android:layout_marginEnd="8dp"
                                     android:layout_toEndOf="@+id/service_duration_image_view">
+
                                     <TextView
                                         android:id="@+id/duration_header_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Service Date"
-                                        android:textSize="12sp"
-                                        android:textColor="@color/Grey"/>
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
+
                                     <TextView
                                         android:id="@+id/service_schedule_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:layout_below="@id/duration_header_text_view"
                                         android:text="Thursday, 14 May 2021"
-                                        android:textSize="14sp"
                                         android:textColor="@color/ummo_2"
-                                        android:layout_below="@id/duration_header_text_view"/>
+                                        android:textSize="14sp" />
 
                                     <TextView
                                         android:id="@+id/reschedule_text_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text="Reschedule"
-                                        android:textSize="14sp"
-                                        android:textColor="#15B60A"
-                                        android:layout_marginEnd="8dp"
+                                        android:layout_below="@id/duration_header_text_view"
                                         android:layout_alignParentEnd="true"
-                                        android:layout_below="@id/duration_header_text_view"/>
+                                        android:layout_marginEnd="8dp"
+                                        android:text="Reschedule"
+                                        android:textColor="#15B60A"
+                                        android:textSize="14sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -565,10 +574,10 @@
                                 app:spb_maxStateNumber="four"
                                 app:spb_stateBackgroundColor="#BDBDBD"
                                 app:spb_stateDescriptionColor="#808080"
+                                app:spb_stateDescriptionSize="12sp"
                                 app:spb_stateForegroundColor="@color/colorPrimaryDark"
                                 app:spb_stateNumberBackgroundColor="#808080"
-                                app:spb_stateNumberForegroundColor="#eeeeee"
-                                app:spb_stateDescriptionSize="12sp"/>
+                                app:spb_stateNumberForegroundColor="#eeeeee" />
 
                             <RelativeLayout
                                 android:id="@+id/service_interrupted_relative_layout"
@@ -618,7 +627,7 @@
 
             <include
                 android:id="@+id/delegated_info_card"
-                layout="@layout/info_card"
+                layout="@layout/delegation_intro_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

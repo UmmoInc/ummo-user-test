@@ -2,10 +2,12 @@ package xyz.ummo.user.rvItems
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.AnimationDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.preference.PreferenceManager
@@ -47,6 +49,7 @@ import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -290,6 +293,27 @@ class ServiceItem(private val service: ServiceObject,
 
             serviceItemObject.put("SERVICE_ID", serviceId)
             mixpanel?.track("serviceCard_infoIconTapped", serviceItemObject)
+        }
+
+        viewHolder.itemView.service_share_icon_relative_layout.setOnClickListener {
+            Timber.e("Sharing ${service.serviceName}")
+            val ummoURL = "https://play.google.com/store/apps/details?id=xyz.ummo.user"
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "Sharing info on ${service.serviceName}. Get Ummo on $ummoURL today")
+                type = "text/plain"
+            }
+
+            val pendingIntent = PendingIntent.getBroadcast(context, 0,
+                Intent(context, ShareBroadCastReceiver::class.java),
+                PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val shareIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                Intent.createChooser(sendIntent, "Share how to '${service.serviceName}' with your friends...", pendingIntent.intentSender)
+            } else {
+                Intent.createChooser(sendIntent, "Share how to '${service.serviceName}' with your friends...")
+            }
+            context.startActivity(shareIntent)
         }
 
         viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {

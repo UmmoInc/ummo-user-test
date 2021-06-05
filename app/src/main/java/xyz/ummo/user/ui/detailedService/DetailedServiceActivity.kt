@@ -58,7 +58,6 @@ import java.net.MalformedURLException
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 class DetailedServiceActivity : AppCompatActivity() {
     private val WRITE_PERMISSION: Int = 1001
     var attachmentDownloadId: Long = 0
