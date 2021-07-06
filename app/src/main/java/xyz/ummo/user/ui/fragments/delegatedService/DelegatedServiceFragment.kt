@@ -43,12 +43,16 @@ import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_ID
 import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_DATE
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_NAME
+import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
+import xyz.ummo.user.ui.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
 import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
+import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceProgressBottomSheet
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
@@ -119,6 +123,7 @@ class DelegatedServiceFragment : Fragment {
 
     private var delegationFee = ""
     private var delegationSpec = ""
+    private var serviceName = ""
 
     constructor(entity: DelegatedServiceEntity) {
         delegatedServiceEntity = entity
@@ -200,6 +205,7 @@ class DelegatedServiceFragment : Fragment {
         viewBinding.rescheduleTextView.setOnClickListener { rescheduleService() }
 
         viewBinding.shareDelegationCard.shareDelegationTextView.setOnClickListener {shareServiceProgress() }
+        viewBinding.shareDelegationCard.shareDelegationCard.setOnClickListener { shareServiceProgress() }
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -212,22 +218,11 @@ class DelegatedServiceFragment : Fragment {
     }
 
     private fun shareServiceProgress() {
-        val shareServiceProgressIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "Sharing your service progress for ... ")
-            type = "text/plain"
-        }
-
-        val pendingIntent = PendingIntent.getBroadcast(context, 0,
-            Intent(context, ShareBroadCastReceiver::class.java), PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val shareIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            Intent.createChooser(shareServiceProgressIntent, "Share service progress...", pendingIntent.intentSender)
-        } else {
-            Intent.createChooser(shareServiceProgressIntent, "Share service progress...")
-        }
-
-        context!!.startActivity(shareIntent)
+        val shareBundle = Bundle()
+        shareBundle.putString(SERVICE_NAME, serviceName)
+        val shareServiceProgressBottomSheet = ShareServiceProgressBottomSheet()
+        shareServiceProgressBottomSheet.arguments = shareBundle
+        shareServiceProgressBottomSheet.show(supportFM, ShareServiceProgressBottomSheet.TAG )
     }
 
     private fun rescheduleService() {
@@ -269,7 +264,7 @@ class DelegatedServiceFragment : Fragment {
 //        bundle.putString(MainScreen.SERVICE_ID, serviceId)
         val delegationFeeQuery = DelegationFeeQuery()
         delegationFeeQuery.arguments = bundle
-        delegationFeeQuery.show(fragmentManager!!, ServiceQueryBottomSheetFragment.TAG)
+        delegationFeeQuery.show(requireFragmentManager(), ServiceQueryBottomSheetFragment.TAG)
         mixpanel.track("delegatedServiceFrag_delegationFeeSelfSupport")
     }
 
@@ -278,7 +273,7 @@ class DelegatedServiceFragment : Fragment {
 
         editor = delegatedServicePreferences.edit()
 
-        val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
+        val alertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
         val completingAlertDialogView = LayoutInflater.from(context)
                 .inflate(R.layout.completing_request_dialog, null)
 
@@ -348,7 +343,7 @@ class DelegatedServiceFragment : Fragment {
      * Then we transmit (via [EventBus]), the [ratingSentEvent] to MainScreen for displaying snackbar.
      * Finally, we then [clearDelegationCache] to remove the [DelegatedServiceEntity]. **/
     private fun confirmServiceDelivery() {
-        val confirmServiceDeliveryDialogBuilder = MaterialAlertDialogBuilder(context!!)
+        val confirmServiceDeliveryDialogBuilder = MaterialAlertDialogBuilder(requireContext())
         val confirmServiceDeliveryView = LayoutInflater
                 .from(context).inflate(R.layout.confirm_service_delivered_view, null)
 
@@ -445,7 +440,7 @@ class DelegatedServiceFragment : Fragment {
     @Subscribe
     fun onServiceStateChange(serviceUpdateEvents: ServiceUpdateEvents) {
 
-        val sharedPreferences = context!!.getSharedPreferences(ummoUserPreferences, mode)
+        val sharedPreferences = requireContext().getSharedPreferences(ummoUserPreferences, mode)
         val editor = sharedPreferences!!.edit()
 
         when (serviceUpdateEvents.serviceObject.getString("status")) {
@@ -494,7 +489,7 @@ class DelegatedServiceFragment : Fragment {
         if (serviceViewModel != null) {
             serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
                     .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
-
+                        serviceName = serviceEntity.serviceName!!
                         delegatedProductNameTextView!!.text = serviceEntity.serviceName
 //                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
 

@@ -28,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import org.greenrobot.eventbus.EventBus
@@ -215,6 +216,7 @@ class MainScreen : AppCompatActivity() {
             badge.isVisible = false
         }
         showBadge()
+        getDynamicLinks()
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
@@ -230,6 +232,17 @@ class MainScreen : AppCompatActivity() {
             openFragment(DelegatedServiceFragment())
             Timber.e("$DELEGATION_STATE -> $delegationState")
         }
+    }
+
+    private fun getDynamicLinks() {
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
+                var deepLink: Uri?
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                    Timber.e("Show Dynamic Link -> $deepLink")
+                }
+        }.addOnFailureListener { e -> Timber.e("Error getting Dynamic Link -> $e") }
     }
 
     private fun showBadge() {
@@ -974,6 +987,7 @@ class MainScreen : AppCompatActivity() {
         const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
         const val AGENT_ID = "AGENT_ID"
 
+        const val SERVICE_NAME = "SERVICE_NAME"
         const val SPEC_FEE = "SPEC_FEE"
         const val SERVICE_SPEC = "SERVICE_SPEC"
         const val SERVICE_DATE = "SERVICE_DATE"

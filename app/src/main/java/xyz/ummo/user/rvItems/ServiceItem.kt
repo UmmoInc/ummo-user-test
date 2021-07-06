@@ -2,12 +2,10 @@ package xyz.ummo.user.rvItems
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.AnimationDrawable
-import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.preference.PreferenceManager
@@ -46,19 +44,21 @@ import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGA
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ServiceItem(private val service: ServiceObject,
-                  val context: Context?,
-                  savedUserActions: JSONObject) : Item<GroupieViewHolder>() {
+class ServiceItem(
+    private val service: ServiceObject,
+    val context: Context?,
+    savedUserActions: JSONObject
+) : Item<GroupieViewHolder>() {
 
     private var serviceId: String = ""
     private val bundle = Bundle()
@@ -93,10 +93,10 @@ class ServiceItem(private val service: ServiceObject,
 
     /** Initializing ServiceViewModel **/
     private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
-            .get(ServiceViewModel::class.java)
+        .get(ServiceViewModel::class.java)
 
     private var delegatedServiceModel = ViewModelProvider(context as FragmentActivity)
-            .get(DelegatedServiceViewModel::class.java)
+        .get(DelegatedServiceViewModel::class.java)
 
     private var serviceEntity = ServiceEntity()
 
@@ -135,14 +135,16 @@ class ServiceItem(private val service: ServiceObject,
     @SuppressLint("SimpleDateFormat")
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         /** Date chunk below is being used to capture a selection's time-stamp **/
         val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         val currentDate = simpleDateFormat.format(Date())
 
-        val mixpanel = MixpanelAPI.getInstance(context,
-                context?.resources?.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            context,
+            context?.resources?.getString(R.string.mixpanelToken)
+        )
         val serviceItemObject = JSONObject()
 
 //        Timber.e("UP-VOTE -> $upVote")
@@ -170,8 +172,10 @@ class ServiceItem(private val service: ServiceObject,
 //            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
             for (i in service.serviceCentres.indices) {
 
-                val serviceCentreChipItem = inflater.inflate(R.layout.service_centre_chip_item,
-                        null, false) as Chip
+                val serviceCentreChipItem = inflater.inflate(
+                    R.layout.service_centre_chip_item,
+                    null, false
+                ) as Chip
 
                 serviceCentreChipItem.text = service.serviceCentres[i]
                 Timber.e("CENTRE_CHIP -> ${service.serviceCentres[i]}")
@@ -215,11 +219,15 @@ class ServiceItem(private val service: ServiceObject,
         if (service.serviceDocuments.isNotEmpty()) {
             viewHolder.itemView.service_requirements_chip_group.removeAllViews()
             for (i in service.serviceDocuments.indices) {
-                val serviceRequirementsChipItem = inflater.inflate(R.layout.service_centre_chip_item,
-                        null, false) as Chip
+                val serviceRequirementsChipItem = inflater.inflate(
+                    R.layout.service_centre_chip_item,
+                    null, false
+                ) as Chip
 
                 serviceRequirementsChipItem.text = service.serviceDocuments[i]
-                viewHolder.itemView.service_requirements_chip_group.addView(serviceRequirementsChipItem)
+                viewHolder.itemView.service_requirements_chip_group.addView(
+                    serviceRequirementsChipItem
+                )
 
                 viewHolder.itemView.service_requirements_chip_group.setOnCheckedChangeListener { group, checkedId ->
                     Timber.e("DOCS CHECKED -> ${service.serviceDocuments[i]}")
@@ -245,9 +253,11 @@ class ServiceItem(private val service: ServiceObject,
         viewHolder.itemView.approved_count_text_view.text = service.usefulCount.toString() //9.1
 
         viewHolder.itemView.disapprove_count_text_view.text = service.notUsefulCount.toString() //10
-        viewHolder.itemView.disapproved_count_text_view.text = service.notUsefulCount.toString() //10.1
+        viewHolder.itemView.disapproved_count_text_view.text =
+            service.notUsefulCount.toString() //10.1
 
-        viewHolder.itemView.service_comments_count_text_view.text = service.serviceComments.size.toString() //11
+        viewHolder.itemView.service_comments_count_text_view.text =
+            service.serviceComments.size.toString() //11
 //        viewHolder.itemView.save_count_text_view.text = service.serviceShareCount.toString() //12
 //        viewHolder.itemView.share_count_text_view.text = service.serviceShareCount.toString() //12
 
@@ -288,40 +298,40 @@ class ServiceItem(private val service: ServiceObject,
             val serviceExtrasBottomSheetDialogFragment = ServiceExtrasBottomSheetDialogFragment()
             serviceExtrasBottomSheetDialogFragment.arguments = bundle
             serviceExtrasBottomSheetDialogFragment
-                    .show(context.supportFragmentManager,
-                            ServiceExtrasBottomSheetDialogFragment.TAG)
+                .show(
+                    context.supportFragmentManager,
+                    ServiceExtrasBottomSheetDialogFragment.TAG
+                )
 
             serviceItemObject.put("SERVICE_ID", serviceId)
             mixpanel?.track("serviceCard_infoIconTapped", serviceItemObject)
         }
 
+        /** Capturing the Share Service Info action (Phase-1)**/
         viewHolder.itemView.service_share_icon_relative_layout.setOnClickListener {
-            Timber.e("Sharing ${service.serviceName}")
-            val ummoURL = "https://play.google.com/store/apps/details?id=xyz.ummo.user"
-            val sendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, "Sharing info on ${service.serviceName}. Get Ummo on $ummoURL today")
-                type = "text/plain"
-            }
+            val sharedServiceObject = JSONObject()
+            val shareBundle = Bundle()
+            shareBundle.putSerializable(SERVICE_OBJECT, service)
 
-            val pendingIntent = PendingIntent.getBroadcast(context, 0,
-                Intent(context, ShareBroadCastReceiver::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT)
+            val shareServiceInfoBottomSheet = ShareServiceInfoBottomSheet()
+            shareServiceInfoBottomSheet.arguments = shareBundle
+            shareServiceInfoBottomSheet.show(
+                context.supportFragmentManager,
+                ShareServiceInfoBottomSheet.TAG
+            )
 
-            val shareIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                Intent.createChooser(sendIntent, "Share how to '${service.serviceName}' with your friends...", pendingIntent.intentSender)
-            } else {
-                Intent.createChooser(sendIntent, "Share how to '${service.serviceName}' with your friends...")
-            }
-            context.startActivity(shareIntent)
+            sharedServiceObject.put("service_name", service.serviceName)
+            mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
         }
 
         viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {
 
             bundle.putString(SERVICE_ID, serviceId)
             val serviceFeeQueryBottomSheetFragment = ServiceFeeQuery()
-            serviceFeeQueryBottomSheetFragment.show(context.supportFragmentManager,
-                    ServiceFeeQuery.TAG)
+            serviceFeeQueryBottomSheetFragment.show(
+                context.supportFragmentManager,
+                ServiceFeeQuery.TAG
+            )
 
             serviceItemObject.put("SERVICE_ID", serviceId)
             mixpanel?.track("serviceCard_queryIconTapped", serviceItemObject)
@@ -386,7 +396,7 @@ class ServiceItem(private val service: ServiceObject,
             upVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_UPVOTED", serviceId)
+                .put("SERVICE_UPVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceUpvoted", serviceItemObject)
             serviceItemObject.remove("SERVICE_UPVOTED")
 
@@ -398,7 +408,7 @@ class ServiceItem(private val service: ServiceObject,
             upVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_UPVOTED", serviceId)
+                .put("SERVICE_UPVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceUpvoted", serviceItemObject)
             serviceItemObject.remove("SERVICE_UPVOTED")
 
@@ -410,7 +420,7 @@ class ServiceItem(private val service: ServiceObject,
             reverseUpVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_UPVOTED_UNDO", serviceId)
+                .put("SERVICE_UPVOTED_UNDO", serviceId)
             mixpanel?.track("serviceCard_serviceUpvoted_undo", serviceItemObject)
             serviceItemObject.remove("SERVICE_UPVOTED_UNDO")
         }
@@ -419,7 +429,7 @@ class ServiceItem(private val service: ServiceObject,
             reverseUpVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_UPVOTED_UNDO", serviceId)
+                .put("SERVICE_UPVOTED_UNDO", serviceId)
             mixpanel?.track("serviceCard_serviceUpvoted_undo", serviceItemObject)
             serviceItemObject.remove("SERVICE_UPVOTED_UNDO")
         }
@@ -431,7 +441,7 @@ class ServiceItem(private val service: ServiceObject,
             downVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_DOWNVOTED", serviceId)
+                .put("SERVICE_DOWNVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceDownvoted", serviceItemObject)
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
@@ -441,7 +451,7 @@ class ServiceItem(private val service: ServiceObject,
             downVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_DOWNVOTED", serviceId)
+                .put("SERVICE_DOWNVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceDownvoted", serviceItemObject)
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
@@ -452,7 +462,7 @@ class ServiceItem(private val service: ServiceObject,
             reverseDownVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_DOWNVOTED", serviceId)
+                .put("SERVICE_DOWNVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceDownvoted_undo", serviceItemObject)
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
@@ -461,7 +471,7 @@ class ServiceItem(private val service: ServiceObject,
             reverseDownVoteTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_DOWNVOTED", serviceId)
+                .put("SERVICE_DOWNVOTED", serviceId)
             mixpanel?.track("serviceCard_serviceDownvoted_undo", serviceItemObject)
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
@@ -472,7 +482,7 @@ class ServiceItem(private val service: ServiceObject,
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_COMMENTED_ON", serviceId)
+                .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
             serviceItemObject.remove("SERVICE_COMMENTED_ON")
         }
@@ -481,7 +491,7 @@ class ServiceItem(private val service: ServiceObject,
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                    .put("SERVICE_COMMENTED_ON", serviceId)
+                .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
             serviceItemObject.remove("SERVICE_COMMENTED_ON")
         }
@@ -551,10 +561,12 @@ class ServiceItem(private val service: ServiceObject,
 
     private fun requestingAgent(viewHolder: GroupieViewHolder) {
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
-        val mixpanel = MixpanelAPI.getInstance(context,
-                context?.resources?.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            context,
+            context?.resources?.getString(R.string.mixpanelToken)
+        )
 
         val serviceItemObject = JSONObject()
 
@@ -569,8 +581,9 @@ class ServiceItem(private val service: ServiceObject,
                     serviceEntity.serviceId != delegatedServiceId -> {
                         viewHolder.itemView.request_agent_button!!.text = "Service pending..."
                         viewHolder.itemView.request_agent_button
-                                .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
-                        viewHolder.itemView.request_agent_button!!.icon = context.resources.getDrawable(R.drawable.ic_service_locked_24)
+                            .setBackgroundColor(context.resources.getColor(R.color.ummo_3))
+                        viewHolder.itemView.request_agent_button!!.icon =
+                            context.resources.getDrawable(R.drawable.ic_service_locked_24)
 
                         viewHolder.itemView.request_agent_button.setOnClickListener {
                             delegateStateEvent.delegateStateEvent = SERVICE_PENDING
@@ -616,8 +629,10 @@ class ServiceItem(private val service: ServiceObject,
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
                 serviceRequestBottomSheetDialog
-                        .show(context!!.supportFragmentManager,
-                                ServiceRequestBottomSheet.TAG)
+                    .show(
+                        context!!.supportFragmentManager,
+                        ServiceRequestBottomSheet.TAG
+                    )
             }
 //            }
         }
@@ -644,34 +659,40 @@ class ServiceItem(private val service: ServiceObject,
 
     private fun markDelegatedAlready(viewHolder: GroupieViewHolder) {
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         val countOfDelegatedServices = delegatedServiceViewModel.getCountOfDelegatedServices()
 
         if (countOfDelegatedServices > 0) {
-            delegatedServiceModel.delegatedServiceEntityLiveData.observe(context as FragmentActivity, { delegatedServiceEntity: DelegatedServiceEntity ->
+            delegatedServiceModel.delegatedServiceEntityLiveData.observe(
+                context as FragmentActivity,
+                { delegatedServiceEntity: DelegatedServiceEntity ->
 
-                val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
-                if (serviceEntity.serviceId == delegatedServiceId) {
-                    Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
-                    viewHolder.itemView.request_agent_button.text = "IN-PROGRESS" //TODO: direct User to Delegation progress
+                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                    Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+                    if (serviceEntity.serviceId == delegatedServiceId) {
+                        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                        viewHolder.itemView.request_agent_button.text =
+                            "IN-PROGRESS" //TODO: direct User to Delegation progress
 
-                    viewHolder.itemView.request_agent_button
+                        viewHolder.itemView.request_agent_button
                             .setBackgroundColor(context.resources.getColor(R.color.Grey))
-                    viewHolder.itemView.request_agent_button.icon = context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
-                    viewHolder.itemView.request_agent_button.isActivated = false
-                }
-            })
+                        viewHolder.itemView.request_agent_button.icon =
+                            context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                        viewHolder.itemView.request_agent_button.isActivated = false
+                    }
+                })
         } else {
             Timber.e("NOTHING DELEGATED YET")
         }
     }
 
-    private fun launchDelegatedService(context: Context?,
-                                       delegatedServiceId: String,
-                                       agentId: String,
-                                       delegationId: String) {
+    private fun launchDelegatedService(
+        context: Context?,
+        delegatedServiceId: String,
+        agentId: String,
+        delegationId: String
+    ) {
 
         val bundle = Bundle()
         bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
@@ -685,7 +706,7 @@ class ServiceItem(private val service: ServiceObject,
         val progress = ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         /** Setting Service as Delegated **/
         serviceEntity.isDelegated = true
@@ -742,13 +763,18 @@ class ServiceItem(private val service: ServiceObject,
     }
 
     private fun selectingServiceSpec(viewHolder: GroupieViewHolder) {
-        val mixpanel = MixpanelAPI.getInstance(context,
-                context?.resources?.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            context,
+            context?.resources?.getString(R.string.mixpanelToken)
+        )
 
-        val autoCompleteTextView = viewHolder.itemView.findViewById<AutoCompleteTextView>(R.id.card_service_cost_text_View)
+        val autoCompleteTextView =
+            viewHolder.itemView.findViewById<AutoCompleteTextView>(R.id.card_service_cost_text_View)
 
-        serviceCostAdapter = ArrayAdapter(context!!,
-                R.layout.list_item, serviceCostArrayList)
+        serviceCostAdapter = ArrayAdapter(
+            context!!,
+            R.layout.list_item, serviceCostArrayList
+        )
 
         autoCompleteTextView?.setAdapter(serviceCostAdapter)
         autoCompleteTextView?.setOnItemClickListener { adapterView, autoView, i, l ->
@@ -774,8 +800,8 @@ class ServiceItem(private val service: ServiceObject,
 
             val serviceSpecCost = JSONObject()
             serviceSpecCost
-                    .put("SERVICE_SPEC", serviceSpec)
-                    .put("SPEC_COST", specCost)
+                .put("SERVICE_SPEC", serviceSpec)
+                .put("SPEC_COST", specCost)
             mixpanel.track("serviceCard_serviceSpecSelected", serviceSpecCost)
 
 
@@ -789,7 +815,7 @@ class ServiceItem(private val service: ServiceObject,
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
 
         val servicePreviouslyDownvoted = serviceItemPrefs
-                .getBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false)
+            .getBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false)
 
         Timber.e("SERVICE PREV. DOWNVOTED -> $servicePreviouslyDownvoted")
 
@@ -806,7 +832,7 @@ class ServiceItem(private val service: ServiceObject,
         Timber.e("UPVOTE COUNT -> ${serviceEntity.usefulCount}")
 
         upVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", true)
-                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false).apply()
+            .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", false).apply()
 
         Timber.e("SERVICE-USEFUL -> ${serviceEntity.usefulCount}")
         /** Updating Service in [Room] **/
@@ -861,8 +887,10 @@ class ServiceItem(private val service: ServiceObject,
      *  TODO: Allow the user to undo their upVote by reversing the action altogether **/
     private fun downVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
         /** Assigning downVote counts to both textViews; each textView needs a fresh copy of count **/
-        viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
-        viewHolder.itemView.disapproved_count_text_view.text = serviceEntity.notUsefulCount.toString()
+        viewHolder.itemView.disapprove_count_text_view.text =
+            serviceEntity.notUsefulCount.toString()
+        viewHolder.itemView.disapproved_count_text_view.text =
+            serviceEntity.notUsefulCount.toString()
         /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_downvoted_this_text_view.visibility = View.VISIBLE
         /** Toggling b/n Disapproved & Disapprove (soon to be Upvoted & Upvote) **/
@@ -874,8 +902,10 @@ class ServiceItem(private val service: ServiceObject,
 
     private fun reverseDownVoteTriggeredChangeStates(viewHolder: GroupieViewHolder) {
         /** Assigning downVote counts to both textViews; each textView needs a fresh copy of count **/
-        viewHolder.itemView.disapprove_count_text_view.text = serviceEntity.notUsefulCount.toString()
-        viewHolder.itemView.disapproved_count_text_view.text = serviceEntity.notUsefulCount.toString()
+        viewHolder.itemView.disapprove_count_text_view.text =
+            serviceEntity.notUsefulCount.toString()
+        viewHolder.itemView.disapproved_count_text_view.text =
+            serviceEntity.notUsefulCount.toString()
         /** Displaying the textView that tells the user what action they've taken **/
         viewHolder.itemView.you_downvoted_this_text_view.visibility = View.INVISIBLE
         /** Toggling b/n Disapproved & Disapprove (soon to be Upvoted & Upvote) **/
@@ -889,7 +919,7 @@ class ServiceItem(private val service: ServiceObject,
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
 
         val servicePreviouslyUpvoted = serviceItemPrefs
-                .getBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
+            .getBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
 
         if (servicePreviouslyUpvoted) {
             undoServiceUpvote(date)
@@ -899,7 +929,7 @@ class ServiceItem(private val service: ServiceObject,
          * 2. toggle b/n icons based on user changing their mind on an action **/
         val downVoteEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         downVoteEditor.putBoolean("UP-VOTE-${serviceEntity.serviceId}", false)
-                .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", true).apply()
+            .putBoolean("DOWN-VOTE-${serviceEntity.serviceId}", true).apply()
 
         serviceEntity.notUsefulCount = serviceEntity.notUsefulCount?.plus(1)
 //        Timber.e("SERVICE-NOT-USEFUL -> ${serviceEntity.notUsefulCount}")
@@ -966,14 +996,16 @@ class ServiceItem(private val service: ServiceObject,
      * 1. We update the comment icon to a filled one
      * 2. We let them know that they've commented by showing them a text; **/
     private fun commentTriggeredChangeStates(viewHolder: GroupieViewHolder) {
-        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
+        viewHolder.itemView.service_comments_count_text_view.text =
+            serviceEntity.serviceComments!!.size.toString()
         viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_chat_bubble_filled_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.VISIBLE
     }
 
     private fun reverseCommentTriggeredChangeStates(viewHolder: GroupieViewHolder) {
         //TODO: undo 18
-        viewHolder.itemView.service_comments_count_text_view.text = serviceEntity.serviceComments!!.size.toString()
+        viewHolder.itemView.service_comments_count_text_view.text =
+            serviceEntity.serviceComments!!.size.toString()
         viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_outline_chat_bubble_grey_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.INVISIBLE
     }
@@ -1003,9 +1035,9 @@ class ServiceItem(private val service: ServiceObject,
 
         try {
             serviceUpdate.put("_id", serviceEntity.serviceId)
-                    .put("update_time", date)
-                    .put("update_type", updateType)
-                    .put("user_contact", userContactPref)
+                .put("update_time", date)
+                .put("update_type", updateType)
+                .put("user_contact", userContactPref)
 
 //            Timber.e("SERVICE-UPDATE-OBJECT -> $serviceUpdate")
 
@@ -1044,15 +1076,19 @@ class ServiceItem(private val service: ServiceObject,
      * 1. $serviceCommentObject takes 4 values: a) serviceId; b) comment; c) date; d) userContact
      * 2. published to the server with the #ServiceComment object override
      * 3. TODO: let the user know that their comment has been published & congratulate them! **/
-    private fun commentOnService(viewHolder: GroupieViewHolder, serviceComment: String, date: String) {
+    private fun commentOnService(
+        viewHolder: GroupieViewHolder,
+        serviceComment: String,
+        date: String
+    ) {
         val serviceCommentObject = JSONObject()
 
         try {
             serviceCommentObject.put("_id", serviceEntity.serviceId)
-                    .put("service_comment", serviceComment)
-                    .put("comment_date", date)
-                    .put("anonymous_comment", anonymousComment)
-                    .put("user_contact", userContactPref)
+                .put("service_comment", serviceComment)
+                .put("comment_date", date)
+                .put("anonymous_comment", anonymousComment)
+                .put("user_contact", userContactPref)
 
             serviceCommentEvent.serviceCommentedOn = true
             serviceCommentEvent.serviceName = serviceEntity.serviceName
@@ -1078,17 +1114,17 @@ class ServiceItem(private val service: ServiceObject,
      * before inserting it into #captureServiceComment **/
     private fun showCommentDialog(viewHolder: GroupieViewHolder, date: String) {
         val commentDialogView = LayoutInflater.from(context)
-                .inflate(R.layout.service_comment_dialog, null)
+            .inflate(R.layout.service_comment_dialog, null)
 
         val commentDialogBuilder = MaterialAlertDialogBuilder(context!!)
 
         commentDialogBuilder
-                .setTitle("Comment on ${service.serviceName}")
-                .setIcon(R.drawable.logo)
-                .setView(commentDialogView)
+            .setTitle("Comment on ${service.serviceName}")
+            .setIcon(R.drawable.logo)
+            .setView(commentDialogView)
 
         val anonymousCheckBox = commentDialogView
-                .findViewById<CheckBox>(R.id.anonymous_comment_check_box)
+            .findViewById<CheckBox>(R.id.anonymous_comment_check_box)
 
         anonymousCheckBox.setOnClickListener {
             anonymousComment = anonymousCheckBox.isChecked
@@ -1096,7 +1132,7 @@ class ServiceItem(private val service: ServiceObject,
 
         commentDialogBuilder.setPositiveButton("Comment") { dialogInterface, i ->
             val serviceCommentEditText = commentDialogView
-                    .findViewById<TextInputEditText>(R.id.service_comment_edit_text)
+                .findViewById<TextInputEditText>(R.id.service_comment_edit_text)
 
             val serviceComment = serviceCommentEditText.text?.trim().toString()
             captureServiceComment(viewHolder, serviceComment, date)
@@ -1112,7 +1148,11 @@ class ServiceItem(private val service: ServiceObject,
     /** With this function, we're:
      * 1. doing the actual saving of the comment to RoomDB
      * 2. calling #commentOnService to publish the comment to the back-end/server **/
-    private fun captureServiceComment(viewHolder: GroupieViewHolder, mServiceComment: String, date: String) {
+    private fun captureServiceComment(
+        viewHolder: GroupieViewHolder,
+        mServiceComment: String,
+        date: String
+    ) {
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
 
@@ -1170,9 +1210,9 @@ class ServiceItem(private val service: ServiceObject,
         val bookmarkObject = JSONObject()
         try {
             bookmarkObject
-                    .put("bookmark_date", date)
-                    .put("user_contact", userContactPref)
-                    .put("bookmarked_service", serviceEntity.serviceId)
+                .put("bookmark_date", date)
+                .put("user_contact", userContactPref)
+                .put("bookmarked_service", serviceEntity.serviceId)
 
             object : BookmarkService(context!!, bookmarkObject) {
                 override fun done(data: ByteArray, code: Number) {
@@ -1189,11 +1229,15 @@ class ServiceItem(private val service: ServiceObject,
     }
 
     @Subscribe
-    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+    fun onServiceCommentedOnEvent(
+        viewHolder: GroupieViewHolder,
+        serviceCommentEvent: ServiceCommentEvent
+    ) {
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
 
-        var serviceCommentCount = viewHolder.itemView.service_comments_count_text_view.text.toString().toInt()
+        var serviceCommentCount =
+            viewHolder.itemView.service_comments_count_text_view.text.toString().toInt()
         serviceCommentCount += 1
         viewHolder.itemView.service_comments_count_text_view.text = serviceCommentCount.toString()
     }

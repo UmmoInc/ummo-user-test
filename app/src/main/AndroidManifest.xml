@@ -102,10 +102,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.MainScreen"
             android:label="@string/title_activity_confirm_location"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:host="ummo.xyz"
+                    android:scheme="https"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

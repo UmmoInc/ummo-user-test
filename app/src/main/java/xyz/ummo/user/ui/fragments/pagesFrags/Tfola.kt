@@ -380,6 +380,7 @@ class Tfola : Fragment() {
             }
 
         } catch (jse: JSONException) {
+            //TODO: handle missing [serviceAttachment]
             Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
         }
 
