@@ -13,14 +13,6 @@ import xyz.ummo.user.databinding.FragmentDelegationFeeQueryBinding
 import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
 import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
 
-private const val DELEGATION_FEE = "delegation_fee"
-private const val DELEGATED_SERVICE_FEE = "delegated_service_fee"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DelegationFeeQuery.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DelegationFeeQuery : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -54,6 +46,9 @@ class DelegationFeeQuery : BottomSheetDialogFragment() {
     companion object {
 
         const val TAG = "DelegationFeeQuery"
+        private const val DELEGATION_FEE = "delegation_fee"
+        private const val DELEGATED_SERVICE_FEE = "delegated_service_fee"
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
                 DelegationFeeQuery().apply {

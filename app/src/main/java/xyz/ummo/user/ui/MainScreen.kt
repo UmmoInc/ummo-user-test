@@ -1,10 +1,13 @@
 package xyz.ummo.user.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -25,6 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import org.greenrobot.eventbus.EventBus
@@ -44,7 +48,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
-import xyz.ummo.user.databinding.InfoCardBinding
+import xyz.ummo.user.databinding.DelegationIntroCardBinding
 import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
@@ -102,7 +106,7 @@ class MainScreen : AppCompatActivity() {
     /** View Binding for Main Screen and App Bar **/
     private lateinit var mainScreenBinding: ActivityMainScreenBinding
     private lateinit var appBarBinding: AppBarMainScreenBinding
-    private lateinit var infoCardBinding: InfoCardBinding
+    private lateinit var delegationIntroCardBinding: DelegationIntroCardBinding
 
     private lateinit var badge: BadgeDrawable
     private var serviceUpdated = false
@@ -110,6 +114,8 @@ class MainScreen : AppCompatActivity() {
     private var delegatedServiceId: String? = null
     private var delegationId: String? = null
     private var agentId: String? = null
+
+    private lateinit var mixpanel: MixpanelAPI
 
     /** Welcome Dialog introducing User to Ummo **/
     private val appId = 11867
@@ -136,7 +142,7 @@ class MainScreen : AppCompatActivity() {
         /** Initializing view binders **/
         mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
         appBarBinding = AppBarMainScreenBinding.inflate(layoutInflater)
-        infoCardBinding = DataBindingUtil.setContentView(this, R.layout.info_card)
+        delegationIntroCardBinding = DataBindingUtil.setContentView(this, R.layout.delegation_intro_card)
 
         val view = mainScreenBinding.root
 
@@ -162,6 +168,10 @@ class MainScreen : AppCompatActivity() {
         startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
 
         //checkForAndLaunchDelegatedFragment()
+
+
+        mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -189,6 +199,12 @@ class MainScreen : AppCompatActivity() {
             feedback()
         }
 
+        val userSupportIcon = findViewById<ActionMenuItemView>(R.id.user_support)
+        userSupportIcon.setOnClickListener {
+            mixpanel.track("supportCentre_launched")
+            userSupport()
+        }
+
         /** Instantiating the Bottom Navigation View **/
         val bottomNavigation: BottomNavigationView = mainScreenBinding.bottomNav
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
@@ -200,10 +216,11 @@ class MainScreen : AppCompatActivity() {
             badge.isVisible = false
         }
         showBadge()
+        getDynamicLinks()
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
 
-//        getServiceProviderData()
+        getServiceProviderData()
 
 //        getAllServicesFromServer()
 
@@ -217,14 +234,41 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
+    private fun getDynamicLinks() {
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
+                var deepLink: Uri?
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.link
+                    Timber.e("Show Dynamic Link -> $deepLink")
+                }
+        }.addOnFailureListener { e -> Timber.e("Error getting Dynamic Link -> $e") }
+    }
+
     private fun showBadge() {
         if (serviceUpdated)
             badge.isVisible = true
     }
 
+    private fun getServiceProviderData() {
+        object : GetServiceProvider(this) {
+            override fun done(data: List<ServiceProviderData>, code: Number) {
+                if (code == 200) {
+                    Timber.e("SERVICE-PROVIDERS -> $data")
+                    var serviceProvider: ServiceProviderData
+
+                    for (i in data.indices) {
+                        serviceProvider = data[i]
+                        Timber.e("SERVICE-PROVIDER -> $serviceProvider")
+                    }
+                } else {
+                    Timber.e("NO SERVICE PROVIDERS FOUND -> $code")
+                }
+            }
+        }
+    }
+
     private fun welcomeUserAboard() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
         introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
@@ -289,6 +333,13 @@ class MainScreen : AppCompatActivity() {
         if (reloadingServicesEvent.reloadingServices == true) {
             showSnackbarBlue("Reloading services...", -1)
             getAllServicesFromServer()
+        }
+    }
+
+    @Subscribe
+    fun onServiceCategorySelection(loadingCategoryServicesEvent: LoadingCategoryServicesEvent) {
+        if (loadingCategoryServicesEvent.loadingService == true) {
+            showSnackbarBlue("Loading ${loadingCategoryServicesEvent.categoryLoading} services", -1)
         }
     }
 
@@ -468,7 +519,7 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkingForDelegatedServiceFromRoom()
+        //checkingForDelegatedServiceFromRoom()
     }
 
     fun feedback() {
@@ -512,6 +563,59 @@ class MainScreen : AppCompatActivity() {
         feedbackDialogBuilder.show()
     }
 
+    private fun userSupport() {
+        val mixpanel = MixpanelAPI.getInstance(applicationContext,
+                resources.getString(R.string.mixpanelToken))
+
+        val userSupportDialogView = LayoutInflater.from(this)
+                .inflate(R.layout.user_support_dialog, null)
+
+        val whatsAppImageView = userSupportDialogView.findViewById<ImageView>(R.id.chat_image_view)
+        val whatsAppTextView = userSupportDialogView.findViewById<TextView>(R.id.chat_text_view)
+        val callImageView = userSupportDialogView.findViewById<ImageView>(R.id.call_image_view)
+        val callTextView = userSupportDialogView.findViewById<TextView>(R.id.call_text_view)
+
+        val userDialogBuilder = MaterialAlertDialogBuilder(this)
+                .setIcon(R.drawable.logo)
+                .setView(userSupportDialogView)
+
+        whatsAppImageView.setOnClickListener { launchWhatsApp() }
+        whatsAppTextView.setOnClickListener { launchWhatsApp() }
+        callImageView.setOnClickListener { launchPhoneDialer() }
+        callTextView.setOnClickListener { launchPhoneDialer() }
+
+        userDialogBuilder.show()
+
+    }
+
+    private fun launchWhatsApp() {
+
+        val contact = "+26876804065"
+
+        val url = "https://api.whatsapp.com/send?phone=$contact"
+        try {
+            val pm: PackageManager = this.packageManager
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+            mixpanel.track("supportCentre_whatsAppChatInitiated")
+        } catch (e: PackageManager.NameNotFoundException) {
+            showSnackbarYellow("WhatsApp not installed.", -1)
+            e.printStackTrace()
+        }
+    }
+
+    private fun launchPhoneDialer() {
+
+        mixpanel.track("supportCentre_phoneDialerInitiated")
+
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:+26876804065")
+        startActivity(intent)
+    }
+
+
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
     private fun submitFeedback(feedbackString: String, userContact: String) {
@@ -539,9 +643,6 @@ class MainScreen : AppCompatActivity() {
                 supportActionBar?.title = "Ummo"
 
                 /** Modify info card **/
-//                infoCardBinding.infoBodyTextView.text = "Welcome to Ummo. Your time is important to us."
-                infoCardBinding.info = Info("Welcome to Ummo", "Your time is important to us")
-//                val homeFragment = HomeFragment()
                 Timber.e("Going to SERVICE-PROVIDERS FRAG")
 //                val serviceCentreFragment = ServiceCentresFragment()
                 val pagesFragment = PagesFragment()
@@ -799,7 +900,9 @@ class MainScreen : AppCompatActivity() {
         //TODO: undo 17
 //        Timber.e("SERVICE - ENTITY [COST] -> ${serviceEntity.serviceCost}")
 
-        serviceViewModel?.addService(serviceEntity)
+        if (serviceEntity.serviceId != null)
+            serviceViewModel?.addService(serviceEntity)
+
 //        Timber.e("SAVING SERVICE -> ${serviceEntity.serviceName}|| DELEGATABLE-ENTITY -> ${serviceEntity.delegatable} || OG: $delegatable")
     }
 
@@ -847,7 +950,6 @@ class MainScreen : AppCompatActivity() {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.gold))
-
         val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
@@ -865,6 +967,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     companion object {
+
         // tags used to attach the fragments
         private const val TAG_HOME = "home"
         var CURRENT_TAG = TAG_HOME
@@ -884,8 +987,10 @@ class MainScreen : AppCompatActivity() {
         const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
         const val AGENT_ID = "AGENT_ID"
 
+        const val SERVICE_NAME = "SERVICE_NAME"
         const val SPEC_FEE = "SPEC_FEE"
         const val SERVICE_SPEC = "SERVICE_SPEC"
+        const val SERVICE_DATE = "SERVICE_DATE"
 
         const val CHOSEN_SERVICE_SPEC = "chosen_service_spec"
         const val TOTAL_DELEGATION_FEE = "total_delegation_fee"

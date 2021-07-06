@@ -37,16 +37,21 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
     @ColumnInfo(name = "service_agent_id")
     private String serviceAgentId;
 
+    @ColumnInfo(name = "service_date")
+    private String serviceDate;
+
     public DelegatedServiceEntity(@NonNull String _serviceId,
 //                                  @NonNull String _serviceName,
                                   @NonNull String _delegatedProductId,
 //                                  @NonNull ArrayList _serviceProgress,
-                                  @NonNull String _serviceAgentId){
+                                  @NonNull String _serviceAgentId,
+                                  @NonNull String _serviceDate){
         this.delegationId = _serviceId;
 //        this.serviceName = _serviceName;
         this.delegatedProductId = _delegatedProductId;
 //        this.serviceProgress = _serviceProgress;
         this.serviceAgentId = _serviceAgentId;
+        this.serviceDate = _serviceDate;
     }
 
     public DelegatedServiceEntity(){
@@ -101,6 +106,15 @@ public class DelegatedServiceEntity implements DelegatedServiceModel {
     @Override
     public String getServiceAgentId() {
         return serviceAgentId;
+    }
+
+    @Override
+    public String getServiceDate() {
+        return serviceDate;
+    }
+
+    public void setServiceDate(String serviceDate) {
+        this.serviceDate = serviceDate;
     }
 
     public void setServiceAgentId(String serviceAgentId) {

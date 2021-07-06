@@ -51,7 +51,8 @@
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
-                    android:textSize="18sp"
+                    android:textColor="@color/ummo_2"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -76,6 +77,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:visibility="gone"
                 android:gravity="end">
 
                 <ImageView
@@ -87,6 +89,25 @@
                     android:contentDescription="@string/save_service"
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_outline_info_blue_24" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/service_share_icon_relative_layout"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="end">
+
+                <ImageView
+                    android:id="@+id/service_share_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/save_service"
+                    android:padding="4dp"
+                    android:layout_marginEnd="4dp"
+                    app:srcCompat="@drawable/ic_share_purple_24" />
             </RelativeLayout>
 
         </RelativeLayout>
@@ -121,7 +142,8 @@
                     <RelativeLayout
                         android:id="@+id/service_header_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/delegated_service_header_image_view"
@@ -138,8 +160,9 @@
                             android:layout_alignTop="@+id/delegated_service_header_image_view"
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility"
-                            android:textColor="@color/Grey"
-                            android:textSize="12sp" />
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="16sp" />
 
                         <TextView
                             android:id="@+id/service_eligibility_text_view"
@@ -164,7 +187,8 @@
                         <RelativeLayout
                             android:id="@+id/service_cost_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
 
                             <ImageView
                                 android:id="@+id/service_cost_image_view"
@@ -187,7 +211,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="4dp"
                                     android:layout_toStartOf="@+id/service_query_icon_relative_layout"
-                                    android:hint="Select your vehicle weight"
+                                    android:hint="@string/service_type_selection_string"
                                     app:boxStrokeColor="@color/ummo_2"
                                     app:hintTextColor="@color/ummo_2">
 
@@ -196,7 +220,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:inputType="none"
-                                        android:text="Tap for vehicle weights"
+                                        android:text="@string/tap_specify_your_service"
                                         android:textSize="16sp" />
 
                                 </com.google.android.material.textfield.TextInputLayout>
@@ -319,8 +343,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_duration"
-                                        android:textColor="@color/Grey"
-                                        android:textSize="12sp" />
+                                        android:textColor="@color/ummo_2"
+                                        android:textSize="14sp" />
 
                                     <TextView
                                         android:id="@+id/service_duration_text_view"
@@ -329,7 +353,7 @@
                                         android:layout_below="@id/service_duration_header_text_view"
                                         android:text="@string/service_duration_placeholder"
                                         android:textColor="@color/black"
-                                        android:textSize="14sp" />
+                                        android:textSize="12sp" />
                                 </RelativeLayout>
 
                             </RelativeLayout>
@@ -361,8 +385,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_centres"
-                                        android:textColor="@color/Grey"
-                                        android:textSize="12sp" />
+                                        android:textColor="@color/ummo_2"
+                                        android:textSize="14sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -371,7 +395,7 @@
                                         android:layout_marginStart="10dp"
                                         android:layout_toEndOf="@id/service_centre_header_text_view"
                                         android:text="@string/service_centre_selection"
-                                        android:textColor="@color/Grey"
+                                        android:textColor="@color/ummo_2"
                                         android:textSize="12sp"
                                         android:textStyle="italic" />
 
@@ -429,8 +453,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/service_requirements"
-                                        android:textColor="@color/Grey"
-                                        android:textSize="12sp" />
+                                        android:textColor="@color/ummo_2"
+                                        android:textSize="14sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -438,8 +462,8 @@
                                         android:layout_alignBottom="@id/service_requirements_header_text_view"
                                         android:layout_marginStart="10dp"
                                         android:layout_toEndOf="@id/service_requirements_header_text_view"
-                                        android:text="(FYI: Checklist)"
-                                        android:textColor="@color/Grey"
+                                        android:text="(FYI)"
+                                        android:textColor="@color/ummo_2"
                                         android:textSize="12sp"
                                         android:textStyle="italic" />
 
@@ -531,9 +555,28 @@
                 android:visibility="visible">
 
                 <LinearLayout
+                    android:id="@+id/service_actions_title_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="4">
+
+                    <TextView
+                        android:id="@+id/rate_gov_service_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="@string/service_actions_title_text"
+                        android:textColor="@color/ummo_2"
+                        android:textSize="8sp"
+                        tools:ignore="SmallSp" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/service_actions_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/service_actions_title_layout"
                     android:orientation="horizontal"
                     android:weightSum="4">
 
@@ -554,7 +597,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_up_blue_24" />
+                            app:srcCompat="@drawable/ic_outline_thumb_up_grey_24" />
 
                         <TextView
                             android:id="@+id/approve_count_text_view"
@@ -618,7 +661,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_outline_thumb_down_red_24" />
+                            app:srcCompat="@drawable/ic_outline_thumb_down_grey_24" />
 
                         <TextView
                             android:id="@+id/disapprove_count_text_view"
@@ -679,7 +722,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_marginStart="4dp"
-                            app:srcCompat="@drawable/ic_outline_chat_bubble_blue_24" />
+                            app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
 
                         <TextView
                             android:id="@+id/service_comments_count_text_view"
@@ -741,7 +784,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_download_for_offline_24" />
+                            app:srcCompat="@drawable/ic_download_for_offline_grey_24" />
 
                         <TextView
                             android:id="@+id/save_count_text_view"

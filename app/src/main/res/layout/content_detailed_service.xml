@@ -48,7 +48,8 @@
                             <RelativeLayout
                                 android:id="@+id/delegated_service_header_layout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:layout_margin="4dp">
 
                                 <ImageView
                                     android:id="@+id/delegated_service_header_image_view"
@@ -63,9 +64,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignTop="@+id/delegated_service_header_image_view"
                                     android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                    android:text="Public Service"
-                                    android:textColor="@color/Grey"
-                                    android:textSize="12sp" />
+                                    android:text="@string/service_name_detailed_info"
+                                    android:textColor="@color/black"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
 
                                 <TextView
                                     android:id="@+id/detailed_service_name_text_view"
@@ -73,7 +75,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_below="@+id/delegated_service_header_title_text_view"
                                     android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                    android:text="Service Name"
+                                    android:text="@string/service_name_detailed_info"
                                     android:textColor="@color/black"
                                     android:textSize="14sp" />
 
@@ -90,7 +92,8 @@
                                 <RelativeLayout
                                     android:id="@+id/description_layout"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/description_image_view"
@@ -111,9 +114,10 @@
                                             android:id="@+id/description_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Product Description"
-                                            android:textColor="@color/Grey"
-                                            android:textSize="12sp" />
+                                            android:text="Description"
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
 
                                         <TextView
                                             android:id="@+id/detailed_description_text_view"
@@ -134,7 +138,8 @@
                                     android:id="@+id/service_cost_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/description_layout">
+                                    android:layout_below="@id/description_layout"
+                                    android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_cost_image_view"
@@ -171,7 +176,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_toStartOf="@+id/detailed_service_query_icon_relative_layout"
-                                            android:hint="Select your vehicle weight"
+                                            android:hint="@string/service_type_selection_string"
                                             app:boxStrokeColor="@color/ummo_2"
                                             app:hintTextColor="@color/ummo_2">
 
@@ -180,7 +185,7 @@
                                                 android:layout_width="match_parent"
                                                 android:layout_height="wrap_content"
                                                 android:inputType="none"
-                                                android:text="Tap for vehicle weights"
+                                                android:text="@string/view_service_prices"
                                                 android:textSize="16sp" />
 
                                         </com.google.android.material.textfield.TextInputLayout>
@@ -195,12 +200,12 @@
 
                                             <ImageView
                                                 android:id="@+id/detailed_query_image_view"
-                                                android:layout_width="wrap_content"
-                                                android:layout_height="wrap_content"
+                                                android:layout_width="20dp"
+                                                android:layout_height="20dp"
                                                 android:layout_alignParentEnd="true"
                                                 android:layout_centerVertical="true"
                                                 android:contentDescription="@string/save_service"
-                                                android:padding="8dp"
+                                                android:padding="4dp"
                                                 app:srcCompat="@drawable/ic_baseline_help_outline_24" />
                                         </RelativeLayout>
 
@@ -222,7 +227,8 @@
                                     android:id="@+id/service_duration_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_cost_layout">
+                                    android:layout_below="@+id/service_cost_layout"
+                                    android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_duration_image_view"
@@ -242,16 +248,17 @@
                                             android:id="@+id/duration_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Service Duration"
-                                            android:textColor="@color/Grey"
-                                            android:textSize="12sp" />
+                                            android:text="@string/service_duration_detailed_info"
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
 
                                         <TextView
                                             android:id="@+id/detailed_service_duration_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_below="@id/duration_header_text_view"
-                                            android:text="Service Duration"
+                                            android:text="@string/service_duration_detailed_info"
                                             android:textColor="@color/black"
                                             android:textSize="14sp" />
                                     </RelativeLayout>
@@ -264,7 +271,8 @@
                                     android:id="@+id/service_docs_relative_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_duration_layout">
+                                    android:layout_below="@+id/service_duration_layout"
+                                    android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_docs_image_view"
@@ -278,35 +286,26 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_centerInParent="true"
+                                        android:layout_marginBottom="8dp"
                                         android:layout_toEndOf="@+id/service_docs_image_view">
 
                                         <TextView
                                             android:id="@+id/docs_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Product Requirements"
-                                            android:textColor="@color/Grey"
-                                            android:textSize="12sp" />
+                                            android:text="@string/service_requirements_detailed_info"
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
 
-
-                                        <com.google.android.material.chip.ChipGroup
-                                            android:id="@+id/detailed_service_docs_chip_group"
+                                        <LinearLayout
+                                            android:id="@+id/service_requirements_linear_layout"
                                             android:layout_width="match_parent"
-                                            android:layout_height="match_parent"
-                                            android:layout_below="@+id/docs_header_text_view"
-                                            app:chipSpacing="2dp"
-                                            app:chipSpacingHorizontal="2dp"
-                                            app:chipSpacingVertical="2dp"
-                                            app:selectionRequired="true"
-                                            app:singleLine="false" />
-
-                                        <!--<TextView
-                                            android:id="@+id/service_docs_text_view"
-                                            android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Docs"
-                                            android:textSize="14sp"
-                                            android:layout_below="@id/docs_header_text_view"/>-->
+                                            android:layout_below="@+id/docs_header_text_view"
+                                            android:layout_margin="5dp"
+                                            android:orientation="vertical" />
+
                                     </RelativeLayout>
                                 </RelativeLayout>
                                 <!--ProductModel Docs Layout End-->
@@ -316,7 +315,8 @@
                                     android:id="@+id/service_centre_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_docs_relative_layout">
+                                    android:layout_below="@+id/service_docs_relative_layout"
+                                    android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_centre_image_view"
@@ -337,10 +337,11 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:text="@string/service_centres"
-                                            android:textColor="@color/Grey"
-                                            android:textSize="12sp" />
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
 
-                                        <TextView
+                                        <!--<TextView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_alignBottom="@id/service_centre_header_text_view"
@@ -349,9 +350,9 @@
                                             android:text="@string/service_centre_selection"
                                             android:textColor="@color/Grey"
                                             android:textSize="12sp"
-                                            android:textStyle="italic" />
+                                            android:textStyle="italic" />-->
 
-                                        <com.google.android.material.chip.ChipGroup
+                                        <!--<com.google.android.material.chip.ChipGroup
                                             android:id="@+id/detailed_service_centres_chip_group"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
@@ -360,7 +361,139 @@
                                             app:chipSpacingHorizontal="2dp"
                                             app:chipSpacingVertical="2dp"
                                             app:selectionRequired="true"
-                                            app:singleLine="false" />
+                                            app:singleLine="false" />-->
+
+                                        <LinearLayout
+                                            android:id="@+id/service_centre_linear_layout"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/service_centre_header_text_view"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_marginBottom="5dp"
+                                            android:orientation="vertical" />
+
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+                                <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+
+                                <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                                <RelativeLayout
+                                    android:id="@+id/service_attachments_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_centre_layout"
+                                    android:layout_margin="4dp">
+
+                                    <ImageView
+                                        android:id="@+id/service_attachments_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="8dp"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_file_present_24" />
+
+                                    <RelativeLayout
+                                        android:id="@+id/service_attachments_relative_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:layout_toEndOf="@+id/service_attachments_image_view">
+
+                                        <TextView
+                                            android:id="@+id/service_attachments_header_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Service Documents:"
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
+
+                                        <LinearLayout
+                                            android:id="@+id/service_attachments_linear_layout"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/service_attachments_header_text_view"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_marginBottom="5dp"
+                                            android:orientation="horizontal" />
+
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+                                <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+
+                                <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                                <RelativeLayout
+                                    android:id="@+id/service_link_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_attachments_layout"
+                                    android:layout_margin="4dp">
+
+                                    <ImageView
+                                        android:id="@+id/service_link_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="8dp"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_web_link_24" />
+
+                                    <RelativeLayout
+                                        android:id="@+id/service_link_relative_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:layout_toEndOf="@+id/service_link_image_view">
+
+                                        <TextView
+                                            android:id="@+id/service_link_header_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Verify online"
+                                            android:textColor="@color/black"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/link_source_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/service_link_header_text_view"
+                                            android:layout_marginTop="5dp"
+                                            android:text="Open Government Website for more info"
+                                            android:textColor="@color/green"
+                                            android:textSize="14sp"
+                                            android:textStyle="italic" />
+
+                                        <ImageView
+                                            android:id="@+id/launch_link_image_view"
+                                            android:layout_width="10dp"
+                                            android:layout_height="10dp"
+                                            android:layout_alignBottom="@+id/link_source_text_view"
+                                            android:layout_marginStart="5dp"
+                                            android:layout_toEndOf="@+id/link_source_text_view"
+                                            app:srcCompat="@drawable/ic_launch_link_24" />
+
+                                        <!--<com.google.android.material.chip.ChipGroup
+                                            android:id="@+id/detailed_service_centres_chip_group"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:layout_below="@+id/service_centre_header_text_view"
+                                            app:chipSpacing="2dp"
+                                            app:chipSpacingHorizontal="2dp"
+                                            app:chipSpacingVertical="2dp"
+                                            app:selectionRequired="true"
+                                            app:singleLine="false" />-->
+
+                                        <LinearLayout
+                                            android:id="@+id/service_link_linear_layout"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@+id/service_link_header_text_view"
+                                            android:layout_marginTop="5dp"
+                                            android:layout_marginBottom="5dp"
+                                            android:orientation="vertical" />
 
                                     </RelativeLayout>
 

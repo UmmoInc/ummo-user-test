@@ -6,11 +6,13 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_tfuma.view.*
@@ -75,6 +77,12 @@ class Tfuma : Fragment() {
     var shareCount: Int = 0 //14
     var viewCount: Int = 0 //15
     lateinit var serviceProvider: String //16
+    var serviceLink: String = "" //17
+    var serviceAttachmentJSONArray = JSONArray()
+    var serviceAttachmentJSONObject = JSONObject()
+    var serviceAttachmentName = ""
+    var serviceAttachmentSize = ""
+    var serviceAttachmentURL = ""
 
     val delegatableServiceJSONObject = JSONObject()
 
@@ -115,14 +123,19 @@ class Tfuma : Fragment() {
 
         Timber.e("DELEGATED SERVICES LIST [0] -> ${delegatableServicesArrayList.size}")
 
+        val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                resources.getString(R.string.mixpanelToken))
+
         reloadServices()
 
         /** Refreshing services with [tfuma_swipe_refresher] **/
         tfumaBinding.tfumaSwipeRefresher.setOnRefreshListener {
             delegatableServicesArrayList.clear()
+            gAdapter.clear()
             getDelegatableServicesFromServer()
             tfumaBinding.tfumaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
+            mixpanel?.track("delegateFragment_refreshed")
         }
 
         return view
@@ -135,6 +148,7 @@ class Tfuma : Fragment() {
         }
     }
 
+    //TODO: Attend to
     private fun loadOfflineServices() {
         Timber.e("OFFLINE SERVICES -> $delegatableServicesArrayList")
     }
@@ -187,12 +201,23 @@ class Tfuma : Fragment() {
         tfumaBinding.loadProgressBar.visibility = View.GONE
         tfumaBinding.offlineLayout.visibility = View.VISIBLE
 
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                    resources.getString(R.string.mixpanelToken))
+            mixpanel?.track("delegateFragment_showingOffline")
+        }
     }
 
     private fun hideOfflineState() {
         tfumaBinding.offlineLayout.visibility = View.GONE
         tfumaBinding.loadProgressBar.visibility = View.GONE
         tfumaBinding.tfumaSwipeRefresher.visibility = View.VISIBLE
+
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(requireContext(),
+                    resources.getString(R.string.mixpanelToken))
+            mixpanel?.track("delegateFragment_hidingOffline")
+        }
     }
 
     private fun getDelegatableServicesFromServer() {
@@ -241,11 +266,31 @@ class Tfuma : Fragment() {
                                 viewCount = service.getInt("service_view_count") //15
                                 serviceProvider = service.getString("service_provider") //16
 
+                                serviceLink = if (service.getString("service_link").isNotEmpty())
+                                    service.getString("service_link") //17
+                                else
+                                    ""
+
+                                try {
+                                    serviceAttachmentJSONArray = service.getJSONArray("service_attachment_objects")
+
+                                    for (x in 0 until serviceAttachmentJSONArray.length()) {
+                                        serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
+                                        serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
+                                        serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
+                                        serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
+                                    }
+                                } catch (jse: JSONException) {
+                                    Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
+                                }
+
                                 delegatableService = ServiceObject(serviceId, serviceName,
                                         serviceDescription, serviceEligibility, serviceCentres,
-                                        delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
-                                        approvalCount, disapprovalCount, serviceComments,
-                                        commentCount, shareCount, viewCount, serviceProvider)
+                                        delegatable, serviceCostArrayList, serviceDocuments,
+                                        serviceDuration, approvalCount, disapprovalCount,
+                                        serviceComments, commentCount, shareCount, viewCount,
+                                        serviceProvider, serviceLink, serviceAttachmentName,
+                                        serviceAttachmentSize, serviceAttachmentURL)
 
                                 Timber.e("DELEGATED---SERVICE -> $delegatableService")
 
@@ -270,7 +315,7 @@ class Tfuma : Fragment() {
                                         .put("COMMENTED-ON", serviceCommentBoolean)
                                         .put("BOOKMARKED", serviceBookmarked)
 
-                                if (isAdded){
+                                if (isAdded) {
                                     gAdapter.add(ServiceItem(delegatableService, context, savedUserActions))
                                     Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
                                     checkingAdapterState()
@@ -339,6 +384,8 @@ class Tfuma : Fragment() {
         val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
         val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }

@@ -15,10 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.auth.*
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.content_delegation_progress.*
 import org.greenrobot.eventbus.EventBus
@@ -29,6 +26,7 @@ import xyz.ummo.user.databinding.ContactVerificationBinding
 import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
 import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
+import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import java.util.concurrent.TimeUnit
@@ -47,6 +45,7 @@ class ContactVerificationActivity : AppCompatActivity() {
     private var mVerificationId: String? = "default"
     private var mVerificationInProgress = false
     private val connectivityReceiver = ConnectivityReceiver()
+    private val contactAutoVerificationEvent = ContactAutoVerificationEvent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -191,8 +190,19 @@ class ContactVerificationActivity : AppCompatActivity() {
     }
 
     private fun startPhoneNumberVerification(phoneNumber: String) {
-        PhoneAuthProvider.getInstance()
-                .verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, this, mCallbacks)
+//        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, this, mCallbacks)
+
+        initCallback()
+
+        val options = PhoneAuthOptions.newBuilder(mAuth)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(this)
+            .setCallbacks(mCallbacks)
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
+
         mVerificationInProgress = true
         Timber.e("Verification started!")
     }
@@ -306,13 +316,12 @@ class ContactVerificationActivity : AppCompatActivity() {
                 2 - Auto-retrieval. On some devices Google Play services can automatically
                 detect the incoming verification SMS and perform verification without
                 user action. */
-                showSnackbar("onVerificationCompleted:$credential")
                 Timber.e("onVerificationCompleted: $credential")
                 // [START_EXCLUDE silent]
                 mVerificationInProgress = false
-
                 // [END_EXCLUDE]
-
+                contactAutoVerificationEvent.contactAutoVerified = true
+                EventBus.getDefault().post(contactAutoVerificationEvent)
                 signInWithPhoneAuthCredential(credential)
             }
 
@@ -334,7 +343,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                     showSnackbar("Quota exceeded.")
                 }
                 // Show a message and update the UI
-                showSnackbar("Verification failed")
+                showSnackbar("Verification failed. Please try again.")
 
             }
 
@@ -345,7 +354,7 @@ class ContactVerificationActivity : AppCompatActivity() {
                 /** The SMS verification code has been sent to the provided phone number, we
                 now need to ask the user to enter the code and then construct a credential
                 by combining the code with a verification ID.*/
-                showSnackbar("Verification SMS on the way")
+                showSnackbarBlue("Verification SMS on the way", -1)
                 Timber.e("onCodeSent: $verificationId")
 
                 // Save verification ID and resending token so we can use them later

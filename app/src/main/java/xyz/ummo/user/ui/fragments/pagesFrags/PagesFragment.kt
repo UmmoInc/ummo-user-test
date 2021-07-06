@@ -64,8 +64,8 @@ class PagesFragment : Fragment() {
 
     private fun setupPagesTabs() {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
-        pagesAdapter.addFragment(Tfuma(), "Tfuma")
-        pagesAdapter.addFragment(Tfola(), "Tfola")
+        pagesAdapter.addFragment(Tfuma(), "Tfola Lusito")
+        pagesAdapter.addFragment(Tfola(), "Tfola Lwati")
 //        pagesAdapter.addFragment(Phepha(), "Phepha")
 
         pagesFragmentBinding.pagesViewPager.adapter = pagesAdapter
