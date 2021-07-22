@@ -128,7 +128,6 @@ class RevenueFragment : Fragment() {
                 ?.getServiceProviderList()
 
         for (i in serviceProviders?.indices!!) {
-            Timber.e("SERVICE-PROVIDERS [2]=> ${serviceProviders[i].serviceProviderId}")
             when {
                 serviceProviders[i].serviceProviderName
                         .equals("ministry of finance", true) -> {

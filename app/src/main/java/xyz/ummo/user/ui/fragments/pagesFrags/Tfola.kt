@@ -209,12 +209,10 @@ class Tfola : Fragment() {
         object : GetServiceProvider(requireActivity()) {
             override fun done(data: List<ServiceProviderData>, code: Number) {
                 if (code == 200) {
-                    Timber.e("SERVICE-PROVIDERS -> $data")
                     serviceProviderList = data
 
                     for (i in data.indices) {
                         serviceProviderData = data[i]
-                        Timber.e("SERVICE-PROVIDER -> $serviceProviderData")
                     }
                 } else {
                     Timber.e("NO SERVICE PROVIDERS FOUND -> $code")
@@ -299,7 +297,7 @@ class Tfola : Fragment() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    allServices = JSONArray(String(data))
+                    val allServices = JSONObject(String(data)).getJSONArray("payload")
 
                     gAdapter.clear()
 
@@ -321,7 +319,6 @@ class Tfola : Fragment() {
         var service: JSONObject
 
         for (i in 0 until allServices.length()) {
-            Timber.e("ALL SERVICES [$i]-> ${allServices[i]}")
             service = allServices[i] as JSONObject
             delegatable = service.getBoolean("delegatable")
 

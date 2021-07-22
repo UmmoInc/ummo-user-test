@@ -40,10 +40,6 @@ import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import java.io.Serializable
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private var serviceDate: String? = null
@@ -79,7 +75,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         arguments?.let {
         }
 
-        serviceRequestBottomSheetPrefs = context!!.getSharedPreferences(ummoUserPreferences, mode)
+        serviceRequestBottomSheetPrefs = requireContext().getSharedPreferences(ummoUserPreferences, mode)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -161,7 +157,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val autoCompleteTextView = viewBinding.sheetServiceCostTextView
 
         serviceCostArrayList = serviceObject!!.serviceCost
-        serviceCostAdapter = ArrayAdapter(context!!, R.layout.list_item, serviceCostArrayList)
+        serviceCostAdapter = ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
 
         autoCompleteTextView.setAdapter(serviceCostAdapter)
 
@@ -288,7 +284,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         confirmPaymentCheckBox.setOnClickListener {
             if (confirmPaymentCheckBox.isChecked) {
-                confirmRequestButton.setBackgroundColor(context!!.resources.getColor(R.color.ummo_1))
+                confirmRequestButton.setBackgroundColor(requireContext().resources.getColor(R.color.ummo_1))
                 confirmRequestButton.isClickable = true
                 confirmRequestButton.isActivated = true
                 confirmRequestButton.isEnabled = true
@@ -301,7 +297,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 /*paymentTermsEvent.paymentTermsConfirmed = true
                 EventBus.getDefault().post(paymentTermsEvent)*/
             } else {
-                confirmRequestButton.setBackgroundColor(context!!.resources.getColor(R.color.greyProfile))
+                confirmRequestButton.setBackgroundColor(requireContext().resources.getColor(R.color.greyProfile))
                 confirmRequestButton.isClickable = false
                 confirmRequestButton.isActivated = false
                 confirmRequestButton.isEnabled = false
@@ -328,7 +324,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                             Timber.e("CODE IS $code")
 
-                            val delegation = JSONObject(String(data))
+                            val delegation = JSONObject(String(data)).getJSONObject("payload")
                             Timber.e("SERVICE OBJ -> $delegation")
                             val delegatedServiceId = delegation.getString("product")
                             val delegationId = delegation.getString("_id")

@@ -254,7 +254,6 @@ class MainScreen : AppCompatActivity() {
         object : GetServiceProvider(this) {
             override fun done(data: List<ServiceProviderData>, code: Number) {
                 if (code == 200) {
-                    Timber.e("SERVICE-PROVIDERS -> $data")
                     var serviceProvider: ServiceProviderData
 
                     for (i in data.indices) {
@@ -391,8 +390,6 @@ class MainScreen : AppCompatActivity() {
 
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
-        Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
-
         if (!socketStateEvent.socketConnected!!) {
             showSnackbarRed("Can't reach Ummo network", -2)
         } else {
@@ -643,7 +640,6 @@ class MainScreen : AppCompatActivity() {
                 supportActionBar?.title = "Ummo"
 
                 /** Modify info card **/
-                Timber.e("Going to SERVICE-PROVIDERS FRAG")
 //                val serviceCentreFragment = ServiceCentresFragment()
                 val pagesFragment = PagesFragment()
                 openFragment(pagesFragment)
@@ -738,12 +734,10 @@ class MainScreen : AppCompatActivity() {
         object : GetAllServices(this) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    val allServices = JSONArray(String(data))
-                    Timber.e("GETTING ALL SERVICES -> $allServices")
+                    val allServices = JSONObject(String(data)).getJSONArray("payload")
 
                     for (i in 0 until allServices.length()) {
                         serviceObject = allServices.getJSONObject(i)
-                        Timber.e("GETTING ALL SERVICES [$i] -> $serviceObject")
                         saveServicesLocally(serviceObject)
                     }
                 } else {
@@ -756,7 +750,6 @@ class MainScreen : AppCompatActivity() {
     private fun saveServicesLocally(mServiceObject: JSONObject) {
 
         val serviceViews = 0 //13
-        Timber.e("TESTING SERVICE-DATA-> $mServiceObject")
 
         /** [SERVICE-ASSIGNMENT: 0]
          * 1. Declaring $serviceID value
@@ -792,8 +785,6 @@ class MainScreen : AppCompatActivity() {
          * 2. Assigning $presenceRequired value from service JSON value **/
         val delegatable: Boolean?
         delegatable = mServiceObject.getBoolean("delegatable")
-
-        Timber.e("$serviceName: DELEGATABLE -> $delegatable")
 
         /** [SERVICE-ASSIGNMENT: 6]
          * 1. Declaring $serviceCost value
@@ -831,7 +822,6 @@ class MainScreen : AppCompatActivity() {
         val commentsArrayList = ArrayList(listOf<String>())
         for (k in 0 until commentsJSONArray.length()) {
             commentsArrayList.add(commentsJSONArray.getString(k))
-            Timber.e("COMMENT-INIT -> ${commentsArrayList.size}!")
         }
 
         /** [SERVICE-ASSIGNMENT: 12]

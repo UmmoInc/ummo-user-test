@@ -1,17 +1,17 @@
 package xyz.ummo.user.api
 
 import android.app.Activity
-import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Base64
 import androidx.multidex.MultiDexApplication
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.nkzawa.socketio.client.IO
-import com.github.nkzawa.socketio.client.Socket
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.engineio.client.transports.WebSocket
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONException
 import org.json.JSONObject
@@ -23,6 +23,7 @@ import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler
+import java.lang.NullPointerException
 import java.net.URISyntaxException
 
 class User : MultiDexApplication() {
@@ -40,8 +41,11 @@ class User : MultiDexApplication() {
 
     private fun initializeSocketWithId(_id: String) {
         try {
-            SocketIO.mSocket = IO.socket("${getString(serverUrl)}/user-$_id")
-            Timber.e("${getString(serverUrl)}/user-$_id")
+            Timber.e("user _id: $_id")
+            val options: IO.Options = IO.Options()
+            options.query = "token=$_id"
+
+            SocketIO.mSocket = IO.socket(getString(serverUrl), options)
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {
@@ -83,7 +87,7 @@ class User : MultiDexApplication() {
         const val DONE = "DONE"
         const val DELIVERED = "DELIVERED"
         const val RATED = "RATED"
-     }
+    }
 
     init {
         //Planting tree!
@@ -94,11 +98,14 @@ class User : MultiDexApplication() {
         //Initializing OneSignal
         OneSignal.startInit(this)
                 .setNotificationOpenedHandler(UmmoNotificationOpenedHandler(this))
-//                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
-//                .unsubscribeWhenNotificationsAreDisabled(true)
+                /*
+                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
+                .unsubscribeWhenNotificationsAreDisabled(true)
+                */
                 .init()
-
-//        OneSignal.handleNotificationOpen(applicationContext, )
+        /*
+        OneSignal.handleNotificationOpen(applicationContext, )
+        */
 
         OneSignal.idsAvailable { userId: String?, registrationId: String? ->
             Timber.e("IDs Available: USER -> $userId; REG -> $registrationId")
@@ -116,15 +123,12 @@ class User : MultiDexApplication() {
     /*override fun notificationOpened(result: OSNotificationOpenResult?) {
         val actionType: OSNotificationAction.ActionType = result!!.action.type
         val data: JSONObject = result.notification.payload.additionalData
-
         if (data != null) {
             Timber.e("NOTIFICATION OPENED [DATA] -> $data")
         } else
             Timber.e("NOTIFICATION DATA IS NULL!")
-
         if (actionType == OSNotificationAction.ActionType.ActionTaken)
             Timber.e("BUTTOn PRESSED WITH ID -> ${result.action.actionID}")
-
         Timber.e("NOTIFICATION OPENED [actionType] -> $actionType")
     }*/
 
@@ -276,7 +280,6 @@ class User : MultiDexApplication() {
             }
 
             SocketIO.mSocket?.on("connect_error") {
-                Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
                 Timber.e("Application created - Server URL[5]->${getString(serverUrl)}")
                 //TODO: Display a warning
 //                sendSocketStateBroadcast(false)

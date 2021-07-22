@@ -224,18 +224,15 @@ class Tfuma : Fragment() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    val allServices = JSONArray(String(data))
+                    val allServices = JSONObject(String(data)).getJSONArray("payload")
                     var service: JSONObject
 
                     try {
                         for (i in 0 until allServices.length()) {
-                            Timber.e("ALL SERVICES [$i]-> ${allServices[i]}")
                             service = allServices[i] as JSONObject
                             delegatable = service.getBoolean("delegatable")
 
                             if (delegatable) {
-                                Timber.e("DELEGATABLE -> $service")
-
                                 serviceId = service.getString("_id") //1
                                 serviceName = service.getString("service_name") //2
                                 serviceDescription = service.getString("service_description") //3
@@ -248,8 +245,6 @@ class Tfuma : Fragment() {
                                 serviceCostJSONArray = service.getJSONArray("service_cost")
                                 serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
 //                                serviceCost = service.getString("service_cost") //7
-                                Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
-
 //                                serviceDocuments = //8
                                 serviceDocumentsJSONArray = service.getJSONArray("service_documents")
                                 serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
@@ -291,8 +286,6 @@ class Tfuma : Fragment() {
                                         serviceComments, commentCount, shareCount, viewCount,
                                         serviceProvider, serviceLink, serviceAttachmentName,
                                         serviceAttachmentSize, serviceAttachmentURL)
-
-                                Timber.e("DELEGATED---SERVICE -> $delegatableService")
 
                                 /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
                                  * 2. wrapping those values in a JSON Object

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.github.nkzawa.emitter.Emitter;
+import io.socket.emitter.Emitter;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import androidx.appcompat.app.AppCompatActivity;

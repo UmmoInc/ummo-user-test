@@ -117,8 +117,6 @@ class RegisterActivity : AppCompatActivity() {
 
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
-        Timber.e("SOCKET-EVENT -> ${socketStateEvent.socketConnected}")
-
         if (!socketStateEvent.socketConnected!!) {
             showSnackbarRed("Can't reach Ummo network", -2)
         } else {
