@@ -10,10 +10,9 @@ import timber.log.Timber
 import xyz.ummo.user.api.User.Companion.SERVICE_STATE
 import xyz.ummo.user.api.User.Companion.mode
 import xyz.ummo.user.api.User.Companion.ummoUserPreferences
-import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.ui.main.MainScreen
 
 class UmmoNotificationOpenedHandler(private val application: Application) : NotificationOpenedHandler {
-
 
     override fun notificationOpened(result: OSNotificationOpenResult) {
         val editor: SharedPreferences.Editor

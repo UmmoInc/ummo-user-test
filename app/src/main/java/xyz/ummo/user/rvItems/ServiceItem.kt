@@ -33,11 +33,6 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen.Companion.AGENT_ID
-import xyz.ummo.user.ui.MainScreen.Companion.CURRENT_SERVICE_PENDING
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_ID
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_PENDING
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
@@ -48,6 +43,7 @@ import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
 import java.text.SimpleDateFormat

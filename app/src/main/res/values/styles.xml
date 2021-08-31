@@ -115,6 +115,32 @@
         <item name="android:textColorSecondary">@color/Grey</item>
     </style>
 
+    <style name="Widget.MaterialComponents.Chip.Filter" parent="Base.Widget.MaterialComponents.Chip">
+        <item name="android:checkable">true</item>
+        <item name="chipBackgroundColor">@color/ummo_1</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="chipIconVisible">false</item>
+        <item name="closeIconVisible">false</item>
+
+        <item name="checkedIcon">@drawable/ic_mtrl_chip_checked_black</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.Chip.Choice" parent="Base.Widget.MaterialComponents.Chip">
+        <item name="android:checkable">true</item>
+
+        <item name="chipIconVisible">true</item>
+        <item name="checkedIconVisible">true</item>
+        <item name="closeIconVisible">false</item>
+
+        <item name="checkedIcon">@drawable/ic_mtrl_chip_checked_black</item>
+
+        <item name="android:textColor">@color/mtrl_choice_chip_text_color</item>
+
+        <item name="chipBackgroundColor">@color/mtrl_choice_chip_background_color</item>
+        <item name="rippleColor">@color/mtrl_choice_chip_ripple_color</item>
+
+    </style>
+
     <style name="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="materialThemeOverlay">
             @style/ThemeOverlay.MaterialComponents.AutoCompleteTextView.OutlinedBox

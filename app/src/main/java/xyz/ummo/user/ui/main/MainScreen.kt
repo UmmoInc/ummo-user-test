@@ -1,4 +1,4 @@
-package xyz.ummo.user.ui
+package xyz.ummo.user.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -38,10 +38,6 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.*
-import xyz.ummo.user.api.User.Companion.DELEGATION_STATE
-import xyz.ummo.user.api.User.Companion.SERVICE_STATE
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -49,7 +45,6 @@ import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
-import xyz.ummo.user.models.Info
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
@@ -58,9 +53,10 @@ import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
-import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
+//import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -129,9 +125,18 @@ class MainScreen : AppCompatActivity() {
     private lateinit var simpleDateFormat: SimpleDateFormat
     private var currentDate: String = ""
 
+    /** Setting up MainViewModel **/
+    private var mainViewModel: MainViewModel? = null
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /** Init MainViewModel **/
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        /** Setting up Socket Worker from MainViewModel **/
+        mainViewModel!!.socketConnect()
 
         /** Locking screen orientation to [ActivityInfo.SCREEN_ORIENTATION_PORTRAIT] **/
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -372,21 +377,23 @@ class MainScreen : AppCompatActivity() {
     }
 
     /** [NetworkStateEvent-3] Subscribing to the NetworkState Event (via EventBus) **/
-    @Subscribe
+    /*@Subscribe
     fun onNetworkStateEvent(networkStateEvent: NetworkStateEvent) {
         Timber.e("ON-EVENT -> ${networkStateEvent.noConnectivity}")
 
-        /** Toggling between network states && displaying an appropriate Snackbar **/
+        */
+    /** Toggling between network states && displaying an appropriate Snackbar **//*
         if (networkStateEvent.noConnectivity!!) {
             showSnackbarRed("Please check connection...", -2)
         } else {
             showSnackbarBlue("Connecting...", -1)
-            /** Reloading Service Centre Fragment **/
+            */
+    /** Reloading Service Centre Fragment **//*
             //TODO: replace with HomeAffairsFragment
 //            val serviceCentreFragment = ServiceCentresFragment()
             //openFragment(serviceCentreFragment)
         }
-    }
+    }*/
 
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
@@ -966,24 +973,6 @@ class MainScreen : AppCompatActivity() {
         // index to identify current nav menu item
         var navItemIndex = 0
         private lateinit var mainScreenPrefs: SharedPreferences
-        const val SERVICE_PENDING = "SERVICE_PENDING"
-        const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
-        const val SERVICE_ID = "SERVICE_ID"
-        const val DELEGATION_ID = "DELEGATION_ID"
-        const val SERVICE_OBJECT = "SERVICE_OBJECT"
-        const val DELEGATION_FEE = "DELEGATION_FEE"
-        const val DELEGATION_SPEC = "DELEGATION_SPEC"
-        const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
-        const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
-        const val AGENT_ID = "AGENT_ID"
-
-        const val SERVICE_NAME = "SERVICE_NAME"
-        const val SPEC_FEE = "SPEC_FEE"
-        const val SERVICE_SPEC = "SERVICE_SPEC"
-        const val SERVICE_DATE = "SERVICE_DATE"
-
-        const val CHOSEN_SERVICE_SPEC = "chosen_service_spec"
-        const val TOTAL_DELEGATION_FEE = "total_delegation_fee"
 
     }
 

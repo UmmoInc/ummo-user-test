@@ -29,16 +29,14 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.RequestService
 import xyz.ummo.user.api.User
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.utilities.*
 import java.io.Serializable
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
@@ -279,8 +277,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val totalCostInt = serviceCostInt + 50
         totalCostTextView.text = "E$totalCostInt"
 
-        delegationFee.put(MainScreen.CHOSEN_SERVICE_SPEC, serviceSpec)
-                .put(MainScreen.TOTAL_DELEGATION_FEE, totalCostInt)
+        delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
+            .put(TOTAL_DELEGATION_FEE, totalCostInt)
 
         confirmPaymentCheckBox.setOnClickListener {
             if (confirmPaymentCheckBox.isChecked) {
@@ -333,17 +331,31 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor = serviceRequestBottomSheetPrefs.edit()
                             editor.putString("DELEGATION_ID", delegationId)
                             //TODO: remove after service is done
-                            editor.putString(DetailedServiceActivity.DELEGATED_SERVICE_ID, serviceObject!!.serviceId)
+                            editor.putString(
+                                DetailedServiceActivity.DELEGATED_SERVICE_ID,
+                                serviceObject!!.serviceId
+                            )
                             editor.putString(DetailedServiceActivity.SERVICE_AGENT_ID, serviceAgent)
-                            editor.putString(MainScreen.DELEGATION_FEE, mDelegationFee.getString(MainScreen.TOTAL_DELEGATION_FEE))
-                            editor.putString(MainScreen.DELEGATION_SPEC, mDelegationFee.getString(MainScreen.CHOSEN_SERVICE_SPEC))
-                            editor.putString(MainScreen.SERVICE_DATE, serviceDate)
+                            editor.putString(
+                                DELEGATION_FEE,
+                                mDelegationFee.getString(TOTAL_DELEGATION_FEE)
+                            )
+                            editor.putString(
+                                DELEGATION_SPEC,
+                                mDelegationFee.getString(CHOSEN_SERVICE_SPEC)
+                            )
+                            editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
-                            launchDelegatedService(context,
-                                    delegatedServiceId, serviceAgent, delegationId)
+                            launchDelegatedService(
+                                context,
+                                delegatedServiceId, serviceAgent, delegationId
+                            )
 
-                            mixpanel.track("requestBottomSheet_completingRequest", serviceBeingRequested)
+                            mixpanel.track(
+                                "requestBottomSheet_completingRequest",
+                                serviceBeingRequested
+                            )
 
                         }
                         404 -> {

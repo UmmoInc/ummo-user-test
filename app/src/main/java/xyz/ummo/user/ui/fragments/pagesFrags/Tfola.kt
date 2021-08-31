@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
@@ -24,8 +25,6 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
 import xyz.ummo.user.databinding.ServiceFilterChipLayoutBinding
@@ -36,6 +35,8 @@ import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
+import xyz.ummo.user.utilities.mode
+import xyz.ummo.user.utilities.ummoUserPreferences
 
 class Tfola : Fragment() {
     private lateinit var allServices: JSONArray
@@ -166,15 +167,18 @@ class Tfola : Fragment() {
             Timber.e("CHECKED GROUP -> $group")
             Timber.e("CHECKED CHIP -> $checkedId")
 
-            when (checkedId) {
+            val titleOrNull = group.findViewById<Chip>(checkedId)?.text
+            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
 
-                2131361939 -> {
+            when (titleOrNull) {
+
+                "All Services" -> {
                     Timber.e("CHECKED ALL")
                     Timber.e("SERVICE PROVIDER -> $serviceProviderList")
                     getNonDelegatableServicesFromServer()
 
                 }
-                2131362251 -> {
+                "Home Affairs" -> {
                     Timber.e("CHECKED HOME AFFAIRS")
                     displayServiceByCategory("601268725ad77100154da834")
                     mixpanel.track("discoverFragment_homeAffairs_selected")
@@ -182,7 +186,7 @@ class Tfola : Fragment() {
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
-                2131362041 -> {
+                "Commerce" -> {
                     Timber.e("CHECKED COMMERCE")
                     displayServiceByCategory("601266be5ad77100154da833")
                     mixpanel.track("discoverFragment_commerce_selected")
@@ -190,7 +194,7 @@ class Tfola : Fragment() {
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
-                2131362498 -> {
+                "Revenue" -> {
                     Timber.e("CHECKED REVENUE")
                     displayServiceByCategory("601268ff5ad77100154da835")
                     mixpanel.track("discoverFragment_revenue_selected")
@@ -297,7 +301,7 @@ class Tfola : Fragment() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    val allServices = JSONObject(String(data)).getJSONArray("payload")
+                    allServices = JSONObject(String(data)).getJSONArray("payload")
 
                     gAdapter.clear()
 

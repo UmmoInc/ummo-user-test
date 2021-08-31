@@ -9,13 +9,16 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.gms.safetynet.SafetyNetApi
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.signup.RegisterActivity
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -40,9 +43,22 @@ class Splash : Activity() {
         FirebaseApp.initializeApp(this)
         mAuth = FirebaseAuth.getInstance()
 
+        /** Instantiating Firebase Instance **/
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.e("Fetching FCM registration token failed -> ${task.exception}")
+                return@OnCompleteListener
+            }
+
+            val token = task.result
+            Timber.e("FCM TOKEN -> $token")
+        })
+
         val context = this.applicationContext
-        val mixpanel = MixpanelAPI.getInstance(context,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            context,
+            resources.getString(R.string.mixpanelToken)
+        )
         mixpanel?.track("appLaunched")
 
         //TODO: REPLACE WITH COROUTINE

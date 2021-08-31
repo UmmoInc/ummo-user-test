@@ -22,23 +22,38 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:overrideLibrary="com.mongodb.stitch.android"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        tools:targetApi="m">
 
-        <receiver android:name=".utilities.broadcastreceivers.ShareBroadCastReceiver" android:exported="false"/>
+        <receiver
+            android:name=".utilities.broadcastreceivers.ShareBroadCastReceiver"
+            android:exported="false" />
 
         <meta-data
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
 
-        <activity android:name=".ui.WebViewActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainScreen" />
-        </activity>
+        <meta-data
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:value="com.onesignal.example.NotificationServiceExtension" />
 
         <meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"
             android:value="DISABLE" />
+
+        <service
+            android:name=".utilities.fcm.UmmoFirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".ui.WebViewActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.main.MainScreen" />
+        </activity>
 
         <activity android:name=".ui.signup.CompleteSignUpActivity">
             <meta-data
@@ -103,7 +118,7 @@
         </activity>
 
         <activity
-            android:name=".ui.MainScreen"
+            android:name=".ui.main.MainScreen"
             android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

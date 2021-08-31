@@ -1,6 +1,7 @@
 package xyz.ummo.user.ui.fragments.profile
 
 import android.app.Activity
+import android.app.Application
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
@@ -16,6 +17,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
@@ -61,8 +63,8 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mParam1 = arguments!!.getString(ARG_PARAM1)
-            mParam2 = arguments!!.getString(ARG_PARAM2)
+            mParam1 = requireArguments().getString(ARG_PARAM1)
+            mParam2 = requireArguments().getString(ARG_PARAM2)
         }
 
         mixpanel = MixpanelAPI.getInstance(context,
@@ -210,6 +212,17 @@ class ProfileFragment : Fragment() {
             args.putString(ARG_PARAM2, param2)
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    class ProfileViewModelFactory(private val application: Application) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+                ProfileViewModel(application) as T
+            } else {
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
         }
     }
 }

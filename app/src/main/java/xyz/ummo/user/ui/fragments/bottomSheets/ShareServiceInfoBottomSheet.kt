@@ -16,7 +16,7 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentShareServiceInfoBottomSheetBinding
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
+import xyz.ummo.user.utilities.SERVICE_OBJECT
 import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 
 class ShareServiceInfoBottomSheet : BottomSheetDialogFragment() {

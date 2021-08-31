@@ -9,10 +9,10 @@ import com.github.kittinunf.fuel.core.extensions.jsonBody
 import io.socket.client.IO
 import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.R.string.*
+import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
 import java.net.URISyntaxException
 
 abstract class Login(var context: Context, name: String, email: String, mobile_contact: String, user_pid: String) {
@@ -104,7 +104,7 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
         try {
             Timber.e("Trying connection...")
             SocketIO.mSocket = IO.socket(context.getString(serverUrl))
-            Timber.e("${context.getString(serverUrl)}/user-$_id")
+            Timber.e("SOCKET USER TOKEN ${context.getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {

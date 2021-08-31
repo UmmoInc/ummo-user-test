@@ -15,7 +15,7 @@
     app:contentPaddingTop="4dp"
     app:strokeColor="@color/Grey"
     app:strokeWidth="1dp"
-    tools:context=".ui.MainScreen">
+    tools:context=".ui.main.MainScreen">
 
     <RelativeLayout
         android:id="@+id/root_relative_layout"

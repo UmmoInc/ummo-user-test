@@ -46,12 +46,12 @@ import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.utilities.SERVICE_OBJECT
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException

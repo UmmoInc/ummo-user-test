@@ -24,8 +24,6 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfumaBinding
 import xyz.ummo.user.models.ServiceCostModel
@@ -34,6 +32,8 @@ import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import xyz.ummo.user.utilities.mode
+import xyz.ummo.user.utilities.ummoUserPreferences
 
 
 class Tfuma : Fragment() {

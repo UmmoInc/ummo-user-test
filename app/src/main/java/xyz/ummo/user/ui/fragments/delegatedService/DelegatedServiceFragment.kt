@@ -1,11 +1,8 @@
 package xyz.ummo.user.ui.fragments.delegatedService
 
 import android.app.AlertDialog
-import android.app.PendingIntent
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -31,31 +28,20 @@ import org.greenrobot.eventbus.Subscribe
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.DelegationFeedback
-import xyz.ummo.user.api.User.Companion.SERVICE_STATE
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
-import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_FEE
-import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_ID
-import xyz.ummo.user.ui.MainScreen.Companion.DELEGATION_SPEC
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_DATE
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_NAME
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
-import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
-import xyz.ummo.user.ui.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
 import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceProgressBottomSheet
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.RatingSentEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
 
