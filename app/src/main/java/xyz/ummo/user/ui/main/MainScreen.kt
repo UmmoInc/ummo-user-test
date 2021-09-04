@@ -147,7 +147,8 @@ class MainScreen : AppCompatActivity() {
         /** Initializing view binders **/
         mainScreenBinding = ActivityMainScreenBinding.inflate(layoutInflater)
         appBarBinding = AppBarMainScreenBinding.inflate(layoutInflater)
-        delegationIntroCardBinding = DataBindingUtil.setContentView(this, R.layout.delegation_intro_card)
+        delegationIntroCardBinding =
+            DataBindingUtil.setContentView(this, R.layout.delegation_intro_card)
 
         val view = mainScreenBinding.root
 
@@ -155,11 +156,11 @@ class MainScreen : AppCompatActivity() {
 
         /** Initializing ServiceProviderViewModel **/
         serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)
+            .get(ServiceProviderViewModel::class.java)
 
         /** Initializing ServiceViewModel **/
         serviceViewModel = ViewModelProvider(this)
-                .get(ServiceViewModel::class.java)
+            .get(ServiceViewModel::class.java)
 
         toolbar = appBarBinding.toolbar
         setSupportActionBar(toolbar)
@@ -175,8 +176,10 @@ class MainScreen : AppCompatActivity() {
         //checkForAndLaunchDelegatedFragment()
 
 
-        mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+        mixpanel = MixpanelAPI.getInstance(
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         mAuth = FirebaseAuth.getInstance()
 
@@ -247,7 +250,7 @@ class MainScreen : AppCompatActivity() {
                     deepLink = pendingDynamicLinkData.link
                     Timber.e("Show Dynamic Link -> $deepLink")
                 }
-        }.addOnFailureListener { e -> Timber.e("Error getting Dynamic Link -> $e") }
+            }.addOnFailureListener { e -> Timber.e("Error getting Dynamic Link -> $e") }
     }
 
     private fun showBadge() {
@@ -278,7 +281,7 @@ class MainScreen : AppCompatActivity() {
         introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
 
         val introDialogView = LayoutInflater.from(this)
-                .inflate(R.layout.intro_dialog_layout, null)
+            .inflate(R.layout.intro_dialog_layout, null)
 
         introDialogBuilder.setView(introDialogView)
 
@@ -292,7 +295,7 @@ class MainScreen : AppCompatActivity() {
             /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
             val welcomeEventObject = JSONObject()
             welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
-            mixpanel?.track("welcomePromptUser_userConfirmation", welcomeEventObject)
+            mixpanel.track("welcomePromptUser_userConfirmation", welcomeEventObject)
         }
 
         introDialogBuilder.show()
@@ -300,7 +303,7 @@ class MainScreen : AppCompatActivity() {
 
     private fun checkingForDelegatedServiceFromRoom() {
         val delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
         val countOfDelegatedService = delegatedServiceViewModel.getCountOfDelegatedServices()
 
         if (countOfDelegatedService == 0)
@@ -454,12 +457,18 @@ class MainScreen : AppCompatActivity() {
     }
 
     @Subscribe
-    fun onServiceCommentedOnEvent(viewHolder: GroupieViewHolder, serviceCommentEvent: ServiceCommentEvent) {
+    fun onServiceCommentedOnEvent(
+        viewHolder: GroupieViewHolder,
+        serviceCommentEvent: ServiceCommentEvent
+    ) {
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceName}")
         Timber.e("SERVICE-COMMENTED-ON-EVENT -> ${serviceCommentEvent.serviceCommentedOn}")
 
         if (serviceCommentEvent.serviceCommentedOn!!) {
-            showSnackbarBlue("Thank you for helping improve ${serviceCommentEvent.serviceName}.", -1)
+            showSnackbarBlue(
+                "Thank you for helping improve ${serviceCommentEvent.serviceName}.",
+                -1
+            )
         }
     }
 
@@ -527,20 +536,23 @@ class MainScreen : AppCompatActivity() {
     }
 
     fun feedback() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         val feedbackDialogView = LayoutInflater.from(this)
-                .inflate(R.layout.feedback_dialog, null)
+            .inflate(R.layout.feedback_dialog, null)
 
         val feedbackDialogBuilder = MaterialAlertDialogBuilder(this)
 
         feedbackDialogBuilder.setTitle("Feedback")
-                .setIcon(R.drawable.logo)
-                .setView(feedbackDialogView)
+            .setIcon(R.drawable.logo)
+            .setView(feedbackDialogView)
 
         feedbackDialogBuilder.setPositiveButton("Submit") { dialogInterface, i ->
-            val feedbackEditText = feedbackDialogView.findViewById<TextInputEditText>(R.id.feedbackEditText)
+            val feedbackEditText =
+                feedbackDialogView.findViewById<TextInputEditText>(R.id.feedbackEditText)
             val feedbackText = feedbackEditText.text?.trim().toString()
 
             Timber.e("Feedback Submitted-> $feedbackText")
@@ -550,7 +562,7 @@ class MainScreen : AppCompatActivity() {
                 /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
                 val feedbackEventObject = JSONObject()
                 feedbackEventObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("FEEDBACK", feedbackText)
+                    .put("FEEDBACK", feedbackText)
                 mixpanel?.track("feedback_submitted", feedbackEventObject)
 
             } else {
@@ -568,11 +580,13 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun userSupport() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         val userSupportDialogView = LayoutInflater.from(this)
-                .inflate(R.layout.user_support_dialog, null)
+            .inflate(R.layout.user_support_dialog, null)
 
         val whatsAppImageView = userSupportDialogView.findViewById<ImageView>(R.id.chat_image_view)
         val whatsAppTextView = userSupportDialogView.findViewById<TextView>(R.id.chat_text_view)
@@ -580,8 +594,8 @@ class MainScreen : AppCompatActivity() {
         val callTextView = userSupportDialogView.findViewById<TextView>(R.id.call_text_view)
 
         val userDialogBuilder = MaterialAlertDialogBuilder(this)
-                .setIcon(R.drawable.logo)
-                .setView(userSupportDialogView)
+            .setIcon(R.drawable.logo)
+            .setView(userSupportDialogView)
 
         whatsAppImageView.setOnClickListener { launchWhatsApp() }
         whatsAppTextView.setOnClickListener { launchWhatsApp() }
@@ -637,44 +651,50 @@ class MainScreen : AppCompatActivity() {
         }
     }
 
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+    private val mOnNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            val mixpanel = MixpanelAPI.getInstance(
+                applicationContext,
+                resources.getString(R.string.mixpanelToken)
+            )
 
-        when (item.itemId) {
+            when (item.itemId) {
 
-            R.id.bottom_navigation_home -> {
-                supportActionBar?.title = "Ummo"
+                R.id.bottom_navigation_home -> {
+                    supportActionBar?.title = "Ummo"
 
-                /** Modify info card **/
+                    /** Modify info card **/
 //                val serviceCentreFragment = ServiceCentresFragment()
-                val pagesFragment = PagesFragment()
-                openFragment(pagesFragment)
+                    val pagesFragment = PagesFragment()
+                    openFragment(pagesFragment)
 
-                val homeEventObject = JSONObject()
-                homeEventObject.put("EVENT_DATE_TIME", currentDate)
-                mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
+                    val homeEventObject = JSONObject()
+                    homeEventObject.put("EVENT_DATE_TIME", currentDate)
+                    mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
 
-                return@OnNavigationItemSelectedListener true
-            }
+                    return@OnNavigationItemSelectedListener true
+                }
 
-            R.id.bottom_navigation_delegates -> {
-                val delegatedServiceFragment = DelegatedServiceFragment()
-                openFragment(delegatedServiceFragment)
+                R.id.bottom_navigation_delegates -> {
+                    val delegatedServiceFragment = DelegatedServiceFragment()
+                    openFragment(delegatedServiceFragment)
 
-                badge.isVisible = false
+                    badge.isVisible = false
 
-                val delegatedServiceEventObject = JSONObject()
-                delegatedServiceEventObject.put("EVENT_DATE_TIME", currentDate)
-                mixpanel?.track("bottomNavigation_delegatedServiceTapped", delegatedServiceEventObject)
+                    val delegatedServiceEventObject = JSONObject()
+                    delegatedServiceEventObject.put("EVENT_DATE_TIME", currentDate)
+                    mixpanel?.track(
+                        "bottomNavigation_delegatedServiceTapped",
+                        delegatedServiceEventObject
+                    )
 
-                return@OnNavigationItemSelectedListener true
-            }
+                    return@OnNavigationItemSelectedListener true
+                }
 
-            /*R.id.bottom_navigation_service -> {
+                /*R.id.bottom_navigation_service -> {
 
-                */
-            /** Modify info card **//*
+                    */
+                /** Modify info card **//*
                 *//* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
 
                  sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
@@ -706,19 +726,19 @@ class MainScreen : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }*/
 
-            R.id.bottom_navigation_profile -> {
-                val profileFragment = ProfileFragment()
-                openFragment(profileFragment)
+                R.id.bottom_navigation_profile -> {
+                    val profileFragment = ProfileFragment()
+                    openFragment(profileFragment)
 
-                val profileEventObject = JSONObject()
-                profileEventObject.put("EVENT_DATE_TIME", currentDate)
-                mixpanel?.track("bottomNavigation_profileTapped", profileEventObject)
+                    val profileEventObject = JSONObject()
+                    profileEventObject.put("EVENT_DATE_TIME", currentDate)
+                    mixpanel?.track("bottomNavigation_profileTapped", profileEventObject)
 
-                return@OnNavigationItemSelectedListener true
+                    return@OnNavigationItemSelectedListener true
+                }
             }
+            false
         }
-        false
-    }
 
     private fun getAndStoreUserInfoLocally() {
         /** Inserting ProfileModel info into ProfileEntity, then ProfileViewModel **/
@@ -929,10 +949,12 @@ class MainScreen : AppCompatActivity() {
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
         val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        val snackbar =
+            Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
 
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
@@ -945,9 +967,11 @@ class MainScreen : AppCompatActivity() {
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
         val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        val snackbar =
+            Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.gold))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
@@ -955,9 +979,11 @@ class MainScreen : AppCompatActivity() {
 
     private fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
+        val snackbar =
+            Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.orange_red))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()

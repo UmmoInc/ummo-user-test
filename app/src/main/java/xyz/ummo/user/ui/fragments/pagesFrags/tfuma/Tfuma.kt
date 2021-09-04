@@ -1,4 +1,4 @@
-package xyz.ummo.user.ui.fragments.pagesFrags
+package xyz.ummo.user.ui.fragments.pagesFrags.tfuma
 
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -30,10 +30,11 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
-import xyz.ummo.user.utilities.mode
-import xyz.ummo.user.utilities.ummoUserPreferences
+import xyz.ummo.user.workers.fromJSONArray
+import xyz.ummo.user.workers.fromServiceCostJSONArray
 
 
 class Tfuma : Fragment() {
@@ -86,18 +87,26 @@ class Tfuma : Fragment() {
 
     val delegatableServiceJSONObject = JSONObject()
 
+    private var tfumaViewModel: TfumaViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         serviceViewModel = ViewModelProvider(this)
-                .get(ServiceViewModel::class.java)
+            .get(ServiceViewModel::class.java)
 
         gAdapter = GroupAdapter()
 
-        delegatableServicesArrayList = (serviceViewModel?.getDelegatableServices() as ArrayList<ServiceEntity>?)!!
+        /** Instantiating [delegatableServicesArrayList]; filling it with data from
+         * [serviceViewModel]'s DelegatableServices **/
+        delegatableServicesArrayList = (serviceViewModel?.getDelegatableServices()
+                as ArrayList<ServiceEntity>?)!!
 
         delegatedServicePrefs = this.requireActivity()
-                .getSharedPreferences(ummoUserPreferences, mode)
+            .getSharedPreferences(ummoUserPreferences, mode)
+
+        /** Initing TfumaViewModel **/
+        tfumaViewModel = ViewModelProvider(this).get(TfumaViewModel::class.java)
 
     }
 
@@ -150,6 +159,8 @@ class Tfuma : Fragment() {
 
     //TODO: Attend to
     private fun loadOfflineServices() {
+        /** Setting up Socket Worker from TfumaViewModel **/
+//        tfumaViewModel!!.socketConnect()
         Timber.e("OFFLINE SERVICES -> $delegatableServicesArrayList")
     }
 
@@ -159,6 +170,9 @@ class Tfuma : Fragment() {
         tfumaBinding.reloadTfumaServicesButton.setOnClickListener {
 
             pollingAdapterState()
+
+            loadOfflineServices()
+
             /** Posting this EventBus in order to display the Snackbar **/
             reloadingServicesEvent.reloadingServices = true
             EventBus.getDefault().post(reloadingServicesEvent)
@@ -227,6 +241,8 @@ class Tfuma : Fragment() {
                     val allServices = JSONObject(String(data)).getJSONArray("payload")
                     var service: JSONObject
 
+//                    tfumaViewModel!!.parseAndDisplayServices(allServices, "delegatable")
+
                     try {
                         for (i in 0 until allServices.length()) {
                             service = allServices[i] as JSONObject
@@ -234,46 +250,59 @@ class Tfuma : Fragment() {
 
                             if (delegatable) {
                                 serviceId = service.getString("_id") //1
-                                serviceName = service.getString("service_name") //2
-                                serviceDescription = service.getString("service_description") //3
-                                serviceEligibility = service.getString("service_eligibility") //4
+                                serviceName = service.getString(SERV_NAME) //2
+                                serviceDescription = service.getString(SERV_DESCR) //3
+                                serviceEligibility = service.getString(SERV_ELIG) //4
 //                                serviceCentres //5
-                                serviceCentresJSONArray = service.getJSONArray("service_centres")
+                                serviceCentresJSONArray = service.getJSONArray(SERV_CENTRES)
                                 serviceCentres = fromJSONArray(serviceCentresJSONArray)
 
-                                delegatable = service.getBoolean("delegatable") //6
-                                serviceCostJSONArray = service.getJSONArray("service_cost")
-                                serviceCostArrayList = fromServiceCostJSONArray(serviceCostJSONArray)
+                                delegatable = service.getBoolean(DELEGATABLE) //6
+                                serviceCostJSONArray = service.getJSONArray(SERV_COST)
+                                serviceCostArrayList =
+                                    fromServiceCostJSONArray(serviceCostJSONArray)
 //                                serviceCost = service.getString("service_cost") //7
 //                                serviceDocuments = //8
-                                serviceDocumentsJSONArray = service.getJSONArray("service_documents")
+                                serviceDocumentsJSONArray = service.getJSONArray(SERV_DOCS)
                                 serviceDocuments = fromJSONArray(serviceDocumentsJSONArray)
 
-                                serviceDuration = service.getString("service_duration") //9
-                                approvalCount = service.getInt("useful_count") //10
-                                disapprovalCount = service.getInt("not_useful_count") //11
+                                serviceDuration = service.getString(SERV_DURATION) //9
+                                approvalCount = service.getInt(UPVOTE_COUNT) //10
+                                disapprovalCount = service.getInt(DOWNVOTE_COUNT) //11
 //                                serviceComments = s //12
-                                serviceCommentsJSONArray = service.getJSONArray("service_comments")
+                                serviceCommentsJSONArray = service.getJSONArray(SERV_COMMENTS)
                                 serviceComments = fromJSONArray(serviceCommentsJSONArray)
 
-                                commentCount = service.getInt("service_comment_count") //13
-                                shareCount = service.getInt("service_share_count") //14
-                                viewCount = service.getInt("service_view_count") //15
-                                serviceProvider = service.getString("service_provider") //16
+                                commentCount = service.getInt(SERV_COMMENT_COUNT) //13
+                                shareCount = service.getInt(SERV_SHARE_COUNT) //14
+                                viewCount = service.getInt(SERV_VIEW_COUNT) //15
+                                serviceProvider = service.getString(SERV_PROVIDER) //16
 
-                                serviceLink = if (service.getString("service_link").isNotEmpty())
-                                    service.getString("service_link") //17
+                                serviceLink = if (service.getString(SERV_LINK).isNotEmpty())
+                                    service.getString(SERV_LINK) //17
                                 else
                                     ""
 
                                 try {
-                                    serviceAttachmentJSONArray = service.getJSONArray("service_attachment_objects")
+                                    serviceAttachmentJSONArray = service.getJSONArray(
+                                        SERV_ATTACH_OBJS
+                                    )
 
                                     for (x in 0 until serviceAttachmentJSONArray.length()) {
-                                        serviceAttachmentJSONObject = serviceAttachmentJSONArray.getJSONObject(x)
-                                        serviceAttachmentName = serviceAttachmentJSONObject.getString("file_name")
-                                        serviceAttachmentSize = serviceAttachmentJSONObject.getString("file_size")
-                                        serviceAttachmentURL = serviceAttachmentJSONObject.getString("file_uri")
+                                        serviceAttachmentJSONObject =
+                                            serviceAttachmentJSONArray.getJSONObject(x)
+                                        serviceAttachmentName =
+                                            serviceAttachmentJSONObject.getString(
+                                                FILE_NAME
+                                            )
+                                        serviceAttachmentSize =
+                                            serviceAttachmentJSONObject.getString(
+                                                FILE_SIZE
+                                            )
+                                        serviceAttachmentURL =
+                                            serviceAttachmentJSONObject.getString(
+                                                FILE_URI
+                                            )
                                     }
                                 } catch (jse: JSONException) {
                                     Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
@@ -322,52 +351,15 @@ class Tfuma : Fragment() {
 
                 } else {
                     Timber.e("FAILED TO GET SERVICES : $code")
+                    /** If we fail to load services, we should:
+                     * 1. poll for a connection;
+                     * 2. display the Offline services view; which will allow the User to retry **/
+                    pollingAdapterState()
+
+                    //TODO: Let's tell the User what to do here
                 }
             }
         }
-    }
-
-    /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
-    private fun fromJSONArray(array: JSONArray): ArrayList<String> {
-        val tmp = ArrayList<String>()
-        for (i in 0 until array.length()) {
-            tmp.add((array.getString(i)))
-        }
-
-        return tmp
-    }
-
-    /** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
-    private fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
-        val tmp = ArrayList<ServiceCostModel>()
-        var serviceCostObject: JSONObject
-        var spec: String
-        var cost: Int
-        var serviceCostModel: ServiceCostModel
-        for (i in 0 until array.length()) {
-            /*serviceCostModel = array.get(i) as ServiceCostModel
-            tmp.add(serviceCostModel)*/
-
-            try {
-                serviceCostObject = array.getJSONObject(i)
-                spec = serviceCostObject.getString("service_spec")
-                cost = serviceCostObject.getInt("spec_cost")
-                serviceCostModel = ServiceCostModel(spec, cost)
-                tmp.add(serviceCostModel)
-            } catch (jse: JSONException) {
-                Timber.e("CONVERTING SERVICE COST JSE -> $jse")
-            }
-        }
-
-        Timber.e("SERVICE COST from FUN -> $tmp")
-        return tmp
-    }
-
-    /** Function a JSON Object and returns a PublicServiceData **/
-    private fun fromJSONObject(obj: JSONObject): String {
-        Timber.e("fromJSONOBJECT-> $obj")
-
-        return obj.toString()
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {

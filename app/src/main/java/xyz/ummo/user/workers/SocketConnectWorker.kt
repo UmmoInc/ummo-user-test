@@ -45,7 +45,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                 initializeSocketWithId(userId)
 
                 if (SocketIO.mSocket != null) {
-                    Timber.e("DOING WORK${SocketIO.mSocket}")
+                    Timber.e("DOING WORK ${SocketIO.mSocket}")
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {

@@ -1,11 +1,11 @@
 package xyz.ummo.user.ui.fragments.pagesFrags
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -14,6 +14,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentPagesBinding
 import xyz.ummo.user.models.ServiceProviderData
+import xyz.ummo.user.ui.fragments.pagesFrags.tfuma.Tfuma
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 
@@ -47,12 +48,16 @@ class PagesFragment : Fragment() {
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
-        pagesFragmentBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_pages,
-                container, false)
+        pagesFragmentBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_pages,
+            container, false
+        )
 
         val view = pagesFragmentBinding.root
 

@@ -8,8 +8,12 @@ import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.utilities.*
 
 /**
@@ -59,4 +63,40 @@ fun sleep() {
         Timber.e("Sleeper held -> ${e.message}")
     }
 
+}
+
+/** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
+fun fromJSONArray(array: JSONArray): ArrayList<String> {
+    val tmp = ArrayList<String>()
+    for (i in 0 until array.length()) {
+        tmp.add((array.getString(i)))
+    }
+
+    return tmp
+}
+
+/** Function takes a JSON Array and returns a (Array)List<PublicServiceData> **/
+fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
+    val tmp = ArrayList<ServiceCostModel>()
+    var serviceCostObject: JSONObject
+    var spec: String
+    var cost: Int
+    var serviceCostModel: ServiceCostModel
+    for (i in 0 until array.length()) {
+        /*serviceCostModel = array.get(i) as ServiceCostModel
+        tmp.add(serviceCostModel)*/
+
+        try {
+            serviceCostObject = array.getJSONObject(i)
+            spec = serviceCostObject.getString("service_spec")
+            cost = serviceCostObject.getInt("spec_cost")
+            serviceCostModel = ServiceCostModel(spec, cost)
+            tmp.add(serviceCostModel)
+        } catch (jse: JSONException) {
+            Timber.e("CONVERTING SERVICE COST JSE -> $jse")
+        }
+    }
+
+    Timber.e("SERVICE COST from FUN -> $tmp")
+    return tmp
 }
