@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_my_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".ui.fragments.profile.ProfileFragment">
+
+    <!-- <androidx.core.widget.NestedScrollView
+         android:id="@+id/profile_scroll_view"
+         android:layout_height="match_parent"
+         android:layout_width="match_parent">-->
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,281 +19,574 @@
         android:background="@color/White"
         android:paddingBottom="10dp">
 
-        <include
-            android:id="@+id/profile_info_card"
-            layout="@layout/profile_info_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <!--<FrameLayout
-            android:id="@+id/profile_pic_box"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/profile_info_card"
-            android:layout_gravity="center"
-            android:layout_marginTop="4dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/ic_profile_face" />
-
-            &lt;!&ndash;<de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/iv_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/ic_camera_alt_black_24dp"/>&ndash;&gt;
-        </FrameLayout>-->
-
-        <TextView
-            android:id="@+id/full_name_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/profile_info_card"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:fontFamily="@font/rubik"
-            android:text="@string/full_name_title_string"
-            android:textColor="@color/greyProfile"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/profile_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/full_name_title"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/White"
-            android:drawablePadding="4dp"
-            android:fontFamily="@font/rubik"
-            android:padding="5dp"
-            android:text="@string/user_name_placeholder"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <View
-            android:id="@+id/view1"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/profile_name"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="10dp"
-            android:background="@color/Grey" />
-
-        <!--<TextView
-            android:id="@+id/id_number_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyProfile"
-            android:text="@string/id_number_title_string"
-            android:textSize="12sp"
-            android:layout_marginTop="10dp"
-            android:textStyle="bold"
-            android:layout_below="@id/view1"
-            android:layout_marginStart="20dp" />
-
-        <TextView
-            android:id="@+id/id_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:drawablePadding="4dp"
-            android:background="@color/White"
-            android:padding="5dp"
-            android:text="Enter Your ID number here"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_below="@id/id_number_title"
-            android:layout_marginTop="2dp"
-            android:clickable="true"
-            android:onClick="goToEditProfile"
-            android:focusable="true"
-            app:drawableRightCompat="@drawable/ic_edit_black_24dp"
-            app:drawableEndCompat="@drawable/ic_edit_black_24dp" />-->
-
-
-        <TextView
-            android:id="@+id/contact_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/view1"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/rubik"
-            android:text="@string/contact_title_string"
-            android:textColor="@color/greyProfile"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/profile_contact"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/contact_title"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/White"
-            android:fontFamily="@font/rubik"
-            android:padding="5dp"
-            android:text="(+268) 76872520"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <!--<TextView
-            android:id="@+id/contact_verification_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/profile_contact"
-            android:layout_alignParentEnd="true"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:layout_marginEnd="20dp"
-            android:fontFamily="@font/rubik"
-            android:paddingStart="0dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="20dp"
-            android:text="Unverified"
-            android:textColor="@color/Grey"
-            android:textSize="10sp"
-            android:textStyle="italic"
-            tools:ignore="SmallSp" />-->
-
-        <View
-            android:id="@+id/view3"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/profile_contact"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/Grey" />
-
-        <TextView
-            android:id="@+id/email_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/view3"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/rubik"
-            android:text="@string/email_title_string"
-            android:textColor="@color/greyProfile"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/profile_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/email_title"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="20dp"
-            android:background="@color/White"
-            android:fontFamily="@font/rubik"
-            android:padding="5dp"
-            android:text="email@gmail.com"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
-
-        <View
-            android:id="@+id/view4"
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/profile_email"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/Grey" />
-
+        <!-- [START] PERSONAL-INFO section -->
         <RelativeLayout
-            android:id="@+id/personal_touch_relative_layout"
+            android:id="@+id/personal_info_relative_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/logout_button">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:id="@+id/clean_hands_relative_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true">
+                android:id="@+id/profile_header_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="20dp"
+                    android:src="@drawable/profile_pic"
+                    app:civ_border_color="#FF000000"
+                    app:civ_border_width="2dp" />
 
                 <TextView
-                    android:id="@+id/clean_hands_text_view"
+                    android:id="@+id/greeting_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/rubik"
-                    android:paddingTop="5dp"
-                    android:text="Made with clean hands"
-                    android:textColor="@color/Grey"
-                    android:textSize="10sp"
-                    android:textStyle="italic"
-                    tools:ignore="SmallSp" />
-
-                <ImageView
-                    android:id="@+id/clean_hands_image_view"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/clean_hands_text_view"
-                    app:srcCompat="@drawable/ic_clean_hands_24" />
+                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@+id/profile_image"
+                    android:fontFamily="@font/rubik"
+                    android:text="Good morning, "
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/made_eswatini_text_view"
+                    android:id="@+id/name_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="5dp"
-                    android:layout_toEndOf="@+id/clean_hands_image_view"
-                    android:fontFamily="@font/rubik"
-                    android:paddingTop="5dp"
-                    android:text="Eswatini"
-                    android:textColor="@color/Grey"
-                    android:textSize="10sp"
-                    android:textStyle="italic"
-                    tools:ignore="SmallSp" />
-
-                <ImageView
-                    android:id="@+id/eswatini_image_view"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/made_eswatini_text_view"
-                    app:srcCompat="@drawable/flag_swaziland" />
+                    android:layout_marginTop="8dp"
+                    android:layout_toEndOf="@+id/greeting_text_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="Jose "
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <TextView
-                android:id="@+id/app_version_text_view"
+                android:id="@+id/personal_info_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/clean_hands_relative_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="5dp"
-                android:layout_marginBottom="50dp"
+                android:layout_below="@id/profile_header_relative_layout"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/rubik"
-                android:text="Version 1.0.9 (Beta)"
-                android:textColor="@color/Grey"
-                android:textSize="10sp"
-                android:textStyle="italic"
-                tools:ignore="SmallSp" />
-        </RelativeLayout>
+                android:text="PERSONAL INFO"
+                android:textColor="@color/greyProfile"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
+            <RelativeLayout
+                android:id="@+id/view_personal_info_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/personal_info_text_view"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/view_personal_info_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="View personal info"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <!--<TextView
+                    android:id="@+id/view_personal_info_details_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/view_personal_info_view"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:padding="5dp"
+                    android:text="Learn how we work to help you save time."
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />-->
+
+                <ImageView
+                    android:id="@+id/view_personal_info_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_account_circle_black_24" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+        <!-- [END] PERSONAL-INFO section -->
+
+        <!-- [START] SUPPORT section -->
+        <RelativeLayout
+            android:id="@+id/support_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/personal_info_relative_layout"
+            android:layout_marginTop="8dp">
+
+            <View
+                android:id="@+id/support_group_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <TextView
+                android:id="@+id/profile_support_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/support_group_divider"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/rubik"
+                android:text="SUPPORT"
+                android:textColor="@color/greyProfile"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/how_ummo_works_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_support_text_view"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/how_ummo_works_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="How Ummo works"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/how_ummo_works_info_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/how_ummo_works_text_view"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Learn how we work to help you save time."
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/how_ummo_works_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_handyman_black_24" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/how_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/how_ummo_works_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <RelativeLayout
+                android:id="@+id/get_help_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/how_divider"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/get_help_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Get help"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/get_help_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_help_outline_black_24dp" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/help_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/get_help_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <RelativeLayout
+                android:id="@+id/give_feedback_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/help_divider"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/give_feedback_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Give us feedback"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/give_feedback_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_feedback_black_24" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/feedback_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/give_feedback_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+        </RelativeLayout>
+        <!-- [END] SUPPORT section -->
+
+        <!-- [START] LEGAL section -->
+        <RelativeLayout
+            android:id="@+id/legal_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/support_relative_layout"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/legal_header_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/rubik"
+                android:text="LEGAL"
+                android:textColor="@color/greyProfile"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/terms_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/legal_header_text_view"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/terms_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Terms of Service"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/terms_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_terms_black_24" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/terms_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/terms_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <RelativeLayout
+                android:id="@+id/privacy_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/terms_divider"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/privacy_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Privacy Policy"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/privacy_info_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/privacy_text_view"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Learn how we use and protect your data."
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/privacy_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_privacy_policy_black_24" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/privacy_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/privacy_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+        </RelativeLayout>
+        <!-- [END] LEGAL section -->
+
+        <!-- [START] ABOUT section -->
+        <RelativeLayout
+            android:id="@+id/about_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/legal_relative_layout"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/about_header_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/rubik"
+                android:text="ABOUT"
+                android:textColor="@color/greyProfile"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/website_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_header_text_view"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/website_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/White"
+                    android:fontFamily="@font/rubik"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="Visit our page"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/website_image_view"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    app:srcCompat="@drawable/ic_outline_language_black_24" />
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/website_divider"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/website_relative_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="20dp"
+                android:background="@color/Grey" />
+
+            <!-- The below RelativeLayout contains the app footer & version number -->
+            <RelativeLayout
+                android:id="@+id/personal_touch_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/website_divider">
+
+                <RelativeLayout
+                    android:id="@+id/clean_hands_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true">
+
+                    <TextView
+                        android:id="@+id/clean_hands_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="5dp"
+                        android:text="Made with clean hands"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <ImageView
+                        android:id="@+id/clean_hands_image_view"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/clean_hands_text_view"
+                        app:srcCompat="@drawable/ic_clean_hands_24" />
+
+                    <TextView
+                        android:id="@+id/made_eswatini_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="5dp"
+                        android:layout_toEndOf="@+id/clean_hands_image_view"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="5dp"
+                        android:text="Eswatini"
+                        android:textColor="@color/Grey"
+                        android:textSize="10sp"
+                        android:textStyle="italic"
+                        tools:ignore="SmallSp" />
+
+                    <ImageView
+                        android:id="@+id/eswatini_image_view"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/made_eswatini_text_view"
+                        app:srcCompat="@drawable/flag_swaziland" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/app_version_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/clean_hands_relative_layout"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="5dp"
+                    android:layout_marginBottom="50dp"
+                    android:fontFamily="@font/rubik"
+                    android:text="Version 1.0.9 (Beta)"
+                    android:textColor="@color/Grey"
+                    android:textSize="10sp"
+                    android:textStyle="italic"
+                    tools:ignore="SmallSp" />
+            </RelativeLayout>
+        </RelativeLayout>
+        <!-- [END] ABOUT section -->
+
+        <!-- The below Button is for Logging Out -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/logout_button"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
+            android:layout_below="@+id/about_relative_layout"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_margin="4dp"
@@ -299,4 +599,6 @@
             tools:targetApi="lollipop" />
     </RelativeLayout>
 
-</layout>
+    <!--    </androidx.core.widget.NestedScrollView>-->
+
+</androidx.core.widget.NestedScrollView>

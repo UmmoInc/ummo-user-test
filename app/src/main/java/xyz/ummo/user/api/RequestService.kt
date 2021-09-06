@@ -2,16 +2,11 @@ package xyz.ummo.user.api
 
 import android.app.Activity
 import android.content.Context
-import android.os.CountDownTimer
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.TextView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import org.json.JSONObject
-import timber.log.Timber
 import xyz.ummo.user.R
 
 /** This abstract function takes a User (contact) && Product (ID); then a request
@@ -23,7 +18,7 @@ abstract class RequestService(context: Context?, user: String, product: String,
         val alertDialogBuilder = MaterialAlertDialogBuilder(context!!)
 
         val errorAlertDialogView = LayoutInflater.from(context)
-                .inflate(R.layout.request_error_dialog, null)
+            .inflate(R.layout.request_error_dialog, null)
 
         val data = JSONObject()
         data.put("user_id", user)
@@ -32,17 +27,18 @@ abstract class RequestService(context: Context?, user: String, product: String,
         data.put("chosen_service_centre", chosenServiceCentre)
         data.put("service_date", serviceDate)
 
-        Fuel.post("${context.getString(R.string.serverUrl)}/api/service_request")
-                .jsonBody(data.toString())
-                .response { request, response, result ->
-                    (context as Activity).runOnUiThread {
-                        done(response.data, response.statusCode)
+//        Fuel.post("${context.getString(R.string.serverUrl)}/api/service_request")
+        Fuel.post("${context.getString(R.string.serverUrl)}/service/service_request")
+            .jsonBody(data.toString())
+            .response { request, response, result ->
+                (context as Activity).runOnUiThread {
+                    done(response.data, response.statusCode)
 
-                        if (response.statusCode == 200) {
+                    if (response.statusCode == 200) {
 
-                        } else if (response.statusCode == 500) {
-                            alertDialogBuilder.setTitle("Something's Wrong")
-                                    .setIcon(R.drawable.logo)
+                    } else if (response.statusCode == 500) {
+                        alertDialogBuilder.setTitle("Something's Wrong")
+                            .setIcon(R.drawable.logo)
                                     .setView(errorAlertDialogView)
 
                             alertDialogBuilder.setPositiveButton("Feedback") { dialogInterface, i ->
