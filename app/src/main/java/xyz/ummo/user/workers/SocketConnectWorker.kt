@@ -16,7 +16,7 @@ import java.net.URISyntaxException
 class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
 
     private val socketStateEvent = SocketStateEvent()
-    val jwt: String = PreferenceManager.getDefaultSharedPreferences(context)
+    private val jwt: String = PreferenceManager.getDefaultSharedPreferences(context)
         .getString("jwt", "").toString()
 
     object SocketIO {
@@ -73,6 +73,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
         }
     }
 
+    /** Initializing [Socket] instance with a User Token (JWT) **/
     fun initializeSocketWithId(userId: String) {
         try {
             val options: IO.Options = IO.Options()
