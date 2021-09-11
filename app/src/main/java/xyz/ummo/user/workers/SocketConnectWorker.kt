@@ -9,7 +9,6 @@ import io.socket.client.Socket
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.api.User.Companion.getUserId
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.net.URISyntaxException
 
@@ -51,7 +50,6 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 
-                        getSocketMessage()
                     }
 
                     /** Checking if our Socket instance has an error connecting **/
