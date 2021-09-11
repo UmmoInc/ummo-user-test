@@ -41,8 +41,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
             if (jwt.isNotEmpty()) {
 
                 /** Getting the User ID from the JWT **/
-                val userId = getUserId(jwt)
-                initializeSocketWithId(userId)
+                initializeSocketWithId(jwt)
 
                 if (SocketIO.mSocket != null) {
 
