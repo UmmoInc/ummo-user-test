@@ -9,6 +9,8 @@ import io.socket.client.Socket
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.User.Companion.getUserId
+import xyz.ummo.user.declarations.Client
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.net.URISyntaxException
 
@@ -50,6 +52,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 
+                        getSocketMessage()
                     }
 
                     /** Checking if our Socket instance has an error connecting **/
@@ -86,7 +89,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
             val options: IO.Options = IO.Options()
             options.query = "token=$userId"
 
-            SocketIO.mSocket = IO.socket(applicationContext.getString(R.string.serverUrl), options)
+            SocketIO.mSocket = IO.socket(applicationContext.getString(R.string.serverUrl), options) as Client?
             SocketIO.mSocket?.connect()
 
             if (SocketIO.mSocket == null) {
