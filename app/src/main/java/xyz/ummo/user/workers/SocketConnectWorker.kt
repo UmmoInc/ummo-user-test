@@ -59,6 +59,13 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                         socketStateEvent.socketConnected = false
                         makeStatusNotification("MAYDAY!", appContext)
                         EventBus.getDefault().post(socketStateEvent)
+                        /*
+                        * So here we will construct fake sample services
+                        *
+                        * new Service(SocketIO.mSocket)
+                        * so the above will then have handlers that it will bind to mSocket
+                        *
+                        * */
                     }
 
                 } else {
