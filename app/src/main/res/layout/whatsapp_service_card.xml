@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="info"
+            type="xyz.ummo.user.models.Info" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/whatsapp_support_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="3dp"
+        app:cardElevation="1dp"
+        app:cardMaxElevation="1dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingTop="4dp"
+        app:strokeColor="@color/ummo_2"
+        app:strokeWidth="1dp">
+
+        <RelativeLayout
+            android:id="@+id/whatsapp_support_card_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp">
+
+            <ImageView
+                android:id="@+id/whatsapp_support_image_view"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:contentDescription="@string/info_image"
+                app:srcCompat="@drawable/ic_blue_support_agent_24" />
+
+            <TextView
+                android:id="@+id/whatsapp_support_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/whatsapp_support_image_view"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/whatsapp_support_image_view"
+                android:fontFamily="@font/rubik"
+                android:text="Ummo Service Assistance"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/whatsapp_support_image_view"
+                android:background="?android:attr/listDivider"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/whatsapp_support_body_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_margin="8dp"
+                android:text="Thank you for using Ummo. We'll do our best to help you save time.\n\nFor now, we'll be using WhatsApp to assist you with your service."
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/whatsapp_support_body_text_view"
+                android:layout_alignParentEnd="true">
+
+                <TextView
+                    android:id="@+id/whatsapp_support_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:text="Text us"
+                    android:textColor="@color/ummo_2"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/whatsapp_image_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toEndOf="@+id/whatsapp_support_text_view"
+                    android:contentDescription="@string/info_image"
+                    app:srcCompat="@drawable/whatsapp" />
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

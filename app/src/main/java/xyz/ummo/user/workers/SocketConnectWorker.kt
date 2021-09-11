@@ -45,13 +45,14 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                 initializeSocketWithId(userId)
 
                 if (SocketIO.mSocket != null) {
-                    Timber.e("DOING WORK ${SocketIO.mSocket}")
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {
                         makeStatusNotification("We're LIVE!", appContext)
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
+
+                        getSocketMessage()
                     }
 
                     /** Checking if our Socket instance has an error connecting **/
@@ -60,6 +61,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                         makeStatusNotification("MAYDAY!", appContext)
                         EventBus.getDefault().post(socketStateEvent)
                     }
+
                 } else {
                     makeStatusNotification("Failed to connect", appContext)
                     Timber.e("NOT DOING WORK")
@@ -74,6 +76,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
     }
 
     /** Initializing [Socket] instance with a User Token (JWT) **/
+    @Synchronized
     fun initializeSocketWithId(userId: String) {
         try {
             val options: IO.Options = IO.Options()
@@ -89,6 +92,23 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
             }
         } catch (e: URISyntaxException) {
             Timber.e(e.toString())
+        }
+    }
+
+    @Synchronized
+    fun getSocket(): Socket? {
+        return SocketIO.mSocket
+    }
+
+    @Synchronized
+    fun closeConnection() {
+        SocketIO.mSocket?.disconnect()
+    }
+
+    @Synchronized
+    fun getSocketMessage() {
+        SocketIO.mSocket?.on("user/notify") {
+            Timber.e("GETTING SOCKET MESSAGE -> $it")
         }
     }
 }

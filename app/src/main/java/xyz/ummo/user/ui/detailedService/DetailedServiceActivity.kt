@@ -51,7 +51,7 @@ import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.main.MainScreen
-import xyz.ummo.user.utilities.SERVICE_OBJECT
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException
@@ -665,11 +665,4 @@ class DetailedServiceActivity : AppCompatActivity() {
         snackbar.show()
     }
 
-    companion object {
-        const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
-        const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
-        const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
-        const val DELEGATION_ID = "DELEGATION_ID"
-        const val ATTACHMENT_DOWNLOADED = "ATTACHMENT_DOWNLOADED"
-    }
 }

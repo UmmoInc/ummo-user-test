@@ -33,9 +33,9 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.utilities.*
 import java.io.Serializable
 
@@ -73,19 +73,26 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         arguments?.let {
         }
 
-        serviceRequestBottomSheetPrefs = requireContext().getSharedPreferences(ummoUserPreferences, mode)
+        serviceRequestBottomSheetPrefs =
+            requireContext().getSharedPreferences(ummoUserPreferences, mode)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
-        viewBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_service_request_bottom_sheet, container, false)
+        viewBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_service_request_bottom_sheet, container, false
+        )
 
         val view = viewBinding.root
 
-        mixpanel = MixpanelAPI.getInstance(requireContext(),
-                resources.getString(R.string.mixpanelToken))
+        mixpanel = MixpanelAPI.getInstance(
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
+        )
 
         /** Unpacking [ServiceObject] from [getArguments]**/
         serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
@@ -102,10 +109,13 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun serviceRequestStepOne() {
 
         serviceLayoutInflater = LayoutInflater.from(context)
-                .context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            .context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         /** Introducing Request Sheet to User**/
-        val requestAgentText = String.format(resources.getString(R.string.request_ummo_agent), serviceObject!!.serviceName)
+        val requestAgentText = String.format(
+            resources.getString(R.string.request_ummo_agent),
+            serviceObject!!.serviceName
+        )
         val requestAgentTextView = viewBinding.requestDescriptionTextView
         requestAgentTextView.text = requestAgentText
 
@@ -125,11 +135,15 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                 /** Setting RadioButton color state-list **/
                 if (Build.VERSION.SDK_INT >= 21) {
-                    val colorStateList = ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),
-                            intArrayOf(android.R.attr.state_enabled)), intArrayOf(
+                    val colorStateList = ColorStateList(
+                        arrayOf(
+                            intArrayOf(-android.R.attr.state_enabled),
+                            intArrayOf(android.R.attr.state_enabled)
+                        ), intArrayOf(
                             Color.GRAY//disabled
                             , resources.getColor(R.color.ummo_1) //enabled
-                    ))
+                        )
+                    )
                     serviceCentreRadioButton.buttonTintList = colorStateList
                 }
                 serviceCentresRadioGroup.addView(serviceCentreRadioButton)
@@ -155,7 +169,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val autoCompleteTextView = viewBinding.sheetServiceCostTextView
 
         serviceCostArrayList = serviceObject!!.serviceCost
-        serviceCostAdapter = ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
+        serviceCostAdapter =
+            ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
 
         autoCompleteTextView.setAdapter(serviceCostAdapter)
 
@@ -190,12 +205,12 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         /** For a better UX, we need the User to not accidentally select a date from the past **/
         val constraintsBuilder = CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
+            .setValidator(DateValidatorPointForward.now())
 
         /** Creating a MaterialDateBuilder object **/
         val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
-                .setCalendarConstraints(constraintsBuilder.build())
-                .setTitleText("Pick a Date for your Service")
+            .setCalendarConstraints(constraintsBuilder.build())
+            .setTitleText("Pick a Date for your Service")
 
         val datePicker = dateBuilder.build()
 
@@ -290,7 +305,11 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 mixpanel.track("requestBottomSheet_confirmingPaymentTerms", serviceBeingRequested)
 
                 confirmRequestButton.setOnClickListener {
-                    requestAgentDelegate(serviceObject!!.serviceId, delegationFee, chosenServiceCentre)
+                    requestAgentDelegate(
+                        serviceObject!!.serviceId,
+                        delegationFee,
+                        chosenServiceCentre
+                    )
                 }
                 /*paymentTermsEvent.paymentTermsConfirmed = true
                 EventBus.getDefault().post(paymentTermsEvent)*/
@@ -303,7 +322,11 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject, mChosenServiceCentre: String) {
+    private fun requestAgentDelegate(
+        mServiceId: String,
+        mDelegationFee: JSONObject,
+        mChosenServiceCentre: String
+    ) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
 
         viewBinding.confirmRequestButton.setBackgroundColor(resources.getColor(R.color.ummo_3))
@@ -311,7 +334,14 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
-            object : RequestService(context, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre, serviceDate) {
+            object : RequestService(
+                context,
+                User.getUserId(jwt),
+                mServiceId,
+                mDelegationFee,
+                mChosenServiceCentre,
+                serviceDate
+            ) {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
                     Timber.e("delegatedService: Status Code->%s", code)
@@ -319,8 +349,6 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                     when (code) {
                         200 -> {
 //                            alertDialogBuilder.dismiss()
-
-                            Timber.e("CODE IS $code")
 
                             val delegation = JSONObject(String(data)).getJSONObject("payload")
                             Timber.e("SERVICE OBJ -> $delegation")
@@ -332,10 +360,10 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor.putString("DELEGATION_ID", delegationId)
                             //TODO: remove after service is done
                             editor.putString(
-                                DetailedServiceActivity.DELEGATED_SERVICE_ID,
+                                DELEGATED_SERVICE_ID,
                                 serviceObject!!.serviceId
                             )
-                            editor.putString(DetailedServiceActivity.SERVICE_AGENT_ID, serviceAgent)
+                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
                             editor.putString(
                                 DELEGATION_FEE,
                                 mDelegationFee.getString(TOTAL_DELEGATION_FEE)
@@ -347,10 +375,13 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
-                            launchDelegatedService(
+                            /*launchDelegatedService(
                                 context,
                                 delegatedServiceId, serviceAgent, delegationId
-                            )
+                            )*/
+                            /** We'll launch the BottomSheet that explains to the User what they
+                             * should expect from this point onwards... **/
+                            launchWhatsAppSheet(delegation)
 
                             mixpanel.track(
                                 "requestBottomSheet_completingRequest",
@@ -368,15 +399,33 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun launchDelegatedService(context: Context?,
-                                       delegatedServiceId: String,
-                                       agentId: String,
-                                       delegationId: String) {
+    private fun launchWhatsAppSheet(requestedService: JSONObject) {
+
+        val requestServiceAssistance = RequestServiceAssistance()
+
+        /** 1. Creating a $requestBundle and
+         *  2. Passing the Requested Service to the WhatsApp BottomSheet **/
+        val requestBundle = Bundle()
+        requestBundle.putString(REQUESTED_SERVICE, requestedService.toString())
+        requestServiceAssistance.arguments = requestBundle
+
+        Timber.e("REQUESTED SERVICE $requestedService")
+        requestServiceAssistance.show(
+            supportFM, RequestServiceAssistance.TAG
+        )
+    }
+
+    private fun launchDelegatedService(
+        context: Context?,
+        delegatedServiceId: String,
+        agentId: String,
+        delegationId: String
+    ) {
 
         val bundle = Bundle()
-        bundle.putString(DetailedServiceActivity.DELEGATED_SERVICE_ID, delegatedServiceId)
-        bundle.putString(DetailedServiceActivity.SERVICE_AGENT_ID, agentId)
-        bundle.putString(DetailedServiceActivity.DELEGATION_ID, delegationId)
+        bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
+        bundle.putString(SERVICE_AGENT_ID, agentId)
+        bundle.putString(DELEGATION_ID, delegationId)
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
@@ -386,7 +435,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val progress = java.util.ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         /** Setting Service as Delegated **/
         delegatedServiceEntity.delegationId = delegationId
@@ -407,10 +456,10 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         @JvmStatic
         fun newInstance(serviceObject: ServiceObject) =
-                ServiceRequestBottomSheet().apply {
-                    arguments = Bundle().apply {
+            ServiceRequestBottomSheet().apply {
+                arguments = Bundle().apply {
 
-                    }
                 }
+            }
     }
 }

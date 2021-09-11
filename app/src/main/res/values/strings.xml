@@ -138,7 +138,7 @@
     <string name="delegation_description">Get an agent to renew your motor-vehicle licence</string>
     <string name="request_ummo_agent">Request an Ummo Agent for %1$s</string>
 
-    <string name="product_cost">Total (including Delegation Fee)</string>
+    <string name="product_cost">Total (including Assistance Fee)</string>
 
     <string name="user_name_placeholder">User Name</string>
     <string name="info_image">Info Image</string>

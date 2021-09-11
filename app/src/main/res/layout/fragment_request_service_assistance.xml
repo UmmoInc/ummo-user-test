@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <RelativeLayout
-        android:id="@+id/share_service_info_relative_layout"
+        android:id="@+id/request_service_assistance_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp">
 
         <ImageView
-            android:id="@+id/sharing_is_caring_icon"
+            android:id="@+id/request_service_assistance_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_centerHorizontal="true"
@@ -19,35 +19,35 @@
             app:srcCompat="@drawable/ic_sharing_is_caring_24" />
 
         <TextView
-            android:id="@+id/sharing_is_caring_text"
+            android:id="@+id/request_service_assistance_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/sharing_is_caring_icon"
+            android:layout_below="@+id/request_service_assistance_icon"
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/rubik"
-            android:text="Sharing is Caring"
-            android:textSize="22sp"
-            android:textColor="@color/ummo_2" />
+            android:text="Request Assistance"
+            android:textColor="@color/ummo_2"
+            android:textSize="22sp" />
 
         <View
             android:id="@+id/divider_1"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_below="@id/sharing_is_caring_text"
+            android:layout_below="@id/request_service_assistance_text"
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="30dp"
             android:background="@color/screenWhite" />
 
         <RelativeLayout
-            android:id="@+id/share_service_info_main_relative_layout"
+            android:id="@+id/request_service_assistance_main_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_below="@+id/sharing_is_caring_text">
+            android:layout_below="@+id/request_service_assistance_text"
+            android:layout_marginTop="8dp">
 
             <ImageView
-                android:id="@+id/caring_image_view"
+                android:id="@+id/request_service_assistance_image_view"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
@@ -55,25 +55,25 @@
                 app:srcCompat="@drawable/ic_care_24" />
 
             <TextView
-                android:id="@+id/show_care_title_text_view"
+                android:id="@+id/request_service_assistance_title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/caring_image_view"
-                android:layout_toEndOf="@id/caring_image_view"
-                android:text="Show you care"
-                android:textColor="@color/black"
+                android:layout_alignTop="@+id/request_service_assistance_image_view"
                 android:layout_marginBottom="4dp"
+                android:layout_toEndOf="@id/request_service_assistance_image_view"
+                android:text="For All"
+                android:textColor="@color/black"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/show_care_main_text_view"
+                android:id="@+id/request_service_assistance_main_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/show_care_title_text_view"
-                android:layout_toEndOf="@id/caring_image_view"
+                android:layout_below="@+id/request_service_assistance_title_text_view"
+                android:layout_toEndOf="@id/request_service_assistance_image_view"
                 android:text="@string/show_you_care"
                 android:textColor="#666"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
 
@@ -128,16 +128,16 @@
         </RelativeLayout>-->
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/share_info_button"
+            android:id="@+id/request_service_assistance_button"
             android:layout_width="300dp"
             android:layout_height="60dp"
-            android:layout_below="@id/share_service_info_main_relative_layout"
+            android:layout_below="@id/request_service_assistance_main_relative_layout"
             android:layout_centerHorizontal="true"
             android:layout_margin="10dp"
             android:backgroundTint="@color/ummo_2"
-            android:text="Share info"
+            android:text="Make Request"
             android:textColor="@color/White"
-            app:icon="@drawable/ic_share_purple_24"
+            app:icon="@drawable/ic_send_black_24dp"
             app:iconGravity="textEnd"
             tools:targetApi="lollipop" />
 

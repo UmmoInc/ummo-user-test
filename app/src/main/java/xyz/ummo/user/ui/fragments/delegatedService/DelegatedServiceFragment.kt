@@ -1,7 +1,9 @@
 package xyz.ummo.user.ui.fragments.delegatedService
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -34,7 +36,6 @@ import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
 import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceProgressBottomSheet
@@ -190,8 +191,15 @@ class DelegatedServiceFragment : Fragment {
         viewBinding.delegationFeeQueryIconRelativeLayout.setOnClickListener { queryDelegationFee() }
         viewBinding.rescheduleTextView.setOnClickListener { rescheduleService() }
 
-        viewBinding.shareDelegationCard.shareDelegationTextView.setOnClickListener {shareServiceProgress() }
-        viewBinding.shareDelegationCard.shareDelegationCard.setOnClickListener { shareServiceProgress() }
+        /** Handling WhatsApp Service Support **/
+        viewBinding.whatsappSupportCard.whatsappSupportCard.setOnClickListener { triggerWhatsAppServiceSupport() }
+        viewBinding.whatsappSupportCard.whatsappSupportTextView.setOnClickListener { triggerWhatsAppServiceSupport() }
+        viewBinding.whatsappSupportCard.whatsappImageView.setOnClickListener { triggerWhatsAppServiceSupport() }
+        viewBinding.whatsappSupportCard.whatsappSupportTextView.setOnClickListener { triggerWhatsAppServiceSupport() }
+        viewBinding.whatsappSupportCard.whatsappSupportTitleTextView.setOnClickListener { triggerWhatsAppServiceSupport() }
+
+//        viewBinding.shareDelegationCard.shareDelegationTextView.setOnClickListener {shareServiceProgress() }
+//        viewBinding.shareDelegationCard.shareDelegationCard.setOnClickListener { shareServiceProgress() }
 //        initDelegatedServiceFrag()
 
 //        updateServiceState()
@@ -203,12 +211,29 @@ class DelegatedServiceFragment : Fragment {
         return view
     }
 
+    private fun triggerWhatsAppServiceSupport() {
+        val contact = "+26876804065"
+
+        val url = "https://api.whatsapp.com/send?phone=$contact"
+        try {
+            val pm: PackageManager = requireActivity().packageManager
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES)
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+            mixpanel.track("supportCentre_whatsAppChatInitiated")
+        } catch (e: PackageManager.NameNotFoundException) {
+            showSnackbarYellow("WhatsApp not installed.", -1)
+            e.printStackTrace()
+        }
+    }
+
     private fun shareServiceProgress() {
         val shareBundle = Bundle()
         shareBundle.putString(SERVICE_NAME, serviceName)
         val shareServiceProgressBottomSheet = ShareServiceProgressBottomSheet()
         shareServiceProgressBottomSheet.arguments = shareBundle
-        shareServiceProgressBottomSheet.show(supportFM, ShareServiceProgressBottomSheet.TAG )
+        shareServiceProgressBottomSheet.show(supportFM, ShareServiceProgressBottomSheet.TAG)
     }
 
     private fun rescheduleService() {
@@ -259,38 +284,48 @@ class DelegatedServiceFragment : Fragment {
 
         editor = delegatedServicePreferences.edit()
 
-        val alertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+        val initDelegateAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
         val completingAlertDialogView = LayoutInflater.from(context)
-                .inflate(R.layout.completing_request_dialog, null)
+            .inflate(R.layout.completing_request_dialog, null)
 
-        alertDialogBuilder.setTitle("Making Request...")
-                .setIcon(R.drawable.logo)
-                .setView(completingAlertDialogView)
+        initDelegateAlertDialogBuilder.setTitle("Making Request...")
+            .setIcon(R.drawable.logo)
+            .setView(completingAlertDialogView)
 
-        val alertDialog = alertDialogBuilder.create()
+        val alertDialog = initDelegateAlertDialogBuilder.create()
+//        val requestTextView = requireView().findViewById<TextView>(R.id.request_text_view)
 
         if (!delegatedServicePreferences.getBoolean(DELEGATE_INITIALIZED, false)) {
             alertDialog.show()
 
-            val timer = object : CountDownTimer(3000, 1000) {
+            val timer = object : CountDownTimer(5000, 1000) {
                 override fun onTick(p0: Long) {
-
+                    Timber.e("TIMER IS -> $p0")
+//                    requestTextView.text = "Finishing up"
                 }
 
                 override fun onFinish() {
                     alertDialog.dismiss()
                     if (isAdded) {
 
-                        val bottomNavigationView = requireActivity().findViewById<View>(R.id.bottom_nav)
-                        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                "Your request was successful! We'll reach you shortly.", Snackbar.LENGTH_LONG)
+                        /** Once the timer is done counting down, we want the User to receive a
+                         * visual confirmation of their service request.
+                         * We're using a Snackbar to achieve this. **/
+                        val bottomNavigationView =
+                            requireActivity().findViewById<View>(R.id.bottom_nav)
+                        val snackbar = Snackbar.make(
+                            requireActivity().findViewById(android.R.id.content),
+                            "Your request was successful! We'll reach you shortly.",
+                            Snackbar.LENGTH_LONG
+                        )
                         snackbar.setTextColor(context!!.resources.getColor(R.color.ummo_4))
                         val textView = snackbar.view
-                                .findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+                            .findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
                         textView.textSize = 14F
                         snackbar.anchorView = bottomNavigationView
                         snackbar.show()
 
+                        /** After everything is done, we then store this state in the SharedPref **/
                         editor.putBoolean(DELEGATE_INITIALIZED, true).apply()
 
                     }
@@ -301,6 +336,32 @@ class DelegatedServiceFragment : Fragment {
 
     }
 
+    private fun showSnackbarYellow(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar =
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.gold))
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun showWhatsAppOption() {
+        /** For this part, we want the User to know that we'll be doing most of the Service
+         * Engagement via WhatsApp.
+         * We then want them to know how to reach us. We'll achieve this by displaying the
+         * "Talk to us" option. **/
+
+
+    }
+
     private fun checkingForDelegatedServices() {
         editor = delegatedServicePreferences.edit()
 
@@ -308,7 +369,7 @@ class DelegatedServiceFragment : Fragment {
             countOfDelegatedServices == 0 -> {
                 viewBinding.delegationLayout.visibility = View.GONE
                 viewBinding.noDelegationLayout.visibility = View.VISIBLE
-                viewBinding.shareDelegationCard.shareDelegationCard.visibility = View.GONE
+                viewBinding.whatsappSupportCard.whatsappSupportCard.visibility = View.VISIBLE
                 takeMeHome()
                 editor.remove(DELEGATE_INITIALIZED).apply()
 

@@ -309,14 +309,14 @@ class MainScreen : AppCompatActivity() {
         if (countOfDelegatedService == 0)
             return
         else {
-            /*delegatedServiceId = intent.getBundleExtra(DELEGATED_SERVICE_ID).toString()
+            delegatedServiceId = intent.getBundleExtra(DELEGATED_SERVICE_ID).toString()
             delegationId = intent.getBundleExtra(DELEGATION_ID).toString()
             agentId = intent.getBundleExtra(AGENT_ID).toString()
 
             Timber.e("TAKING US TO DELEGATION-FRAG")
             bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
             bundle.putString(AGENT_ID, agentId)
-            bundle.putString(DELEGATION_ID, delegationId)*/
+            bundle.putString(DELEGATION_ID, delegationId)
             val delegatedServiceFragment = DelegatedServiceFragment()
 //            delegatedServiceFragment.arguments = bundle
             openFragment(delegatedServiceFragment)
@@ -532,7 +532,7 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        //checkingForDelegatedServiceFromRoom()
+        checkingForDelegatedServiceFromRoom()
     }
 
     fun feedback() {
