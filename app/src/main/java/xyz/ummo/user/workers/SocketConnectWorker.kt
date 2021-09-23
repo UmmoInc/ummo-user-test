@@ -9,9 +9,9 @@ import io.socket.client.Socket
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.api.User.Companion.getUserId
-import xyz.ummo.user.declarations.Client
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
+import xyz.ummo.user.workers.sockethandlers.AgentHandler
+import xyz.ummo.user.workers.sockethandlers.UserHandler
 import java.net.URISyntaxException
 
 class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
@@ -19,6 +19,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
     private val socketStateEvent = SocketStateEvent()
     private val jwt: String = PreferenceManager.getDefaultSharedPreferences(context)
         .getString("jwt", "").toString()
+    private val services: LinkedHashMap<String, Any> = LinkedHashMap()
 
     object SocketIO {
         var mSocket: Socket? = null
@@ -48,29 +49,25 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {
-                        makeStatusNotification("We're LIVE!", appContext)
+                        makeStatusNotification("Socket", "We're LIVE!", appContext)
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 
-                        getSocketMessage()
+                        this.bind("user", UserHandler(SocketIO.mSocket!!))
+                        this.bind("agent", AgentHandler(SocketIO.mSocket!!))
+
+//                        this.bind("service", ServiceHandler(SocketIO.mSocket!!))
                     }
 
                     /** Checking if our Socket instance has an error connecting **/
                     SocketIO.mSocket?.on("connect_error") {
                         socketStateEvent.socketConnected = false
-                        makeStatusNotification("MAYDAY!", appContext)
+                        makeStatusNotification("Socket", "MAYDAY!", appContext)
                         EventBus.getDefault().post(socketStateEvent)
-                        /*
-                        * So here we will construct fake sample services
-                        *
-                        * new Service(SocketIO.mSocket)
-                        * so the above will then have handlers that it will bind to mSocket
-                        *
-                        * */
                     }
 
                 } else {
-                    makeStatusNotification("Failed to connect", appContext)
+                    makeStatusNotification("Socket", "Failed to connect", appContext)
                     Timber.e("NOT DOING WORK")
                 }
             }
@@ -89,7 +86,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
             val options: IO.Options = IO.Options()
             options.query = "token=$userId"
 
-            SocketIO.mSocket = IO.socket(applicationContext.getString(R.string.serverUrl), options) as Client?
+            SocketIO.mSocket = IO.socket(applicationContext.getString(R.string.serverUrl), options)
             SocketIO.mSocket?.connect()
 
             if (SocketIO.mSocket == null) {
@@ -112,10 +109,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
         SocketIO.mSocket?.disconnect()
     }
 
-    @Synchronized
-    fun getSocketMessage() {
-        SocketIO.mSocket?.on("user/notify") {
-            Timber.e("GETTING SOCKET MESSAGE -> $it")
-        }
+    fun bind(name: String, service: Any) {
+        this.services[name] = service
     }
 }

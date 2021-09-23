@@ -138,6 +138,15 @@ class MainScreen : AppCompatActivity() {
         /** Setting up Socket Worker from MainViewModel **/
         mainViewModel!!.socketConnect()
 
+        /** Setting up Service Worker from MainViewModel **/
+        mainViewModel!!.serviceHandler()
+
+        /** Setting up User Worker from MainViewModel **/
+        mainViewModel!!.userHandler()
+
+        /** Setting up Agent Worker from MainViewModel **/
+        mainViewModel!!.agentHandler()
+
         /** Locking screen orientation to [ActivityInfo.SCREEN_ORIENTATION_PORTRAIT] **/
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 

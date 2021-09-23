@@ -24,6 +24,7 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -36,7 +37,9 @@ import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
+import xyz.ummo.user.ui.main.MainViewModel
 import xyz.ummo.user.utilities.*
+import xyz.ummo.user.workers.SocketConnectWorker
 import java.io.Serializable
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
@@ -67,6 +70,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private lateinit var mixpanel: MixpanelAPI
     private val serviceBeingRequested = JSONObject()
 
+    /** Borrowing MainViewModel for service requests via ServiceHandler **/
+    private var mainViewModel: MainViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -75,6 +80,9 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         serviceRequestBottomSheetPrefs =
             requireContext().getSharedPreferences(ummoUserPreferences, mode)
+
+        /** Initing [mainViewModel] to use in [requestAgentDelegate] below **/
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -328,12 +336,34 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         mChosenServiceCentre: String
     ) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
+        val serviceRequestObject = JSONObject()
 
         viewBinding.confirmRequestButton.setBackgroundColor(resources.getColor(R.color.ummo_3))
         viewBinding.confirmRequestButton.text = "Requesting..."
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
+
+            try {
+                serviceRequestObject.put("user_id", User.getUserId(jwt))
+                    .put("product_name", serviceObject!!.serviceName)
+                    .put("product_id", mServiceId)
+                    .put("delegation_fee", mDelegationFee)
+                    .put("chosen_service_centre", mChosenServiceCentre)
+                    .put("service_date", serviceDate)
+                Timber.e("SUCCESSFULLY SCHEDULING SERVICE VIA SOCKET")
+
+                /** [scheduleServiceSocketEvent] takes the $serviceRequestObject && emits this event
+                 * via [SocketConnectWorker] **/
+                scheduleServiceSocketEvent(serviceRequestObject)
+
+                /** [launchWhatsAppSheet] takes $serviceRequestObject && processes this JSONObject
+                 * to create a WhatsApp-ready text to complete the service request **/
+                launchWhatsAppSheet(serviceRequestObject, serviceObjectParam!!)
+            } catch (jse: JSONException) {
+                Timber.e("FAILED TO REQUEST SERVICE -> $jse")
+            }
+
             object : RequestService(
                 context,
                 User.getUserId(jwt),
@@ -375,13 +405,15 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
-                            /*launchDelegatedService(
+                            launchDelegatedService(
                                 context,
                                 delegatedServiceId, serviceAgent, delegationId
-                            )*/
-                            /** We'll launch the BottomSheet that explains to the User what they
-                             * should expect from this point onwards... **/
-                            launchWhatsAppSheet(delegation)
+                            )
+
+                            /** Requesting service via ServiceHandler *
+                            //                            mainViewModel?.serviceHandler()
+                             * We'll launch the BottomSheet that explains to the User what they
+                             * should expect from this point onwards... */
 
                             mixpanel.track(
                                 "requestBottomSheet_completingRequest",
@@ -399,7 +431,14 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun launchWhatsAppSheet(requestedService: JSONObject) {
+    private fun scheduleServiceSocketEvent(serviceJSON: JSONObject) {
+        val socket = SocketConnectWorker.SocketIO.mSocket
+        socket?.emit("service/schedule", serviceJSON)
+    }
+
+    private fun launchWhatsAppSheet(requestedService: JSONObject, serviceObject: Serializable) {
+
+//        mainViewModel!!.socketConnect()
 
         val requestServiceAssistance = RequestServiceAssistance()
 
@@ -407,6 +446,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
          *  2. Passing the Requested Service to the WhatsApp BottomSheet **/
         val requestBundle = Bundle()
         requestBundle.putString(REQUESTED_SERVICE, requestedService.toString())
+        requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
         requestServiceAssistance.arguments = requestBundle
 
         Timber.e("REQUESTED SERVICE $requestedService")
@@ -415,7 +455,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         )
     }
 
-    private fun launchDelegatedService(
+    fun launchDelegatedService(
         context: Context?,
         delegatedServiceId: String,
         agentId: String,

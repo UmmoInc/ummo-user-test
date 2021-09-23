@@ -23,7 +23,7 @@ import xyz.ummo.user.utilities.*
  * @param context Context needed for a Toast
  * **/
 
-fun makeStatusNotification(message: String, context: Context) {
+fun makeStatusNotification(title: String, message: String, context: Context) {
 
     /** Making a channel if necessary **/
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -43,7 +43,7 @@ fun makeStatusNotification(message: String, context: Context) {
         /** Create the notification **/
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle(NOTIFICATION_TITLE)
+            .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(LongArray(0))
