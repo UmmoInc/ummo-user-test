@@ -14,9 +14,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.FirebaseException
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthProvider
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,14 +25,13 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.SafetyNetReCAPTCHA
 import xyz.ummo.user.databinding.RegisterBinding
-import xyz.ummo.user.ui.legal.PrivacyPolicy
 import xyz.ummo.user.ui.signup.ContactVerificationActivity.Companion.TRYING_AGAIN
+import xyz.ummo.user.utilities.USER_CONTACT
+import xyz.ummo.user.utilities.USER_NAME
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
-import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.RecaptchaStateEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
-import java.util.concurrent.TimeUnit
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -277,10 +275,5 @@ class RegisterActivity : AppCompatActivity() {
         val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
         snackbar.show()
-    }
-
-    companion object {
-        const val USER_CONTACT = "USER_CONTACT"
-        const val USER_NAME = "USER_NAME"
     }
 }

@@ -451,6 +451,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         Timber.e("REQUESTED SERVICE $requestedService")
         requestServiceAssistance.show(
+            /** [supportFM] is borrowed from [MainScreen]'s companion object **/
             supportFM, RequestServiceAssistance.TAG
         )
     }

@@ -8,7 +8,9 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
@@ -30,9 +32,9 @@ import xyz.ummo.user.api.Login
 import xyz.ummo.user.api.SocketIO
 import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.ui.main.MainScreen
-import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
-import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
 import xyz.ummo.user.utilities.PrefManager
+import xyz.ummo.user.utilities.USER_CONTACT
+import xyz.ummo.user.utilities.USER_NAME
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
@@ -227,7 +229,9 @@ class CompleteSignUpActivity : AppCompatActivity() {
                             }
                         } else {
                         Timber.e("USER-PID is null/empty -> $onePlayerId")
-                        }
+                        progress.dismiss()
+                        showSnackbarBlue("We missed something. Please try again.", -1)
+                    }
 //                    }
                 }
             }
@@ -322,8 +326,20 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar =
+            Snackbar.make(this.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
         snackbar.show()
     }
 

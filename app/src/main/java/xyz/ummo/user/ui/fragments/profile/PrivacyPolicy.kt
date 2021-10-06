@@ -4,24 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.android.synthetic.main.fragment_personal_info.view.*
 import xyz.ummo.user.R
-import xyz.ummo.user.databinding.FragmentPersonalInfoBinding
+import xyz.ummo.user.databinding.FragmentPrivacyPolicyBinding
 
+class PrivacyPolicy : Fragment() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PersonalInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class PersonalInfoFragment : Fragment() {
-
-    private lateinit var viewBinding: FragmentPersonalInfoBinding
-    private lateinit var profileView: View
+    private lateinit var privacyPolicyWebView: WebView
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var privacyPolicyView: View
+    private lateinit var privacyPolicyBinding: FragmentPrivacyPolicyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,43 +25,16 @@ class PersonalInfoFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        viewBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_personal_info, container,
-            false
-        )
-
-        profileView = viewBinding.root
-
-        return profileView
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /** Hiding the MainActivity toolbar **/
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
 
-        profileView.profile_tool_bar.inflateMenu(R.menu.personal_profile_menu)
+        privacyPolicyBinding.privacyPolicyToolBar.inflateMenu(R.menu.personal_profile_menu)
 
-        profileView.profile_tool_bar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.profile_menu_help -> {
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        /** Navigating the User back to the Main Profile View **/
-        profileView.profile_tool_bar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        profileView.profile_tool_bar.setNavigationOnClickListener {
+        privacyPolicyBinding.privacyPolicyToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+        privacyPolicyBinding.privacyPolicyToolBar.setNavigationOnClickListener {
             openFragment(ProfileFragment())
         }
     }
@@ -85,6 +54,27 @@ class PersonalInfoFragment : Fragment() {
         fragmentTransaction.commit()
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        privacyPolicyBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_privacy_policy,
+            container,
+            false
+        )
+
+        privacyPolicyView = privacyPolicyBinding.root
+
+        privacyPolicyWebView = privacyPolicyBinding.privacyPolicyWebView
+
+        privacyPolicyWebView.loadUrl("https://sites.google.com/view/ummo-privacy-policy/home")
+
+        return privacyPolicyView
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -92,12 +82,12 @@ class PersonalInfoFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment PersonalInfoFragment.
+         * @return A new instance of fragment PrivacyPolicy.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            PersonalInfoFragment().apply {
+            PrivacyPolicy().apply {
                 arguments = Bundle().apply {
                 }
             }

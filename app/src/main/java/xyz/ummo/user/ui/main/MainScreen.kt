@@ -148,7 +148,7 @@ class MainScreen : AppCompatActivity() {
         mainViewModel!!.agentHandler()
 
         /** Locking screen orientation to [ActivityInfo.SCREEN_ORIENTATION_PORTRAIT] **/
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
         simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         currentDate = simpleDateFormat.format(Date())
@@ -198,10 +198,10 @@ class MainScreen : AppCompatActivity() {
         }
 
         /** Getting Shared Pref Values for the user - to use in various scenarios to follow**/
-        sharedPrefUserName = mainScreenPrefs.getString("USER_NAME", "")!!
-        sharedPrefUserEmail = mainScreenPrefs.getString("USER_EMAIL", "")!!
-        sharedPrefUserContact = mainScreenPrefs.getString("USER_CONTACT", "")!!
-        sharedPrefNewSession = mainScreenPrefs.getBoolean("NEW_SESSION", false)
+        sharedPrefUserName = mainScreenPrefs.getString(USER_NAME, "")!!
+        sharedPrefUserEmail = mainScreenPrefs.getString(USER_EMAIL, "")!!
+        sharedPrefUserContact = mainScreenPrefs.getString(USER_CONTACT, "")!!
+        sharedPrefNewSession = mainScreenPrefs.getBoolean(NEW_SESSION, false)
 
         Timber.e("NEW SESSION -> $sharedPrefNewSession")
         if (sharedPrefNewSession) {
@@ -285,9 +285,10 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun welcomeUserAboard() {
+        val editor = mainScreenPrefs.edit()
 
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
-        introDialogBuilder.setTitle("Welcome to Ummo's Beta Test").setIcon(R.drawable.logo)
+        introDialogBuilder.setTitle("Welcome to Ummo").setIcon(R.drawable.logo)
 
         val introDialogView = LayoutInflater.from(this)
             .inflate(R.layout.intro_dialog_layout, null)
@@ -298,13 +299,17 @@ class MainScreen : AppCompatActivity() {
             Timber.e("USER IS IN!!!")
             val pagesFragment = PagesFragment()
             openFragment(pagesFragment)
-            val editor = mainScreenPrefs.edit()
+
             editor.putBoolean("NEW_SESSION", false).apply()
 
             /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
             val welcomeEventObject = JSONObject()
             welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
             mixpanel.track("welcomePromptUser_userConfirmation", welcomeEventObject)
+        }
+
+        introDialogBuilder.setOnDismissListener {
+            editor.putBoolean("NEW_SESSION", false).apply()
         }
 
         introDialogBuilder.show()
@@ -645,7 +650,7 @@ class MainScreen : AppCompatActivity() {
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
-    private fun submitFeedback(feedbackString: String, userContact: String) {
+    fun submitFeedback(feedbackString: String, userContact: String) {
 
         object : GeneralFeedback(this, feedbackString, userContact) {
             override fun done(data: ByteArray, code: Number) {

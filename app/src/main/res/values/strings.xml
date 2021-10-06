@@ -219,5 +219,6 @@
     <string name="show_you_care">Not knowing what to do can be frustrating. \n\nHelp a friend by sharing how to %1$s.</string>
     <string name="google_play_source"><![CDATA[<p>Try the Ummo App from <a href=\'https://play.google.com/store/apps/details?id=xyz.ummo.user\'>Google Play Store</a> and discover more services from the Eswatini Government.</p>]]></string>
     <string name="taking_you_to_whatsapp">We\'re taking you to WhatsApp…</string>
+    <string name="ask_us_anything">We\'ll do our best to help you where we can. \n\nSomethings, we may need to look things up, just to be sure.</string>
 
 </resources>

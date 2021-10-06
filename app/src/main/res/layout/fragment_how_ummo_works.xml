@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context=".ui.fragments.profile.HowUmmoWorks">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/how_ummo_works_tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="How Ummo Works"
+            app:titleTextColor="@color/ummo_2" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/how_ummo_works_scroll_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/how_ummo_works_tool_bar"
+            android:layout_marginBottom="56dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/how_ummo_works_tool_bar">
+
+                <ImageView
+                    android:id="@+id/ummo_iv"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:srcCompat="@drawable/logo" />
+
+                <TextView
+                    android:id="@+id/how_ummo_works_intro_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ummo_iv"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/rubik"
+                    android:text="You're just 3 steps away from accessing convenience"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/black"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:id="@+id/how_ummo_works_step_one_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/how_ummo_works_intro_text_view"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_one_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="1. Browse Services"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_one_details_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/how_ummo_works_step_one_text_view"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="Start by browsing Services that are listed. Apply filters like 'Home-Affairs'.\n\nSelect the service you want."
+                        android:textColor="#666"
+                        android:textSize="18sp" />
+
+                    <!--<ImageView
+                        android:id="@+id/view_personal_info_image_view"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        app:srcCompat="@drawable/ic_outline_account_circle_black_24" />-->
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/how_ummo_works_step_two_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/how_ummo_works_step_one_relative_layout"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_two_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="2. Book Appointment"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_two_details_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/how_ummo_works_step_two_text_view"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="Once you've found the service you're looking for, book an assistant in just a few clicks. \n\nUmmo will match you with a professional Agent."
+                        android:textColor="#666"
+                        android:textSize="18sp" />
+
+                    <!--<ImageView
+                        android:id="@+id/view_personal_info_image_view"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        app:srcCompat="@drawable/ic_outline_account_circle_black_24" />-->
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/how_ummo_works_step_three_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/how_ummo_works_step_two_relative_layout"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_three_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="3. Connect with Agent"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/how_ummo_works_step_three_details_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/how_ummo_works_step_three_text_view"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="@color/White"
+                        android:fontFamily="@font/rubik"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="After being matched with an Agent, you will then be able to chat about your service details.\n\nSee why you can trust an Ummo Agent below."
+                        android:textColor="#666"
+                        android:textSize="18sp" />
+
+                    <!--<ImageView
+                        android:id="@+id/view_personal_info_image_view"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        app:srcCompat="@drawable/ic_outline_account_circle_black_24" />-->
+                </RelativeLayout>
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </RelativeLayout>
+</layout>

@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <WebView
-        android:id="@+id/privacy_policy_web_view"
+        android:id="@+id/privacy_policy_web_view_1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="80dp"

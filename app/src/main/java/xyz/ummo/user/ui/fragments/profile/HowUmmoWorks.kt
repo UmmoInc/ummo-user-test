@@ -8,64 +8,52 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.android.synthetic.main.fragment_personal_info.view.*
+import kotlinx.android.synthetic.main.fragment_how_ummo_works.view.*
 import xyz.ummo.user.R
-import xyz.ummo.user.databinding.FragmentPersonalInfoBinding
-
+import xyz.ummo.user.databinding.FragmentHowUmmoWorksBinding
 
 /**
  * A simple [Fragment] subclass.
- * Use the [PersonalInfoFragment.newInstance] factory method to
+ * Use the [HowUmmoWorks.newInstance] factory method to
  * create an instance of this fragment.
  */
-class PersonalInfoFragment : Fragment() {
+class HowUmmoWorks : Fragment() {
 
-    private lateinit var viewBinding: FragmentPersonalInfoBinding
-    private lateinit var profileView: View
+    private lateinit var viewBinding: FragmentHowUmmoWorksBinding
+    private lateinit var howUmmoWorksView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            /*param1 = it.getString(ARG_PARAM1)
+            param2 = it.getString(ARG_PARAM2)*/
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
         viewBinding = DataBindingUtil.inflate(
             inflater,
-            R.layout.fragment_personal_info, container,
+            R.layout.fragment_how_ummo_works,
+            container,
             false
         )
-
-        profileView = viewBinding.root
-
-        return profileView
+        howUmmoWorksView = viewBinding.root
+        return howUmmoWorksView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         /** Hiding the MainActivity toolbar **/
         val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.visibility = View.GONE
 
-        profileView.profile_tool_bar.inflateMenu(R.menu.personal_profile_menu)
-
-        profileView.profile_tool_bar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.profile_menu_help -> {
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        /** Navigating the User back to the Main Profile View **/
-        profileView.profile_tool_bar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        profileView.profile_tool_bar.setNavigationOnClickListener {
+        howUmmoWorksView.how_ummo_works_tool_bar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+        howUmmoWorksView.how_ummo_works_tool_bar.setNavigationOnClickListener {
             openFragment(ProfileFragment())
         }
     }
@@ -92,13 +80,15 @@ class PersonalInfoFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment PersonalInfoFragment.
+         * @return A new instance of fragment HowUmmoWorks.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            PersonalInfoFragment().apply {
+            HowUmmoWorks().apply {
                 arguments = Bundle().apply {
+                    /*putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)*/
                 }
             }
     }

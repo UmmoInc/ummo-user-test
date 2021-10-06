@@ -19,14 +19,22 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.GeneralFeedback
 import xyz.ummo.user.api.Logout
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.ui.fragments.scanner.CheckIn
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.signup.RegisterActivity
+import xyz.ummo.user.utilities.USER_CONTACT
 
 @Keep
 class ProfileFragment : Fragment() {
@@ -83,6 +91,9 @@ class ProfileFragment : Fragment() {
     private lateinit var webpageTV: TextView
     private lateinit var webpageIV: ImageView
 
+    /** User Profile SharedPref Val **/
+    private var userContact = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
@@ -103,6 +114,8 @@ class ProfileFragment : Fragment() {
 
         profilePrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
         val editor = profilePrefs.edit()
+
+        userContact = profilePrefs.getString(USER_CONTACT, "").toString()
 
         val view = inflater.inflate(R.layout.fragment_my_profile, container, false)
 
@@ -153,6 +166,30 @@ class ProfileFragment : Fragment() {
         viewPersonalInfoTV.setOnClickListener { launchPersonalInfoFragment() }
         viewPersonalInfoIV.setOnClickListener { launchPersonalInfoFragment() }
 
+        howUmmoWorksRL.setOnClickListener { launchHowUmmoWorksFragment() }
+        howUmmoWorksIV.setOnClickListener { launchHowUmmoWorksFragment() }
+        howUmmoWorksTV.setOnClickListener { launchHowUmmoWorksFragment() }
+
+        getHelpRL.setOnClickListener { launchGetHelpFragment() }
+        getHelpIV.setOnClickListener { launchGetHelpFragment() }
+        getHelpTV.setOnClickListener { launchGetHelpFragment() }
+
+        giveFeedbackRL.setOnClickListener { launchGiveFeedbackFragment() }
+        giveFeedbackIV.setOnClickListener { launchGiveFeedbackFragment() }
+        giveFeedbackTV.setOnClickListener { launchGiveFeedbackFragment() }
+
+        privacyRL.setOnClickListener { launchPrivacyPolicyFragment() }
+        privacyIV.setOnClickListener { launchPrivacyPolicyFragment() }
+        privacyTV.setOnClickListener { launchPrivacyPolicyFragment() }
+
+        termsRL.setOnClickListener { launchTermsOfServiceFragment() }
+        termsIV.setOnClickListener { launchTermsOfServiceFragment() }
+        termsTV.setOnClickListener { launchTermsOfServiceFragment() }
+
+        webpageRL.setOnClickListener { launchWebsiteFragment() }
+        webpageIV.setOnClickListener { launchWebsiteFragment() }
+        webpageTV.setOnClickListener { launchWebsiteFragment() }
+
         /*profileViewBinding.logoutButton.setOnClickListener {
             logout()
         }*/
@@ -195,32 +232,128 @@ class ProfileFragment : Fragment() {
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchHowUmmoWorksFragment() {
-
+        openFragment(HowUmmoWorks())
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchGetHelpFragment() {
-
+        val getHelp = GetHelp()
+        getHelp.show(
+            /** [supportFM] is borrowed from [MainScreen]'s companion object **/
+            supportFM, GetHelp.TAG
+        )
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchGiveFeedbackFragment() {
+        val mixpanel = MixpanelAPI.getInstance(
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
+        )
 
+        val feedbackDialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.feedback_dialog, null)
+
+        val feedbackDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        feedbackDialogBuilder.setTitle("Feedback")
+            .setIcon(R.drawable.logo)
+            .setView(feedbackDialogView)
+
+        feedbackDialogBuilder.setPositiveButton("Submit") { dialogInterface, i ->
+            val feedbackEditText =
+                feedbackDialogView.findViewById<TextInputEditText>(R.id.feedbackEditText)
+            val feedbackText = feedbackEditText.text?.trim().toString()
+
+            Timber.e("Feedback Submitted-> $feedbackText")
+            if (feedbackText.isNotEmpty()) {
+
+                /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
+                val feedbackEventObject = JSONObject()
+                feedbackEventObject.put("FEEDBACK", feedbackText)
+                mixpanel?.track("feedback_submitted", feedbackEventObject)
+
+                submitFeedback(feedbackText, userContact)
+            } else {
+                showSnackbarYellow("You forgot your feedback", -1)
+                mixpanel?.track("feedback_cancelled")
+            }
+
+        }
+
+        feedbackDialogBuilder.setNegativeButton("Cancel") { dialogInterface, i ->
+            Timber.e("Feedback Cancelled")
+        }
+
+        feedbackDialogBuilder.show()
+    }
+
+    /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
+     * It's used by #feedback **/
+    fun submitFeedback(feedbackString: String, userContact: String) {
+
+        object : GeneralFeedback(requireContext(), feedbackString, userContact) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("Feedback Submitted -> ${String(data)}")
+                    showSnackbarBlue("Thank you for your feedback :)", 0)
+                } else {
+                    Timber.e("Feedback Error: Code -> $code")
+                    Timber.e("Feedback Error: Data -> ${String(data)}")
+                    showSnackbarYellow("Uhm. Feedback is stuck somewhere", 0)
+
+                }
+            }
+        }
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchTermsOfServiceFragment() {
-
+        openFragment(TermsOfService())
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchPrivacyPolicyFragment() {
-
+        openFragment(PrivacyPolicy())
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchWebsiteFragment() {
+        openFragment(VisitUmmoPage())
+    }
 
+    private fun showSnackbarYellow(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar =
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.gold))
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
+    }
+
+    private fun showSnackbarBlue(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
+        val snackbar =
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
+        snackbar.show()
     }
 
     private fun launchCheckInScanner() {

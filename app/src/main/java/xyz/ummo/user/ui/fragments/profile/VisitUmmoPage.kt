@@ -4,24 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.android.synthetic.main.fragment_personal_info.view.*
 import xyz.ummo.user.R
-import xyz.ummo.user.databinding.FragmentPersonalInfoBinding
+import xyz.ummo.user.databinding.FragmentVisitUmmoPageBinding
 
+class VisitUmmoPage : Fragment() {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PersonalInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class PersonalInfoFragment : Fragment() {
-
-    private lateinit var viewBinding: FragmentPersonalInfoBinding
-    private lateinit var profileView: View
+    private lateinit var visitUmmoPageWebView: WebView
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var visitUmmoPageView: View
+    private lateinit var visitUmmoPageBinding: FragmentVisitUmmoPageBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,48 +28,27 @@ class PersonalInfoFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         // Inflate the layout for this fragment
-        viewBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_personal_info, container,
-            false
-        )
-
-        profileView = viewBinding.root
-
-        return profileView
+        visitUmmoPageBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_visit_ummo_page, container, false)
+        visitUmmoPageView = visitUmmoPageBinding.root
+        visitUmmoPageWebView = visitUmmoPageBinding.visitUmmoPageWebView
+        visitUmmoPageWebView.loadUrl("https://www.ummo.xyz")
+        return visitUmmoPageView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         /** Hiding the MainActivity toolbar **/
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
 
-        profileView.profile_tool_bar.inflateMenu(R.menu.personal_profile_menu)
-
-        profileView.profile_tool_bar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.profile_menu_help -> {
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        /** Navigating the User back to the Main Profile View **/
-        profileView.profile_tool_bar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        profileView.profile_tool_bar.setNavigationOnClickListener {
+        visitUmmoPageBinding.visitUmmoPageToolBar.inflateMenu(R.menu.personal_profile_menu)
+        visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+        visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationOnClickListener {
             openFragment(ProfileFragment())
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
-        toolbar.visibility = View.VISIBLE
     }
 
     private fun openFragment(fragment: Fragment) {
@@ -92,12 +67,12 @@ class PersonalInfoFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment PersonalInfoFragment.
+         * @return A new instance of fragment VisitUmmoPage.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            PersonalInfoFragment().apply {
+            VisitUmmoPage().apply {
                 arguments = Bundle().apply {
                 }
             }
