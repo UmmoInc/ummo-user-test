@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import kotlinx.android.synthetic.main.fragment_personal_info.view.*
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentPersonalInfoBinding
 
 
@@ -22,6 +24,8 @@ class PersonalInfoFragment : Fragment() {
 
     private lateinit var viewBinding: FragmentPersonalInfoBinding
     private lateinit var profileView: View
+
+    private lateinit var profileViewModel: ProfileViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +44,32 @@ class PersonalInfoFragment : Fragment() {
             false
         )
 
+
         profileView = viewBinding.root
 
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+
+        fillInProfileFields()
+
         return profileView
+    }
+
+    private fun fillInProfileFields() {
+        profileViewModel.profileEntityLiveData.observe(
+            viewLifecycleOwner,
+            { profileEntity: ProfileEntity ->
+                val profileName = profileEntity.profileName
+                val spaceIndex = profileName?.indexOf(" ")
+                val firstName = profileName!!.substring(0, spaceIndex!!)
+                val surname = profileName.substring(spaceIndex + 1, profileName.length)
+
+                profileView.first_name_text_input_edit_text.setText(firstName)
+                profileView.last_name_text_input_edit_text.setText(surname)
+
+                profileView.contact_text_input_edit_text.setText(profileEntity.profileContact)
+                profileView.email_text_input_edit_text.setText(profileEntity.profileEmail)
+            }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,8 +77,6 @@ class PersonalInfoFragment : Fragment() {
         /** Hiding the MainActivity toolbar **/
         val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.visibility = View.GONE
-
-        profileView.profile_tool_bar.inflateMenu(R.menu.personal_profile_menu)
 
         profileView.profile_tool_bar.setOnMenuItemClickListener {
             when (it.itemId) {

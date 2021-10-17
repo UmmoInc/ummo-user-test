@@ -405,10 +405,25 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
-                            launchDelegatedService(
+                            /*launchDelegatedService(
                                 context,
                                 delegatedServiceId, serviceAgent, delegationId
-                            )
+                            )*/
+                            /** Saving Service Delegation in Room **/
+                            val delegatedServiceEntity = DelegatedServiceEntity()
+                            val delegatedServiceViewModel =
+                                ViewModelProvider((context as FragmentActivity?)!!)
+                                    .get(DelegatedServiceViewModel::class.java)
+
+                            val progress = java.util.ArrayList<String>()
+
+                            /** Setting Service as Delegated **/
+                            delegatedServiceEntity.delegationId = delegationId
+                            delegatedServiceEntity.delegatedProductId = delegatedServiceId
+                            delegatedServiceEntity.serviceAgentId = serviceAgent
+                            delegatedServiceEntity.serviceProgress = progress
+                            delegatedServiceEntity.serviceDate = serviceDate
+                            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
                             /** Requesting service via ServiceHandler *
                             //                            mainViewModel?.serviceHandler()

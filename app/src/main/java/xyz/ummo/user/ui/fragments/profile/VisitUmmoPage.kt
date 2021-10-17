@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentVisitUmmoPageBinding
 
@@ -16,6 +17,7 @@ class VisitUmmoPage : Fragment() {
 
     private lateinit var visitUmmoPageWebView: WebView
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var bottomNav: BottomNavigationView
     private lateinit var visitUmmoPageView: View
     private lateinit var visitUmmoPageBinding: FragmentVisitUmmoPageBinding
 
@@ -44,11 +46,21 @@ class VisitUmmoPage : Fragment() {
         toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
 
+        /** Hiding the Bottom NavBar **/
+        bottomNav = requireActivity().findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.GONE
+
         visitUmmoPageBinding.visitUmmoPageToolBar.inflateMenu(R.menu.personal_profile_menu)
         visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationOnClickListener {
             openFragment(ProfileFragment())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        toolbar.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
     }
 
     private fun openFragment(fragment: Fragment) {

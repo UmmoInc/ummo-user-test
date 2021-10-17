@@ -49,6 +49,7 @@ const val TOTAL_DELEGATION_FEE = "total_delegation_fee"
 const val OPEN_DELEGATION = "OPEN_DELEGATION"
 
 const val SERVICE_DELEGATED = "SERVICE_DELEGATED"
+const val WHATSAPP_LAUNCHED = "WHATSAPP_LAUNCHED"
 
 /** The Constants below will be used to parse services based on the ServiceObject schema **/
 const val SERV_NAME = "service_name"

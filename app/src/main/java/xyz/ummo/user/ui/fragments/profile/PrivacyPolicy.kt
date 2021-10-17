@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentPrivacyPolicyBinding
 
@@ -16,6 +17,7 @@ class PrivacyPolicy : Fragment() {
 
     private lateinit var privacyPolicyWebView: WebView
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var bottomNav: BottomNavigationView
     private lateinit var privacyPolicyView: View
     private lateinit var privacyPolicyBinding: FragmentPrivacyPolicyBinding
 
@@ -31,6 +33,10 @@ class PrivacyPolicy : Fragment() {
         toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
 
+        /** Hiding the Bottom NavBar **/
+        bottomNav = requireActivity().findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.GONE
+
         privacyPolicyBinding.privacyPolicyToolBar.inflateMenu(R.menu.personal_profile_menu)
 
         privacyPolicyBinding.privacyPolicyToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
@@ -41,8 +47,8 @@ class PrivacyPolicy : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
     }
 
     private fun openFragment(fragment: Fragment) {

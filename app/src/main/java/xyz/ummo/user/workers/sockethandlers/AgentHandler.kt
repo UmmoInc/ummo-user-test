@@ -10,7 +10,7 @@ class AgentHandler(socket: Socket) {
     init {
         socket.on("$name/request") {
             this.notify(it.toString())
-            Timber.e("AGENT REQUEST DATA -> $it")
+            Timber.e("AGENT REQUEST DATA -> ${it[0]}")
         }
     }
 

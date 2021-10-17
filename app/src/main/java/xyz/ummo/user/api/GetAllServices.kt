@@ -2,6 +2,7 @@ package xyz.ummo.user.api
 
 import android.app.Activity
 import com.github.kittinunf.fuel.Fuel
+import timber.log.Timber
 
 abstract class GetAllServices(activity: Activity) {
     init {
@@ -9,7 +10,10 @@ abstract class GetAllServices(activity: Activity) {
         Fuel.get("/product")
             .response { request, response, result ->
                 activity.runOnUiThread {
-                    done(response.data, response.statusCode)
+                    if (response.data.isNotEmpty())
+                        done(response.data, response.statusCode)
+                    else
+                        Timber.e("RESPONSE IS EMPTY!")
                 }
             }
     }

@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentTermsOfServiceBinding
 
@@ -16,6 +17,7 @@ class TermsOfService : Fragment() {
 
     private lateinit var termsOfServiceWebView: WebView
     private lateinit var toolbar: MaterialToolbar
+    private lateinit var bottomNav: BottomNavigationView
     private lateinit var termsOfServiceView: View
     private lateinit var termsOfServiceBinding: FragmentTermsOfServiceBinding
 
@@ -31,6 +33,10 @@ class TermsOfService : Fragment() {
         toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
 
+        /** Hiding the Bottom NavBar **/
+        bottomNav = requireActivity().findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.GONE
+
         termsOfServiceBinding.termsOfServiceToolBar.inflateMenu(R.menu.personal_profile_menu)
         termsOfServiceBinding.termsOfServiceToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         termsOfServiceBinding.termsOfServiceToolBar.setNavigationOnClickListener {
@@ -41,8 +47,8 @@ class TermsOfService : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
     }
 
     override fun onCreateView(

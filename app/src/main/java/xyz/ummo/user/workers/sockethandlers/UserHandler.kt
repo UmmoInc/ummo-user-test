@@ -10,6 +10,7 @@ class UserHandler(socket: Socket) {
     init {
         socket.on("$name/notify") {
             this.notify(it.toString())
+            Timber.e("USER MESSAGE -> ${it[0]}")
         }
     }
 

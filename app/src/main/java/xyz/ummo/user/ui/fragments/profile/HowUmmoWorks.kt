@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_how_ummo_works.view.*
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentHowUmmoWorksBinding
@@ -21,6 +22,8 @@ class HowUmmoWorks : Fragment() {
 
     private lateinit var viewBinding: FragmentHowUmmoWorksBinding
     private lateinit var howUmmoWorksView: View
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,8 +52,11 @@ class HowUmmoWorks : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         /** Hiding the MainActivity toolbar **/
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
+        toolbar = requireActivity().findViewById(R.id.toolbar)
         toolbar.visibility = View.GONE
+        /** Hiding the Bottom NavBar **/
+        bottomNav = requireActivity().findViewById(R.id.bottom_nav)
+        bottomNav.visibility = View.GONE
 
         howUmmoWorksView.how_ummo_works_tool_bar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         howUmmoWorksView.how_ummo_works_tool_bar.setNavigationOnClickListener {
@@ -60,8 +66,8 @@ class HowUmmoWorks : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val toolbar = requireActivity().findViewById<MaterialToolbar>(R.id.toolbar)
         toolbar.visibility = View.VISIBLE
+        bottomNav.visibility = View.VISIBLE
     }
 
     private fun openFragment(fragment: Fragment) {

@@ -359,7 +359,6 @@ class DelegatedServiceFragment : Fragment {
          * We then want them to know how to reach us. We'll achieve this by displaying the
          * "Talk to us" option. **/
 
-
     }
 
     private fun checkingForDelegatedServices() {

@@ -227,16 +227,19 @@ class ProfileFragment : Fragment() {
 
     /** We're using this function to take the User to their Personal Info view **/
     private fun launchPersonalInfoFragment() {
+        mixpanel.track("profile_personaInfo_launched")
         openFragment(PersonalInfoFragment())
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchHowUmmoWorksFragment() {
+        mixpanel.track("profile_howUmmoWorks_launched")
         openFragment(HowUmmoWorks())
     }
 
     /** We're using this function to take the User to view how Ummo works **/
     private fun launchGetHelpFragment() {
+        mixpanel.track("profile_getHelp_launched")
         val getHelp = GetHelp()
         getHelp.show(
             /** [supportFM] is borrowed from [MainScreen]'s companion object **/
@@ -245,11 +248,25 @@ class ProfileFragment : Fragment() {
     }
 
     /** We're using this function to take the User to view how Ummo works **/
+    private fun launchTermsOfServiceFragment() {
+        mixpanel.track("profile_termsOfService_launched")
+        openFragment(TermsOfService())
+    }
+
+    /** We're using this function to take the User to view how Ummo works **/
+    private fun launchPrivacyPolicyFragment() {
+        mixpanel.track("profile_privacy_launched")
+        openFragment(PrivacyPolicy())
+    }
+
+    /** We're using this function to take the User to view how Ummo works **/
+    private fun launchWebsiteFragment() {
+        mixpanel.track("profile_website_launched")
+        openFragment(VisitUmmoPage())
+    }
+
+    /** We're using this function to take the User to view how Ummo works **/
     private fun launchGiveFeedbackFragment() {
-        val mixpanel = MixpanelAPI.getInstance(
-            requireContext(),
-            resources.getString(R.string.mixpanelToken)
-        )
 
         val feedbackDialogView = LayoutInflater.from(requireContext())
             .inflate(R.layout.feedback_dialog, null)
@@ -271,12 +288,12 @@ class ProfileFragment : Fragment() {
                 /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
                 val feedbackEventObject = JSONObject()
                 feedbackEventObject.put("FEEDBACK", feedbackText)
-                mixpanel?.track("feedback_submitted", feedbackEventObject)
+                mixpanel.track("feedback_submitted", feedbackEventObject)
 
                 submitFeedback(feedbackText, userContact)
             } else {
                 showSnackbarYellow("You forgot your feedback", -1)
-                mixpanel?.track("feedback_cancelled")
+                mixpanel.track("feedback_cancelled")
             }
 
         }
@@ -290,7 +307,7 @@ class ProfileFragment : Fragment() {
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
-    fun submitFeedback(feedbackString: String, userContact: String) {
+    private fun submitFeedback(feedbackString: String, userContact: String) {
 
         object : GeneralFeedback(requireContext(), feedbackString, userContact) {
             override fun done(data: ByteArray, code: Number) {
@@ -305,21 +322,6 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
-    }
-
-    /** We're using this function to take the User to view how Ummo works **/
-    private fun launchTermsOfServiceFragment() {
-        openFragment(TermsOfService())
-    }
-
-    /** We're using this function to take the User to view how Ummo works **/
-    private fun launchPrivacyPolicyFragment() {
-        openFragment(PrivacyPolicy())
-    }
-
-    /** We're using this function to take the User to view how Ummo works **/
-    private fun launchWebsiteFragment() {
-        openFragment(VisitUmmoPage())
     }
 
     private fun showSnackbarYellow(message: String, length: Int) {

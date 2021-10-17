@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -24,6 +25,7 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.databinding.FragmentRequestServiceAssistanceBinding
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 
 class RequestServiceAssistance : BottomSheetDialogFragment() {
@@ -48,6 +50,10 @@ class RequestServiceAssistance : BottomSheetDialogFragment() {
 
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+
+    private lateinit var takingYouToWhatsAppBuilder: MaterialAlertDialogBuilder
+    private lateinit var takingYouToWhatsApp: AlertDialog
+    private lateinit var takingYouToWhatsAppView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,8 +171,7 @@ class RequestServiceAssistance : BottomSheetDialogFragment() {
                 override fun onFinish() {
                     startActivity(intent)
 //                    editor.putString(DELEGATION_ID, delegation)
-                    editor.putBoolean(SERVICE_DELEGATED, true).apply()
-
+                    editor.putBoolean(WHATSAPP_LAUNCHED, true).apply()
 
                     return
                 }
@@ -179,14 +184,14 @@ class RequestServiceAssistance : BottomSheetDialogFragment() {
     }
 
     private fun showAlertDialog() {
-        val takingYouToWhatsAppBuilder = MaterialAlertDialogBuilder(requireContext())
-        val takingYouToWhatsAppView = LayoutInflater.from(requireContext())
+        takingYouToWhatsAppBuilder = MaterialAlertDialogBuilder(requireContext())
+        takingYouToWhatsAppView = LayoutInflater.from(requireContext())
             .inflate(R.layout.taking_you_to_whatsapp, null, false)
 
         takingYouToWhatsAppBuilder.setTitle("Just a second")
         takingYouToWhatsAppBuilder.setView(takingYouToWhatsAppView)
         takingYouToWhatsAppBuilder.setIcon(R.drawable.logo)
-        takingYouToWhatsAppBuilder.show()
+        takingYouToWhatsApp = takingYouToWhatsAppBuilder.show()
     }
 
     override fun onResume() {
@@ -195,11 +200,26 @@ class RequestServiceAssistance : BottomSheetDialogFragment() {
         /** Checking if there's a delegated service:
          * if TRUE, then we launch the DelegatedService view
          * else, resume normally **/
-        if (sharedPrefs.getBoolean(SERVICE_DELEGATED, false)) {
-            Timber.e("WE HAVE A DELEGATED SERVICE")
-        } else {
-            Timber.e("NO DELEGATED SERVICE")
+        when {
+            sharedPrefs.getBoolean(WHATSAPP_LAUNCHED, false) -> {
+                Timber.e("WE HAVE A DELEGATED SERVICE")
+                editor.putBoolean(SERVICE_DELEGATED, true)
+            }
+            sharedPrefs.getBoolean(SERVICE_DELEGATED, false) -> {
+                launchDelegatedService()
+            }
+            else -> {
+                Timber.e("NO DELEGATED SERVICE")
+            }
         }
+    }
+
+    private fun launchDelegatedService() {
+
+        editor.putBoolean(SERVICE_DELEGATED, true)
+
+        val intent = Intent(activity, MainScreen::class.java)
+        startActivity(intent)
     }
 
     /** Supposed solution to "The specified child has a parent already.**/
