@@ -37,7 +37,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
-                    app:srcCompat="@drawable/logo" />
+                    app:srcCompat="@drawable/ummo_logo" />
 
                 <TextView
                     android:id="@+id/how_ummo_works_intro_text_view"
@@ -58,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/how_ummo_works_intro_text_view"
+                    android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:focusable="true">
 
@@ -72,7 +73,7 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="1. Browse Services"
+                        android:text="1. Browse Listed Services"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -89,9 +90,9 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="Start by browsing Services that are listed. Apply filters like 'Home-Affairs'.\n\nSelect the service you want."
+                        android:text="Start by browsing through listed services. \n\nThen select the service you'd like to learn more about."
                         android:textColor="#666"
-                        android:textSize="18sp" />
+                        android:textSize="16sp" />
 
                     <!--<ImageView
                         android:id="@+id/view_personal_info_image_view"
@@ -122,7 +123,7 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="2. Book Appointment"
+                        android:text="2. Book an Appointment"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -139,9 +140,9 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="Once you've found the service you're looking for, book an assistant in just a few clicks. \n\nUmmo will match you with a professional Agent."
+                        android:text="Once you've found the service you're looking for, you may book an assistant in just a few clicks. \n\nUmmo will match you with a professional Agent near you."
                         android:textColor="#666"
-                        android:textSize="18sp" />
+                        android:textSize="16sp" />
 
                     <!--<ImageView
                         android:id="@+id/view_personal_info_image_view"
@@ -172,7 +173,7 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="3. Connect with Agent"
+                        android:text="3. Connect with an Agent"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -189,9 +190,9 @@
                         android:fontFamily="@font/rubik"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="After being matched with an Agent, you will then be able to chat about your service details.\n\nSee why you can trust an Ummo Agent below."
+                        android:text="Your Agent will contact you to arrange your service details.\n\nSee why you can trust an Ummo Agent below."
                         android:textColor="#666"
-                        android:textSize="18sp" />
+                        android:textSize="16sp" />
 
                     <!--<ImageView
                         android:id="@+id/view_personal_info_image_view"

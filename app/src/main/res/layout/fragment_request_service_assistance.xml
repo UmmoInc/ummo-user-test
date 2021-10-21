@@ -47,26 +47,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/request_service_assistance_text"
-            android:layout_marginTop="8dp">
-
-            <ImageView
-                android:id="@+id/request_service_assistance_image_view"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:srcCompat="@drawable/ic_baseline_chat_24" />
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="30dp">
 
             <TextView
                 android:id="@+id/request_service_assistance_title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/request_service_assistance_image_view"
                 android:layout_marginBottom="4dp"
-                android:layout_toEndOf="@id/request_service_assistance_image_view"
+                android:fontFamily="@font/rubik"
                 android:text="Complete Request on WhatsApp"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -76,7 +66,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/request_service_assistance_title_text_view"
-                android:layout_toEndOf="@id/request_service_assistance_image_view"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/rubik"
                 android:text="We care about giving you the best service possible. \n\nThat's why we would like to assist you through our WhatsApp account."
                 android:textColor="#666"
                 android:textSize="14sp" />
@@ -145,8 +136,8 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="@color/green"
             android:text="Complete via WhatsApp"
-            android:textSize="12sp"
             android:textColor="@color/White"
+            android:textSize="12sp"
             app:icon="@drawable/ic_send_black_24dp"
             app:iconGravity="textEnd"
             tools:targetApi="lollipop" />

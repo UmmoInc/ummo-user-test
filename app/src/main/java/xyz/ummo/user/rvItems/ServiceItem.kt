@@ -34,10 +34,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
-import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.*
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -622,11 +619,24 @@ class ServiceItem(
                 requestBundle.putSerializable(SERVICE_OBJECT, service)
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
-                serviceRequestBottomSheetDialog
-                    .show(
+
+                val introduceDelegateBottomSheetDialog = IntroduceDelegate()
+                introduceDelegateBottomSheetDialog.arguments = requestBundle
+
+                /** Checking if [DELEGATION_INTRO_IS_CONFIRMED], at which, we show the appropriate
+                 * dialog, as per User's awareness **/
+                if (serviceItemPrefs.getBoolean(DELEGATION_INTRO_IS_CONFIRMED, false)) {
+                    serviceRequestBottomSheetDialog.show(
                         context!!.supportFragmentManager,
                         ServiceRequestBottomSheet.TAG
                     )
+                } else {
+                    introduceDelegateBottomSheetDialog.show(
+                        context!!.supportFragmentManager,
+                        IntroduceDelegate.TAG
+                    )
+                }
+
             }
 //            }
         }
@@ -645,7 +655,7 @@ class ServiceItem(
         for (i in offlineServices.indices) {
             if (mServiceId == offlineServices[i].serviceId) {
                 Timber.e("OFFLINE SERVICE -> ${offlineServices[i].serviceName}")
-                viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
+//                viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
                 viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
             }
         }

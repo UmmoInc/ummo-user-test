@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#222222"
+    tools:context=".ui.intro.Intro">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/tertiary_relative_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/primary_intro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+
+                <ImageView
+                    android:id="@+id/ummo_logo_image_view"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/logo" />
+
+                <TextView
+                    android:id="@+id/welcome_user_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ummo_logo_image_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/rubik"
+                    android:gravity="center"
+                    android:text="Welcome to Ummo"
+                    android:textColor="@color/White"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/secondary_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/primary_intro_relative_layout"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp">
+
+                <!--[START] Service Prep. Relative Layout -->
+                <RelativeLayout
+                    android:id="@+id/secondary_one_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/service_prep_image_view"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:srcCompat="@drawable/ic_service_prep_checklist_24" />
+
+                    <TextView
+                        android:id="@+id/service_prep_main_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/service_prep_image_view"
+                        android:fontFamily="@font/rubik"
+                        android:text="Prepare for Government Services"
+                        android:textColor="@color/White"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/service_prep_sub_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/service_prep_main_text_view"
+                        android:layout_alignStart="@+id/service_prep_main_text_view"
+                        android:layout_marginStart="-1dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toEndOf="@+id/service_prep_image_view"
+                        android:text="Easily prepare for your service by browsing through service info."
+                        android:textColor="#999999"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+                <!--[END] Service Prep. Relative Layout -->
+
+                <!--[START] Request Service Assistance Relative Layout -->
+                <RelativeLayout
+                    android:id="@+id/secondary_two_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/secondary_one_relative_layout"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/request_service_image_view"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:srcCompat="@drawable/ic_service_agent_blue_24" />
+
+                    <TextView
+                        android:id="@+id/request_service_main_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/request_service_image_view"
+                        android:fontFamily="@font/rubik"
+                        android:text="Request Service Assistance"
+                        android:textColor="@color/White"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/request_service_sub_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/request_service_main_text_view"
+                        android:layout_alignStart="@+id/request_service_main_text_view"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toEndOf="@+id/request_service_image_view"
+                        android:text="Out of time? \nRequest a Service Agent to assist you."
+                        android:textColor="#999999"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+                <!--[END] Request Service Assistance Relative Layout -->
+
+                <!--[START] Share Service Info Relative Layout -->
+                <RelativeLayout
+                    android:id="@+id/secondary_three_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/secondary_two_relative_layout"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/share_service_image_view"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:srcCompat="@drawable/ic_share_blue_24" />
+
+                    <TextView
+                        android:id="@+id/share_service_main_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/share_service_image_view"
+                        android:fontFamily="@font/rubik"
+                        android:text="Share Service Information"
+                        android:textColor="@color/White"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/share_service_sub_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/share_service_main_text_view"
+                        android:layout_alignStart="@+id/share_service_main_text_view"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toEndOf="@+id/share_service_image_view"
+                        android:text="Simply tap to share service info to your loved ones and help them save time."
+                        android:textColor="#999999"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+                <!--[END] Share Service Info Relative Layout -->
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:id="@+id/tertiary_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/scroll_view">
+
+        <ImageView
+            android:id="@+id/user_agreement_image_view"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:padding="2dp"
+            app:srcCompat="@drawable/ic_user_privacy_blue_24" />
+
+        <TextView
+            android:id="@+id/user_agreement_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_agreement_image_view"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:text="Ummo takes your privacy very seriously. We will never share your data with government without consulting you first."
+            android:textColor="#999999"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/continue_button"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/user_agreement_text_view"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/ummo_3"
+            android:enabled="true"
+            android:text="Continue"
+            android:textColor="@color/White"
+            tools:targetApi="lollipop" />
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

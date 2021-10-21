@@ -157,9 +157,10 @@ class ProfileFragment : Fragment() {
         profileViewModel?.profileEntityLiveData?.observe(
             viewLifecycleOwner,
             { profileEntity1: ProfileEntity ->
-                profileName!!.text = profileEntity1.profileName
-//            profileContact!!.text = profileEntity1.profileContact
-//            profileEmail!!.text = profileEntity1.profileEmail
+                /** Parsing through the [profileEntity1]'s [profileName] to extract the first name **/
+                val endOfFirstNameIndex = profileEntity1.profileName?.indexOf(" ", 0, true)
+                val firstName = profileEntity1.profileName?.substring(0, endOfFirstNameIndex!!)
+                profileName!!.text = firstName
             })
 
         viewPersonalInfoRL.setOnClickListener { launchPersonalInfoFragment() }

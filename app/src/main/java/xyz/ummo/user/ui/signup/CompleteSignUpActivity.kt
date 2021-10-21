@@ -32,9 +32,7 @@ import xyz.ummo.user.api.Login
 import xyz.ummo.user.api.SocketIO
 import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.ui.main.MainScreen
-import xyz.ummo.user.utilities.PrefManager
-import xyz.ummo.user.utilities.USER_CONTACT
-import xyz.ummo.user.utilities.USER_NAME
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
@@ -267,23 +265,22 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     launchHomeScreen()
                     /** Saving user details in Shared Preferences */
                     val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
-                    val editor: SharedPreferences.Editor
-                    editor = sharedPreferences.edit()
-                    editor.putBoolean("SIGNED_UP", true)
-                    editor.putString("USER_NAME", name)
-                    editor.putString("USER_CONTACT", contact)
-                    editor.putString("USER_EMAIL", email)
-                    editor.putString("USER_PID", playerId)
-                    editor.putBoolean("NEW_SESSION", true)
+                    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+                    editor.putBoolean(SIGNED_UP, true)
+                    editor.putString(USER_NAME, name)
+                    editor.putString(USER_CONTACT, contact)
+                    editor.putString(USER_EMAIL, email)
+                    editor.putString(USER_PID, playerId)
+                    editor.putBoolean(NEW_SESSION, true)
                     editor.apply()
 
                     /** [MixpanelAPI] 1. Identifying User by contact &&
                      *                2. Tracking sign_up activity **/
                     val userObject = JSONObject()
-                    userObject.put("USER_NAME", name)
-                    userObject.put("USER_CONTACT", contact)
-                    userObject.put("USER_EMAIL", email)
-                    userObject.put("SIGN_UP_DATE", currentDate)
+                    userObject.put(USER_NAME, name)
+                    userObject.put(USER_CONTACT, contact)
+                    userObject.put(USER_EMAIL, email)
+                    userObject.put(SIGN_UP_DATE, currentDate)
 
                     mixpanel?.people?.identify(contact)
                     mixpanel?.track("userRegistering_userDetails", userObject)

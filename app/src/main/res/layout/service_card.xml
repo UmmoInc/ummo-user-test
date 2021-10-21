@@ -90,7 +90,7 @@
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_outline_info_blue_24" />
             </RelativeLayout>
-            <RelativeLayout
+            <!--<RelativeLayout
                 android:id="@+id/service_share_icon_relative_layout"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
@@ -104,10 +104,45 @@
                     android:layout_height="30dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="4dp"
                     android:contentDescription="@string/save_service"
                     android:padding="4dp"
-                    android:layout_marginEnd="4dp"
                     app:srcCompat="@drawable/ic_share_purple_24" />
+            </RelativeLayout>-->
+            <RelativeLayout
+                android:id="@+id/save_service_relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="end"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <ImageView
+                    android:id="@+id/save_service_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    app:srcCompat="@drawable/ic_download_for_offline_grey_24" />
+
+                <TextView
+                    android:id="@+id/save_count_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/save_service_image"
+                    android:fontFamily="@font/rubik"
+                    android:text=""
+                    android:textSize="12sp"
+                    app:fontFamily="@font/rubik" />
+
             </RelativeLayout>
 
         </RelativeLayout>
@@ -660,7 +695,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginBottom="4dp"
                             app:srcCompat="@drawable/ic_outline_thumb_down_grey_24" />
 
                         <TextView
@@ -769,8 +807,8 @@
                     </RelativeLayout>-->
 
                     <RelativeLayout
-                        android:id="@+id/save_service_relative_layout"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/service_share_icon_relative_layout"
+                        android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:clickable="true"
@@ -779,24 +817,14 @@
                         android:paddingEnd="4dp">
 
                         <ImageView
-                            android:id="@+id/save_service_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:id="@+id/service_share_image_view"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
-                            app:srcCompat="@drawable/ic_download_for_offline_grey_24" />
-
-                        <TextView
-                            android:id="@+id/save_count_text_view"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/save_service_image"
-                            android:fontFamily="@font/rubik"
-                            android:text=""
-                            android:textSize="12sp"
-                            app:fontFamily="@font/rubik" />
-
+                            android:layout_marginEnd="4dp"
+                            android:contentDescription="@string/save_service"
+                            android:padding="4dp"
+                            app:srcCompat="@drawable/ic_share_grey_24" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -861,15 +889,15 @@
                         tools:visibility="visible" />-->
 
                     <TextView
-                        android:id="@+id/you_saved_this_text_view"
+                        android:id="@+id/share_service_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/you_saved_this"
+                        android:text="@string/share_service"
                         android:textColor="@color/black"
                         android:textSize="8sp"
                         android:textStyle="italic"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         tools:ignore="SmallSp"
                         tools:visibility="visible" />
                 </LinearLayout>

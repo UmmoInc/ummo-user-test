@@ -105,9 +105,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         /** Unpacking [ServiceObject] from [getArguments]**/
         serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
         serviceObject = serviceObjectParam as ServiceObject
-
-        serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
         Timber.e("SERVICE OBJECT PARAM -> $serviceObjectParam")
+
         serviceRequestStepOne()
         serviceRequestStepTwo()
 

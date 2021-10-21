@@ -9,13 +9,21 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_baseline_chat_24.xml" value="0.40520833333333334" />
+        <entry key="app/src/main/res/drawable/ic_outline_thumb_down_grey_24.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/drawable/ic_saved_offline_pin_24.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/drawable/ic_share_black_24.xml" value="0.24479166666666666" />
+        <entry key="app/src/main/res/drawable/ic_share_grey_24.xml" value="0.40185185185185185" />
+        <entry key="app/src/main/res/drawable/ic_share_purple_24.xml" value="0.24479166666666666" />
+        <entry key="app/src/main/res/drawable/ic_user_privacy_blue_24.xml" value="0.3453703703703704" />
+        <entry key="app/src/main/res/layout/activity_intro.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_privacy_policy.xml" value="0.2657407407407407" />
         <entry key="app/src/main/res/layout/app_bar_main_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/feedback_dialog.xml" value="0.2675925925925926" />
-        <entry key="app/src/main/res/layout/fragment_get_help.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_get_help.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_give_feedback.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_how_ummo_works.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_introduce_delegate.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_my_profile.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_pages.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_personal_info.xml" value="0.22" />
@@ -25,6 +33,8 @@
         <entry key="app/src/main/res/layout/fragment_terms_of_service.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_visit_ummo_page.xml" value="0.4925925925925926" />
         <entry key="app/src/main/res/layout/intro_dialog_layout.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/register.xml" value="0.30462962962962964" />
+        <entry key="app/src/main/res/layout/service_card.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/layout/taking_you_to_whatsapp.xml" value="0.3675925925925926" />
         <entry key="app/src/main/res/menu/navigation.xml" value="0.1" />
         <entry key="app/src/main/res/menu/personal_profile_menu.xml" value="0.1" />

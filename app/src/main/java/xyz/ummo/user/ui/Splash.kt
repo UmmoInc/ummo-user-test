@@ -18,8 +18,11 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.intro.Intro
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.signup.RegisterActivity
+import xyz.ummo.user.utilities.CONTINUED
+import xyz.ummo.user.utilities.SIGNED_UP
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.SecureRandom
@@ -71,7 +74,7 @@ class Splash : Activity() {
             finish()
 
             val splashPreferences = getSharedPreferences(splashPrefs, mode)
-            val signedUp = splashPreferences.getBoolean("SIGNED_UP", false)
+            val signedUp = splashPreferences.getBoolean(SIGNED_UP, false)
             /*if (signedUp) {
                 Timber.e("onCreate - User has already signed up")
                 startActivity(Intent(this@Splash, MainScreen::class.java))
@@ -87,8 +90,11 @@ class Splash : Activity() {
             } else {
                 Timber.e("onCreate - User has not signed up yet!")
 
-               /* val providers = arrayListOf(AuthUI.IdpConfig.PhoneBuilder().build())*/
-                startActivity(Intent(this@Splash, RegisterActivity::class.java))
+                if (splashPreferences.getBoolean(CONTINUED, false)) {
+                    startActivity(Intent(this@Splash, RegisterActivity::class.java))
+                } else {
+                    startActivity(Intent(this@Splash, Intro::class.java))
+                }
                 /*startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)

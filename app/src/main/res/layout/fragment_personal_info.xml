@@ -8,57 +8,6 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         tools:context=".ui.fragments.profile.PersonalInfoFragment">
-        <!--<com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/app_bar_height"
-
-            android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-            <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsingToolbar_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerInside"
-                app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
-                app:contentScrim="?attr/colorPrimary"
-                app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-                app:toolbarId="@+id/toolbar">
-
-                <ImageView
-                    android:id="@+id/service_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    android:alpha="0.8"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ummo_background"
-                    app:layout_collapseMode="parallax"
-                    app:layout_collapseParallaxMultiplier="0.7" />
-
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:theme="@style/AppTheme.NoActionBar"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/AppTheme.PopupOverlay">
-
-                    <com.google.android.material.appbar.MaterialToolbar
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:elevation="0dp"
-                        app:layout_collapseMode="pin"
-                        tools:targetApi="lollipop" />
-
-                </androidx.appcompat.widget.Toolbar>
-
-            </com.google.android.material.appbar.CollapsingToolbarLayout>
-        </com.google.android.material.appbar.AppBarLayout>-->
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/profile_tool_bar"
@@ -109,7 +58,6 @@
                     android:cursorVisible="true"
                     android:editable="false"
                     android:fontFamily="@font/rubik"
-                    android:hint="First Name"
                     android:lines="1"
                     android:textColorHint="@color/ummo_2"
                     android:textCursorDrawable="@drawable/cursor"
@@ -159,7 +107,6 @@
                     android:cursorVisible="true"
                     android:fontFamily="@font/rubik"
                     android:editable="false"
-                    android:hint="Surname"
                     android:lines="1"
                     android:textColorHint="@color/ummo_2"
                     android:textCursorDrawable="@drawable/cursor"
@@ -209,7 +156,6 @@
                     android:cursorVisible="true"
                     android:editable="false"
                     android:fontFamily="@font/rubik"
-                    android:hint="Phone number"
                     android:lines="1"
                     android:textColorHint="@color/ummo_2"
                     android:textCursorDrawable="@drawable/cursor"
@@ -259,7 +205,6 @@
                     android:cursorVisible="true"
                     android:editable="false"
                     android:fontFamily="@font/rubik"
-                    android:hint="Email"
                     android:lines="1"
                     android:textColorHint="@color/ummo_2"
                     android:textCursorDrawable="@drawable/cursor"
