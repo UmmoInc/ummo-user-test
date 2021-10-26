@@ -34,8 +34,11 @@
                     android:id="@+id/profile_image"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    android:layout_margin="20dp"
-                    android:src="@drawable/profile_pic"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:src="@drawable/ic_round_person_black_24"
                     app:civ_border_color="#FF000000"
                     app:civ_border_width="2dp" />
 
@@ -124,7 +127,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_account_circle_black_24" />
+                    app:srcCompat="@drawable/ic_outline_account_circle_blue_24" />
             </RelativeLayout>
 
         </RelativeLayout>
@@ -208,7 +211,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_handyman_black_24" />
+                    app:srcCompat="@drawable/ic_outline_handyman_blue_24" />
             </RelativeLayout>
 
             <View
@@ -253,7 +256,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_help_outline_black_24dp" />
+                    app:srcCompat="@drawable/ic_help_outline_blue_24dp" />
             </RelativeLayout>
 
             <View
@@ -298,7 +301,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_feedback_black_24" />
+                    app:srcCompat="@drawable/ic_outline_feedback_blue_24" />
             </RelativeLayout>
 
             <View
@@ -365,7 +368,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_terms_black_24" />
+                    app:srcCompat="@drawable/ic_outline_terms_blue_24" />
             </RelativeLayout>
 
             <View
@@ -426,7 +429,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_privacy_policy_black_24" />
+                    app:srcCompat="@drawable/ic_outline_privacy_policy_blue_24" />
             </RelativeLayout>
 
             <View
@@ -492,7 +495,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    app:srcCompat="@drawable/ic_outline_language_black_24" />
+                    app:srcCompat="@drawable/ic_outline_language_blue_24" />
             </RelativeLayout>
 
             <View

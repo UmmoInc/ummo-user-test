@@ -130,7 +130,7 @@ public class AppRepository {
     }
 
     private static class insertProfileAsyncTask extends AsyncTask<ProfileEntity, Void, Void> {
-        private ProfileDao mProfileAsyncTaskDao;
+        private final ProfileDao mProfileAsyncTaskDao;
 
         private insertProfileAsyncTask(ProfileDao profileDao) {
             this.mProfileAsyncTaskDao = profileDao;
@@ -145,7 +145,7 @@ public class AppRepository {
     }
 
     private static class deleteProfileAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ProfileDao mProfileAsyncTaskDao;
+        private final ProfileDao mProfileAsyncTaskDao;
 
         deleteProfileAsyncTask(ProfileDao profileDao) {
             this.mProfileAsyncTaskDao = profileDao;
@@ -160,7 +160,7 @@ public class AppRepository {
     }
 
     private static class updateProfileAsyncTask extends AsyncTask<ProfileEntity, Void, Void> {
-        private ProfileDao mProfileAsyncTaskDao;
+        private final ProfileDao mProfileAsyncTaskDao;
 
         updateProfileAsyncTask(ProfileDao profileDao) {
             mProfileAsyncTaskDao = profileDao;
@@ -219,7 +219,7 @@ public class AppRepository {
     }
 
     private static class getDelegatedServiceEntityAsyncTask extends AsyncTask<Void, Void, LiveData<DelegatedServiceEntity>> {
-        private DelegatedServiceDao mDelegatedServiceDao;
+        private final DelegatedServiceDao mDelegatedServiceDao;
 
         private getDelegatedServiceEntityAsyncTask(DelegatedServiceDao delegatedServiceDao) {
             this.mDelegatedServiceDao = delegatedServiceDao;
@@ -235,7 +235,7 @@ public class AppRepository {
     }
 
     private static class insertDelegatedServiceAsyncTask extends AsyncTask<DelegatedServiceEntity, Void, Void> {
-        private DelegatedServiceDao mDelegatedServiceDao;
+        private final DelegatedServiceDao mDelegatedServiceDao;
 
         private insertDelegatedServiceAsyncTask(DelegatedServiceDao delegatedServiceDao) {
             this.mDelegatedServiceDao = delegatedServiceDao;
@@ -250,7 +250,7 @@ public class AppRepository {
     }
 
     private static class deleteAllDelegatedServicesAsyncTask extends AsyncTask<Void, Void, Void> {
-        private DelegatedServiceDao mDelegatedServiceAsyncTaskDao;
+        private final DelegatedServiceDao mDelegatedServiceAsyncTaskDao;
 
         deleteAllDelegatedServicesAsyncTask(DelegatedServiceDao delegatedServiceDao) {
             this.mDelegatedServiceAsyncTaskDao = delegatedServiceDao;
@@ -375,7 +375,7 @@ public class AppRepository {
      * 5.1
      **/
     private static class deleteServiceProviderAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+        private final ServiceProviderDao mServiceProviderAsyncTaskDao;
 
         deleteServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao) {
             this.mServiceProviderAsyncTaskDao = serviceProviderDao;
@@ -395,7 +395,7 @@ public class AppRepository {
     private static class getServiceProvidersAsyncTask extends AsyncTask<Void, Void, List<ServiceProviderEntity>> {
         private final ServiceProviderDao mServiceProviderAsyncTaskDao;
         private final List<ServiceProviderEntity> serviceProviderEntityList = new ArrayList<>();
-        private WeakReference<AppRepository> appRepositoryWeakReference;
+        private final WeakReference<AppRepository> appRepositoryWeakReference;
 
         getServiceProvidersAsyncTask(ServiceProviderDao serviceProviderDao, AppRepository appRepository) {
             appRepositoryWeakReference = new WeakReference<>(appRepository);
@@ -439,7 +439,7 @@ public class AppRepository {
     }*/
 
     private static class updateServiceProviderAsyncTask extends AsyncTask<ServiceProviderEntity, Void, Void> {
-        private ServiceProviderDao mServiceProviderAsyncTaskDao;
+        private final ServiceProviderDao mServiceProviderAsyncTaskDao;
 
         updateServiceProviderAsyncTask(ServiceProviderDao serviceProviderDao) {
             mServiceProviderAsyncTaskDao = serviceProviderDao;
@@ -663,7 +663,7 @@ public class AppRepository {
      * 5.1
      **/
     private static class deleteServicesAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ServiceDao mServiceAsyncTaskDao;
+        private final ServiceDao mServiceAsyncTaskDao;
 
         deleteServicesAsyncTask(ServiceDao serviceDao) {
             this.mServiceAsyncTaskDao = serviceDao;
@@ -710,7 +710,7 @@ public class AppRepository {
     }
 
     private static class insertProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
-        private ProductDao mProductDao;
+        private final ProductDao mProductDao;
 
         private insertProductAsyncTask(ProductDao productDao) {
             this.mProductDao = productDao;
@@ -742,7 +742,7 @@ public class AppRepository {
     }
 
     private static class deleteAllProductsAsyncTask extends AsyncTask<Void, Void, Void> {
-        private ProductDao mProductAsyncTaskDao;
+        private final ProductDao mProductAsyncTaskDao;
 
         deleteAllProductsAsyncTask(ProductDao productDao) {
             this.mProductAsyncTaskDao = productDao;
@@ -757,7 +757,7 @@ public class AppRepository {
     }
 
     private static class updateProductAsyncTask extends AsyncTask<ProductEntity, Void, Void> {
-        private ProductDao mProductAsyncTaskDao;
+        private final ProductDao mProductAsyncTaskDao;
 
         updateProductAsyncTask(ProductDao productDao) {
             mProductAsyncTaskDao = productDao;

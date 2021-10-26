@@ -41,7 +41,7 @@ class User : MultiDexApplication() {
     private val socketStateEvent = SocketStateEvent()
     private val serviceUpdateEvents = ServiceUpdateEvents()
 
-    fun initializeSocketWithId(_id: String) {
+    private fun initializeSocketWithId(_id: String) {
         try {
             Timber.e("user _id: $_id")
             val options: IO.Options = IO.Options()
@@ -60,7 +60,7 @@ class User : MultiDexApplication() {
         }
     }
 
-    fun initializeSocketWithOutId() {
+    private fun initializeSocketWithOutId() {
         try {
             SocketIO.mSocket = IO.socket(getString(serverUrl))
             SocketIO.mSocket?.connect()
@@ -256,7 +256,7 @@ class User : MultiDexApplication() {
                 val delegatedProductId: String = JSONObject(it[0].toString()).getString("product")
                 val serviceAgentId: String = JSONObject(it[0].toString()).getString("agent")
                 val arr = JSONObject(it[0].toString()).getJSONArray("progress")
-                intent.putExtra("progress", arr.toString());
+                intent.putExtra("progress", arr.toString())
                 //                val serviceName: String = JSONObject(it[0].toString()).getJSONArray("progress")
 
                 startActivity(intent)

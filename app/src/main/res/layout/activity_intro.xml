@@ -94,7 +94,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/service_prep_image_view"
-                        android:text="Easily prepare for your service by browsing through service info."
+                        android:text="Easily prepare for your service by browsing through service info, wherever you are."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
@@ -107,7 +107,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/secondary_one_relative_layout"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="14dp">
 
                     <ImageView
                         android:id="@+id/request_service_image_view"
@@ -152,7 +152,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/secondary_two_relative_layout"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="14dp">
 
                     <ImageView
                         android:id="@+id/share_service_image_view"

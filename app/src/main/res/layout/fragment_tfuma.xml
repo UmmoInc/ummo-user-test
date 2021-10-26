@@ -64,12 +64,12 @@
                 android:id="@+id/offlineTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/rubik"
                 android:layout_below="@+id/offline_image_view"
+                android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:textAlignment="center"
                 android:text="We're currently having trouble loading services for you. \n\nPlease retry connecting."
+                android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
 

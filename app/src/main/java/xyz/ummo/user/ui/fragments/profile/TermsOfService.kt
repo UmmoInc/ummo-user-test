@@ -37,7 +37,7 @@ class TermsOfService : Fragment() {
         bottomNav = requireActivity().findViewById(R.id.bottom_nav)
         bottomNav.visibility = View.GONE
 
-        termsOfServiceBinding.termsOfServiceToolBar.inflateMenu(R.menu.personal_profile_menu)
+//        termsOfServiceBinding.termsOfServiceToolBar.inflateMenu(R.menu.personal_profile_menu)
         termsOfServiceBinding.termsOfServiceToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         termsOfServiceBinding.termsOfServiceToolBar.setNavigationOnClickListener {
             openFragment(ProfileFragment())

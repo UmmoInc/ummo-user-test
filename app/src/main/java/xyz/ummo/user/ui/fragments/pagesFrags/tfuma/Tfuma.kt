@@ -113,12 +113,16 @@ class Tfuma : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
-        tfumaBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_tfuma,
-                container,
-                false)
+        tfumaBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_tfuma,
+            container,
+            false
+        )
 
         val view = tfumaBinding.root
+
+        /** Scaffolding the [recyclerView] **/
         recyclerView = view.tfuma_services_recycler_view
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = view.tfuma_services_recycler_view.layoutManager

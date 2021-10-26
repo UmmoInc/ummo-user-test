@@ -37,7 +37,7 @@ class PrivacyPolicy : Fragment() {
         bottomNav = requireActivity().findViewById(R.id.bottom_nav)
         bottomNav.visibility = View.GONE
 
-        privacyPolicyBinding.privacyPolicyToolBar.inflateMenu(R.menu.personal_profile_menu)
+//        privacyPolicyBinding.privacyPolicyToolBar.inflateMenu(R.menu.personal_profile_menu)
 
         privacyPolicyBinding.privacyPolicyToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         privacyPolicyBinding.privacyPolicyToolBar.setNavigationOnClickListener {

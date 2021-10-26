@@ -1,7 +1,6 @@
 package xyz.ummo.user.rvItems
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -31,12 +30,15 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.*
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.models.ServiceCommentObject
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.*
+import xyz.ummo.user.ui.fragments.bottomSheets.serviceComments.ServiceComments
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.*
@@ -54,12 +56,14 @@ class ServiceItem(
     private var serviceId: String = ""
     private val bundle = Bundle()
 
+
+    private val serviceCommentsBundle = Bundle()
+    private var serviceComments = ArrayList<ServiceCommentObject>()
+
     /** Shared Preferences for storing user actions **/
     private lateinit var serviceItemPrefs: SharedPreferences
     private lateinit var savingServiceOfflineAnimation: AnimationDrawable
 
-    private val mode = Activity.MODE_PRIVATE
-    private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private var upVote: Boolean = false
     private var downVote: Boolean = false
     private var commentedOn: Boolean = false
@@ -137,11 +141,6 @@ class ServiceItem(
             context?.resources?.getString(R.string.mixpanelToken)
         )
         val serviceItemObject = JSONObject()
-
-//        Timber.e("UP-VOTE -> $upVote")
-//        Timber.e("DOWN-VOTE -> $downVote")
-//        Timber.e("COMMENTED-ON -> $commentedOn")
-//        Timber.e("BOOKMARKED -> $bookmarked")
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
@@ -467,24 +466,29 @@ class ServiceItem(
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
 
-        /** [3] Service Feedback Click Handlers **/
+        /** [3] Service Comments Click Handlers on the entire Relative Layout **/
         viewHolder.itemView.service_comments_relative_layout.setOnClickListener {
-            makeServiceComment(viewHolder, currentDate)
+            /*makeServiceComment(viewHolder, currentDate)
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                 .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
-            serviceItemObject.remove("SERVICE_COMMENTED_ON")
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")*/
+
+            viewServiceComments()
+
         }
         viewHolder.itemView.service_comments_image.setOnClickListener {
-            makeServiceComment(viewHolder, currentDate)
+            /*makeServiceComment(viewHolder, currentDate)
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                 .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
-            serviceItemObject.remove("SERVICE_COMMENTED_ON")
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")*/
+
+            viewServiceComments()
         }
 
         /** [4] Save Service Click Handlers **/
@@ -1112,6 +1116,47 @@ class ServiceItem(
         } catch (jse: JSONException) {
             Timber.e("JSONException ->$jse")
         }
+    }
+
+
+    /** Let's display the Service Comments Bottom here **/
+    private fun viewServiceComments() {
+
+        /** We're going to display the Service Comments Bottom Sheet below **/
+        val serviceCommentsBottomSheet = ServiceComments()
+
+        serviceCommentsBundle.putString(SERVICE_ID, serviceId)
+        serviceCommentsBundle.putString(SERVICE_NAME, service.serviceName)
+
+        serviceCommentsBottomSheet.arguments = serviceCommentsBundle
+
+        serviceCommentsBottomSheet.show(
+            supportFM,
+            ServiceComments.TAG
+        )
+
+        /*object : ViewServiceComments(context, serviceId) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("SERVICE COMMENTS -> ${String(data)}")
+
+                    */
+        /** Filling up [serviceComments] with [parseServiceCommentsPayload] **//*
+                    serviceComments = parseServiceCommentsPayload(data)
+
+                    serviceCommentsBundle.putSerializable(SERVICE_COMMENTS, serviceComments)
+                    */
+        /** We're going to display the Service Comments Bottom Sheet below **//*
+                    val serviceCommentsBottomSheet = ServiceComments()
+                    serviceCommentsBottomSheet.arguments = serviceCommentsBundle
+
+                    serviceCommentsBottomSheet.show(
+                        supportFM,
+                        ServiceComments.TAG
+                    )
+                }
+            }
+        }*/
     }
 
     /** With this function, we're simply displaying the commentDialog  && capturing the comment

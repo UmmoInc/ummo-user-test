@@ -20,7 +20,7 @@ abstract class ServiceComment(context: Context, serviceComment: JSONObject) {
                     done(response.data, response.statusCode)
 
                     if (response.statusCode == 200) {
-                        Timber.e("Responding well | Data -> ${response.data}")
+                        Timber.e("Responding well | Data -> ${String(response.data)}")
                     } else {
                         Timber.e("Status Code -> ${String(response.data)}")
                     }

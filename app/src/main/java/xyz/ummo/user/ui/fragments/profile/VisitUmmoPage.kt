@@ -50,7 +50,7 @@ class VisitUmmoPage : Fragment() {
         bottomNav = requireActivity().findViewById(R.id.bottom_nav)
         bottomNav.visibility = View.GONE
 
-        visitUmmoPageBinding.visitUmmoPageToolBar.inflateMenu(R.menu.personal_profile_menu)
+//        visitUmmoPageBinding.visitUmmoPageToolBar.inflateMenu(R.menu.personal_profile_menu)
         visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
         visitUmmoPageBinding.visitUmmoPageToolBar.setNavigationOnClickListener {
             openFragment(ProfileFragment())

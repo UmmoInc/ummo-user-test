@@ -221,5 +221,6 @@
     <string name="taking_you_to_whatsapp">We\'re taking you to WhatsApp…</string>
     <string name="ask_us_anything">We\'ll do our best to help you where we can. \n\nSometimes, we may need to look things up, just to be sure.</string>
     <string name="share_service">Share service</string>
+    <string name="service_comments_subtitle">%1$s</string>
 
 </resources>

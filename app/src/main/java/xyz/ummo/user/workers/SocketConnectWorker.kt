@@ -49,7 +49,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {
-                        makeStatusNotification("Socket", "We're LIVE!", appContext)
+//                        makeStatusNotification("Socket", "We're LIVE!", appContext)
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 
@@ -62,7 +62,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                     /** Checking if our Socket instance has an error connecting **/
                     SocketIO.mSocket?.on("connect_error") {
                         socketStateEvent.socketConnected = false
-                        makeStatusNotification("Socket", "MAYDAY!", appContext)
+//                        makeStatusNotification("Socket", "MAYDAY!", appContext)
                         EventBus.getDefault().post(socketStateEvent)
                     }
 
