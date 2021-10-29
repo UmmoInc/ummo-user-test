@@ -119,6 +119,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-dynamic-links'
+    implementation 'com.google.firebase:firebase-perf-ktx'
 
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
@@ -203,6 +204,7 @@ dependencies {
 apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.firebase.firebase-perf'
 repositories {
     mavenCentral()
 }
