@@ -39,7 +39,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
+                    android:layout_marginStart="8dp"
                     app:srcCompat="@drawable/logo" />
 
                 <TextView
@@ -47,12 +47,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:layout_toEndOf="@+id/card_avatar_image_view"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
                     android:textColor="@color/ummo_2"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -77,8 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:visibility="gone"
-                android:gravity="end">
+                android:gravity="end"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/info_image_view"
@@ -178,13 +178,14 @@
                         android:id="@+id/service_header_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
                         android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/delegated_service_header_image_view"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:layout_margin="8dp"
+                            android:layout_marginStart="8dp"
                             android:padding="8dp"
                             app:srcCompat="@drawable/ic_service_verification_24" />
 
@@ -219,7 +220,7 @@
                         android:layout_below="@id/service_header_layout">
 
                         <!-- [START] Service Cost Layout (ID: "service_cost_layout")-->
-                        <RelativeLayout
+                        <!--<RelativeLayout
                             android:id="@+id/service_cost_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -280,11 +281,11 @@
                                 </RelativeLayout>
                             </RelativeLayout>
 
-                        </RelativeLayout>
+                        </RelativeLayout>-->
                         <!-- [END] Service Cost Layout (ID: "service_cost_layout")-->
 
                         <!-- [START] Action Layout (ID: "action_layout")-->
-                        <RelativeLayout
+                        <!--<RelativeLayout
                             android:id="@+id/action_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -342,18 +343,18 @@
                                 android:paddingRight="8dp"
                                 android:visibility="visible"
                                 app:srcCompat="@drawable/ic_stat_expand_more" />
-                        </RelativeLayout>
+                        </RelativeLayout>-->
                         <!-- [END] Action Layout (ID: "action_layout")-->
 
                         <!-- [START] Expandable Layout (ID: "expandable_relative_layout")-->
-                        <RelativeLayout
+                        <!--<RelativeLayout
                             android:id="@+id/expandable_relative_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/action_layout"
                             android:visibility="gone"
                             tools:visibility="visible">
-                            <!-- [START] Service Duration Layout (ID: "service_duration_layout")-->
+                            &lt;!&ndash; [START] Service Duration Layout (ID: "service_duration_layout")&ndash;&gt;
                             <RelativeLayout
                                 android:id="@+id/service_duration_layout"
                                 android:layout_width="match_parent"
@@ -392,9 +393,9 @@
                                 </RelativeLayout>
 
                             </RelativeLayout>
-                            <!-- [END] Service Duration Layout (ID: "service_duration_layout"-->
+                            &lt;!&ndash; [END] Service Duration Layout (ID: "service_duration_layout"&ndash;&gt;
 
-                            <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                            &lt;!&ndash; [START] Service Centre Layout (ID: "service_centre_layout")&ndash;&gt;
                             <RelativeLayout
                                 android:id="@+id/service_centre_layout"
                                 android:layout_width="match_parent"
@@ -434,7 +435,7 @@
                                         android:textSize="12sp"
                                         android:textStyle="italic" />
 
-                                    <!--<LinearLayout
+                                    &lt;!&ndash;<LinearLayout
                                         android:id="@+id/service_centres_linear_layout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -444,7 +445,7 @@
                                         android:paddingEnd="8dp"
                                         android:paddingBottom="4dp">
 
-                                    </LinearLayout>-->
+                                    </LinearLayout>&ndash;&gt;
 
                                     <com.google.android.material.chip.ChipGroup
                                         android:id="@+id/service_centres_chip_group"
@@ -460,9 +461,9 @@
                                 </RelativeLayout>
 
                             </RelativeLayout>
-                            <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+                            &lt;!&ndash; [END] Service Centre Layout (ID: "service_centre_layout")&ndash;&gt;
 
-                            <!-- [START] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
+                            &lt;!&ndash; [START] Service Requirements Layout (ID: "service_requirements_relative_layout"&ndash;&gt;
                             <RelativeLayout
                                 android:id="@+id/service_requirements_relative_layout"
                                 android:layout_width="match_parent"
@@ -513,7 +514,7 @@
                                         app:selectionRequired="false"
                                         app:singleLine="false" />
 
-                                    <!--<LinearLayout
+                                    &lt;!&ndash;<LinearLayout
                                         android:id="@+id/service_requirements_linear_layout"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -521,12 +522,12 @@
                                         android:orientation="horizontal"
                                         android:paddingStart="8dp"
                                         android:paddingEnd="16dp"
-                                        android:paddingBottom="8dp" />-->
+                                        android:paddingBottom="8dp" />&ndash;&gt;
 
                                 </RelativeLayout>
                             </RelativeLayout>
-                            <!-- [END] Service Requirements Layout (ID: "service_requirements_relative_layout"-->
-                        </RelativeLayout>
+                            &lt;!&ndash; [END] Service Requirements Layout (ID: "service_requirements_relative_layout"&ndash;&gt;
+                        </RelativeLayout>-->
                         <!-- [END] Expandable Layout (ID: "expandable_relative_layout")-->
 
                         <!--<RelativeLayout
@@ -565,10 +566,24 @@
 
                         </RelativeLayout>-->
 
+                        <RelativeLayout
+                            android:id="@+id/service_image_relative_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#666666">
+
+                            <ImageView
+                                android:id="@+id/service_image_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="300dp"
+                                android:layout_centerHorizontal="true"
+                                android:padding="5dp" />
+                        </RelativeLayout>
                     </RelativeLayout>
                     <!-- [END] Body Layout -->
 
                 </RelativeLayout>
+
             </androidx.core.widget.NestedScrollView>
 
             <View

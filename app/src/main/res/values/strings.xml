@@ -151,7 +151,7 @@
     <string name="registration_continue">Continue</string>
     <string name="service_name">Service Name</string>
     <string name="service_description">Service Description</string>
-    <string name="service_eligibility">Service Eligibility</string>
+    <string name="service_eligibility">This service is for:</string>
     <string name="service_eligibility_placeholder">Who is eligible to receive this service?</string>
     <string name="service_centres">Service found at:</string>
     <string name="service_centre_placeholder">Service Centre</string>

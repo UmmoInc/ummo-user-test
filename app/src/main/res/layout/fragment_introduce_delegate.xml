@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/delegate_intro_header_relative_layout"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp">
 
                 <TextView
@@ -105,7 +105,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/delegate_description_text_view"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="15dp">
 
                     <ImageView
                         android:id="@+id/service_prep_image_view"
@@ -139,7 +139,7 @@
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/service_prep_image_view"
                         android:fontFamily="@font/rubik"
-                        android:text="Select your nearest service centre.\n\nChoose the type of service you'd like.\n\nPick a date that suits your schedule."
+                        android:text="\u2022 Select your nearest service centre.\n\u2022 Choose the type of service you'd like.\n\u2022 Pick a date that suits your schedule."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
@@ -152,7 +152,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/secondary_one_relative_layout"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="15dp">
 
                     <ImageView
                         android:id="@+id/request_service_image_view"
@@ -183,10 +183,10 @@
                         android:layout_below="@id/request_service_main_text_view"
                         android:layout_alignStart="@+id/request_service_main_text_view"
                         android:layout_marginTop="4dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_toEndOf="@+id/request_service_image_view"
                         android:fontFamily="@font/rubik"
-                        android:text="Your Agent will arrange to carry out your service.\n\nService charges apply."
+                        android:text="\u2022 Your Agent will arrange to carry out your service.\n\u2022 Service charges apply."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 

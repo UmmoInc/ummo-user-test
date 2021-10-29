@@ -29,8 +29,8 @@ android {
         applicationId "xyz.ummo.user"
         minSdkVersion 20
         targetSdkVersion 30
-        versionCode 20
-        versionName "1.1.0"
+        versionCode 22
+        versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -147,6 +147,9 @@ dependencies {
     implementation 'com.onesignal:OneSignal:4.4.1'
     //GroupieAdapter
     implementation "com.xwray:groupie:2.8.0"
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     //EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
