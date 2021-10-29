@@ -13,10 +13,10 @@ import android.view.View
 import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.content_detailed_service.view.*
@@ -55,7 +55,6 @@ class ServiceItem(
 
     private var serviceId: String = ""
     private val bundle = Bundle()
-
 
     private val serviceCommentsBundle = Bundle()
     private var serviceComments = ArrayList<ServiceCommentObject>()
@@ -110,6 +109,7 @@ class ServiceItem(
 
     //private lateinit var serviceCentresTextView: TextView
     private lateinit var serviceRequirementsTextView: TextView
+    private lateinit var picasso: Picasso
 
     init {
         upVote = savedUserActions.getBoolean("UP-VOTE")
@@ -129,6 +129,12 @@ class ServiceItem(
 
     @SuppressLint("SimpleDateFormat")
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+
+        /** Initializing [Picasso] **/
+        picasso = Picasso.get()
+        /*picasso.load(R.drawable.mvl_disc)
+            .into(viewHolder.itemView.service_image_view)*/
+
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
             .get(DelegatedServiceViewModel::class.java)
 
@@ -156,8 +162,13 @@ class ServiceItem(
 
         checkIfServiceIsSavedOffline(serviceId, viewHolder)
 
+        if (service.serviceName.contains("Motor Vehicle License Disc", true)) {
+            picasso.load(R.drawable.mvl_disc)
+                .into(viewHolder.itemView.service_image_view)
+        }
+
         /** Parsing and displaying the service centres in the Service Centres linear layout **/
-        if (service.serviceCentres.isNotEmpty()) {
+        /*if (service.serviceCentres.isNotEmpty()) {
             viewHolder.itemView.service_centres_chip_group.removeAllViews()
 //            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
             for (i in service.serviceCentres.indices) {
@@ -179,16 +190,16 @@ class ServiceItem(
                 serviceCentreChipItem.setOnCheckedChangeListener { compoundButton, b ->
                     Timber.e("SERVICE CENTRE CHECKED [GROUP] -> ${service.serviceCentres[i]}")
                 }
-                /*if (serviceCentreChipItem.isChecked) {
+                *//*if (serviceCentreChipItem.isChecked) {
                     serviceItemObject.put("CENTRE_CHIP", service.serviceCentres)
                     mixpanel?.track("serviceCard_centreChipChecked", serviceItemObject)
 
                     Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentres}")
-                }*/
+                }*//*
 
                 viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
             }
-        }
+        }*/
 
         /** Parsing Service Costs**/
         parseServiceCostBySpec(service)
@@ -202,11 +213,11 @@ class ServiceItem(
 
         selectingServiceSpec(viewHolder)
 
-        viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
+//        viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
 //        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
 
         /** Parsing and displaying the service requirements in the Service Requirements linear layout **/
-        if (service.serviceDocuments.isNotEmpty()) {
+        /*if (service.serviceDocuments.isNotEmpty()) {
             viewHolder.itemView.service_requirements_chip_group.removeAllViews()
             for (i in service.serviceDocuments.indices) {
                 val serviceRequirementsChipItem = inflater.inflate(
@@ -226,7 +237,7 @@ class ServiceItem(
 
                 }
             }
-        }
+        }*/
 
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
@@ -314,7 +325,7 @@ class ServiceItem(
             mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
         }
 
-        viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {
+        /*viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {
 
             bundle.putString(SERVICE_ID, serviceId)
             val serviceFeeQueryBottomSheetFragment = ServiceFeeQuery()
@@ -325,15 +336,15 @@ class ServiceItem(
 
             serviceItemObject.put("SERVICE_ID", serviceId)
             mixpanel?.track("serviceCard_queryIconTapped", serviceItemObject)
-        }
+        }*/
 
         /** Expand Service Card to reveal more info - Layout-Click... **/
-        viewHolder.itemView.action_layout.setOnClickListener {
+        /*viewHolder.itemView.action_layout.setOnClickListener {
             if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
+                *//*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
                 viewHolder.itemView.expand_image_view.visibility = View.GONE
                 viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"*/
+                viewHolder.itemView.action_text_view.text = "CLOSE"*//*
 
                 showServiceDetails()
 
@@ -342,14 +353,14 @@ class ServiceItem(
                 mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
+                *//*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
                 viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
                 viewHolder.itemView.collapse_image_view.visibility = View.GONE
                 viewHolder.itemView.action_text_view.text = "MORE INFO"
 
                 serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                         .put("SERVICE_ID", serviceId)
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)*/
+                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)*//*
 
                 showServiceDetails()
 
@@ -358,10 +369,10 @@ class ServiceItem(
                 mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
 
             }
-        }
+        }*/
 
         /** Expand Service Card to reveal more info - Text-Click... **/
-        viewHolder.itemView.action_text_view.setOnClickListener {
+        /*viewHolder.itemView.action_text_view.setOnClickListener {
             if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
 
                 showServiceDetails()
@@ -376,7 +387,7 @@ class ServiceItem(
                 mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
 
             }
-        }
+        }*/
 
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {

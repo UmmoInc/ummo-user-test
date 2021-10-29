@@ -31,6 +31,7 @@
                     android:layout_height="100dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
+                    android:padding="10dp"
                     android:src="@drawable/logo" />
 
                 <TextView
@@ -94,7 +95,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/service_prep_image_view"
-                        android:text="Easily prepare for your service by browsing through service info, wherever you are."
+                        android:text="Easily prepare for your service. Browse through service info, wherever you are."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
@@ -139,7 +140,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/request_service_image_view"
-                        android:text="Out of time? \nRequest a Service Agent to assist you."
+                        android:text="Out of time? \nHire a Service Agent to assist you."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
@@ -170,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@+id/share_service_image_view"
                         android:fontFamily="@font/rubik"
-                        android:text="Share Service Information"
+                        android:text="Share Your Experience"
                         android:textColor="@color/White"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -184,7 +185,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/share_service_image_view"
-                        android:text="Simply tap to share service info to your loved ones and help them save time."
+                        android:text="Help your friends make the most of their time too.\nSpread the word within your circle."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
