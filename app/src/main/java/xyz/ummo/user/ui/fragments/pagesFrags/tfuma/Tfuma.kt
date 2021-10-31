@@ -84,6 +84,8 @@ class Tfuma : Fragment() {
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
+    var serviceCategory = ""
+    lateinit var category: String
 
     val delegatableServiceJSONObject = JSONObject()
 
@@ -127,17 +129,20 @@ class Tfuma : Fragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = view.tfuma_services_recycler_view.layoutManager
         recyclerView.adapter = gAdapter
-        Timber.e("GROUPIE-ADAPTER [1]-> ${gAdapter.itemCount}")
+//        Timber.e("GROUPIE-ADAPTER [1]-> ${gAdapter.itemCount}")
 
+        Timber.e("SERVICE CATEGORY -> ${parentFragment?.arguments?.getString(SERVICE_CATEGORY)}")
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
         pollingAdapterState()
-//        getDelegatableServicesLocally()
 
         getDelegatableServicesFromServer()
 
         Timber.e("DELEGATED SERVICES LIST [0] -> ${delegatableServicesArrayList.size}")
 
-        val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
+        )
 
         reloadServices()
 
@@ -252,7 +257,7 @@ class Tfuma : Fragment() {
                             service = allServices[i] as JSONObject
                             delegatable = service.getBoolean("delegatable")
 
-                            if (delegatable) {
+                            if (delegatable && category == service.getString(SERVICE_CATEGORY)) {
                                 serviceId = service.getString("_id") //1
                                 serviceName = service.getString(SERV_NAME) //2
                                 serviceDescription = service.getString(SERV_DESCR) //3
@@ -287,6 +292,8 @@ class Tfuma : Fragment() {
                                 else
                                     ""
 
+                                serviceCategory = service.getString(SERVICE_CATEGORY)
+
                                 try {
                                     serviceAttachmentJSONArray = service.getJSONArray(
                                         SERV_ATTACH_OBJS
@@ -312,13 +319,15 @@ class Tfuma : Fragment() {
                                     Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
                                 }
 
-                                delegatableService = ServiceObject(serviceId, serviceName,
-                                        serviceDescription, serviceEligibility, serviceCentres,
-                                        delegatable, serviceCostArrayList, serviceDocuments,
-                                        serviceDuration, approvalCount, disapprovalCount,
-                                        serviceComments, commentCount, shareCount, viewCount,
-                                        serviceProvider, serviceLink, serviceAttachmentName,
-                                        serviceAttachmentSize, serviceAttachmentURL)
+                                delegatableService = ServiceObject(
+                                    serviceId, serviceName,
+                                    serviceDescription, serviceEligibility, serviceCentres,
+                                    delegatable, serviceCostArrayList, serviceDocuments,
+                                    serviceDuration, approvalCount, disapprovalCount,
+                                    serviceComments, commentCount, shareCount, viewCount,
+                                    serviceProvider, serviceLink, serviceAttachmentName,
+                                    serviceAttachmentSize, serviceAttachmentURL, serviceCategory
+                                )
 
                                 /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
                                  * 2. wrapping those values in a JSON Object

@@ -10,9 +10,10 @@ abstract class GetAllServices(activity: Activity) {
         Fuel.get("/product")
             .response { request, response, result ->
                 activity.runOnUiThread {
-                    if (response.data.isNotEmpty())
+                    if (response.data.isNotEmpty()) {
                         done(response.data, response.statusCode)
-                    else
+                        Timber.e("SERVICES FOUND -> ${String(response.data)}")
+                    } else
                         Timber.e("RESPONSE IS EMPTY!")
                 }
             }

@@ -17,6 +17,7 @@ import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.pagesFrags.tfuma.Tfuma
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.SERVICE_CATEGORY
 
 class PagesFragment : Fragment() {
 
@@ -26,6 +27,7 @@ class PagesFragment : Fragment() {
     private var serviceProviderEntity = ServiceProviderEntity()
     private var serviceViewModel: ServiceViewModel? = null
     private var serviceEntity = ServiceEntity()
+    private var category = ""
 
     companion object {
         fun newInstance() = PagesFragment()
@@ -33,15 +35,16 @@ class PagesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.e("SERVICE-PROVIDER-DATA {onCreate} [1] -> $serviceProviderData")
+        Timber.e("SERVICE-CATEGORY -> ${arguments?.get(SERVICE_CATEGORY)}")
+        category = arguments?.getString(SERVICE_CATEGORY).toString()
 
         /** Initializing ServiceProviderViewModel **/
         serviceProviderViewModel = ViewModelProvider(this)
-                .get(ServiceProviderViewModel::class.java)
+            .get(ServiceProviderViewModel::class.java)
 
         /** Initializing ServiceViewModel **/
         serviceViewModel = ViewModelProvider(this)
-                .get(ServiceViewModel::class.java)
+            .get(ServiceViewModel::class.java)
 
 //        pagesPrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
         Timber.e("SERVICE-PROVIDER-DATA {onCreate} [2] -> $serviceProviderData")
@@ -69,6 +72,7 @@ class PagesFragment : Fragment() {
 
     private fun setupPagesTabs() {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
+
         pagesAdapter.addFragment(Tfuma(), "Tfola Lusito")
         pagesAdapter.addFragment(Tfola(), "Tfola Lwati")
 //        pagesAdapter.addFragment(Phepha(), "Phepha")
@@ -77,9 +81,9 @@ class PagesFragment : Fragment() {
         pagesFragmentBinding.pagesTabLayout.setupWithViewPager(pagesFragmentBinding.pagesViewPager)
 
         pagesFragmentBinding.pagesTabLayout.getTabAt(0)!!
-                .setIcon(R.drawable.ic_tfuma_24)
+            .setIcon(R.drawable.ic_tfuma_24)
         pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!
-                .setIcon(R.drawable.ic_tfola_24)
+            .setIcon(R.drawable.ic_tfola_24)
         /*pagesFragmentBinding.pagesTabLayout.getTabAt(2)!!
                 .setIcon(R.drawable.ic_coronavirus_24)*/
     }

@@ -1,5 +1,6 @@
 package xyz.ummo.user.rvItems
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
@@ -29,6 +30,7 @@ class ServiceCommentItem(
         viewHolder.itemView.service_comment_text_view.text = serviceCommentObject.serviceComment
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun convertDate(): Date {
         val date = serviceCommentObject.commentDateTime
         val pattern = "dd/M/yyy hh:mm:ss"

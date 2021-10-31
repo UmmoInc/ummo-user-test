@@ -46,9 +46,9 @@ import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
 import xyz.ummo.user.models.ServiceProviderData
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
-import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
@@ -297,8 +297,9 @@ class MainScreen : AppCompatActivity() {
 
         introDialogBuilder.setPositiveButton("I'm in") { dialogInterface, i ->
             Timber.e("USER IS IN!!!")
-            val pagesFragment = PagesFragment()
-            openFragment(pagesFragment)
+//            val pagesFragment = PagesFragment()
+            val serviceCategories = ServiceCategories()
+            openFragment(serviceCategories)
 
             editor.putBoolean("NEW_SESSION", false).apply()
 
@@ -418,8 +419,9 @@ class MainScreen : AppCompatActivity() {
             showSnackbarRed("Can't reach Ummo network", -2)
         } else {
             showSnackbarBlue("Ummo network found...", -1)
-            val pagesFragment = PagesFragment()
-            openFragment(pagesFragment)
+//            val pagesFragment = PagesFragment()
+            val serviceCategories = ServiceCategories()
+            openFragment(serviceCategories)
         }
     }
 
@@ -538,10 +540,6 @@ class MainScreen : AppCompatActivity() {
 
         /** [NetworkStateEvent-1] Register for EventBus events **/
         EventBus.getDefault().unregister(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     override fun onResume() {
@@ -678,9 +676,8 @@ class MainScreen : AppCompatActivity() {
                     supportActionBar?.title = "Ummo"
 
                     /** Modify info card **/
-//                val serviceCentreFragment = ServiceCentresFragment()
-                    val pagesFragment = PagesFragment()
-                    openFragment(pagesFragment)
+                    val serviceCategories = ServiceCategories()
+                    openFragment(serviceCategories)
 
                     val homeEventObject = JSONObject()
                     homeEventObject.put("EVENT_DATE_TIME", currentDate)

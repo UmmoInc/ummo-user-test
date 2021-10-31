@@ -54,6 +54,7 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
         var serviceAttachmentName = ""
         var serviceAttachmentSize = ""
         var serviceAttachmentURL = ""
+        var serviceCategory = ""
 
         var serviceDuration: String
         var upvoteCount: Int
@@ -90,6 +91,7 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
                     shareCount = service.getInt(SERV_SHARE_COUNT) //14
                     viewCount = service.getInt(SERV_VIEW_COUNT) //15
                     serviceProvider = service.getString(SERV_PROVIDER) //16
+                    serviceCategory = service.getString(SERVICE_CATEGORY)
 
                     serviceLink = if (service.getString(SERV_LINK).isNotEmpty())
                         service.getString(SERV_LINK)
@@ -115,7 +117,7 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
                         serviceEligibility, serviceCentres, conditionMet, serviceCosts, serviceDocs,
                         serviceDuration, upvoteCount, downvoteCount, serviceComments, commentCount,
                         shareCount, viewCount, serviceProvider, serviceLink, serviceAttachmentName,
-                        serviceAttachmentSize, serviceAttachmentURL
+                        serviceAttachmentSize, serviceAttachmentURL, serviceCategory
                     )
 
 //                    return delegatableService

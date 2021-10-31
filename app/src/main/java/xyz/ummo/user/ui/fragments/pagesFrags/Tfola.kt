@@ -33,6 +33,7 @@ import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 import xyz.ummo.user.utilities.mode
@@ -94,6 +95,9 @@ class Tfola : Fragment() {
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
+    var serviceCategory = ""
+    lateinit var category: String
+
     lateinit var mixpanel: MixpanelAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,13 +153,15 @@ class Tfola : Fragment() {
             resources.getString(R.string.mixpanelToken)
         )
 
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+
         /** Refreshing services with [tfola_swipe_refresher] **/
         tfolaBinding.tfolaSwipeRefresher.setOnRefreshListener {
             getNonDelegatableServicesFromServer()
             tfolaBinding.tfolaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
 
-            mixpanel?.track("discoverFragment_refreshed")
+            mixpanel.track("discoverFragment_refreshed")
         }
 
         return view
@@ -326,7 +332,7 @@ class Tfola : Fragment() {
             service = allServices[i] as JSONObject
             delegatable = service.getBoolean("delegatable")
 
-            if (!delegatable) {
+            if (!delegatable && category == service.getString(SERVICE_CATEGORY)) {
                 parseSingleService(service)
             }
         }
@@ -369,6 +375,8 @@ class Tfola : Fragment() {
         else
             ""
 
+        serviceCategory = serviceJSONObject.getString(SERVICE_CATEGORY)
+
         try {
             serviceAttachmentJSONArray =
                 serviceJSONObject.getJSONArray("service_attachment_objects")
@@ -391,7 +399,7 @@ class Tfola : Fragment() {
             delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
             approvalCount, disapprovalCount, serviceComments,
             commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL
+            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL, serviceCategory
         )
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
