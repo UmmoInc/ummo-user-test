@@ -160,7 +160,7 @@ class ProfileFragment : Fragment() {
                 /** Parsing through the [profileEntity1]'s [profileName] to extract the first name **/
                 val endOfFirstNameIndex = profileEntity1.profileName?.indexOf(" ", 0, true)
                 val firstName = profileEntity1.profileName?.substring(0, endOfFirstNameIndex!!)
-                profileName!!.text = firstName
+                profileName!!.text = profileEntity1.profileName
             })
 
         viewPersonalInfoRL.setOnClickListener { launchPersonalInfoFragment() }

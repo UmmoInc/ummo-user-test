@@ -232,7 +232,7 @@ class Tfola : Fragment() {
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
-     * the User the [offlineLayout] and allowing them to reload the services manually **/
+     * the User the [offline_layout] and allowing them to reload the services manually **/
     private fun reloadServices() {
         tfolaBinding.reloadTfolaServicesButton.setOnClickListener {
 

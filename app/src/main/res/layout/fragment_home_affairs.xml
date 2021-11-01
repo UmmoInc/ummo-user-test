@@ -42,7 +42,7 @@
             android:visibility="invisible" />
 
         <RelativeLayout
-            android:id="@+id/offlineLayout"
+            android:id="@+id/offline_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/load_progress_bar"

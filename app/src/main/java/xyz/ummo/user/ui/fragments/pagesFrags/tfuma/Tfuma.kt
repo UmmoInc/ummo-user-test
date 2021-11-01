@@ -146,6 +146,8 @@ class Tfuma : Fragment() {
 
         reloadServices()
 
+//        checkServicesAfterSomeTime()
+
         /** Refreshing services with [tfuma_swipe_refresher] **/
         tfumaBinding.tfumaSwipeRefresher.setOnRefreshListener {
             delegatableServicesArrayList.clear()
@@ -157,6 +159,27 @@ class Tfuma : Fragment() {
         }
 
         return view
+    }
+
+    private fun checkServicesAfterSomeTime() {
+        val timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(p0: Long) {
+
+            }
+
+            override fun onFinish() {
+                if (gAdapter.itemCount == 0) {
+                    tfumaBinding.noServicesRelativeLayout.visibility = View.VISIBLE
+                    tfumaBinding.offlineLayout.visibility = View.GONE
+                    tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
+                    tfumaBinding.loadProgressBar.visibility = View.GONE
+
+                    return
+                }
+            }
+        }
+
+        timer.start()
     }
 
     @Subscribe
@@ -174,7 +197,7 @@ class Tfuma : Fragment() {
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
-     * the User the [offlineLayout] and allowing them to reload the services manually **/
+     * the User the [offline_layout] and allowing them to reload the services manually **/
     private fun reloadServices() {
         tfumaBinding.reloadTfumaServicesButton.setOnClickListener {
 
@@ -196,7 +219,8 @@ class Tfuma : Fragment() {
 
             override fun onFinish() {
                 if (gAdapter.itemCount == 0) {
-                    showOfflineState()
+//                    showOfflineState()
+                    noServicesInCategory()
                 } else {
                     hideOfflineState()
                 }
@@ -219,14 +243,31 @@ class Tfuma : Fragment() {
         }
     }
 
+    private fun noServicesInCategory() {
+        tfumaBinding.noServicesRelativeLayout.visibility = View.VISIBLE
+        tfumaBinding.offlineLayout.visibility = View.GONE
+        tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
+        tfumaBinding.loadProgressBar.visibility = View.GONE
+
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
+            mixpanel?.track("delegateFragment_noServicesInCategory")
+        }
+    }
+
     private fun showOfflineState() {
         tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
         tfumaBinding.loadProgressBar.visibility = View.GONE
         tfumaBinding.offlineLayout.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                    resources.getString(R.string.mixpanelToken))
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
             mixpanel?.track("delegateFragment_showingOffline")
         }
     }

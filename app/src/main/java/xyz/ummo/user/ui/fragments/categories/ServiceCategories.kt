@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.categories
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,9 @@ import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentServiceCategoriesBinding
 import xyz.ummo.user.models.ServiceCategoryModel
 import xyz.ummo.user.rvItems.ServiceCategoryItem
+import xyz.ummo.user.utilities.USER_NAME
+import xyz.ummo.user.utilities.mode
+import xyz.ummo.user.utilities.ummoUserPreferences
 
 class ServiceCategories : Fragment() {
     private lateinit var viewBinding: FragmentServiceCategoriesBinding
@@ -23,6 +27,8 @@ class ServiceCategories : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var rootView: View
     private lateinit var mixpanelAPI: MixpanelAPI
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var userName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +53,19 @@ class ServiceCategories : Fragment() {
         )
         rootView = viewBinding.root
 
+        sharedPreferences = context?.getSharedPreferences(ummoUserPreferences, mode)!!
+        userName = sharedPreferences.getString(USER_NAME, "").toString()
+        val endOfFirstName = userName.indexOf(" ", 0, true)
+        val firstName = userName.substring(0, endOfFirstName)
+
         /** Scaffolding the [recyclerView] **/
         recyclerView = rootView.service_category_recycler_view
         recyclerView.setHasFixedSize(true)
 //        recyclerView.layoutManager = rootView.service_category_recycler_view.layoutManager
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = gAdapter
+
+        viewBinding.homeBarTitleTextView.text = "Welcome, $firstName"
 
         gAdapter.add(0, ServiceCategoryItem(ServiceCategoryModel("business", 17), requireContext()))
         gAdapter.add(1, ServiceCategoryItem(ServiceCategoryModel("travel", 7), requireContext()))

@@ -106,7 +106,7 @@
             android:visibility="visible" />
 
         <RelativeLayout
-            android:id="@+id/offlineLayout"
+            android:id="@+id/offline_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -143,6 +143,49 @@
                 android:layout_centerInParent="true"
                 android:layout_margin="10dp"
                 android:background="@drawable/rounded_button_transparent_purple"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/no_services_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_folder_open_24" />
+
+            <TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="It seems there are no services under this category."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/go_home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_text_view"
+                android:layout_centerInParent="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
                 android:text="@string/retry_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>

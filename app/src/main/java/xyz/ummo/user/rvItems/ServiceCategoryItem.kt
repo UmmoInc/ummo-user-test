@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.service_category.view.*
 import xyz.ummo.user.R
 import xyz.ummo.user.models.ServiceCategoryModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
+import xyz.ummo.user.utilities.CATEGORY
 import xyz.ummo.user.utilities.SERVICE_CATEGORY
 
 class ServiceCategoryItem(
@@ -42,6 +43,8 @@ class ServiceCategoryItem(
                         AppCompatResources
                             .getDrawable(context, R.drawable.ic_twotone_health_and_safety_24)
                     )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For your loved ones' physical well-being"
             }
             serviceCategoryModel.serviceCategoryName.contains("EDUCATION", true) -> {
                 viewHolder.itemView.category_image_view.setImageDrawable(
@@ -50,6 +53,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_school_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For your Educational needs"
+
             }
             serviceCategoryModel.serviceCategoryName.contains("BUSINESS", true) -> {
                 viewHolder.itemView.category_image_view.setImageDrawable(
@@ -58,6 +64,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_business_center_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For Businesses Owners & Entrepreneurs"
+
             }
             serviceCategoryModel.serviceCategoryName.contains("TRAVEL", true) -> {
                 viewHolder.itemView.category_image_view.setImageDrawable(
@@ -66,6 +75,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_flight_takeoff_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For all your Travel requirements"
+
             }
 
             serviceCategoryModel.serviceCategoryName.contains("VEHICLES", true) -> {
@@ -75,6 +87,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_car_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For your Vehicle Licence Disc & more"
+
             }
 
             serviceCategoryModel.serviceCategoryName.contains("IDENTITY", true) -> {
@@ -84,6 +99,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_identity_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For your Citizenship & Identification"
+
             }
 
             serviceCategoryModel.serviceCategoryName.contains("AGRICULTURE", true) -> {
@@ -93,6 +111,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_agriculture_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For all your Farming needs"
+
             }
 
             serviceCategoryModel.serviceCategoryName.contains("IDEAS", true) -> {
@@ -102,6 +123,9 @@ class ServiceCategoryItem(
                         R.drawable.ic_twotone_creatives_24
                     )
                 )
+
+//                viewHolder.itemView.category_service_count_text_view.text = "For your Creative Work, Content & Trademarks"
+
             }
         }
     }
@@ -117,6 +141,7 @@ class ServiceCategoryItem(
         val fragmentManager = fragmentActivity.supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         val pagesFragment = PagesFragment()
+        pagesFragment.arguments?.putString(CATEGORY, serviceCategoryModel.serviceCategoryName)
 
         bundle.putString(SERVICE_CATEGORY, serviceCategoryModel.serviceCategoryName)
         pagesFragment.arguments = bundle
