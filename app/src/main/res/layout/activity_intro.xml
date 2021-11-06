@@ -10,12 +10,12 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/tertiary_relative_layout"
+        android:layout_height="match_parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
+            android:id="@+id/main_intro_relative_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -27,11 +27,11 @@
 
                 <ImageView
                     android:id="@+id/ummo_logo_image_view"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
-                    android:padding="10dp"
+                    android:padding="8dp"
                     android:src="@drawable/logo" />
 
                 <TextView
@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/ummo_logo_image_view"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="4dp"
                     android:fontFamily="@font/rubik"
                     android:gravity="center"
                     android:text="Welcome to Ummo"
@@ -95,7 +95,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/service_prep_image_view"
-                        android:text="Easily prepare for your service. Browse through service info, wherever you are."
+                        android:text="Prepare for your service, with ease. Browse through service info, wherever you are."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
@@ -108,7 +108,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/secondary_one_relative_layout"
-                    android:layout_marginTop="14dp">
+                    android:layout_marginTop="20dp">
 
                     <ImageView
                         android:id="@+id/request_service_image_view"
@@ -153,7 +153,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/secondary_two_relative_layout"
-                    android:layout_marginTop="14dp">
+                    android:layout_marginTop="20dp">
 
                     <ImageView
                         android:id="@+id/share_service_image_view"
@@ -185,59 +185,61 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_toEndOf="@+id/share_service_image_view"
-                        android:text="Help your friends make the most of their time too.\nSpread the word within your circle."
+                        android:text="Help your friends make the most of their time.\nSpread the word within your circle."
                         android:textColor="#999999"
                         android:textSize="14sp" />
 
                 </RelativeLayout>
                 <!--[END] Share Service Info Relative Layout -->
             </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/tertiary_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/secondary_relative_layout"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="30dp"
+                android:foregroundGravity="bottom"
+                android:gravity="bottom">
+
+                <ImageView
+                    android:id="@+id/user_agreement_image_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:padding="2dp"
+                    app:srcCompat="@drawable/ic_user_privacy_blue_24" />
+
+                <TextView
+                    android:id="@+id/user_agreement_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_agreement_image_view"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:text="Ummo takes your privacy very seriously. We will never share your data with government without consulting you first."
+                    android:textColor="#999999"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/continue_button"
+                    android:layout_width="300dp"
+                    android:layout_height="60dp"
+                    android:layout_below="@+id/user_agreement_text_view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/ummo_3"
+                    android:enabled="true"
+                    android:text="Continue"
+                    android:textColor="@color/White"
+                    android:textSize="16sp"
+                    tools:targetApi="lollipop" />
+            </RelativeLayout>
         </RelativeLayout>
-
     </androidx.core.widget.NestedScrollView>
-
-    <RelativeLayout
-        android:id="@+id/tertiary_relative_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/scroll_view">
-
-        <ImageView
-            android:id="@+id/user_agreement_image_view"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
-            android:padding="2dp"
-            app:srcCompat="@drawable/ic_user_privacy_blue_24" />
-
-        <TextView
-            android:id="@+id/user_agreement_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/user_agreement_image_view"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:text="Ummo takes your privacy very seriously. We will never share your data with government without consulting you first."
-            android:textColor="#999999"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/continue_button"
-            android:layout_width="300dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/user_agreement_text_view"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="10dp"
-            android:backgroundTint="@color/ummo_3"
-            android:enabled="true"
-            android:text="Continue"
-            android:textColor="@color/White"
-            tools:targetApi="lollipop" />
-    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieViewHolder
@@ -128,12 +129,11 @@ class ServiceItem(
     }
 
     @SuppressLint("SimpleDateFormat")
+    @AddTrace(name = "service_item_binding_view_holder")
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
 
         /** Initializing [Picasso] **/
         picasso = Picasso.get()
-        /*picasso.load(R.drawable.mvl_disc)
-            .into(viewHolder.itemView.service_image_view)*/
 
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
             .get(DelegatedServiceViewModel::class.java)
@@ -162,82 +162,39 @@ class ServiceItem(
 
         checkIfServiceIsSavedOffline(serviceId, viewHolder)
 
-        if (service.serviceName.contains("Motor Vehicle License Disc", true)) {
-            picasso.load(R.drawable.mvl_disc)
-                .into(viewHolder.itemView.service_image_view)
-        }
-
-        /** Parsing and displaying the service centres in the Service Centres linear layout **/
-        /*if (service.serviceCentres.isNotEmpty()) {
-            viewHolder.itemView.service_centres_chip_group.removeAllViews()
-//            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
-            for (i in service.serviceCentres.indices) {
-
-                val serviceCentreChipItem = inflater.inflate(
-                    R.layout.service_centre_chip_item,
-                    null, false
-                ) as Chip
-
-                serviceCentreChipItem.text = service.serviceCentres[i]
-                Timber.e("CENTRE_CHIP -> ${service.serviceCentres[i]}")
-
-                viewHolder.itemView.service_centres_chip_group.setOnCheckedChangeListener { group, checkedId ->
-                    serviceItemObject.put("SERVICE_CENTRE_CHIP", service.serviceCentres[i])
-                    Timber.e("SERVICE CENTRE CHECKED [GROUP] -> ${service.serviceCentres[i]}")
-                    mixpanel?.track("serviceCard_serviceCentreChecked", serviceItemObject)
-                }
-
-                serviceCentreChipItem.setOnCheckedChangeListener { compoundButton, b ->
-                    Timber.e("SERVICE CENTRE CHECKED [GROUP] -> ${service.serviceCentres[i]}")
-                }
-                *//*if (serviceCentreChipItem.isChecked) {
-                    serviceItemObject.put("CENTRE_CHIP", service.serviceCentres)
-                    mixpanel?.track("serviceCard_centreChipChecked", serviceItemObject)
-
-                    Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentres}")
-                }*//*
-
-                viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
+        when {
+            service.serviceName.contains("Motor Vehicle License Disc", true) -> {
+                picasso.load(R.drawable.mvl_disc)
+                    .into(viewHolder.itemView.service_image_view)
             }
-        }*/
+            service.serviceName.contains("Passport", true) -> {
+                picasso.load(R.drawable.passport)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Travel Document", true) -> {
+                picasso.load(R.drawable.travel_document)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Driver's License", true)
+                    || service.serviceName.contains("Learner's License") -> {
+                picasso.load(R.drawable.drivers_licence)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Change Vehicle Ownership", true) -> {
+                picasso.load(R.drawable.vehicle_exchange)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("ID Card", true) -> {
+                picasso.load(R.drawable.national_id)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+
+        }
 
         /** Parsing Service Costs**/
         parseServiceCostBySpec(service)
-        /** Listening for Item Selected **/
-        /*addListenerOnSpinnerItemSelected(viewHolder)
-//        viewHolder.itemView.service_cost_text_view.text = service.serviceCost //6
-        serviceCostSpinner = viewHolder.itemView.service_cost_spinner
-        serviceCostAdapter = ArrayAdapter(context,
-                R.layout.support_simple_spinner_dropdown_item, serviceCostArrayList)
-        serviceCostSpinner?.adapter = serviceCostAdapter*/
 
         selectingServiceSpec(viewHolder)
-
-//        viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
-//        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
-
-        /** Parsing and displaying the service requirements in the Service Requirements linear layout **/
-        /*if (service.serviceDocuments.isNotEmpty()) {
-            viewHolder.itemView.service_requirements_chip_group.removeAllViews()
-            for (i in service.serviceDocuments.indices) {
-                val serviceRequirementsChipItem = inflater.inflate(
-                    R.layout.service_centre_chip_item,
-                    null, false
-                ) as Chip
-
-                serviceRequirementsChipItem.text = service.serviceDocuments[i]
-                viewHolder.itemView.service_requirements_chip_group.addView(
-                    serviceRequirementsChipItem
-                )
-
-                viewHolder.itemView.service_requirements_chip_group.setOnCheckedChangeListener { group, checkedId ->
-                    Timber.e("DOCS CHECKED -> ${service.serviceDocuments[i]}")
-                    serviceItemObject.put("SERVICE_DOC_CHIP", service.serviceDocuments[i])
-                    mixpanel?.track("serviceCard_serviceDocChecked", serviceItemObject)
-
-                }
-            }
-        }*/
 
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
@@ -248,6 +205,14 @@ class ServiceItem(
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
             mixpanel?.track("serviceCard_cardTitleTapped", mixpanelServiceObject)
+        }
+
+        viewHolder.itemView.service_image_view.setOnClickListener {
+            showServiceDetails()
+
+            val mixpanelServiceObject = JSONObject()
+            mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
+            mixpanel?.track("serviceCard_cardImageTapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
@@ -325,69 +290,6 @@ class ServiceItem(
             mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
         }
 
-        /*viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {
-
-            bundle.putString(SERVICE_ID, serviceId)
-            val serviceFeeQueryBottomSheetFragment = ServiceFeeQuery()
-            serviceFeeQueryBottomSheetFragment.show(
-                context.supportFragmentManager,
-                ServiceFeeQuery.TAG
-            )
-
-            serviceItemObject.put("SERVICE_ID", serviceId)
-            mixpanel?.track("serviceCard_queryIconTapped", serviceItemObject)
-        }*/
-
-        /** Expand Service Card to reveal more info - Layout-Click... **/
-        /*viewHolder.itemView.action_layout.setOnClickListener {
-            if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                *//*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
-                viewHolder.itemView.expand_image_view.visibility = View.GONE
-                viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"*//*
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                *//*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
-                viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.collapse_image_view.visibility = View.GONE
-                viewHolder.itemView.action_text_view.text = "MORE INFO"
-
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_ID", serviceId)
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)*//*
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            }
-        }*/
-
-        /** Expand Service Card to reveal more info - Text-Click... **/
-        /*viewHolder.itemView.action_text_view.setOnClickListener {
-            if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
-
-            }
-        }*/
 
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {
@@ -559,6 +461,7 @@ class ServiceItem(
 
         /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
         intent.putExtra(SERVICE_OBJECT, service as Serializable)
+//        intent.putExtra(SERVICE_IMAGE, )
         Timber.e("SHOWING SERVICE DETAILS -> $service")
 
         serviceViewModel.addService(serviceEntity)

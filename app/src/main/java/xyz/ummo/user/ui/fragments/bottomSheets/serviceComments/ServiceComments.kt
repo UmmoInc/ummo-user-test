@@ -3,6 +3,7 @@ package xyz.ummo.user.ui.fragments.bottomSheets.serviceComments
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -88,6 +89,8 @@ class ServiceComments : BottomSheetDialogFragment() {
 
         initializeServiceCommentsBottomSheetTitle()
 
+        checkForCommentsAndStopProgressBar()
+
         return rootView
     }
 
@@ -100,6 +103,29 @@ class ServiceComments : BottomSheetDialogFragment() {
 
         serviceName = arguments?.getString(SERVICE_NAME).toString()
         viewBinding.serviceCommentsHeaderSubtitleTextView.text = serviceName
+    }
+
+    private fun checkForCommentsAndStopProgressBar() {
+        val timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(p0: Long) {
+                viewBinding.loadServiceCommentsProgressBar.visibility = View.VISIBLE
+                viewBinding.noCommentsRelativeLayout.visibility = View.GONE
+                viewBinding.serviceCommentNestedScrollView.visibility = View.GONE
+            }
+
+            override fun onFinish() {
+                if (gAdapter.itemCount == 0) {
+                    viewBinding.loadServiceCommentsProgressBar.visibility = View.GONE
+                    viewBinding.noCommentsRelativeLayout.visibility = View.VISIBLE
+                    viewBinding.serviceCommentNestedScrollView.visibility = View.GONE
+                } else {
+                    viewBinding.loadServiceCommentsProgressBar.visibility = View.GONE
+                    viewBinding.noCommentsRelativeLayout.visibility = View.GONE
+                    viewBinding.serviceCommentNestedScrollView.visibility = View.VISIBLE
+                }
+            }
+        }
+        timer.start()
     }
 
     private fun populateServiceCommentsRecyclerView() {

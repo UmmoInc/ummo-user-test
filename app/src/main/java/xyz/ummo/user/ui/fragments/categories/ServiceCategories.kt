@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.categories
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +14,12 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_service_categories.view.*
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.GetCategorySummary
 import xyz.ummo.user.databinding.FragmentServiceCategoriesBinding
 import xyz.ummo.user.models.ServiceCategoryModel
 import xyz.ummo.user.rvItems.ServiceCategoryItem
@@ -29,11 +35,21 @@ class ServiceCategories : Fragment() {
     private lateinit var mixpanelAPI: MixpanelAPI
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var userName: String
+    private var totalIdeas = 0
+    private var totalVehicles = 0
+    private var totalBusiness = 0
+    private var totalIdentity = 0
+    private var totalHealth = 0
+    private var totalTravel = 0
+    private var totalAgriculture = 0
+    private var totalEducation = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
+
+        getCatSum(requireContext())
 
         mixpanelAPI = MixpanelAPI
             .getInstance(context, context?.resources?.getString(R.string.mixpanelToken))
@@ -67,22 +83,132 @@ class ServiceCategories : Fragment() {
 
         viewBinding.homeBarTitleTextView.text = "Welcome, $firstName"
 
-        gAdapter.add(0, ServiceCategoryItem(ServiceCategoryModel("business", 17), requireContext()))
-        gAdapter.add(1, ServiceCategoryItem(ServiceCategoryModel("travel", 7), requireContext()))
-        gAdapter.add(
-            2,
-            ServiceCategoryItem(ServiceCategoryModel("education", 21), requireContext())
-        )
-        gAdapter.add(3, ServiceCategoryItem(ServiceCategoryModel("health", 9), requireContext()))
-        gAdapter.add(4, ServiceCategoryItem(ServiceCategoryModel("identity", 15), requireContext()))
-        gAdapter.add(
-            5,
-            ServiceCategoryItem(ServiceCategoryModel("agriculture", 8), requireContext())
-        )
-        gAdapter.add(6, ServiceCategoryItem(ServiceCategoryModel("ideas", 3), requireContext()))
-        gAdapter.add(7, ServiceCategoryItem(ServiceCategoryModel("vehicles", 8), requireContext()))
-
         return rootView
+    }
+
+    private fun getCatSum(context: Context) {
+        object : GetCategorySummary(requireActivity()) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("CATEGORY SERVICE COUNT -> ${String(data)}")
+
+                    gAdapter = GroupAdapter()
+                    recyclerView.adapter = gAdapter
+
+                    try {
+                        val categorySummary = JSONObject(String(data))
+                        val categoryObjects: JSONArray = categorySummary.getJSONArray("payload")
+                        var categoryObject: JSONObject
+
+                        for (i in 0 until categoryObjects.length()) {
+                            categoryObject = categoryObjects[i] as JSONObject
+                            Timber.e("CATEGORY OBJECT -> $categoryObject")
+
+                            when {
+                                /** 1. VEHICLES **/
+                                categoryObject.get("_id") == "vehicles" -> {
+                                    totalVehicles = categoryObject.getInt("total")
+                                }
+                                /** 2. BUSINESS **/
+                                categoryObject.get("_id") == "business" -> {
+                                    totalBusiness = categoryObject.getInt("total")
+                                }
+                                /** 3. IDEAS **/
+                                categoryObject.get("_id") == "ideas" -> {
+                                    totalIdeas = categoryObject.getInt("total")
+                                }
+                                /** 4. IDENTITY **/
+                                categoryObject.get("_id") == "identity" -> {
+                                    totalIdentity = categoryObject.getInt("total")
+                                }
+                                /** 5. EDUCATION **/
+                                categoryObject.get("_id") == "education" -> {
+                                    totalEducation = categoryObject.getInt("total")
+                                }
+                                /** 6. AGRICULTURE **/
+                                categoryObject.get("_id") == "agriculture" -> {
+                                    totalAgriculture = categoryObject.getInt("total")
+                                }
+                                /** 7. HEALTH **/
+                                categoryObject.get("_id") == "health" -> {
+                                    totalHealth = categoryObject.getInt("total")
+                                }
+                                /** 8. TRAVEL **/
+                                categoryObject.get("_id") == "travel" -> {
+                                    totalTravel = categoryObject.getInt("total")
+                                }
+                            }
+
+                            gAdapter.clear()
+                            gAdapter.add(
+                                0,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("vehicles", totalVehicles),
+                                    context
+                                )
+                            )
+                            gAdapter.add(
+                                1,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("business", totalBusiness),
+                                    context
+                                )
+                            )
+                            gAdapter.add(
+                                2,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("ideas", totalIdeas),
+                                    context
+                                )
+                            )
+                            gAdapter.add(
+                                3,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("identity", totalIdentity),
+                                    context
+                                )
+                            )
+                            gAdapter.add(
+                                4,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel(
+                                        "education",
+                                        totalEducation
+                                    ), context
+                                )
+                            )
+                            gAdapter.add(
+                                5,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel(
+                                        "agriculture",
+                                        totalAgriculture
+                                    ), context
+                                )
+                            )
+                            gAdapter.add(
+                                6,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("health", totalHealth),
+                                    context
+                                )
+                            )
+                            gAdapter.add(
+                                7,
+                                ServiceCategoryItem(
+                                    ServiceCategoryModel("travel", totalTravel),
+                                    context
+                                )
+                            )
+                            viewBinding.loadCategoriesProgressBar.visibility = View.GONE
+
+                        }
+                    } catch (jse: JSONException) {
+                        Timber.e("THROWING JSE -> $jse")
+                    }
+                }
+            }
+        }
     }
 
     companion object {

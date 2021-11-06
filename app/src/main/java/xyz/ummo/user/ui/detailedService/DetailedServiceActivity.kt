@@ -63,6 +63,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     var attachmentDownloadId: Long = 0
     var nestedScrollView: NestedScrollView? = null
     var mCollapsingToolbarLayout: CollapsingToolbarLayout? = null
+    var serviceImageView: ImageView? = null
     var serviceDescriptionTextView: TextView? = null
     var serviceNameTextView: TextView? = null
     var serviceCostTextView: TextView? = null
@@ -154,6 +155,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         requestAgentBtn = findViewById(R.id.request_agent_btn)
         webViewLink = findViewById(R.id.link_source_text_view)
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout)
+        serviceImageView = findViewById(R.id.service_image_view)
         val appBar = findViewById<AppBarLayout>(R.id.app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
         serviceDescriptionTextView = findViewById(R.id.detailed_description_text_view)
@@ -213,12 +215,14 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     private fun openWebLink() {
         val webViewIntent = Intent(this, WebViewActivity::class.java)
+        val webLinkJSON = JSONObject()
         webViewIntent.putExtra("LINK", serviceObject.serviceLink)
         Timber.e("WEB LINK -> ${serviceObject.serviceLink}")
         if (serviceObject.serviceLink.isNotEmpty()) {
             showSnackbarWhite("Opening link...", 0)
             startActivity(webViewIntent)
-            mixpanel.track("detailedService_serviceLinkOpened")
+            webLinkJSON.put("LINK_OPENED", serviceObject.serviceLink)
+            mixpanel.track("detailedService_serviceLinkOpened", webLinkJSON)
         } else {
             showSnackbarYellow("No link for '${serviceObject.serviceName}' found", -1)
         }

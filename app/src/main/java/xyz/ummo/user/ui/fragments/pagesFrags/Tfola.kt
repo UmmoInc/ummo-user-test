@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -32,6 +34,7 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
@@ -140,7 +143,11 @@ class Tfola : Fragment() {
 
         getNonDelegatableServicesFromServer()
 
+        pollingAdapterState()
+
         reloadServices()
+
+        returnHome()
 
         if (isAdded) {
             getServiceProviderData()
@@ -165,6 +172,28 @@ class Tfola : Fragment() {
         }
 
         return view
+    }
+
+    private fun noServicesInCategory() {
+        tfolaBinding.noServicesRelativeLayout.visibility = View.VISIBLE
+        tfolaBinding.offlineLayout.visibility = View.GONE
+        tfolaBinding.tfolaServicesRecyclerView.visibility = View.GONE
+        tfolaBinding.loadProgressBar.visibility = View.GONE
+
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
+            mixpanel?.track("discoverFragment_noServicesInCategory")
+        }
+    }
+
+    private fun hideNoServicesLayout() {
+        tfolaBinding.noServicesRelativeLayout.visibility = View.GONE
+        tfolaBinding.tfolaSwipeRefresher.visibility = View.VISIBLE
+        tfolaBinding.loadProgressBar.visibility = View.GONE
+        tfolaBinding.offlineLayout.visibility = View.GONE
     }
 
     private fun filterServicesByCategory() {
@@ -251,9 +280,11 @@ class Tfola : Fragment() {
 
             override fun onFinish() {
                 if (gAdapter.itemCount == 0) {
-                    showOfflineState()
+//                    showOfflineState()
+                    noServicesInCategory()
                 } else {
                     hideOfflineState()
+                    hideNoServicesLayout()
                 }
             }
         }
@@ -303,6 +334,22 @@ class Tfola : Fragment() {
         }
     }
 
+    private fun returnHome() {
+        tfolaBinding.goHomeButton.setOnClickListener {
+            openFragment(ServiceCategories())
+        }
+    }
+
+    private fun openFragment(fragment: Fragment) {
+
+        val fragmentTransaction: FragmentTransaction = requireActivity().supportFragmentManager
+            .beginTransaction()
+
+        fragmentTransaction.replace(R.id.frame, fragment)
+        fragmentTransaction.commit()
+    }
+
+    @AddTrace(name = "get_non_delegatable_services_from_server")
     private fun getNonDelegatableServicesFromServer() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
@@ -428,8 +475,6 @@ class Tfola : Fragment() {
         if (isAdded) {
             gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
             Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
-            gAdapter.notifyDataSetChanged()
-
             checkingAdapterState()
         }
     }

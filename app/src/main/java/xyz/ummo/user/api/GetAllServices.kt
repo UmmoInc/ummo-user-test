@@ -1,12 +1,47 @@
 package xyz.ummo.user.api
 
 import android.app.Activity
+import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
+import com.google.firebase.perf.metrics.AddTrace
+import okhttp3.*
+import org.json.JSONException
+import org.json.JSONObject
 import timber.log.Timber
+import xyz.ummo.user.R
 
-abstract class GetAllServices(activity: Activity) {
+
+abstract class GetAllServices(private val activity: Activity) {
+
+    var client = OkHttpClient()
+    val jwt: String = PreferenceManager.getDefaultSharedPreferences(activity)
+        .getString("jwt", "").toString()
+
     init {
-//        Fuel.get("/api/get_all_services")
+        getAllServices()
+        getAllServicesOK("${activity.getString(R.string.serverUrl)}/product", object : Callback {
+            override fun onFailure(call: Call, e: java.io.IOException) {
+                Timber.e("OK HTTP FAILED -> $e")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseData = response.body.toString()
+
+                activity.runOnUiThread {
+                    try {
+                        val json = JSONObject(responseData)
+                        Timber.e("OK HTTP RESPONSE -> $json")
+                    } catch (e: JSONException) {
+                        Timber.e("OK HTTP JSE -> $e")
+                        e.printStackTrace()
+                    }
+                }
+            }
+        })
+    }
+
+    @AddTrace(name = "get_all_services")
+    private fun getAllServices() {
         Fuel.get("/product")
             .response { request, response, result ->
                 activity.runOnUiThread {
@@ -19,5 +54,29 @@ abstract class GetAllServices(activity: Activity) {
             }
     }
 
-    abstract fun done(data: ByteArray, code:Number)
+    private fun getAllServicesOK(url: String, callback: Callback): Call {
+        val request = Request.Builder().url(url).header("jwt", jwt).build()
+        val call = client.newCall(request)
+        call.enqueue(callback)
+        return call
+    }
+
+    /*private fun getAllServicesOk() {
+        val okHttp = OkHttpClient()
+
+        val requestBuilder =
+            Request.Builder()
+                .url("${activity.getString(R.string.serverUrl)}/product")
+                .build()
+
+        activity.runOnUiThread {
+
+
+            if (response.isSuccessful) {
+                Timber.e("OK HTTP RESPONSE -> ${response.body}")
+            }
+        }
+    }*/
+
+    abstract fun done(data: ByteArray, code: Number)
 }

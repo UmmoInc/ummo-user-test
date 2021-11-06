@@ -124,6 +124,7 @@
     <string name="request_agent_title">Get agent</string>
     <string name="chats_title">Chats</string>
     <string name="retry_button_string">Retry</string>
+    <string name="return_button_string">Return</string>
 
     <!-- Third-party Tokens-->
     <string name="mixpanelToken">d787d12259b1db03ada420ec6bb9e5af</string>

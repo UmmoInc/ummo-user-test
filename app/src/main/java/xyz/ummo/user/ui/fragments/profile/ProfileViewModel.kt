@@ -22,6 +22,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         socketConnectWorkManager.enqueue(OneTimeWorkRequest.from(SocketConnectWorker::class.java))
     }
 
+    internal fun emailVerifiedEvent() {
+        socketConnectWorkManager.enqueue(OneTimeWorkRequest.from(SocketConnectWorker::class.java))
+    }
+
     fun insertProfile(profileEntity: ProfileEntity?) {
         appRepository.insertProfile(profileEntity)
         //        Timber.e("insertProfile: PROFILE->%s", profileEntity.profileName);

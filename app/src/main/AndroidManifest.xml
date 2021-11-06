@@ -77,7 +77,8 @@
                 android:value="@string/safety_net_api_key" />
         </activity>
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
-        <activity android:name=".ui.SelfDelegateActivity">
+
+        <!--<activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -88,7 +89,7 @@
                     android:host="ummo.page.link"
                     android:scheme="https" />
             </intent-filter>
-        </activity>
+        </activity>-->
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
         <activity
             android:name=".ui.detailedService.DetailedServiceActivity"
@@ -118,8 +119,18 @@
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <data android:scheme="anton" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="ummo.page.link"
+                    android:scheme="https" />
+
             </intent-filter>
         </activity>
         <activity

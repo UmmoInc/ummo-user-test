@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -188,6 +189,7 @@ class ContactVerificationActivity : AppCompatActivity() {
         }
     }
 
+    @AddTrace(name = "starting_phone_number_verification")
     private fun startPhoneNumberVerification(phoneNumber: String) {
 //        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, this, mCallbacks)
 
@@ -273,7 +275,7 @@ class ContactVerificationActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 //Sign user in, update UI
                 showSnackbar("Successfully signing in")
-                val user = task.result?.user
+                val user = task.result.user
                 Timber.e("Signing in, user -> $user")
 
                 mixpanel?.track("contactSuccessfullyVerified")
@@ -303,6 +305,7 @@ class ContactVerificationActivity : AppCompatActivity() {
         finish()
     }
 
+    @AddTrace(name = "contact_verification_responses")
     private fun initCallback() {
         // Initialize phone auth callbacks
         // [START phone_auth_callbacks]
@@ -347,8 +350,8 @@ class ContactVerificationActivity : AppCompatActivity() {
             }
 
             override fun onCodeSent(
-                    verificationId: String,
-                    token: PhoneAuthProvider.ForceResendingToken
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken
             ) {
                 /** The SMS verification code has been sent to the provided phone number, we
                 now need to ask the user to enter the code and then construct a credential

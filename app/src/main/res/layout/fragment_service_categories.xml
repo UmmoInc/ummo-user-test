@@ -4,12 +4,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/parent_constraint_layout"
+        android:background="#1111"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.fragments.categories.ServiceCategories">
 
-        <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/home_bar_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,7 +40,7 @@
                     android:fontFamily="@font/rubik"
                     android:padding="5dp"
                     android:text="Welcome, User"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -51,10 +52,24 @@
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/rubik"
                     android:text="Select a category below to get started"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="normal" />
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <ProgressBar
+            android:id="@+id/load_categories_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/service_category_nested_scroll_view"

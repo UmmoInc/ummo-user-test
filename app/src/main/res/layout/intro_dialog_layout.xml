@@ -39,7 +39,7 @@
                     android:paddingStart="0dp"
                     android:paddingEnd="8dp"
                     android:text="@string/intro_header_text"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
             </RelativeLayout>
 
         </RelativeLayout>
@@ -109,15 +109,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
-                    android:text="We'd love to hear from you. Send us as much feedback as you can. (Top Right Corner)"
-                    android:textSize="14sp" />
+                    android:fontFamily="@font/rubik"
+                    android:text="We'd love to hear from you.\n\nPlease consider participating in the Test Survey"
+                    android:textSize="16sp" />
             </RelativeLayout>
 
         </RelativeLayout>
         <!--Intro Header Layout Start-->
 
         <!--Intro Header Layout Start-->
-        <RelativeLayout
+        <!--<RelativeLayout
             android:id="@+id/intro_footer_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -147,7 +148,7 @@
                     android:textSize="14sp" />
             </RelativeLayout>
 
-        </RelativeLayout>
+        </RelativeLayout>-->
         <!--Intro Header Layout Start-->
 
     </RelativeLayout>

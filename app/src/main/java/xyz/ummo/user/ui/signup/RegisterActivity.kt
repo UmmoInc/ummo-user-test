@@ -16,6 +16,7 @@ import com.google.android.gms.safetynet.SafetyNet
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -217,33 +218,35 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    @AddTrace(name = "recaptcha_security_test")
     private fun reCAPTCHA() {
         Timber.e("reCAPTCHA SUCCESSFUL - 0!")
 
         SafetyNet.getClient(this).verifyWithRecaptcha("6Ldc8ikaAAAAAIYNDzByhh1V7NWcAOZz-ozv-Tno")
-                .addOnSuccessListener { response ->
-                    Timber.e("reCAPTCHA SUCCESSFUL - 1!")
-                    val userResponseToken = response.tokenResult
-                    if (response.tokenResult?.isNotEmpty() == true) {
+            .addOnSuccessListener { response ->
+                Timber.e("reCAPTCHA SUCCESSFUL - 1!")
+                val userResponseToken = response.tokenResult
+                if (response.tokenResult?.isNotEmpty() == true) {
+                    Timber.e("reCAPTCHA Token -> $userResponseToken")
+
+                    GlobalScope.launch {
                         Timber.e("reCAPTCHA Token -> $userResponseToken")
 
-                        GlobalScope.launch {
-                            Timber.e("reCAPTCHA Token -> $userResponseToken")
-
-                            Timber.e("GLOBAL SCOPE THREAD NAME -> ${Thread.currentThread().name}")
-                            verifyCaptchaFromServer(userResponseToken)
-                        }
+                        Timber.e("GLOBAL SCOPE THREAD NAME -> ${Thread.currentThread().name}")
+                        verifyCaptchaFromServer(userResponseToken)
                     }
                 }
-                .addOnFailureListener { e ->
-                    Timber.e("reCAPTCHA FAILED - 2!")
-                    if (e is ApiException) {
-                        Timber.e("reCAPTCHA ERROR -> ${CommonStatusCodes.getStatusCodeString(e.statusCode)}")
-                    } else
-                        Timber.e("reCAPTCHA ERROR (unknown) -> ${e.message}")
-                }
+            }
+            .addOnFailureListener { e ->
+                Timber.e("reCAPTCHA FAILED - 2!")
+                if (e is ApiException) {
+                    Timber.e("reCAPTCHA ERROR -> ${CommonStatusCodes.getStatusCodeString(e.statusCode)}")
+                } else
+                    Timber.e("reCAPTCHA ERROR (unknown) -> ${e.message}")
+            }
     }
 
+    @AddTrace(name = "verifying_captcha_from_server")
     private fun verifyCaptchaFromServer(responseToken: String) {
         object : SafetyNetReCAPTCHA(this, responseToken) {
             override fun done(data: ByteArray, code: Number) {

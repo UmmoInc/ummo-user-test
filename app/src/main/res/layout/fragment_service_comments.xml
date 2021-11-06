@@ -106,6 +106,39 @@
                 tools:listitem="@layout/service_comment" />
         </androidx.core.widget.NestedScrollView>
 
+        <RelativeLayout
+            android:id="@+id/no_comments_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/no_comments_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_add_comment_24" />
+
+            <TextView
+                android:id="@+id/no_comments_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_comments_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Looks like you might be the first to comment on this service.\n\nLet your voice be heard!"
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/service_comment_box_relative_layout"
             android:layout_width="match_parent"

@@ -8,7 +8,6 @@ import androidx.multidex.MultiDexApplication
 import com.github.kittinunf.fuel.core.FuelManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -126,7 +125,6 @@ class User : MultiDexApplication() {
             .getString("jwt", "").toString()
 
         FuelManager.instance.basePath = getString(serverUrl)
-        val mixpanel = MixpanelAPI.getInstance(applicationContext, MIXPANEL_TOKEN)
 
         //Initializing OneSignal
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)

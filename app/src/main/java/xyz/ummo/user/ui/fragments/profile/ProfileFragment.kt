@@ -34,6 +34,7 @@ import xyz.ummo.user.ui.fragments.scanner.CheckIn
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.signup.RegisterActivity
+import xyz.ummo.user.utilities.EMAIL_VERIFIED
 import xyz.ummo.user.utilities.USER_CONTACT
 
 @Keep
@@ -52,6 +53,7 @@ class ProfileFragment : Fragment() {
     private var mAuth: FirebaseAuth? = null
 
     private lateinit var profilePrefs: SharedPreferences
+    private lateinit var prefEditor: SharedPreferences.Editor
     private val mode = Activity.MODE_PRIVATE
     private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private lateinit var mixpanel: MixpanelAPI
@@ -60,6 +62,9 @@ class ProfileFragment : Fragment() {
     private lateinit var viewPersonalInfoRL: RelativeLayout
     private lateinit var viewPersonalInfoTV: TextView
     private lateinit var viewPersonalInfoIV: ImageView
+
+    /** Account Verification Icon **/
+    private lateinit var accountVerificationIcon: ImageView
 
     /** Variables for `How Ummo Works (Support)` **/
     private lateinit var howUmmoWorksRL: RelativeLayout
@@ -109,11 +114,26 @@ class ProfileFragment : Fragment() {
         mAuth = FirebaseAuth.getInstance()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    private fun verifyEmail() {
+        //TODO
+        prefEditor.putBoolean(EMAIL_VERIFIED, true)
+    }
+
+    private fun checkEmailVerification() {
+        if (profilePrefs.getBoolean(EMAIL_VERIFIED, false)) {
+            accountVerificationIcon.setImageResource(R.drawable.ic_baseline_verified_user_24)
+        } else {
+            accountVerificationIcon.setImageResource(R.drawable.ic_twotone_hourglass_top_24)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         profilePrefs = requireActivity().getSharedPreferences(ummoUserPreferences, mode)
-        val editor = profilePrefs.edit()
+        prefEditor = profilePrefs.edit()
 
         userContact = profilePrefs.getString(USER_CONTACT, "").toString()
 
@@ -123,6 +143,8 @@ class ProfileFragment : Fragment() {
 
         /** {START} Assigning view variables to views **/
         profileName = view.findViewById(R.id.name_text_view)
+
+        accountVerificationIcon = view.findViewById(R.id.verification_status_image_view)
 
         viewPersonalInfoRL = view.findViewById(R.id.view_personal_info_relative_layout)
         viewPersonalInfoTV = view.findViewById(R.id.view_personal_info_text_view)
@@ -213,6 +235,10 @@ class ProfileFragment : Fragment() {
 
             mixpanel.track("profileFrag_cardDismissed")
         }*/
+
+        /** Checking User verification status **/
+        verifyEmail()
+        checkEmailVerification()
 
         return view
     }

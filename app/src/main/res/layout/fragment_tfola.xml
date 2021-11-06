@@ -7,6 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#1111"
         android:layout_marginTop="104dp"
         android:layout_marginBottom="?android:attr/actionBarSize"
         android:padding="4dp">
@@ -126,12 +127,12 @@
                 android:id="@+id/offlineTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/rubik"
                 android:layout_below="@+id/offline_image_view"
+                android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:textAlignment="center"
                 android:text="We're having trouble loading services for you. \n\nPlease retry connecting."
+                android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
 
@@ -173,7 +174,7 @@
                 android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="It seems there are no services under this category."
+                android:text="There are no services under this category at the moment.\n\nPlease check again soon."
                 android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
@@ -184,9 +185,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/no_services_text_view"
                 android:layout_centerInParent="true"
-                android:layout_margin="10dp"
-                android:background="@drawable/rounded_button_transparent_blue"
-                android:text="@string/retry_button_string"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="@string/return_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>
 

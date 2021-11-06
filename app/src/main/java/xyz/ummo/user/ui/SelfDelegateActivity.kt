@@ -3,7 +3,6 @@ package xyz.ummo.user.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import org.json.JSONArray
@@ -18,30 +17,26 @@ import java.util.*
 
 class SelfDelegateActivity : AppCompatActivity() {
 
-    private val TAG = "SelfDelegateActivity"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_self_delegate)
         handlingDeepLinks()
     }
-    fun handlingDeepLinks() {
+
+    private fun handlingDeepLinks() {
         FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(intent)
-                .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    var deepLink: Uri? = null
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData ->
 
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.link
-                    }
+                val deepLink: Uri? = pendingDynamicLinkData.link
 
-                    Log.e(TAG, "Deeplink ${deepLink}")
+                Timber.e("Deeplink $deepLink")
 
-                    if (PrefManager(this).isFirstTimeLaunch) {
-                        // Finish sign up and load service  and forward to service
+                if (PrefManager(this).isFirstTimeLaunch) {
+                    // Finish sign up and load service  and forward to service
                         object : NewlyDelegated(this, deepLink!!.toString().split("?")[1]) {
                             override fun done(data: ByteArray, code: Number) {
-                                Log.e(TAG, String(data))
+                                Timber.e("NEWLY DELEGATED -> ${String(data)}")
                             }
                         }
                     } else {
@@ -51,7 +46,7 @@ class SelfDelegateActivity : AppCompatActivity() {
                                 .split("&")[1]
                                 .split("=")[1]
 
-                        Log.e(TAG, service_id)
+                    //Timber.e( service_id)
                         object : GetService(this, service_id) {
                             override fun done(data: ByteArray, code: Number) {
                                 val intent = Intent(applicationContext, MainScreen::class.java)
@@ -103,9 +98,7 @@ class SelfDelegateActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    Timber.e(" onSuccess Deep Link ->%s", deepLink!!.toString().split("?")[1])
-
-
+                Timber.e(" onSuccess Deep Link ->%s", deepLink.toString().split("?")[1])
                 }
                 .addOnFailureListener(this) { e -> Timber.e(" onFailure ->$e") }
     }

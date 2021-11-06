@@ -9,9 +9,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -29,6 +31,7 @@ import xyz.ummo.user.databinding.FragmentTfumaBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
@@ -87,8 +90,6 @@ class Tfuma : Fragment() {
     var serviceCategory = ""
     lateinit var category: String
 
-    val delegatableServiceJSONObject = JSONObject()
-
     private var tfumaViewModel: TfumaViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,11 +110,12 @@ class Tfuma : Fragment() {
 
         /** Initing TfumaViewModel **/
         tfumaViewModel = ViewModelProvider(this).get(TfumaViewModel::class.java)
-
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
         tfumaBinding = DataBindingUtil.inflate(
             inflater,
@@ -146,6 +148,8 @@ class Tfuma : Fragment() {
 
         reloadServices()
 
+        returnHome()
+
 //        checkServicesAfterSomeTime()
 
         /** Refreshing services with [tfuma_swipe_refresher] **/
@@ -159,27 +163,6 @@ class Tfuma : Fragment() {
         }
 
         return view
-    }
-
-    private fun checkServicesAfterSomeTime() {
-        val timer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(p0: Long) {
-
-            }
-
-            override fun onFinish() {
-                if (gAdapter.itemCount == 0) {
-                    tfumaBinding.noServicesRelativeLayout.visibility = View.VISIBLE
-                    tfumaBinding.offlineLayout.visibility = View.GONE
-                    tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
-                    tfumaBinding.loadProgressBar.visibility = View.GONE
-
-                    return
-                }
-            }
-        }
-
-        timer.start()
     }
 
     @Subscribe
@@ -211,6 +194,21 @@ class Tfuma : Fragment() {
         }
     }
 
+    private fun returnHome() {
+        tfumaBinding.goHomeButton.setOnClickListener {
+            openFragment(ServiceCategories())
+        }
+    }
+
+    private fun openFragment(fragment: Fragment) {
+
+        val fragmentTransaction: FragmentTransaction = requireActivity().supportFragmentManager
+            .beginTransaction()
+
+        fragmentTransaction.replace(R.id.frame, fragment)
+        fragmentTransaction.commit()
+    }
+
     private fun pollingAdapterState() {
         val timer = object : CountDownTimer(10000, 1000) {
             override fun onTick(p0: Long) {
@@ -223,6 +221,7 @@ class Tfuma : Fragment() {
                     noServicesInCategory()
                 } else {
                     hideOfflineState()
+                    hideNoServicesLayout()
                 }
             }
         }
@@ -272,18 +271,28 @@ class Tfuma : Fragment() {
         }
     }
 
+    private fun hideNoServicesLayout() {
+        tfumaBinding.tfumaSwipeRefresher.visibility = View.VISIBLE
+        tfumaBinding.noServicesRelativeLayout.visibility = View.GONE
+        tfumaBinding.loadProgressBar.visibility = View.GONE
+        tfumaBinding.offlineLayout.visibility = View.GONE
+    }
+
     private fun hideOfflineState() {
         tfumaBinding.offlineLayout.visibility = View.GONE
         tfumaBinding.loadProgressBar.visibility = View.GONE
         tfumaBinding.tfumaSwipeRefresher.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(requireContext(),
-                    resources.getString(R.string.mixpanelToken))
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
             mixpanel?.track("delegateFragment_hidingOffline")
         }
     }
 
+    @AddTrace(name = "get_delegatable_services_from_server")
     private fun getDelegatableServicesFromServer() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
@@ -374,25 +383,32 @@ class Tfuma : Fragment() {
                                  * 2. wrapping those values in a JSON Object
                                  * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
                                 serviceUpVoteBoolean = delegatedServicePrefs
-                                        .getBoolean("UP-VOTE-${serviceId}", false)
+                                    .getBoolean("UP-VOTE-${serviceId}", false)
 
                                 serviceDownVoteBoolean = delegatedServicePrefs
-                                        .getBoolean("DOWN-VOTE-${serviceId}", false)
+                                    .getBoolean("DOWN-VOTE-${serviceId}", false)
 
                                 serviceCommentBoolean = delegatedServicePrefs
-                                        .getBoolean("COMMENTED-ON-${serviceId}", false)
+                                    .getBoolean("COMMENTED-ON-${serviceId}", false)
 
                                 serviceBookmarked = delegatedServicePrefs
-                                        .getBoolean("BOOKMARKED-${serviceId}", false)
+                                    .getBoolean("BOOKMARKED-${serviceId}", false)
 
                                 savedUserActions
-                                        .put("UP-VOTE", serviceUpVoteBoolean)
-                                        .put("DOWN-VOTE", serviceDownVoteBoolean)
-                                        .put("COMMENTED-ON", serviceCommentBoolean)
-                                        .put("BOOKMARKED", serviceBookmarked)
+                                    .put("UP-VOTE", serviceUpVoteBoolean)
+                                    .put("DOWN-VOTE", serviceDownVoteBoolean)
+                                    .put("COMMENTED-ON", serviceCommentBoolean)
+                                    .put("BOOKMARKED", serviceBookmarked)
 
                                 if (isAdded) {
-                                    gAdapter.add(ServiceItem(delegatableService, context, savedUserActions))
+                                    gAdapter
+                                        .add(
+                                            ServiceItem(
+                                                delegatableService,
+                                                context,
+                                                savedUserActions
+                                            )
+                                        )
                                     Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
                                     checkingAdapterState()
                                 }
@@ -421,28 +437,22 @@ class Tfuma : Fragment() {
          *  Length is -1 for Snackbar.LENGTH_SHORT
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE**/
         val bottomNav = requireActivity().findViewById<View>(R.id.bottom_nav)
-        val snackbar = Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
+        val snackbar =
+            Snackbar.make(requireActivity().findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Tfuma.
-         */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                Tfuma().apply {
+            Tfuma().apply {
 
-                }
+            }
     }
 }

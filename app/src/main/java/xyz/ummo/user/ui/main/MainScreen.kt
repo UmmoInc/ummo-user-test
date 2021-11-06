@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -128,6 +129,9 @@ class MainScreen : AppCompatActivity() {
     /** Setting up MainViewModel **/
     private var mainViewModel: MainViewModel? = null
 
+    /** SharedPref Editor **/
+    private lateinit var editor: SharedPreferences.Editor
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -177,6 +181,7 @@ class MainScreen : AppCompatActivity() {
         supportFM = supportFragmentManager
 
         mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
+        editor = mainScreenPrefs.edit()
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
         /** Starting DelegatedServiceFragment **/
@@ -206,9 +211,13 @@ class MainScreen : AppCompatActivity() {
         Timber.e("NEW SESSION -> $sharedPrefNewSession")
         if (sharedPrefNewSession) {
             welcomeUserAboard()
+            notifyUserToCheckInbox()
         }
 
         getAndStoreUserInfoLocally()
+
+        /** Checking User Email verifier **/
+        verifyEmail()
 
         /** Instantiating the Feedback function from the `feedback_icon`**/
         val feedbackIcon = findViewById<ActionMenuItemView>(R.id.feedback_icon)
@@ -232,14 +241,12 @@ class MainScreen : AppCompatActivity() {
             Timber.e("WHY IS BADGE STILL ON?")
             badge.isVisible = false
         }
+
         showBadge()
-        getDynamicLinks()
+//        getDynamicLinks()
         bottomNavigation.selectedItemId = R.id.bottom_navigation_home
 //        checkForSocketConnection()
-
         getServiceProviderData()
-
-//        getAllServicesFromServer()
 
         val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
@@ -254,11 +261,8 @@ class MainScreen : AppCompatActivity() {
     private fun getDynamicLinks() {
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent).addOnSuccessListener { pendingDynamicLinkData ->
-                var deepLink: Uri?
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
-                    Timber.e("Show Dynamic Link -> $deepLink")
-                }
+                val deepLink: Uri? = pendingDynamicLinkData.link
+                Timber.e("Show Dynamic Link -> $deepLink")
             }.addOnFailureListener { e -> Timber.e("Error getting Dynamic Link -> $e") }
     }
 
@@ -285,7 +289,9 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun welcomeUserAboard() {
-        val editor = mainScreenPrefs.edit()
+
+        val welcomeEventObject = JSONObject()
+        welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
 
         val introDialogBuilder = MaterialAlertDialogBuilder(this)
         introDialogBuilder.setTitle("Welcome to Ummo").setIcon(R.drawable.logo)
@@ -295,18 +301,26 @@ class MainScreen : AppCompatActivity() {
 
         introDialogBuilder.setView(introDialogView)
 
-        introDialogBuilder.setPositiveButton("I'm in") { dialogInterface, i ->
+        introDialogBuilder.setPositiveButton("Send Survey") { dialogInterface, i ->
             Timber.e("USER IS IN!!!")
 //            val pagesFragment = PagesFragment()
             val serviceCategories = ServiceCategories()
             openFragment(serviceCategories)
 
-            editor.putBoolean("NEW_SESSION", false).apply()
+            editor.putBoolean(NEW_SESSION, false).apply()
 
             /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
-            val welcomeEventObject = JSONObject()
-            welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
-            mixpanel.track("welcomePromptUser_userConfirmation", welcomeEventObject)
+
+            mixpanel.track("welcomePromptUser_sendSurvey", welcomeEventObject)
+
+            showSnackbarBlue("Thank you. We'll send it later today :)", 0)
+        }
+
+        introDialogBuilder.setNegativeButton("No thanks") { dialogInterface, i ->
+            editor.putBoolean(NEW_SESSION, false).apply()
+
+            mixpanel.track("welcomePromptUser_dontSendSurvey", welcomeEventObject)
+
         }
 
         introDialogBuilder.setOnDismissListener {
@@ -314,6 +328,22 @@ class MainScreen : AppCompatActivity() {
         }
 
         introDialogBuilder.show()
+    }
+
+    private fun notifyUserToCheckInbox() {
+
+        val timer = object : CountDownTimer(10000, 1000) {
+            override fun onTick(p0: Long) {
+
+            }
+
+            override fun onFinish() {
+                showSnackbarYellow("Please check your email inbox for verification", 0)
+//                editor.putBoolean(EMAIL_REMINDER_SENT, true)
+            }
+        }
+
+        timer.start()
     }
 
     private fun checkingForDelegatedServiceFromRoom() {
@@ -760,6 +790,10 @@ class MainScreen : AppCompatActivity() {
         profileViewModel?.insertProfile(profileEntity)
 
         Timber.e("PROFILE ENTITY -> ${profileEntity.profileContact}")
+    }
+
+    private fun verifyEmail() {
+        profileViewModel?.emailVerifiedEvent()
     }
 
     private fun openFragment(fragment: Fragment) {

@@ -1,7 +1,9 @@
 package xyz.ummo.user.ui.fragments.bottomSheets
 
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,11 +29,6 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,8 +50,22 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
         viewBinding.confirmDelegationIntroButton.setOnClickListener {
             launchServiceRequestBottomSheet(serviceObject)
         }
+
+        termsAndConditions()
         // Inflate the layout for this fragment
         return rootView
+    }
+
+    private fun termsAndConditions() {
+        val tsAndCs =
+            "<div>Ummo and all its affiliates are COVID-19 compliant. \n\n<a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms and Conditions</a> apply.</div>"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            viewBinding.serviceGuaranteeTextView.text =
+                Html.fromHtml(tsAndCs, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            viewBinding.serviceGuaranteeTextView.text = Html.fromHtml(tsAndCs)
+        }
     }
 
     private fun launchServiceRequestBottomSheet(serviceObject: ServiceObject) {

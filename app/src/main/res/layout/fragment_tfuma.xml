@@ -8,8 +8,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="104dp"
+        android:background="#1111"
         android:layout_marginBottom="?android:attr/actionBarSize"
-        android:padding="4dp">
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/tfuma_intro_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="2dp"
+            app:cardMaxElevation="1dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/Grey"
+            app:strokeWidth="1dp">
+
+            <RelativeLayout
+                android:id="@+id/tfuma_intro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tfuma_intro_title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik"
+                    android:padding="5dp"
+                    android:text="Delegate"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tfuma_intro_subtitle_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tfuma_intro_title_text_view"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/rubik"
+                    android:text="You can hire an Agent to assist you with the following."
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!--<include
             android:id="@+id/home_info_card"
@@ -21,6 +67,8 @@
             android:id="@+id/tfuma_swipe_refresher"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/tfuma_intro_card_view"
+            android:layout_marginBottom="10dp"
             android:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -46,8 +94,8 @@
             android:id="@+id/offline_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:visibility="invisible"
             tools:visibility="visible">
@@ -56,9 +104,9 @@
                 android:id="@+id/offline_image_view"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                app:srcCompat="@drawable/ic_baseline_cloud_off_24"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_baseline_cloud_off_24" />
 
             <TextView
                 android:id="@+id/offlineTextView"
@@ -111,7 +159,7 @@
                 android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="It seems there are no services under this category."
+                android:text="There are no services under this category at the moment.\n\nPlease check again soon."
                 android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
@@ -122,9 +170,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/no_services_text_view"
                 android:layout_centerInParent="true"
-                android:layout_margin="10dp"
-                android:background="@drawable/rounded_button_transparent_blue"
-                android:text="@string/retry_button_string"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="@string/return_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>
 
