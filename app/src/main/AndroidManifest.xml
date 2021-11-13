@@ -91,10 +91,12 @@
             </intent-filter>
         </activity>-->
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
+
         <activity
             android:name=".ui.detailedService.DetailedServiceActivity"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
@@ -120,8 +122,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <data android:scheme="anton" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -130,7 +132,6 @@
                 <data
                     android:host="ummo.page.link"
                     android:scheme="https" />
-
             </intent-filter>
         </activity>
         <activity

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,8 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GeneralFeedback
 import xyz.ummo.user.api.Logout
+import xyz.ummo.user.api.RequestEmailVerification
+import xyz.ummo.user.api.User
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.ui.fragments.scanner.CheckIn
 import xyz.ummo.user.ui.main.MainScreen
@@ -36,6 +39,7 @@ import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.signup.RegisterActivity
 import xyz.ummo.user.utilities.EMAIL_VERIFIED
 import xyz.ummo.user.utilities.USER_CONTACT
+import xyz.ummo.user.utilities.USER_EMAIL
 
 @Keep
 class ProfileFragment : Fragment() {
@@ -96,8 +100,15 @@ class ProfileFragment : Fragment() {
     private lateinit var webpageTV: TextView
     private lateinit var webpageIV: ImageView
 
+    private var userVerified: Boolean? = null
+
     /** User Profile SharedPref Val **/
     private var userContact = ""
+    private var userEmail = ""
+    private var userId = ""
+    private var jwt = ""
+
+    private lateinit var emailConcatenate: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,19 +123,68 @@ class ProfileFragment : Fragment() {
         )
 
         mAuth = FirebaseAuth.getInstance()
+
     }
 
-    private fun verifyEmail() {
-        //TODO
-        prefEditor.putBoolean(EMAIL_VERIFIED, true)
+    private fun requestVerification(userId: String) {
+        object : RequestEmailVerification(requireContext(), userId) {
+            override fun done(data: ByteArray, code: Number) {
+                Timber.e("REQUESTING EMAIL -> ${String(data)}")
+            }
+        }
     }
 
     private fun checkEmailVerification() {
         if (profilePrefs.getBoolean(EMAIL_VERIFIED, false)) {
             accountVerificationIcon.setImageResource(R.drawable.ic_baseline_verified_user_24)
+            accountVerificationIcon.setOnClickListener { notifyUserOfEmailVerificationStatusDone() }
         } else {
             accountVerificationIcon.setImageResource(R.drawable.ic_twotone_hourglass_top_24)
+            accountVerificationIcon.setOnClickListener { notifyUserOfEmailVerificationStatusPending() }
         }
+    }
+
+    private fun notifyUserOfEmailVerificationStatusPending() {
+        val notifyUserOfEmailStatusView = LayoutInflater
+            .from(requireContext()).inflate(R.layout.notify_user_of_email_status, null)
+
+        val notifyUserOfEmailStatusDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        emailConcatenate = notifyUserOfEmailStatusView
+            .findViewById(R.id.email_verification_prompt_text_view)
+
+        val emailVerificationText =
+            String.format(resources.getString(R.string.verify_email_prompt), userEmail)
+        emailConcatenate.text = emailVerificationText
+
+        notifyUserOfEmailStatusDialogBuilder.setTitle("Please Verify Your Email")
+            .setIcon(R.drawable.logo)
+            .setView(notifyUserOfEmailStatusView)
+
+        notifyUserOfEmailStatusDialogBuilder.setPositiveButton("Resend") { dialogInterface, i ->
+            Timber.e("RESENDING EMAIL") //TODO: resend email verification
+            requestVerification(userId)
+            mixpanel.track("profile_resendingEmail")
+        }
+
+        notifyUserOfEmailStatusDialogBuilder.show()
+    }
+
+    private fun notifyUserOfEmailVerificationStatusDone() {
+        val notifyUserOfEmailStatusView = LayoutInflater
+            .from(requireContext()).inflate(R.layout.notify_user_of_email_status_done, null)
+
+        val notifyUserOfEmailStatusDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+
+        notifyUserOfEmailStatusDialogBuilder.setTitle("Congratulations!")
+            .setIcon(R.drawable.logo)
+            .setView(notifyUserOfEmailStatusView)
+
+        notifyUserOfEmailStatusDialogBuilder.setPositiveButton("GOT IT") { dialogInterface, i ->
+
+        }
+
+        notifyUserOfEmailStatusDialogBuilder.show()
     }
 
     override fun onCreateView(
@@ -136,6 +196,9 @@ class ProfileFragment : Fragment() {
         prefEditor = profilePrefs.edit()
 
         userContact = profilePrefs.getString(USER_CONTACT, "").toString()
+        userEmail = profilePrefs.getString(USER_EMAIL, "").toString()
+        jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "").toString()
+        userId = User.getUserId(jwt)
 
         val view = inflater.inflate(R.layout.fragment_my_profile, container, false)
 
@@ -237,7 +300,6 @@ class ProfileFragment : Fragment() {
         }*/
 
         /** Checking User verification status **/
-        verifyEmail()
         checkEmailVerification()
 
         return view

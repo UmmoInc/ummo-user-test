@@ -21,7 +21,6 @@ import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
-import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import java.net.URISyntaxException
 
@@ -38,7 +37,6 @@ class User : MultiDexApplication() {
     //    private val socketReceiver = SocketReceiver()
     private val socketState: Boolean = false
     private val socketStateEvent = SocketStateEvent()
-    private val serviceUpdateEvents = ServiceUpdateEvents()
 
     private fun initializeSocketWithId(_id: String) {
         try {

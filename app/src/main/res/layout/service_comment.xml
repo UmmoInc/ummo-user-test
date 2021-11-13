@@ -71,6 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/user_name_text_view"
+                    android:layout_marginTop="14dp"
                     android:layout_toEndOf="@id/user_avatar_image_view"
                     android:text="This is the comment that User-1 has made. We will rejoice, and be glad with it."
                     android:textColor="@color/black"

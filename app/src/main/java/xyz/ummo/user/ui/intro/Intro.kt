@@ -20,7 +20,6 @@ import xyz.ummo.user.utilities.CONTINUED
 import xyz.ummo.user.utilities.mode
 import xyz.ummo.user.utilities.ummoUserPreferences
 
-
 class Intro : AppCompatActivity() {
 
     private lateinit var continueButton: Button
@@ -41,7 +40,7 @@ class Intro : AppCompatActivity() {
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
         val userAgreementText =
-            "<div>Ummo takes your privacy very seriously. We will never share your data with government without consulting you first. Check out our <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy</a> for more info.</div>"
+            "<div>Ummo takes your privacy very seriously. We will never share your data with Third Parties without consulting you first. Check out our <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy</a> for more info.</div>"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             userDataPromiseText.text = Html.fromHtml(userAgreementText, Html.FROM_HTML_MODE_LEGACY)
         } else {

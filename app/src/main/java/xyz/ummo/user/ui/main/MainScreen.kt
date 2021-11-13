@@ -85,7 +85,7 @@ class MainScreen : AppCompatActivity() {
     private val delegatedServiceEntity = DelegatedServiceEntity()
 
     /**Values for launching DelegatedServiceFragment**/
-    val bundle = Bundle()
+    var bundle = Bundle()
     var serviceId = ""
     var delegatedProductId = ""
     var serviceAgentId = ""
@@ -135,6 +135,11 @@ class MainScreen : AppCompatActivity() {
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        bundle = intent.getBundleExtra(VIEW_SOURCE)!!
+
+        if (!bundle.isEmpty)
+            Timber.e("VIEW_SOURCE -> $bundle")
 
         /** Init MainViewModel **/
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
@@ -189,7 +194,6 @@ class MainScreen : AppCompatActivity() {
 
         //checkForAndLaunchDelegatedFragment()
 
-
         mixpanel = MixpanelAPI.getInstance(
             applicationContext,
             resources.getString(R.string.mixpanelToken)
@@ -208,7 +212,6 @@ class MainScreen : AppCompatActivity() {
         sharedPrefUserContact = mainScreenPrefs.getString(USER_CONTACT, "")!!
         sharedPrefNewSession = mainScreenPrefs.getBoolean(NEW_SESSION, false)
 
-        Timber.e("NEW SESSION -> $sharedPrefNewSession")
         if (sharedPrefNewSession) {
             welcomeUserAboard()
             notifyUserToCheckInbox()
@@ -238,7 +241,6 @@ class MainScreen : AppCompatActivity() {
         badge = bottomNavigation.getOrCreateBadge(R.id.bottom_navigation_delegates)
 
         if (bottomNavigation.selectedItemId == R.id.bottom_navigation_delegates) {
-            Timber.e("WHY IS BADGE STILL ON?")
             badge.isVisible = false
         }
 
@@ -393,6 +395,17 @@ class MainScreen : AppCompatActivity() {
         if (loadingCategoryServicesEvent.loadingService == true) {
             showSnackbarBlue("Loading ${loadingCategoryServicesEvent.categoryLoading} services", -1)
         }
+    }
+
+    @Subscribe
+    fun onVerifiedStateEvent(userVerificationEvent: UserVerificationEvent) {
+
+        val sharedPreferences = (this).getSharedPreferences(ummoUserPreferences, mode)
+        val editor = sharedPreferences!!.edit()
+
+        val userVerified: Boolean? = userVerificationEvent.userVerified!!
+        Timber.e("USER VERIFIED -> $userVerified")
+        editor.putBoolean(EMAIL_VERIFIED, userVerified!!).apply()
     }
 
     @Subscribe

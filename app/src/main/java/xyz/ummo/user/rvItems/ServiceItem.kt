@@ -777,7 +777,6 @@ class ServiceItem(
         if (serviceEntity.usefulCount != 0) {
             serviceEntity.usefulCount = serviceEntity.usefulCount?.minus(1)
             Timber.e("UPVOTE COUNT -> ${serviceEntity.usefulCount}")
-
         }
 
         /** Initializing sharedPreferences **/

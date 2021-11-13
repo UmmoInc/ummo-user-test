@@ -238,6 +238,7 @@ class ServiceComments : BottomSheetDialogFragment() {
                                     userName
                                 )
                             gAdapter.add(ServiceCommentItem(newServiceCommentObject, context))
+                            viewBinding.noCommentsRelativeLayout.visibility = View.GONE
                             gAdapter.notifyItemInserted(serviceCommentsArrayList.size + 1)
 
                             recyclerView.smoothScrollToPosition(gAdapter.itemCount + 1)

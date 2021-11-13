@@ -223,5 +223,6 @@
     <string name="ask_us_anything">We\'ll do our best to help you where we can. \n\nSometimes, we may need to look things up, just to be sure.</string>
     <string name="share_service">Share service</string>
     <string name="service_comments_subtitle">%1$s</string>
+    <string name="verify_email_prompt">Please check your email, %1$s, to verify your Ummo account.\n\nIf you haven\'t received it yet, you may resend it below.</string>
 
 </resources>

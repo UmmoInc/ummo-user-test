@@ -218,7 +218,7 @@
                     android:layout_below="@+id/user_agreement_image_view"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
-                    android:text="Ummo takes your privacy very seriously. We will never share your data with government without consulting you first."
+                    android:text="Ummo takes your privacy very seriously. We will never share your data with Third Parties without consulting you first."
                     android:textColor="#999999"
                     android:textSize="12sp" />
 
