@@ -23,6 +23,7 @@ data class ServiceObject(
     var serviceAttachmentName: String,
     var serviceAttachmentSize: String,
     var serviceAttachmentURL: String,
-    var serviceCategory: String
+    var serviceCategory: String,
+    var serviceBenefits: ArrayList<ServiceBenefit>
 ) //17
     : Serializable

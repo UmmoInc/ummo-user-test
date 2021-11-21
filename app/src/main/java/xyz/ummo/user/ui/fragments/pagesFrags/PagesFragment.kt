@@ -11,14 +11,21 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.adapters.PagesViewPagerAdapter
+import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.databinding.FragmentPagesBinding
+import xyz.ummo.user.models.ServiceBenefit
+import xyz.ummo.user.models.ServiceCostModel
+import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.fragments.pagesFrags.tfuma.Tfuma
@@ -27,7 +34,6 @@ import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class PagesFragment : Fragment() {
 
@@ -40,6 +46,42 @@ class PagesFragment : Fragment() {
     private var serviceEntity = ServiceEntity()
     private var category = ""
     private lateinit var mixpanel: MixpanelAPI
+    private val tfumaObject = Tfuma()
+
+    /** Delegatable Service Variables **/
+    lateinit var serviceId: String //1
+    lateinit var serviceName: String //2
+    lateinit var serviceDescription: String //3
+    lateinit var serviceEligibility: String //4
+    var serviceCentres = ArrayList<String>() //5
+    lateinit var serviceCentresJSONArray: JSONArray //5
+    var delegatable: Boolean = false //6
+    lateinit var serviceCost: String //7
+    lateinit var serviceCostArrayList: ArrayList<ServiceCostModel>
+    lateinit var serviceCostJSONArray: JSONArray
+    var serviceDocuments = ArrayList<String>() //8
+    lateinit var serviceDocumentsJSONArray: JSONArray //8
+    lateinit var serviceDuration: String //9
+    var approvalCount: Int = 0 //10
+    var disapprovalCount: Int = 0 //11
+    var serviceComments = ArrayList<String>() //12
+    lateinit var serviceCommentsJSONArray: JSONArray //12
+    var commentCount: Int = 0 //13
+    var shareCount: Int = 0 //14
+    var viewCount: Int = 0 //15
+    lateinit var serviceProvider: String //16
+    var serviceLink: String = "" //17
+    var serviceAttachmentJSONArray = JSONArray()
+    var serviceAttachmentJSONObject = JSONObject()
+    var serviceBenefitJSONArray = JSONArray()
+    var serviceBenefits = ArrayList<ServiceBenefit>()
+    var serviceAttachmentName = ""
+    var serviceAttachmentSize = ""
+    var serviceAttachmentURL = ""
+    var serviceCategory = ""
+    var countOfDelegatableServices: Int = 0
+    var countOfNonDelegatableServices: Int = 0
+    private lateinit var delegatableService: ServiceObject
 
     companion object {
         fun newInstance() = PagesFragment()
@@ -121,18 +163,58 @@ class PagesFragment : Fragment() {
         pagesFragmentBinding.pagesTabLayout.getTabAt(1)?.orCreateBadge
 
         //getServiceProviderData()
-        setupPagesTabs()
+        setupPagesTabs(0, 0)
+
+        getDelegatableServicesFromServer()
 
         checkTabAndClearBadge()
 
         return view
     }
 
-    private fun setupPagesTabs() {
+    @AddTrace(name = "get_delegatable_services_from_server")
+    fun getDelegatableServicesFromServer() {
+        object : GetAllServices(requireActivity()) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    val allServices = JSONObject(String(data)).getJSONArray("payload")
+                    var service: JSONObject
+
+                    try {
+                        for (i in 0 until allServices.length()) {
+                            service = allServices[i] as JSONObject
+                            delegatable = service.getBoolean("delegatable")
+
+                            if (delegatable && category == service.getString(SERVICE_CATEGORY)) {
+                                countOfDelegatableServices++
+                            } else if (!delegatable && category == service.getString(
+                                    SERVICE_CATEGORY
+                                )
+                            ) {
+                                countOfNonDelegatableServices++
+                            }
+                        }
+                        setupPagesTabs(countOfDelegatableServices, countOfNonDelegatableServices)
+
+                    } catch (jse: JSONException) {
+                        Timber.e("FAILED TO PARSE DELEGATABLE SERVICES -> $jse")
+                    }
+
+                } else {
+                    Timber.e("FAILED TO GET SERVICES : $code")
+                }
+            }
+        }
+    }
+
+    private fun setupPagesTabs(delegatable: Int, nonDelegatable: Int) {
         val pagesAdapter = PagesViewPagerAdapter(childFragmentManager)
 
         pagesAdapter.addFragment(Tfuma(), "Tfola Lusito")
+        pagesFragmentBinding.pagesTabLayout.getTabAt(0)?.orCreateBadge?.number = delegatable
+
         pagesAdapter.addFragment(Tfola(), "Tfola Lwati")
+        pagesFragmentBinding.pagesTabLayout.getTabAt(1)?.orCreateBadge?.number = nonDelegatable
 
 //        pagesAdapter.addFragment(Phepha(), "Phepha")
 
@@ -144,7 +226,7 @@ class PagesFragment : Fragment() {
         pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!
             .setIcon(R.drawable.ic_tfola_24)
 
-        pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!.orCreateBadge
+//        pagesFragmentBinding.pagesTabLayout.getTabAt(1)!!.orCreateBadge
 
 //        checkTabAndClearBadge()
     }
@@ -170,6 +252,9 @@ class PagesFragment : Fragment() {
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 position = tab!!.position
+                if (position == 0) {
+                    pagesFragmentBinding.pagesTabLayout.getTabAt(position)?.badge?.isVisible = false
+                }
                 pagesTabObject.put("TAB_POSITION", position)
                 mixpanel.track("pagesFragment_unSelectedTab", pagesTabObject)
 
@@ -177,6 +262,13 @@ class PagesFragment : Fragment() {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 position = tab!!.position
+
+                if (position == 0) {
+                    pagesFragmentBinding.pagesTabLayout.getTabAt(position)?.badge?.isVisible = false
+                } else if (position == 1) {
+                    pagesFragmentBinding.pagesTabLayout.getTabAt(position)?.badge?.isVisible = false
+                }
+
                 pagesTabObject.put("TAB_POSITION", position)
                 mixpanel.track("pagesFragment_reSelectedTab", pagesTabObject)
             }

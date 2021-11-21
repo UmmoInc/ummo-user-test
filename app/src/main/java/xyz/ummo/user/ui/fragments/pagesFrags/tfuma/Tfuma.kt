@@ -26,8 +26,10 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
+import xyz.ummo.user.api.Service
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfumaBinding
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.rvItems.ServiceItem
@@ -37,6 +39,7 @@ import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import xyz.ummo.user.workers.fromJSONArray
+import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
 
 
@@ -84,11 +87,14 @@ class Tfuma : Fragment() {
     var serviceLink: String = "" //17
     var serviceAttachmentJSONArray = JSONArray()
     var serviceAttachmentJSONObject = JSONObject()
+    var serviceBenefitJSONArray = JSONArray()
+    var serviceBenefits = ArrayList<ServiceBenefit>()
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
     var serviceCategory = ""
     lateinit var category: String
+    var countOfServices: Int = 0
 
     private var tfumaViewModel: TfumaViewModel? = null
 
@@ -293,7 +299,7 @@ class Tfuma : Fragment() {
     }
 
     @AddTrace(name = "get_delegatable_services_from_server")
-    private fun getDelegatableServicesFromServer() {
+    fun getDelegatableServicesFromServer() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
@@ -309,6 +315,7 @@ class Tfuma : Fragment() {
 
                             if (delegatable && category == service.getString(SERVICE_CATEGORY)) {
                                 serviceId = service.getString("_id") //1
+                                countOfServices++
                                 serviceName = service.getString(SERV_NAME) //2
                                 serviceDescription = service.getString(SERV_DESCR) //3
                                 serviceEligibility = service.getString(SERV_ELIG) //4
@@ -336,6 +343,19 @@ class Tfuma : Fragment() {
                                 shareCount = service.getInt(SERV_SHARE_COUNT) //14
                                 viewCount = service.getInt(SERV_VIEW_COUNT) //15
                                 serviceProvider = service.getString(SERV_PROVIDER) //16
+
+                                /** Checking if [serviceBenefits] exists in the [Service] object,
+                                 * since not all services have benefits listed under them. **/
+                                serviceBenefitJSONArray = if (service.has(SERVICE_BENEFITS)) {
+                                    service.getJSONArray(SERVICE_BENEFITS)
+                                } else {
+                                    val noServiceBenefit = ServiceBenefit("", "")
+                                    Timber.e("NO SERVICE BENEFIT -> $noServiceBenefit")
+                                    serviceBenefitJSONArray.put(0, noServiceBenefit)
+                                }
+
+                                serviceBenefits =
+                                    fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
 
                                 serviceLink = if (service.getString(SERV_LINK).isNotEmpty())
                                     service.getString(SERV_LINK) //17
@@ -376,7 +396,8 @@ class Tfuma : Fragment() {
                                     serviceDuration, approvalCount, disapprovalCount,
                                     serviceComments, commentCount, shareCount, viewCount,
                                     serviceProvider, serviceLink, serviceAttachmentName,
-                                    serviceAttachmentSize, serviceAttachmentURL, serviceCategory
+                                    serviceAttachmentSize, serviceAttachmentURL, serviceCategory,
+                                    serviceBenefits
                                 )
 
                                 /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
@@ -414,6 +435,8 @@ class Tfuma : Fragment() {
                                 }
                             }
                         }
+
+                        Timber.e("COUNT OF SERVICES -> $countOfServices")
 
                     } catch (jse: JSONException) {
                         Timber.e("FAILED TO PARSE DELEGATABLE SERVICES -> $jse")

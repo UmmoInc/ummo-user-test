@@ -44,6 +44,7 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.WebViewActivity
@@ -59,6 +60,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DetailedServiceActivity : AppCompatActivity() {
+    private lateinit var serviceBenefitsRelativeLayout: RelativeLayout
+    private lateinit var dividerView: View
     private val WRITE_PERMISSION: Int = 1001
     var attachmentDownloadId: Long = 0
     var nestedScrollView: NestedScrollView? = null
@@ -66,18 +69,26 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceImageView: ImageView? = null
     var serviceDescriptionTextView: TextView? = null
     var serviceNameTextView: TextView? = null
+    var serviceBenefitsHeaderTextView: TextView? = null
+    var serviceBenefitOneTitle: TextView? = null
+    var serviceBenefitOneBody: TextView? = null
+    var serviceBenefitTwoTitle: TextView? = null
+    var serviceBenefitTwoBody: TextView? = null
+    var serviceBenefitThreeTitle: TextView? = null
+    var serviceBenefitThreeBody: TextView? = null
+    var expandCollapseTextView: TextView? = null
     var serviceCostTextView: TextView? = null
     var serviceDurationTextView: TextView? = null
     var serviceDocsTextView: TextView? = null
     var serviceCentresTextView: TextView? = null
     var serviceStepsTextView: TextView? = null
 
-    //    var serviceDocsChipGroup: ChipGroup? = null
     var serviceDocsLayout: LinearLayout? = null
+    var expandCollapseAction: RelativeLayout? = null
 
-    //    var serviceCentresChipGroup: ChipGroup? = null
     var serviceCentresLinearLayout: LinearLayout? = null
     var serviceAttachmentLayout: LinearLayout? = null
+    var serviceBenefitsLayout: RelativeLayout? = null
     var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
@@ -93,18 +104,12 @@ class DetailedServiceActivity : AppCompatActivity() {
     var stepsList: ArrayList<String>? = null
     var docsList: ArrayList<String>? = null
     var serviceCentresList: ArrayList<String>? = null
+    var serviceBenefitsList: ArrayList<ServiceBenefit>? = null
     private var agentRequestStatus = "Requesting agent..."
     private var agentDelegate = JSONObject()
     private var agentName: String? = null
     private var serviceId: String? = null
-    private val delegatedProductId: String? = null
-    private val serviceProgress: String? = null
     private var _serviceName: String? = null
-    private var _description: String? = null
-    private var _cost: String? = null
-    private val _duration: String? = null
-    private val _steps: String? = null
-    private val _docs: String? = null
     private var progress: ProgressDialog? = null
     var agentRequestDialog: AlertDialog.Builder? = null
     var agentNotFoundDialog: AlertDialog.Builder? = null
@@ -160,6 +165,21 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceImageView = findViewById(R.id.service_image_view)
         val appBar = findViewById<AppBarLayout>(R.id.app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
+        serviceBenefitsHeaderTextView = findViewById(R.id.service_benefits_header_text_view)
+        serviceBenefitsRelativeLayout =
+            findViewById<RelativeLayout>(R.id.service_benefits_main_relative_layout)
+        dividerView = findViewById(R.id.divider_2)
+
+        serviceBenefitOneTitle = findViewById(R.id.benefit_one_title_text_view)
+        serviceBenefitOneBody = findViewById(R.id.benefit_one_body_text_view)
+
+        serviceBenefitTwoTitle = findViewById(R.id.benefit_two_title_text_view)
+        serviceBenefitTwoBody = findViewById(R.id.benefit_two_body_text_view)
+
+        serviceBenefitThreeTitle = findViewById(R.id.benefit_three_title_text_view)
+        serviceBenefitThreeBody = findViewById(R.id.benefit_three_body_text_view)
+
+        expandCollapseTextView = findViewById(R.id.action_text_view)
         serviceDescriptionTextView = findViewById(R.id.detailed_description_text_view)
 //        serviceCostTextView = findViewById(R.id.detailed_service_cost_text_view)
         serviceDurationTextView = findViewById(R.id.detailed_service_duration_text_view)
@@ -167,6 +187,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 //        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
         serviceCentresLinearLayout = findViewById(R.id.service_centre_linear_layout)
         serviceAttachmentLayout = findViewById(R.id.service_attachments_linear_layout)
+        serviceBenefitsLayout = findViewById(R.id.service_benefits_holder_relative_layout)
 
         appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
             if (mCollapsingToolbarLayout!!.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(
@@ -202,10 +223,6 @@ class DetailedServiceActivity : AppCompatActivity() {
         delegatedServiceViewModel = ViewModelProvider(this)
             .get(DelegatedServiceViewModel::class.java)
 
-        /** Instantiating Service Cost Spinner **/
-//TODO: undo        addListenerOnSpinnerItemSelected()
-//        serviceCostSpinner = findViewById(R.id.detailed_service_cost_dropdown)
-
         serviceCostTextInputLayout = findViewById(R.id.detailed_service_cost_dropdown)
 
         selectingServiceSpec()
@@ -222,6 +239,16 @@ class DetailedServiceActivity : AppCompatActivity() {
          * environment.**/
         webViewLink!!.setOnClickListener { openWebLink() }
         service_link_relative_layout.setOnClickListener { openWebLink() }
+
+        showServiceBenefits(serviceObject)
+    }
+
+    /** With the function below, we're ...**/
+    private fun showServiceBenefits(mService: ServiceObject) {
+        val serviceName = mService.serviceName
+        val serviceBenefitTitle =
+            String.format(resources.getString(R.string.service_benefits_title_text), serviceName)
+        serviceBenefitsHeaderTextView!!.text = serviceBenefitTitle
     }
 
     private fun openWebLink() {
@@ -390,7 +417,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         if (mService.serviceAttachmentURL.isEmpty()) {
             serviceAttachmentLayout!!.removeAllViews()
             val noAttachmentTextView = TextView(this)
-            noAttachmentTextView.text = "No attachments for this service."
+            noAttachmentTextView.text = "No attachments found for this service."
             noAttachmentTextView.textSize = 10F
             noAttachmentTextView.setTextColor(resources.getColor(R.color.greyProfile))
             serviceAttachmentLayout!!.addView(noAttachmentTextView)
@@ -497,7 +524,6 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         docsList = ArrayList(serviceObject.serviceDocuments)
-        Timber.e("DOCS-LIST -> $docsList")
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
@@ -532,6 +558,69 @@ class DetailedServiceActivity : AppCompatActivity() {
             }
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
+        }
+
+        serviceBenefitsList = ArrayList(serviceObject.serviceBenefits)
+        parseServiceBenefits(serviceBenefitsList!!)
+
+        if (serviceBenefitsList!!.size > 0) {
+            toggleServiceBenefits()
+        } else {
+            serviceBenefitsRelativeLayout.visibility = View.GONE
+            dividerView.visibility = View.GONE
+        }
+
+    }
+
+    /** We need the User to toggle between showing Service Benefits, and hiding them **/
+    private fun toggleServiceBenefits() {
+        val toggleServiceBenefitsRelativeLayout = findViewById<RelativeLayout>(R.id.action_layout)
+        val toggleServiceBenefitsTextView = findViewById<TextView>(R.id.action_text_view)
+        val expandServiceBenefitsImageView = findViewById<ImageView>(R.id.expand_image_view)
+        val collapseServiceBenefitsImageView = findViewById<ImageView>(R.id.collapse_image_view)
+
+        toggleServiceBenefitsRelativeLayout.setOnClickListener {
+
+            if (serviceBenefitsLayout?.visibility == View.VISIBLE) {
+                serviceBenefitsLayout?.visibility = View.GONE
+                toggleServiceBenefitsTextView.text = "Show Benefits"
+                expandServiceBenefitsImageView.visibility = View.GONE
+                collapseServiceBenefitsImageView.visibility = View.VISIBLE
+                mixpanel.track("detailedService_showingBenefits")
+
+            } else {
+                serviceBenefitsLayout?.visibility = View.VISIBLE
+                toggleServiceBenefitsTextView.text = "Hide Benefits"
+                expandServiceBenefitsImageView.visibility = View.VISIBLE
+                collapseServiceBenefitsImageView.visibility = View.GONE
+                mixpanel.track("detailedService_hidingBenefits")
+            }
+        }
+    }
+
+    /** With this function, we'll be parsing all service benefits into their custom UI components **/
+    private fun parseServiceBenefits(mServiceBenefits: ArrayList<ServiceBenefit>) {
+        var benefitTitle: String
+        var benefitBody: String
+        val benefitTitleTextView = TextView(this)
+        val benefitBodyTextView = TextView(this)
+
+        for (i in 0 until mServiceBenefits.size) {
+            benefitTitle = mServiceBenefits[i].benefitTitle
+            benefitBody = mServiceBenefits[i].benefitBody
+            benefitTitleTextView.text = benefitTitle
+            benefitBodyTextView.text = benefitBody
+
+            if (i == 0) {
+                serviceBenefitOneTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitOneBody?.text = benefitBody
+            } else if (i == 1) {
+                serviceBenefitTwoTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitTwoBody?.text = benefitBody
+            } else if (i == 2) {
+                serviceBenefitThreeTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitThreeBody?.text = benefitBody
+            }
         }
     }
 

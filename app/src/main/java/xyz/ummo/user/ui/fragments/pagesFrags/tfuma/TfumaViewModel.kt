@@ -9,11 +9,13 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.data.repo.AppRepository
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.SocketConnectWorker
 import xyz.ummo.user.workers.fromJSONArray
+import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
 
 class TfumaViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,6 +50,9 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
 
         var serviceCommentsJSONArray: JSONArray
         var serviceComments: ArrayList<String>
+
+        var serviceBenefitJSONArray: JSONArray
+        var serviceBenefits: ArrayList<ServiceBenefit>
 
         var serviceAttachmentJSONArray: JSONArray
         var serviceAttachmentJSONObject: JSONObject
@@ -91,7 +96,9 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
                     shareCount = service.getInt(SERV_SHARE_COUNT) //14
                     viewCount = service.getInt(SERV_VIEW_COUNT) //15
                     serviceProvider = service.getString(SERV_PROVIDER) //16
-                    serviceCategory = service.getString(SERVICE_CATEGORY)
+                    serviceCategory = service.getString(SERVICE_CATEGORY) //17
+                    serviceBenefitJSONArray = service.getJSONArray(SERVICE_BENEFITS)
+                    serviceBenefits = fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
 
                     serviceLink = if (service.getString(SERV_LINK).isNotEmpty())
                         service.getString(SERV_LINK)
@@ -113,11 +120,28 @@ class TfumaViewModel(application: Application) : AndroidViewModel(application) {
                     }
 
                     delegatableService = ServiceObject(
-                        serviceId, serviceName, serviceDescription,
-                        serviceEligibility, serviceCentres, conditionMet, serviceCosts, serviceDocs,
-                        serviceDuration, upvoteCount, downvoteCount, serviceComments, commentCount,
-                        shareCount, viewCount, serviceProvider, serviceLink, serviceAttachmentName,
-                        serviceAttachmentSize, serviceAttachmentURL, serviceCategory
+                        serviceId,
+                        serviceName,
+                        serviceDescription,
+                        serviceEligibility,
+                        serviceCentres,
+                        conditionMet,
+                        serviceCosts,
+                        serviceDocs,
+                        serviceDuration,
+                        upvoteCount,
+                        downvoteCount,
+                        serviceComments,
+                        commentCount,
+                        shareCount,
+                        viewCount,
+                        serviceProvider,
+                        serviceLink,
+                        serviceAttachmentName,
+                        serviceAttachmentSize,
+                        serviceAttachmentURL,
+                        serviceCategory,
+                        serviceBenefits
                     )
 
 //                    return delegatableService

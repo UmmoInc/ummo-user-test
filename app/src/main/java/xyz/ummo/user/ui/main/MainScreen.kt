@@ -136,6 +136,9 @@ class MainScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        checkingForDelegatedServiceFromRoom()
+
+        Timber.e("ON_CREATE")
 //        bundle = intent.getBundleExtra(VIEW_SOURCE)!!
 
         if (!bundle.isEmpty)
@@ -364,6 +367,8 @@ class MainScreen : AppCompatActivity() {
             bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
             bundle.putString(AGENT_ID, agentId)
             bundle.putString(DELEGATION_ID, delegationId)
+
+            showSnackbarBlue("Taking you to your service", -1)
             val delegatedServiceFragment = DelegatedServiceFragment()
 //            delegatedServiceFragment.arguments = bundle
             openFragment(delegatedServiceFragment)
@@ -373,6 +378,8 @@ class MainScreen : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        Timber.e("ON_START")
+        checkingForDelegatedServiceFromRoom()
         /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver -
          * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -464,7 +471,7 @@ class MainScreen : AppCompatActivity() {
             showSnackbarBlue("Ummo network found...", -1)
 //            val pagesFragment = PagesFragment()
             val serviceCategories = ServiceCategories()
-            openFragment(serviceCategories)
+//            openFragment(serviceCategories)
         }
     }
 
@@ -587,6 +594,7 @@ class MainScreen : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        Timber.e("ON_RESUME")
         checkingForDelegatedServiceFromRoom()
     }
 
@@ -691,7 +699,7 @@ class MainScreen : AppCompatActivity() {
 
     /** This function sends the feedback over HTTP Post by overriding `done` from #Feedback
      * It's used by #feedback **/
-    fun submitFeedback(feedbackString: String, userContact: String) {
+    private fun submitFeedback(feedbackString: String, userContact: String) {
 
         object : GeneralFeedback(this, feedbackString, userContact) {
             override fun done(data: ByteArray, code: Number) {

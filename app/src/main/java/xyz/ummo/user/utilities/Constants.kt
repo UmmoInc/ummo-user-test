@@ -71,6 +71,9 @@ const val SERV_VIEW_COUNT = "service_view_count"
 const val SERV_PROVIDER = "service_provider"
 const val SERV_LINK = "service_link"
 const val SERVICE_CATEGORY = "service_category"
+const val SERVICE_BENEFITS = "service_benefits"
+const val REASON_TITLE = "reason_title"
+const val REASON_BODY = "reason_body"
 const val SERV_ATTACH_OBJS = "service_attachment_objects"
 const val FILE_NAME = "file_name"
 const val FILE_SIZE = "file_size"
@@ -102,5 +105,8 @@ const val EMAIL_REMINDER_SENT = "EMAIL_REMINDER_SENT"
 /** View Sources **/
 const val VIEW_SOURCE = "VIEW_SOURCE"
 const val DETAILED_SERVICE = "DETAILED_SERVICE"
+
+const val TAKE_ME_TO = "TAKE_ME_TO"
+const val DELEGATED_SERVICE_FRAGMENT = "DELEGATED_SERVICE_FRAGMENT"
 
 /** Crash states**/

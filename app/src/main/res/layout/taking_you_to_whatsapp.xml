@@ -29,7 +29,7 @@
                     android:fontFamily="@font/rubik"
                     android:paddingStart="0dp"
                     android:paddingEnd="8dp"
-                    android:text="@string/taking_you_to_whatsapp"
+                    android:text="@string/making_request"
                     android:textSize="16sp" />
             </RelativeLayout>
 

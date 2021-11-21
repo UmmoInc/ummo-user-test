@@ -224,5 +224,7 @@
     <string name="share_service">Share service</string>
     <string name="service_comments_subtitle">%1$s</string>
     <string name="verify_email_prompt">Please check your email, %1$s, to verify your Ummo account.\n\nIf you haven\'t received it yet, you may resend it below.</string>
+    <string name="service_benefits_title_text">Why %1$s</string>
+    <string name="making_request">We\'re making your request…</string>
 
 </resources>

@@ -27,20 +27,24 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
+import xyz.ummo.user.api.Service
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
 import xyz.ummo.user.databinding.ServiceFilterChipLayoutBinding
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.SERVICE_BENEFITS
 import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
 import xyz.ummo.user.utilities.mode
 import xyz.ummo.user.utilities.ummoUserPreferences
+import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 
 class Tfola : Fragment() {
     private lateinit var allServices: JSONArray
@@ -95,6 +99,10 @@ class Tfola : Fragment() {
     var serviceLink = "" //17
     var serviceAttachmentJSONArray = JSONArray()
     var serviceAttachmentJSONObject = JSONObject() //18
+
+    var serviceBenefitJSONArray = JSONArray()
+    var serviceBenefits = ArrayList<ServiceBenefit>()
+
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
@@ -417,6 +425,19 @@ class Tfola : Fragment() {
         viewCount = serviceJSONObject.getInt("service_view_count") //15
         serviceProvider = serviceJSONObject.getString("service_provider") //16
 
+        /** Checking if [serviceBenefits] exists in the [Service] object,
+         * since not all services have benefits listed under them. **/
+        serviceBenefitJSONArray = if (serviceJSONObject.has(SERVICE_BENEFITS)) {
+            Timber.e("SERVICE BENEFIT FOUND")
+            serviceJSONObject.getJSONArray(SERVICE_BENEFITS)
+        } else {
+            val noServiceBenefit = ServiceBenefit("", "")
+            Timber.e("NO SERVICE BENEFIT -> $noServiceBenefit")
+            serviceBenefitJSONArray.put(0, noServiceBenefit)
+        }
+
+        serviceBenefits = fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
+
         serviceLink = if (serviceJSONObject.getString("service_link").isNotEmpty())
             serviceJSONObject.getString("service_link") //17
         else
@@ -446,7 +467,8 @@ class Tfola : Fragment() {
             delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
             approvalCount, disapprovalCount, serviceComments,
             commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL, serviceCategory
+            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL, serviceCategory,
+            serviceBenefits
         )
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")

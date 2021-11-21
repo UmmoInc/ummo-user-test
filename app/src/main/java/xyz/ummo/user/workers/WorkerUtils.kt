@@ -13,6 +13,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.utilities.*
 
@@ -99,4 +100,26 @@ fun fromServiceCostJSONArray(array: JSONArray): ArrayList<ServiceCostModel> {
 
     Timber.e("SERVICE COST from FUN -> $tmp")
     return tmp
+}
+
+fun fromServiceBenefitsJSONArray(array: JSONArray): ArrayList<ServiceBenefit> {
+    val temp = ArrayList<ServiceBenefit>()
+    var serviceBenefitObject: JSONObject
+    var serviceBenefitTitle: String
+    var serviceBenefitBody: String
+    var serviceBenefit: ServiceBenefit
+
+    for (i in 0 until array.length()) {
+        try {
+            serviceBenefitObject = array.getJSONObject(i)
+            serviceBenefitTitle = serviceBenefitObject.getString("reason_title")
+            serviceBenefitBody = serviceBenefitObject.getString("reason_body")
+            serviceBenefit = ServiceBenefit(serviceBenefitTitle, serviceBenefitBody)
+            temp.add(serviceBenefit)
+        } catch (jse: JSONException) {
+            Timber.e("SERVICE BENEFIT JSE -> $jse")
+        }
+    }
+    Timber.e("SERVICE BENEFIT FROM FUN -> $temp")
+    return temp
 }
