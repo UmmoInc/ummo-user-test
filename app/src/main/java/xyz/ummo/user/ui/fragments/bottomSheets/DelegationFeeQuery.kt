@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_delegation_fee_query.view.*
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentDelegationFeeQueryBinding
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_SPEC
-import xyz.ummo.user.ui.MainScreen.Companion.SPEC_FEE
+import xyz.ummo.user.utilities.SERVICE_SPEC
 
 class DelegationFeeQuery : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters

@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -23,27 +25,24 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.RequestService
 import xyz.ummo.user.api.User
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
+import xyz.ummo.user.ui.main.MainViewModel
+import xyz.ummo.user.utilities.*
+import xyz.ummo.user.workers.SocketConnectWorker
 import java.io.Serializable
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private var serviceDate: String? = null
@@ -71,34 +70,48 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private lateinit var serviceRequestBottomSheetPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var mixpanel: MixpanelAPI
+    private lateinit var requestingAgentBuilder: MaterialAlertDialogBuilder
+    private lateinit var requestingAssistance: AlertDialog
+    private lateinit var takingYouToWhatsAppView: View
     private val serviceBeingRequested = JSONObject()
 
+    /** Borrowing MainViewModel for service requests via ServiceHandler **/
+    private var mainViewModel: MainViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
         }
 
-        serviceRequestBottomSheetPrefs = context!!.getSharedPreferences(ummoUserPreferences, mode)
+        serviceRequestBottomSheetPrefs =
+            requireContext().getSharedPreferences(ummoUserPreferences, mode)
+
+        /** Initing [mainViewModel] to use in [requestAgentDelegate] below **/
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
-        viewBinding = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_service_request_bottom_sheet, container, false)
+        viewBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_service_request_bottom_sheet, container, false
+        )
 
         val view = viewBinding.root
 
-        mixpanel = MixpanelAPI.getInstance(requireContext(),
-                resources.getString(R.string.mixpanelToken))
+        mixpanel = MixpanelAPI.getInstance(
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
+        )
 
         /** Unpacking [ServiceObject] from [getArguments]**/
         serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
         serviceObject = serviceObjectParam as ServiceObject
-
-        serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
         Timber.e("SERVICE OBJECT PARAM -> $serviceObjectParam")
+
         serviceRequestStepOne()
         serviceRequestStepTwo()
 
@@ -108,10 +121,13 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun serviceRequestStepOne() {
 
         serviceLayoutInflater = LayoutInflater.from(context)
-                .context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            .context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         /** Introducing Request Sheet to User**/
-        val requestAgentText = String.format(resources.getString(R.string.request_ummo_agent), serviceObject!!.serviceName)
+        val requestAgentText = String.format(
+            resources.getString(R.string.request_ummo_agent),
+            serviceObject!!.serviceName
+        )
         val requestAgentTextView = viewBinding.requestDescriptionTextView
         requestAgentTextView.text = requestAgentText
 
@@ -131,11 +147,15 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                 /** Setting RadioButton color state-list **/
                 if (Build.VERSION.SDK_INT >= 21) {
-                    val colorStateList = ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),
-                            intArrayOf(android.R.attr.state_enabled)), intArrayOf(
+                    val colorStateList = ColorStateList(
+                        arrayOf(
+                            intArrayOf(-android.R.attr.state_enabled),
+                            intArrayOf(android.R.attr.state_enabled)
+                        ), intArrayOf(
                             Color.GRAY//disabled
                             , resources.getColor(R.color.ummo_1) //enabled
-                    ))
+                        )
+                    )
                     serviceCentreRadioButton.buttonTintList = colorStateList
                 }
                 serviceCentresRadioGroup.addView(serviceCentreRadioButton)
@@ -161,7 +181,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val autoCompleteTextView = viewBinding.sheetServiceCostTextView
 
         serviceCostArrayList = serviceObject!!.serviceCost
-        serviceCostAdapter = ArrayAdapter(context!!, R.layout.list_item, serviceCostArrayList)
+        serviceCostAdapter =
+            ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
 
         autoCompleteTextView.setAdapter(serviceCostAdapter)
 
@@ -196,12 +217,12 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         /** For a better UX, we need the User to not accidentally select a date from the past **/
         val constraintsBuilder = CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
+            .setValidator(DateValidatorPointForward.now())
 
         /** Creating a MaterialDateBuilder object **/
         val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
-                .setCalendarConstraints(constraintsBuilder.build())
-                .setTitleText("Pick a Date for your Service")
+            .setCalendarConstraints(constraintsBuilder.build())
+            .setTitleText("Pick a Date for your Service")
 
         val datePicker = dateBuilder.build()
 
@@ -262,8 +283,6 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val delegationFee = JSONObject()
 
         confirmServiceCostTextView.text = "E$specCost"
-        delegationCostTextView.text = this.getString(R.string.delegation_fee)
-
         /** 1) Removing the currency from the fee
          *  2) Converting fee string to int
          *  3) Adding [Delegation Fee] to get Total Cost (int)
@@ -277,18 +296,38 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
             serviceCost
         }
 
+        val totalCostInt: Int
+
         Timber.e("SERVICE COST -> $specCost")
         Timber.e("SERVICE FORMATTED -> $formattedServiceCost")
         val serviceCostInt = Integer.parseInt(formattedServiceCost)
-        val totalCostInt = serviceCostInt + 50
+
+        totalCostInt = when {
+            chosenServiceCentre.contains("Manzini", true) -> {
+                delegationCostTextView.text = 119.toString()
+                serviceCostInt + 119
+            }
+            chosenServiceCentre.contains("Mahhala", true) -> {
+                delegationCostTextView.text = 99.toString()
+                serviceCostInt + 99
+            }
+            chosenServiceCentre.contains("Mbabane", true) -> {
+                delegationCostTextView.text = 149.toString()
+                serviceCostInt + 149
+            }
+            else -> {
+                delegationCostTextView.text = 99.toString()
+                serviceCostInt + 99
+            }
+        }
         totalCostTextView.text = "E$totalCostInt"
 
-        delegationFee.put(MainScreen.CHOSEN_SERVICE_SPEC, serviceSpec)
-                .put(MainScreen.TOTAL_DELEGATION_FEE, totalCostInt)
+        delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
+            .put(TOTAL_DELEGATION_FEE, totalCostInt)
 
         confirmPaymentCheckBox.setOnClickListener {
             if (confirmPaymentCheckBox.isChecked) {
-                confirmRequestButton.setBackgroundColor(context!!.resources.getColor(R.color.ummo_1))
+                confirmRequestButton.setBackgroundColor(requireContext().resources.getColor(R.color.ummo_1))
                 confirmRequestButton.isClickable = true
                 confirmRequestButton.isActivated = true
                 confirmRequestButton.isEnabled = true
@@ -296,12 +335,16 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 mixpanel.track("requestBottomSheet_confirmingPaymentTerms", serviceBeingRequested)
 
                 confirmRequestButton.setOnClickListener {
-                    requestAgentDelegate(serviceObject!!.serviceId, delegationFee, chosenServiceCentre)
+                    requestAgentDelegate(
+                        serviceObject!!.serviceId,
+                        delegationFee,
+                        chosenServiceCentre
+                    )
                 }
                 /*paymentTermsEvent.paymentTermsConfirmed = true
                 EventBus.getDefault().post(paymentTermsEvent)*/
             } else {
-                confirmRequestButton.setBackgroundColor(context!!.resources.getColor(R.color.greyProfile))
+                confirmRequestButton.setBackgroundColor(requireContext().resources.getColor(R.color.greyProfile))
                 confirmRequestButton.isClickable = false
                 confirmRequestButton.isActivated = false
                 confirmRequestButton.isEnabled = false
@@ -309,15 +352,50 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun requestAgentDelegate(mServiceId: String, mDelegationFee: JSONObject, mChosenServiceCentre: String) {
+    private fun requestAgentDelegate(
+        mServiceId: String,
+        mDelegationFee: JSONObject,
+        mChosenServiceCentre: String
+    ) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
+        val serviceRequestObject = JSONObject()
 
         viewBinding.confirmRequestButton.setBackgroundColor(resources.getColor(R.color.ummo_3))
         viewBinding.confirmRequestButton.text = "Requesting..."
         Timber.e("SERVICE_ID REQUEST->%s", mServiceId)
 
         if (jwt != null) {
-            object : RequestService(context, User.getUserId(jwt), mServiceId, mDelegationFee, mChosenServiceCentre, serviceDate) {
+
+            /*try {
+                serviceRequestObject.put("user_id", User.getUserId(jwt))
+                    .put("product_name", serviceObject!!.serviceName)
+                    .put("product_id", mServiceId)
+                    .put("delegation_fee", mDelegationFee)
+                    .put("chosen_service_centre", mChosenServiceCentre)
+                    .put("service_date", serviceDate)
+                Timber.e("SUCCESSFULLY SCHEDULING SERVICE VIA SOCKET")
+
+                */
+            /** [scheduleServiceSocketEvent] takes the $serviceRequestObject && emits this event
+             * via [SocketConnectWorker] **//*
+                scheduleServiceSocketEvent(serviceRequestObject)
+
+                */
+            /** [launchWhatsAppSheet] takes $serviceRequestObject && processes this JSONObject
+             * to create a WhatsApp-ready text to complete the service request **//*
+//                launchWhatsAppSheet(serviceRequestObject, serviceObjectParam!!)
+            } catch (jse: JSONException) {
+                Timber.e("FAILED TO REQUEST SERVICE -> $jse")
+            }*/
+
+            object : RequestService(
+                context,
+                User.getUserId(jwt),
+                mServiceId,
+                mDelegationFee,
+                mChosenServiceCentre,
+                serviceDate
+            ) {
                 override fun done(data: ByteArray, code: Int) {
                     Timber.e("delegatedService: Done->%s", String(data))
                     Timber.e("delegatedService: Status Code->%s", code)
@@ -326,9 +404,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                         200 -> {
 //                            alertDialogBuilder.dismiss()
 
-                            Timber.e("CODE IS $code")
-
-                            val delegation = JSONObject(String(data))
+                            val delegation = JSONObject(String(data)).getJSONObject("payload")
                             Timber.e("SERVICE OBJ -> $delegation")
                             val delegatedServiceId = delegation.getString("product")
                             val delegationId = delegation.getString("_id")
@@ -337,17 +413,65 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             editor = serviceRequestBottomSheetPrefs.edit()
                             editor.putString("DELEGATION_ID", delegationId)
                             //TODO: remove after service is done
-                            editor.putString(DetailedServiceActivity.DELEGATED_SERVICE_ID, serviceObject!!.serviceId)
-                            editor.putString(DetailedServiceActivity.SERVICE_AGENT_ID, serviceAgent)
-                            editor.putString(MainScreen.DELEGATION_FEE, mDelegationFee.getString(MainScreen.TOTAL_DELEGATION_FEE))
-                            editor.putString(MainScreen.DELEGATION_SPEC, mDelegationFee.getString(MainScreen.CHOSEN_SERVICE_SPEC))
-                            editor.putString(MainScreen.SERVICE_DATE, serviceDate)
+                            editor.putString(
+                                DELEGATED_SERVICE_ID,
+                                serviceObject!!.serviceId
+                            )
+                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
+                            editor.putString(
+                                DELEGATION_FEE,
+                                mDelegationFee.getString(TOTAL_DELEGATION_FEE)
+                            )
+                            editor.putString(
+                                DELEGATION_SPEC,
+                                mDelegationFee.getString(CHOSEN_SERVICE_SPEC)
+                            )
+                            editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
-                            launchDelegatedService(context,
-                                    delegatedServiceId, serviceAgent, delegationId)
+                            /** Showing the User a loader before directing them to the Delegated Screen **/
+                            val timer = object : CountDownTimer(2000, 1000) {
 
-                            mixpanel.track("requestBottomSheet_completingRequest", serviceBeingRequested)
+                                override fun onTick(p0: Long) {
+                                    showAlertDialog()
+                                }
+
+                                override fun onFinish() {
+                                    launchDelegatedService(
+                                        context,
+                                        delegatedServiceId, serviceAgent, delegationId
+                                    )
+
+                                    return
+                                }
+                            }
+                            timer.start()
+
+                            /** Saving Service Delegation in Room **/
+                            val delegatedServiceEntity = DelegatedServiceEntity()
+                            val delegatedServiceViewModel =
+                                ViewModelProvider((context as FragmentActivity?)!!)
+                                    .get(DelegatedServiceViewModel::class.java)
+
+                            val progress = java.util.ArrayList<String>()
+
+                            /** Setting Service as Delegated **/
+                            delegatedServiceEntity.delegationId = delegationId
+                            delegatedServiceEntity.delegatedProductId = delegatedServiceId
+                            delegatedServiceEntity.serviceAgentId = serviceAgent
+                            delegatedServiceEntity.serviceProgress = progress
+                            delegatedServiceEntity.serviceDate = serviceDate
+                            delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
+
+                            /** Requesting service via ServiceHandler *
+                            //                            mainViewModel?.serviceHandler()
+                             * We'll launch the BottomSheet that explains to the User what they
+                             * should expect from this point onwards... */
+
+                            mixpanel.track(
+                                "requestBottomSheet_completingRequest",
+                                serviceBeingRequested
+                            )
 
                         }
                         404 -> {
@@ -360,15 +484,54 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun launchDelegatedService(context: Context?,
-                                       delegatedServiceId: String,
-                                       agentId: String,
-                                       delegationId: String) {
+    private fun scheduleServiceSocketEvent(serviceJSON: JSONObject) {
+        val socket = SocketConnectWorker.SocketIO.mSocket
+        socket?.emit("service/schedule", serviceJSON)
+    }
+
+    private fun showAlertDialog() {
+        requestingAgentBuilder = MaterialAlertDialogBuilder(requireContext())
+        takingYouToWhatsAppView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.taking_you_to_whatsapp, null, false)
+
+        requestingAgentBuilder.setTitle("Just a second")
+        requestingAgentBuilder.setView(takingYouToWhatsAppView)
+        requestingAgentBuilder.setIcon(R.drawable.logo)
+        requestingAssistance = requestingAgentBuilder.show()
+    }
+
+    private fun launchWhatsAppSheet(requestedService: JSONObject, serviceObject: Serializable) {
+
+//        mainViewModel!!.socketConnect()
+
+        val requestServiceAssistance = RequestServiceAssistance()
+
+        /** 1. Creating a $requestBundle and
+         *  2. Passing the Requested Service to the WhatsApp BottomSheet **/
+        val requestBundle = Bundle()
+        requestBundle.putString(REQUESTED_SERVICE, requestedService.toString())
+        requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
+        requestServiceAssistance.arguments = requestBundle
+
+        Timber.e("REQUESTED SERVICE $requestedService")
+        requestServiceAssistance.show(
+            /** [supportFM] is borrowed from [MainScreen]'s companion object **/
+            supportFM, RequestServiceAssistance.TAG
+        )
+    }
+
+    fun launchDelegatedService(
+        context: Context?,
+        delegatedServiceId: String,
+        agentId: String,
+        delegationId: String
+    ) {
 
         val bundle = Bundle()
-        bundle.putString(DetailedServiceActivity.DELEGATED_SERVICE_ID, delegatedServiceId)
-        bundle.putString(DetailedServiceActivity.SERVICE_AGENT_ID, agentId)
-        bundle.putString(DetailedServiceActivity.DELEGATION_ID, delegationId)
+        bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
+        bundle.putString(SERVICE_AGENT_ID, agentId)
+        bundle.putString(DELEGATION_ID, delegationId)
+        bundle.putString(TAKE_ME_TO, DELEGATED_SERVICE_FRAGMENT)
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
@@ -378,7 +541,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         val progress = java.util.ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         /** Setting Service as Delegated **/
         delegatedServiceEntity.delegationId = delegationId
@@ -399,10 +562,10 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         @JvmStatic
         fun newInstance(serviceObject: ServiceObject) =
-                ServiceRequestBottomSheet().apply {
-                    arguments = Bundle().apply {
+            ServiceRequestBottomSheet().apply {
+                arguments = Bundle().apply {
 
-                    }
                 }
+            }
     }
 }

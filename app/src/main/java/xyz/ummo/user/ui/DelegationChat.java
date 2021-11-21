@@ -3,13 +3,6 @@ package xyz.ummo.user.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.github.nkzawa.emitter.Emitter;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +17,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import xyz.ummo.user.ui.animations.ExpandOrCollapse;
+import io.socket.emitter.Emitter;
 import xyz.ummo.user.R;
-import xyz.ummo.user.api.GetService;
-
-
 import xyz.ummo.user.adapters.MessageAdapter;
+import xyz.ummo.user.api.GetService;
 import xyz.ummo.user.api.SendChatMessage;
 import xyz.ummo.user.api.SocketIO;
+import xyz.ummo.user.ui.animations.ExpandOrCollapse;
+import xyz.ummo.user.ui.main.MainScreen;
 
 public class DelegationChat extends AppCompatActivity {
 

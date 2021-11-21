@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:state_focused="false"
-        android:drawable="@drawable/ic_help_outline_black_24dp"
-        /> <!-- not focused -->
+    <item android:drawable="@drawable/ic_help_outline_blue_24dp" android:state_focused="false" /> <!-- not focused -->
     <item
         android:state_focused="true"
         android:drawable="@drawable/purple_help_outline"

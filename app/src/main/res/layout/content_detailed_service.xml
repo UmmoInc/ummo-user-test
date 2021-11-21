@@ -64,9 +64,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignTop="@+id/delegated_service_header_image_view"
                                     android:layout_toEndOf="@id/delegated_service_header_image_view"
+                                    android:fontFamily="@font/rubik"
                                     android:text="@string/service_name_detailed_info"
                                     android:textColor="@color/black"
-                                    android:textSize="20sp"
+                                    android:textSize="18sp"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -75,6 +76,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_below="@+id/delegated_service_header_title_text_view"
                                     android:layout_toEndOf="@id/delegated_service_header_image_view"
+                                    android:fontFamily="@font/rubik"
                                     android:text="@string/service_name_detailed_info"
                                     android:textColor="@color/black"
                                     android:textSize="14sp" />
@@ -93,7 +95,10 @@
                                     android:id="@+id/description_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_margin="4dp">
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_marginBottom="4dp">
 
                                     <ImageView
                                         android:id="@+id/description_image_view"
@@ -114,9 +119,10 @@
                                             android:id="@+id/description_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:text="Description"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="What it's about"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <TextView
@@ -125,6 +131,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_below="@id/description_header_text_view"
                                             android:layout_marginTop="0dp"
+                                            android:fontFamily="@font/rubik"
                                             android:text="@string/description_default_string"
                                             android:textColor="@color/black"
                                             android:textSize="14sp" />
@@ -133,19 +140,215 @@
                                 </RelativeLayout>
                                 <!--ProductModel Description Layout End-->
 
+                                <View
+                                    android:id="@+id/divider_2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_below="@id/description_layout"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="2dp"
+                                    android:layout_marginBottom="4dp"
+                                    android:background="?android:attr/listDivider" />
+
+                                <!-- [START] Expandable Layout (ID: "expandable_relative_layout")-->
+                                <RelativeLayout
+                                    android:id="@+id/service_benefits_main_relative_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/divider_2"
+                                    android:paddingStart="4dp"
+                                    android:paddingEnd="4dp">
+
+                                    <ImageView
+                                        android:id="@+id/service_benefits_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_twotone_tips_24" />
+
+                                    <TextView
+                                        android:id="@+id/service_benefits_header_text_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_toEndOf="@+id/service_benefits_image_view"
+                                        android:fontFamily="@font/rubik"
+                                        android:text="@string/service_benefits_title_text"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <!-- [START] Action Layout (ID: "action_layout")-->
+                                    <RelativeLayout
+                                        android:id="@+id/action_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/service_benefits_header_text_view"
+                                        android:layout_alignStart="@+id/service_benefits_header_text_view"
+                                        android:layout_marginTop="0dp"
+                                        android:clickable="true"
+                                        android:focusable="true"
+                                        android:paddingTop="4dp">
+
+                                        <!--<View
+                                            android:id="@+id/divider"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="1dp"
+                                            android:layout_gravity="center_horizontal"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginEnd="20dp"
+                                            android:background="?android:attr/listDivider" />-->
+
+                                        <TextView
+                                            android:id="@+id/action_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="0dp"
+                                            android:clickable="true"
+                                            android:focusable="true"
+                                            android:text="Show Service Benefits"
+                                            android:textColor="@color/ummo_1"
+                                            android:textSize="12sp"
+                                            android:textStyle="bold" />
+
+                                        <ImageView
+                                            android:id="@+id/expand_image_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_alignTop="@+id/action_text_view"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_centerInParent="true"
+                                            android:paddingStart="8dp"
+                                            android:paddingLeft="8dp"
+                                            android:paddingEnd="8dp"
+                                            android:paddingRight="8dp"
+                                            android:visibility="gone"
+                                            app:srcCompat="@drawable/ic_stat_expand_less"
+                                            tools:visibility="visible" />
+
+                                        <ImageView
+                                            android:id="@+id/collapse_image_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_centerInParent="true"
+                                            android:paddingStart="8dp"
+                                            android:paddingLeft="8dp"
+                                            android:paddingEnd="8dp"
+                                            android:paddingRight="8dp"
+                                            android:visibility="visible"
+                                            app:srcCompat="@drawable/ic_stat_expand_more" />
+                                    </RelativeLayout>
+                                    <!-- [END] Action Layout (ID: "action_layout")-->
+
+                                    <RelativeLayout
+                                        android:id="@+id/service_benefits_holder_relative_layout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/action_layout"
+                                        android:layout_alignStart="@id/action_layout"
+                                        android:visibility="gone">
+
+                                        <TextView
+                                            android:id="@+id/benefit_one_title_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="0dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="REASON ONE"
+                                            android:textColor="@color/black"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/benefit_one_body_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/benefit_one_title_text_view"
+                                            android:layout_marginTop="4dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="Reason One Body"
+                                            android:textColor="@color/black"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:id="@+id/benefit_two_title_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/benefit_one_body_text_view"
+                                            android:layout_marginTop="8dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="REASON TWO"
+                                            android:textColor="@color/black"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/benefit_two_body_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/benefit_two_title_text_view"
+                                            android:layout_marginTop="4dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="Reason Two Body"
+                                            android:textColor="@color/black"
+                                            android:textSize="14sp" />
+
+                                        <TextView
+                                            android:id="@+id/benefit_three_title_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/benefit_two_body_text_view"
+                                            android:layout_marginTop="8dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="REASON THREE"
+                                            android:textColor="@color/black"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:id="@+id/benefit_three_body_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/benefit_three_title_text_view"
+                                            android:layout_marginTop="4dp"
+                                            android:layout_marginBottom="8dp"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="Reason Three Body"
+                                            android:textColor="@color/black"
+                                            android:textSize="14sp" />
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+                                <!-- [END] Expandable Layout (ID: "expandable_relative_layout")-->
+                                <View
+                                    android:id="@+id/divider_3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_below="@id/service_benefits_main_relative_layout"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="8dp"
+                                    android:background="?android:attr/listDivider" />
                                 <!--ProductModel Cost Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_cost_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/description_layout"
+                                    android:layout_below="@id/divider_3"
                                     android:layout_margin="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_cost_image_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_margin="8dp"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
                                         android:padding="8dp"
                                         app:srcCompat="@drawable/ic_stat_cost_icon" />
 
@@ -221,13 +424,20 @@
 
                                 </RelativeLayout>
                                 <!--ProductModel Cost Layout End-->
-
+                                <View
+                                    android:id="@+id/divider_4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_below="@id/service_cost_layout"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="8dp"
+                                    android:background="?android:attr/listDivider" />
                                 <!--ProductModel Duration Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_duration_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_cost_layout"
+                                    android:layout_below="@+id/divider_4"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -248,9 +458,10 @@
                                             android:id="@+id/duration_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
                                             android:text="@string/service_duration_detailed_info"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <TextView
@@ -258,6 +469,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_below="@id/duration_header_text_view"
+                                            android:fontFamily="@font/rubik"
                                             android:text="@string/service_duration_detailed_info"
                                             android:textColor="@color/black"
                                             android:textSize="14sp" />
@@ -266,12 +478,21 @@
                                 </RelativeLayout>
                                 <!--ProductModel Duration Layout End-->
 
+                                <View
+                                    android:id="@+id/divider_5"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_below="@id/service_duration_layout"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="2dp"
+                                    android:background="?android:attr/listDivider" />
+
                                 <!--ProductModel Docs Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_docs_relative_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_duration_layout"
+                                    android:layout_below="@+id/divider_5"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -293,9 +514,10 @@
                                             android:id="@+id/docs_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
                                             android:text="@string/service_requirements_detailed_info"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <LinearLayout
@@ -336,9 +558,10 @@
                                             android:id="@+id/service_centre_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
                                             android:text="@string/service_centres"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <!--<TextView
@@ -383,7 +606,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_below="@+id/service_centre_layout"
-                                    android:layout_margin="4dp">
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_marginBottom="4dp">
 
                                     <ImageView
                                         android:id="@+id/service_attachments_image_view"
@@ -404,9 +630,10 @@
                                             android:id="@+id/service_attachments_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
                                             android:text="Service Documents:"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <LinearLayout
@@ -450,9 +677,10 @@
                                             android:id="@+id/service_link_header_text_view"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
                                             android:text="Verify online"
                                             android:textColor="@color/black"
-                                            android:textSize="20sp"
+                                            android:textSize="18sp"
                                             android:textStyle="bold" />
 
                                         <TextView
@@ -461,6 +689,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_below="@+id/service_link_header_text_view"
                                             android:layout_marginTop="5dp"
+                                            android:fontFamily="@font/rubik"
                                             android:text="Open Government Website for more info"
                                             android:textColor="@color/green"
                                             android:textSize="14sp"

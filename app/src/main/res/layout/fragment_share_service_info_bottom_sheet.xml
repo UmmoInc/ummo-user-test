@@ -29,6 +29,16 @@
             android:textSize="22sp"
             android:textColor="@color/ummo_2" />
 
+        <View
+            android:id="@+id/divider_1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/sharing_is_caring_text"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="30dp"
+            android:background="@color/screenWhite" />
+
         <RelativeLayout
             android:id="@+id/share_service_info_main_relative_layout"
             android:layout_width="match_parent"
@@ -63,7 +73,7 @@
                 android:layout_toEndOf="@id/caring_image_view"
                 android:text="@string/show_you_care"
                 android:textColor="#666"
-                android:textSize="12sp" />
+                android:textSize="16sp" />
 
         </RelativeLayout>
 

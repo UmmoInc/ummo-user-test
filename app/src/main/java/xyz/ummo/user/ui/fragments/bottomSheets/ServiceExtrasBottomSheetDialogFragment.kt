@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.layout_service_extras_modal_bottom_sheet.*
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -30,7 +28,7 @@ class ServiceExtrasBottomSheetDialogFragment : BottomSheetDialogFragment(){
 
         if (arguments != null) {
             Timber.e("Arguments available -> $arguments")
-            if (arguments!!["SERVICE_DELEGATABLE"] == true) {
+            if (requireArguments()["SERVICE_DELEGATABLE"] == true) {
                 requestAgentRelativeLayout.visibility = View.GONE //TODO: Meant to be View.VISIBLE
             } else
                 requestAgentRelativeLayout.visibility = View.GONE

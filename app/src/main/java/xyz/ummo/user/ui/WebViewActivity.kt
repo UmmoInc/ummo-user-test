@@ -2,15 +2,14 @@ package xyz.ummo.user.ui
 
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
-import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_web_view.*
-import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.ui.main.MainScreen
 
 class WebViewActivity : AppCompatActivity(){
 

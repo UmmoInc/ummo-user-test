@@ -7,6 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#1111"
         android:layout_marginTop="104dp"
         android:layout_marginBottom="?android:attr/actionBarSize"
         android:padding="4dp">
@@ -38,7 +39,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/all_services_chip"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -48,7 +49,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/home_affairs_chip"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -58,7 +59,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/commerce_chip"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -68,7 +69,7 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/revenue_chip"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
@@ -106,7 +107,7 @@
             android:visibility="visible" />
 
         <RelativeLayout
-            android:id="@+id/offlineLayout"
+            android:id="@+id/offline_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -126,12 +127,12 @@
                 android:id="@+id/offlineTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/rubik"
                 android:layout_below="@+id/offline_image_view"
+                android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:textAlignment="center"
                 android:text="We're having trouble loading services for you. \n\nPlease retry connecting."
+                android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
 
@@ -144,6 +145,52 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/rounded_button_transparent_purple"
                 android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/no_services_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_folder_open_24" />
+
+            <TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="There are no services under this category at the moment.\n\nPlease check again soon."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/go_home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_text_view"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="@string/return_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>
 

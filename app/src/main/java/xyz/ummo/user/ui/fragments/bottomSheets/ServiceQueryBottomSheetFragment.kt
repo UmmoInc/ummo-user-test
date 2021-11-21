@@ -13,7 +13,6 @@ import kotlinx.android.synthetic.main.fragment_service_query_bottom_sheet.view.*
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentServiceQueryBottomSheetBinding
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 
 class ServiceQueryBottomSheetFragment : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
