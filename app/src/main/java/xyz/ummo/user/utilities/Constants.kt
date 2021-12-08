@@ -91,6 +91,7 @@ const val USER_EMAIL = "USER_EMAIL"
 const val USER_PID = "USER_PID"
 const val NEW_SESSION = "NEW_SESSION"
 const val SIGN_UP_DATE = "SIGN_UP_DATE"
+const val MIXPANEL_NAME = "\$name"
 const val EMAIL_VERIFIED = "EMAIL_VERIFIED"
 
 /** App Startup Constants **/

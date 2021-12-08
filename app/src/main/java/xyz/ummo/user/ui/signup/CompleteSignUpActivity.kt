@@ -281,8 +281,10 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     userObject.put(USER_CONTACT, contact)
                     userObject.put(USER_EMAIL, email)
                     userObject.put(SIGN_UP_DATE, currentDate)
+                    userObject.put(MIXPANEL_NAME, name)
 
                     mixpanel?.people?.identify(contact)
+                    mixpanel?.identify(contact)
                     mixpanel?.track("userRegistering_userDetails", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
                 } else {
@@ -309,7 +311,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(applicationContext,
-                            Objects.requireNonNull(task.exception)?.message,
+                            Objects.requireNonNull(task.exception).message,
                             Toast.LENGTH_SHORT).show()
                 }
             }

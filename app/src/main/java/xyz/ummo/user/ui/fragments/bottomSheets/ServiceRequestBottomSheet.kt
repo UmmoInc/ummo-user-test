@@ -27,6 +27,7 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -366,27 +367,25 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         if (jwt != null) {
 
-            /*try {
+            try {
                 serviceRequestObject.put("user_id", User.getUserId(jwt))
-                    .put("product_name", serviceObject!!.serviceName)
-                    .put("product_id", mServiceId)
-                    .put("delegation_fee", mDelegationFee)
-                    .put("chosen_service_centre", mChosenServiceCentre)
-                    .put("service_date", serviceDate)
+                        .put("product_name", serviceObject!!.serviceName)
+                        .put("product_id", mServiceId)
+                        .put("delegation_fee", mDelegationFee)
+                        .put("chosen_service_centre", mChosenServiceCentre)
+                        .put("service_date", serviceDate)
                 Timber.e("SUCCESSFULLY SCHEDULING SERVICE VIA SOCKET")
 
-                */
-            /** [scheduleServiceSocketEvent] takes the $serviceRequestObject && emits this event
-             * via [SocketConnectWorker] **//*
-                scheduleServiceSocketEvent(serviceRequestObject)
+                /** [scheduleServiceSocketEvent] takes the $serviceRequestObject && emits this event
+                 * via [SocketConnectWorker] **/
+//                scheduleServiceSocketEvent(serviceRequestObject)
 
-                */
-            /** [launchWhatsAppSheet] takes $serviceRequestObject && processes this JSONObject
-             * to create a WhatsApp-ready text to complete the service request **//*
+                /** [launchWhatsAppSheet] takes $serviceRequestObject && processes this JSONObject
+                 * to create a WhatsApp-ready text to complete the service request **/
 //                launchWhatsAppSheet(serviceRequestObject, serviceObjectParam!!)
             } catch (jse: JSONException) {
                 Timber.e("FAILED TO REQUEST SERVICE -> $jse")
-            }*/
+            }
 
             object : RequestService(
                 context,
@@ -408,7 +407,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             Timber.e("SERVICE OBJ -> $delegation")
                             val delegatedServiceId = delegation.getString("product")
                             val delegationId = delegation.getString("_id")
-                            val serviceAgent = delegation.getString("agent")
+//                            val serviceAgent = delegation.getString("agent")
 
                             editor = serviceRequestBottomSheetPrefs.edit()
                             editor.putString("DELEGATION_ID", delegationId)
@@ -417,7 +416,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                                 DELEGATED_SERVICE_ID,
                                 serviceObject!!.serviceId
                             )
-                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
+//                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
                             editor.putString(
                                 DELEGATION_FEE,
                                 mDelegationFee.getString(TOTAL_DELEGATION_FEE)
@@ -438,8 +437,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                                 override fun onFinish() {
                                     launchDelegatedService(
-                                        context,
-                                        delegatedServiceId, serviceAgent, delegationId
+                                            context,
+                                            delegatedServiceId, delegationId
                                     )
 
                                     return
@@ -450,15 +449,15 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             /** Saving Service Delegation in Room **/
                             val delegatedServiceEntity = DelegatedServiceEntity()
                             val delegatedServiceViewModel =
-                                ViewModelProvider((context as FragmentActivity?)!!)
-                                    .get(DelegatedServiceViewModel::class.java)
+                                    ViewModelProvider((context as FragmentActivity?)!!)
+                                            .get(DelegatedServiceViewModel::class.java)
 
                             val progress = java.util.ArrayList<String>()
 
                             /** Setting Service as Delegated **/
                             delegatedServiceEntity.delegationId = delegationId
                             delegatedServiceEntity.delegatedProductId = delegatedServiceId
-                            delegatedServiceEntity.serviceAgentId = serviceAgent
+                            delegatedServiceEntity.serviceAgentId = "serviceAgent"
                             delegatedServiceEntity.serviceProgress = progress
                             delegatedServiceEntity.serviceDate = serviceDate
                             delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
@@ -487,6 +486,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun scheduleServiceSocketEvent(serviceJSON: JSONObject) {
         val socket = SocketConnectWorker.SocketIO.mSocket
         socket?.emit("service/schedule", serviceJSON)
+        Timber.e("SCHEDULING SERVICE -> $serviceJSON")
     }
 
     private fun showAlertDialog() {
@@ -523,19 +523,19 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     fun launchDelegatedService(
         context: Context?,
         delegatedServiceId: String,
-        agentId: String,
+//        agentId: String,
         delegationId: String
     ) {
 
         val bundle = Bundle()
         bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
-        bundle.putString(SERVICE_AGENT_ID, agentId)
+//        bundle.putString(SERVICE_AGENT_ID, agentId)
         bundle.putString(DELEGATION_ID, delegationId)
         bundle.putString(TAKE_ME_TO, DELEGATED_SERVICE_FRAGMENT)
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
-        Timber.e("SERVICE_AGENT_ID -> $agentId")
+//        Timber.e("SERVICE_AGENT_ID -> $agentId")
         Timber.e("SERVICE_DATE -> $serviceDate")
 
         val progress = java.util.ArrayList<String>()
@@ -546,7 +546,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         /** Setting Service as Delegated **/
         delegatedServiceEntity.delegationId = delegationId
         delegatedServiceEntity.delegatedProductId = delegatedServiceId
-        delegatedServiceEntity.serviceAgentId = agentId
+//        delegatedServiceEntity.serviceAgentId = agentId
         delegatedServiceEntity.serviceProgress = progress
         delegatedServiceEntity.serviceDate = serviceDate
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)

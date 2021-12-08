@@ -72,6 +72,7 @@ class Tfuma : Fragment() {
     lateinit var serviceCost: String //7
     lateinit var serviceCostArrayList: ArrayList<ServiceCostModel>
     lateinit var serviceCostJSONArray: JSONArray
+    lateinit var mixpanelAPI: MixpanelAPI
 
     var serviceDocuments = ArrayList<String>() //8
     lateinit var serviceDocumentsJSONArray: JSONArray //8
@@ -112,21 +113,33 @@ class Tfuma : Fragment() {
                 as ArrayList<ServiceEntity>?)!!
 
         delegatedServicePrefs = this.requireActivity()
-            .getSharedPreferences(ummoUserPreferences, mode)
+                .getSharedPreferences(ummoUserPreferences, mode)
 
         /** Initing TfumaViewModel **/
         tfumaViewModel = ViewModelProvider(this).get(TfumaViewModel::class.java)
     }
 
+    override fun onStart() {
+        super.onStart()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.timeEvent("Viewing TFUMA ($category)")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.track("Viewing TFUMA ($category)")
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         tfumaBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_tfuma,
-            container,
+                inflater,
+                R.layout.fragment_tfuma,
+                container,
             false
         )
 
@@ -147,9 +160,9 @@ class Tfuma : Fragment() {
 
         Timber.e("DELEGATED SERVICES LIST [0] -> ${delegatableServicesArrayList.size}")
 
-        val mixpanel = MixpanelAPI.getInstance(
-            requireContext(),
-            resources.getString(R.string.mixpanelToken)
+        mixpanelAPI = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
         )
 
         reloadServices()
@@ -165,7 +178,7 @@ class Tfuma : Fragment() {
             getDelegatableServicesFromServer()
             tfumaBinding.tfumaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
-            mixpanel?.track("delegateFragment_refreshed")
+            mixpanelAPI.track("delegateFragment_refreshed")
         }
 
         return view
@@ -255,11 +268,8 @@ class Tfuma : Fragment() {
         tfumaBinding.loadProgressBar.visibility = View.GONE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
-            )
-            mixpanel?.track("delegateFragment_noServicesInCategory")
+
+            mixpanelAPI.track("delegateFragment_noServicesInCategory")
         }
     }
 
@@ -269,11 +279,8 @@ class Tfuma : Fragment() {
         tfumaBinding.offlineLayout.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
-            )
-            mixpanel?.track("delegateFragment_showingOffline")
+
+            mixpanelAPI.track("delegateFragment_showingOffline")
         }
     }
 
@@ -290,11 +297,8 @@ class Tfuma : Fragment() {
         tfumaBinding.tfumaSwipeRefresher.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
-            )
-            mixpanel?.track("delegateFragment_hidingOffline")
+
+            mixpanelAPI.track("delegateFragment_hidingOffline")
         }
     }
 

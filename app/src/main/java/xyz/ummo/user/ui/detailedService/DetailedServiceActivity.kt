@@ -122,7 +122,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     private lateinit var detailedServicePrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
-    private lateinit var mixpanel: MixpanelAPI
+    private lateinit var mixpanelAPI: MixpanelAPI
 
     private var serviceCostAdapter: ArrayAdapter<ServiceCostModel>? = null
     private var serviceCostSpinner: Spinner? = null
@@ -133,12 +133,22 @@ class DetailedServiceActivity : AppCompatActivity() {
     private var specCost = ""
     private var chosenServiceCentre = ""
 
+    override fun onStart() {
+        super.onStart()
+        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mixpanelAPI.track("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mixpanel = MixpanelAPI.getInstance(
-            this,
-            resources.getString(R.string.mixpanelToken)
+        mixpanelAPI = MixpanelAPI.getInstance(
+                this,
+                resources.getString(R.string.mixpanelToken)
         )
 
         /** Binding Layout Views **/
@@ -260,7 +270,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             showSnackbarWhite("Opening link...", 0)
             startActivity(webViewIntent)
             webLinkJSON.put("LINK_OPENED", serviceObject.serviceLink)
-            mixpanel.track("detailedService_serviceLinkOpened", webLinkJSON)
+            mixpanelAPI.track("detailedService_serviceLinkOpened", webLinkJSON)
         } else {
             showSnackbarYellow("No link for '${serviceObject.serviceName}' found", -1)
         }
@@ -297,9 +307,9 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             val serviceSpecCost = JSONObject()
             serviceSpecCost
-                .put("SERVICE_SPEC", serviceSpec)
-                .put("SPEC_COST", specCost)
-            mixpanel.track("detailedService_serviceSpecSelected", serviceSpecCost)
+                    .put("SERVICE_SPEC", serviceSpec)
+                    .put("SPEC_COST", specCost)
+            mixpanelAPI.track("detailedService_serviceSpecSelected", serviceSpecCost)
 
             checkForDelegatedServiceAndCompare()
         }
@@ -336,7 +346,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         }
 
                         /** Tracking a repeat request **/
-                        mixpanel.track("detailedService_repeatingRequest", serviceRequestObject)
+                        mixpanelAPI.track("detailedService_repeatingRequest", serviceRequestObject)
                     }
                 })
 
@@ -353,7 +363,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         ServiceRequestBottomSheet.TAG
                     )
 
-                mixpanel.track("detailedService_requestingService", serviceRequestObject)
+                mixpanelAPI.track("detailedService_requestingService", serviceRequestObject)
             }
         }
     }
@@ -371,7 +381,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     private fun openServiceFeeSelfSupport() {
         val serviceFeeQuery = ServiceFeeQuery()
         serviceFeeQuery.show(this.supportFragmentManager, ServiceFeeQuery.TAG)
-        mixpanel.track("detailedService_serviceFeeSelfSupport")
+        mixpanelAPI.track("detailedService_serviceFeeSelfSupport")
 
     }
 
@@ -385,7 +395,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
 
-        mixpanel.track("detailedService_navigateBack")
+        mixpanelAPI.track("detailedService_navigateBack")
     }
 
     override fun onPause() {
@@ -487,7 +497,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                     .put("FILE_NAME", serviceObject.serviceAttachmentName)
                     .put("FILE_URL", serviceObject.serviceAttachmentURL)
 
-                mixpanel.track("attachment_downloadTapped", attachmentObject)
+                mixpanelAPI.track("attachment_downloadTapped", attachmentObject)
 
                 /** Checking if attachment has been downloaded; handling UX appropriately **/
                 if (!attachmentDownloaded) {
@@ -586,14 +596,14 @@ class DetailedServiceActivity : AppCompatActivity() {
                 toggleServiceBenefitsTextView.text = "Show Benefits"
                 expandServiceBenefitsImageView.visibility = View.GONE
                 collapseServiceBenefitsImageView.visibility = View.VISIBLE
-                mixpanel.track("detailedService_showingBenefits")
+                mixpanelAPI.track("detailedService_showingBenefits")
 
             } else {
                 serviceBenefitsLayout?.visibility = View.VISIBLE
                 toggleServiceBenefitsTextView.text = "Hide Benefits"
                 expandServiceBenefitsImageView.visibility = View.VISIBLE
                 collapseServiceBenefitsImageView.visibility = View.GONE
-                mixpanel.track("detailedService_hidingBenefits")
+                mixpanelAPI.track("detailedService_hidingBenefits")
             }
         }
     }
@@ -715,7 +725,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                     if (id == attachmentDownloadId) {
                         showSnackbarGreen("Download complete", -1)
                         editor.putBoolean(ATTACHMENT_DOWNLOADED, true).apply()
-                        mixpanel.track("detailedService_attachmentDownloaded", attachmentObject)
+                        mixpanelAPI.track("detailedService_attachmentDownloaded", attachmentObject)
 
                     }
                 }

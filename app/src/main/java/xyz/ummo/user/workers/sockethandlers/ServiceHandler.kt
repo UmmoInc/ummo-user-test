@@ -12,11 +12,11 @@ class ServiceHandler(serviceJSON: JSONObject, context: Context, params: WorkerPa
 
     val socket = SocketConnectWorker.SocketIO.mSocket
 
-    private var serviceScheduleCallback = Emitter.Listener {
+    var serviceScheduleCallback = Emitter.Listener {
         socket!!.emit("service/schedule", serviceJSON)
     }
 
-    private var serviceReadyCallback = Emitter.Listener {
+    var serviceReadyCallback = Emitter.Listener {
         socket!!.emit("service/ready", serviceJSON)
     }
 

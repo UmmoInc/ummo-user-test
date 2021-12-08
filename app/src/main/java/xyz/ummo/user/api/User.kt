@@ -8,6 +8,7 @@ import androidx.multidex.MultiDexApplication
 import com.github.kittinunf.fuel.core.FuelManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -16,6 +17,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.BuildConfig
+import xyz.ummo.user.R
 import xyz.ummo.user.R.string.onesignal_app_id
 import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
@@ -27,6 +29,8 @@ import java.net.URISyntaxException
 class User : MultiDexApplication() {
 
     private var fcmToken: String = ""
+
+    private lateinit var mixpanelAPI: MixpanelAPI
 
     //public var mSocket: Socket? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
@@ -116,11 +120,17 @@ class User : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
+        /** Init Mixpanel **/
+        mixpanelAPI = MixpanelAPI.getInstance(
+                applicationContext,
+                resources.getString(R.string.mixpanelToken)
+        )
+
         /** Init MainViewModel **/
 //        mainViewModel = ViewModelProvider().get(MainViewModel::class.java)
 
         val jwt: String = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString("jwt", "").toString()
+                .getString("jwt", "").toString()
 
         FuelManager.instance.basePath = getString(serverUrl)
 
@@ -136,6 +146,11 @@ class User : MultiDexApplication() {
         notificationOpenedHandler()
 
         if (jwt != "") {
+
+            /** Identifying User in Mixpanel's Profile properties **/
+            /*mixpanelAPI.people.identify(getUserId(jwt))
+            mixpanelAPI.identify(getUserId(jwt))*/
+
             FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
             initializeSocketWithId(getUserId(jwt))
 

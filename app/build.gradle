@@ -24,12 +24,12 @@ apply plugin: 'kotlin-android-extensions' //TODO: Deprecate Extensions
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "xyz.ummo.user"
         minSdkVersion 20
-        targetSdkVersion 30
-        versionCode 33
+        targetSdkVersion 31
+        versionCode 35
         versionName "1.2.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -45,6 +45,11 @@ android {
         //[END] OneSignal Integration
     }
     buildTypes {
+        student{
+            minifyEnabled true
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -79,7 +84,7 @@ dependencies {
     def multidex_version = "2.0.1"
     def lifecycle_version = '2.2.0'
     def room_version = '2.2.6'
-    def versions_work = "2.5.0"
+    def versions_work = "2.7.1"
 
     /**Dex**/
     implementation "androidx.multidex:multidex:$multidex_version"

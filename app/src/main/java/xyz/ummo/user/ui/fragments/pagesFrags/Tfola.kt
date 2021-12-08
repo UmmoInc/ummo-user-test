@@ -109,13 +109,25 @@ class Tfola : Fragment() {
     var serviceCategory = ""
     lateinit var category: String
 
-    lateinit var mixpanel: MixpanelAPI
+    lateinit var mixpanelAPI: MixpanelAPI
+
+    override fun onStart() {
+        super.onStart()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.timeEvent("Viewing TFOLA ($category)")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.track("Viewing TFOLA ($category)")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         serviceViewModel = ViewModelProvider(this)
-            .get(ServiceViewModel::class.java)
+                .get(ServiceViewModel::class.java)
 
         gAdapter = GroupAdapter()
 
@@ -163,9 +175,9 @@ class Tfola : Fragment() {
 
         filterServicesByCategory()
 
-        mixpanel = MixpanelAPI.getInstance(
-            requireContext(),
-            resources.getString(R.string.mixpanelToken)
+        mixpanelAPI = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
         )
 
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
@@ -176,7 +188,7 @@ class Tfola : Fragment() {
             tfolaBinding.tfolaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
 
-            mixpanel.track("discoverFragment_refreshed")
+            mixpanelAPI.track("discoverFragment_refreshed")
         }
 
         return view
@@ -224,7 +236,7 @@ class Tfola : Fragment() {
                 "Home Affairs" -> {
                     Timber.e("CHECKED HOME AFFAIRS")
                     displayServiceByCategory("601268725ad77100154da834")
-                    mixpanel.track("discoverFragment_homeAffairs_selected")
+                    mixpanelAPI.track("discoverFragment_homeAffairs_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -232,7 +244,7 @@ class Tfola : Fragment() {
                 "Commerce" -> {
                     Timber.e("CHECKED COMMERCE")
                     displayServiceByCategory("601266be5ad77100154da833")
-                    mixpanel.track("discoverFragment_commerce_selected")
+                    mixpanelAPI.track("discoverFragment_commerce_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Commerce"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -240,7 +252,7 @@ class Tfola : Fragment() {
                 "Revenue" -> {
                     Timber.e("CHECKED REVENUE")
                     displayServiceByCategory("601268ff5ad77100154da835")
-                    mixpanel.track("discoverFragment_revenue_selected")
+                    mixpanelAPI.track("discoverFragment_revenue_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Revenue"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)

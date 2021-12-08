@@ -188,13 +188,17 @@ class PagesFragment : Fragment() {
                             if (delegatable && category == service.getString(SERVICE_CATEGORY)) {
                                 countOfDelegatableServices++
                             } else if (!delegatable && category == service.getString(
-                                    SERVICE_CATEGORY
-                                )
+                                            SERVICE_CATEGORY
+                                    )
                             ) {
                                 countOfNonDelegatableServices++
                             }
                         }
-                        setupPagesTabs(countOfDelegatableServices, countOfNonDelegatableServices)
+                        if (isAdded)
+                            setupPagesTabs(
+                                    countOfDelegatableServices,
+                                    countOfNonDelegatableServices
+                            )
 
                     } catch (jse: JSONException) {
                         Timber.e("FAILED TO PARSE DELEGATABLE SERVICES -> $jse")

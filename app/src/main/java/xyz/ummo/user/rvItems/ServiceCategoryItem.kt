@@ -4,9 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.FragmentActivity
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.service_category.view.*
+import org.json.JSONObject
 import xyz.ummo.user.R
 import xyz.ummo.user.models.ServiceCategoryModel
 import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
@@ -20,6 +22,8 @@ class ServiceCategoryItem(
 
     private val bundle = Bundle()
 
+    private lateinit var mixpanelAPI: MixpanelAPI
+
     override fun getLayout(): Int {
         return R.layout.service_category
     }
@@ -27,10 +31,10 @@ class ServiceCategoryItem(
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.category_title_text_view.text = serviceCategoryModel.serviceCategoryName
         viewHolder.itemView.category_service_count_text_view.text =
-            "${serviceCategoryModel.serviceCount} services"
+                "${serviceCategoryModel.serviceCount} services"
 
         addThumbnailsToCategories(viewHolder)
-        openCategory(viewHolder)
+        openCategory(context, viewHolder)
 
     }
 
@@ -120,7 +124,7 @@ class ServiceCategoryItem(
                 viewHolder.itemView.category_image_view.setImageDrawable(
                     AppCompatResources.getDrawable(
                         context,
-                        R.drawable.ic_twotone_creatives_24
+                            R.drawable.ic_twotone_creatives_24
                     )
                 )
 
@@ -130,9 +134,14 @@ class ServiceCategoryItem(
         }
     }
 
-    private fun openCategory(viewHolder: GroupieViewHolder) {
+    private fun openCategory(context: Context, viewHolder: GroupieViewHolder) {
+
+        val category = JSONObject()
+        mixpanelAPI = MixpanelAPI.getInstance(context, context.resources.getString(R.string.mixpanelToken))
         viewHolder.itemView.service_category_card_view.setOnClickListener {
             openFragment()
+            category.put("CATEGORY_NAME", serviceCategoryModel.serviceCategoryName)
+            mixpanelAPI.track("serviceCategory_selected", category)
         }
     }
 
