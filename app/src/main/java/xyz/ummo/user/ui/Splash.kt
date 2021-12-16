@@ -22,6 +22,7 @@ import xyz.ummo.user.ui.intro.Intro
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.signup.RegisterActivity
 import xyz.ummo.user.utilities.CONTINUED
+import xyz.ummo.user.utilities.LAUNCH_URL
 import xyz.ummo.user.utilities.SIGNED_UP
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -59,8 +60,8 @@ class Splash : Activity() {
 
         val context = this.applicationContext
         val mixpanel = MixpanelAPI.getInstance(
-            context,
-            resources.getString(R.string.mixpanelToken)
+                context,
+                resources.getString(R.string.mixpanelToken)
         )
         mixpanel?.track("appLaunched")
 
@@ -86,7 +87,8 @@ class Splash : Activity() {
             val firstTimeLaunch = splashPreferences.getBoolean("IsFirstTimeLaunch", true)
             if (!firstTimeLaunch) {
                 Timber.e("onCreate - User has already signed up")
-                startActivity(Intent(this@Splash, MainScreen::class.java))
+                startActivity(Intent(this@Splash, MainScreen::class.java)
+                        .putExtra(LAUNCH_URL, ""))
             } else {
                 Timber.e("onCreate - User has not signed up yet!")
 

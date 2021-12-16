@@ -320,10 +320,40 @@ class User : MultiDexApplication() {
             val actionId = result.action.actionId
             val type: String = result.action.type.toString() // "ActionTaken" | "Opened"
             val title = result.notification.title
+            val body = result.notification.body
+            val data = result.notification.rawPayload
+            val dataObject = JSONObject(data)
+            val customObject = JSONObject(dataObject.getString("custom")).getJSONObject("a")
+            val openURL = customObject.getString("OPEN_URL")
+            val url = result.notification.launchURL
+
+            val notificationJSONObject = JSONObject()
+
+            /** Checking if URL is not empty, then launching an in-app browser window **/
+            if (openURL.isNotEmpty()) {
+                /** Open the link **/
+                val intent = Intent(applicationContext, MainScreen::class.java)
+                intent.putExtra(LAUNCH_URL, openURL)
+                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                Timber.e("LAUNCH URL -> $openURL")
+
+                notificationJSONObject.put(ACTION_ID, actionId)
+                notificationJSONObject.put(ACTION_TAKEN, type)
+                notificationJSONObject.put(LAUNCH_URL, openURL)
+                notificationJSONObject.put(NOTIFICATION_BODY, body)
+                mixpanelAPI.track("notificationAction", notificationJSONObject)
+
+                startActivity(intent)
+            } else
+                return@setNotificationOpenedHandler
 
             Timber.e("OS NOTIFICATION ACTION-ID -> $actionId")
             Timber.e("OS NOTIFICATION TYPE -> $type")
             Timber.e("OS NOTIFICATION TITLE -> $title")
+            Timber.e("OS NOTIFICATION BODY -> $body")
+            Timber.e("OS NOTIFICATION DATA -> $dataObject")
+            Timber.e("OS NOTIFICATION CUSTOM DATA -> $customObject")
+            Timber.e("OS NOTIFICATION OPEN URL -> $openURL")
         }
     }
 }

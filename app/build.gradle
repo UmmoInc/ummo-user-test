@@ -29,7 +29,7 @@ android {
         applicationId "xyz.ummo.user"
         minSdkVersion 20
         targetSdkVersion 31
-        versionCode 35
+        versionCode 36
         versionName "1.2.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

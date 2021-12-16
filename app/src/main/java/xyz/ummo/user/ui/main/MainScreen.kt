@@ -47,6 +47,7 @@ import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
 import xyz.ummo.user.models.ServiceProviderData
+import xyz.ummo.user.ui.fragments.UmmoBrowser
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
@@ -255,6 +256,16 @@ class MainScreen : AppCompatActivity() {
 
         val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
+
+        /** Check for URL in intent extras and launch the Ummo Browser **/
+        val launchURL = intent.extras?.getString(LAUNCH_URL)
+
+        if (launchURL != null && launchURL.isNotEmpty()) {
+            Timber.e("LAUNCHING WITH URL -> $launchURL")
+            mixpanel.track("openingUmmoBrowser")
+            openFragment(UmmoBrowser.newInstance(launchURL))
+        }
+
         val delegatedServiceFragment = DelegatedServiceFragment()
 
         if (openDelegation == 1) {

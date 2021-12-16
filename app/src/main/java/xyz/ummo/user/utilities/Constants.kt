@@ -8,7 +8,7 @@ import android.app.Activity
  * Name of Notification Channel for verbose notifications of background work **/
 @JvmField
 val VERBOSE_NOTIFICATION_CHANNEL_NAME: CharSequence =
-    "Verbose WorkManager Notifications"
+        "Verbose WorkManager Notifications"
 const val VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION = "Shows notifications whenever work starts"
 
 @JvmField
@@ -16,6 +16,12 @@ val NOTIFICATION_TITLE: CharSequence = "WorkRequest Starting"
 const val CHANNEL_ID = "VERBOSE_NOTIFICATION"
 const val NOTIFICATION_ID = 1
 const val DELAY_TIME_MILLIS: Long = 3000
+
+/** OneSignal Notification Constants **/
+const val ACTION_ID = "ACTION_ID"
+const val ACTION_TAKEN = "ACTION_TAKEN"
+const val LAUNCH_URL = "LAUNCH_URL"
+const val NOTIFICATION_BODY = "NOTIFICATION_BODY"
 
 const val ummoUserPreferences = "UMMO_USER_PREFERENCES"
 const val mode = Activity.MODE_PRIVATE

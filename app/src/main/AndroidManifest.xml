@@ -44,9 +44,12 @@
         <meta-data
             android:name="com.onesignal.NotificationServiceExtension"
             android:value="com.onesignal.example.NotificationServiceExtension" />
-        <meta-data
+        <!--<meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"
-            android:value="DISABLE" />
+            android:value="DISABLE" />-->
+        <!-- <meta-data
+             android:name="com.onesignal.suppressLaunchURLs"
+             android:value="false"/>-->
 
         <service
             android:name=".utilities.fcm.UmmoFirebaseService"
