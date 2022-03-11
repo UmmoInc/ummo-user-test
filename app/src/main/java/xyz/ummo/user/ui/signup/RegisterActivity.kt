@@ -233,7 +233,7 @@ class RegisterActivity : AppCompatActivity() {
                         Timber.e("reCAPTCHA Token -> $userResponseToken")
 
                         Timber.e("GLOBAL SCOPE THREAD NAME -> ${Thread.currentThread().name}")
-                        verifyCaptchaFromServer(userResponseToken)
+                        verifyCaptchaFromServer(userResponseToken!!)
                     }
                 }
             }

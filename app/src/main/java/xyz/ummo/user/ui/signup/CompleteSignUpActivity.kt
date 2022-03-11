@@ -311,7 +311,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(applicationContext,
-                            Objects.requireNonNull(task.exception).message,
+                            Objects.requireNonNull(task.exception)!!.message,
                             Toast.LENGTH_SHORT).show()
                 }
             }
