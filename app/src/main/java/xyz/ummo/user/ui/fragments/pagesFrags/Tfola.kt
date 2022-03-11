@@ -9,9 +9,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -24,18 +27,24 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
-import xyz.ummo.user.api.User.Companion.mode
-import xyz.ummo.user.api.User.Companion.ummoUserPreferences
+import xyz.ummo.user.api.Service
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentTfolaBinding
 import xyz.ummo.user.databinding.ServiceFilterChipLayoutBinding
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.SERVICE_BENEFITS
+import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
+import xyz.ummo.user.utilities.mode
+import xyz.ummo.user.utilities.ummoUserPreferences
+import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 
 class Tfola : Fragment() {
     private lateinit var allServices: JSONArray
@@ -90,16 +99,35 @@ class Tfola : Fragment() {
     var serviceLink = "" //17
     var serviceAttachmentJSONArray = JSONArray()
     var serviceAttachmentJSONObject = JSONObject() //18
+
+    var serviceBenefitJSONArray = JSONArray()
+    var serviceBenefits = ArrayList<ServiceBenefit>()
+
     var serviceAttachmentName = ""
     var serviceAttachmentSize = ""
     var serviceAttachmentURL = ""
-    lateinit var mixpanel: MixpanelAPI
+    var serviceCategory = ""
+    lateinit var category: String
+
+    lateinit var mixpanelAPI: MixpanelAPI
+
+    override fun onStart() {
+        super.onStart()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.timeEvent("Viewing TFOLA ($category)")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        mixpanelAPI.track("Viewing TFOLA ($category)")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         serviceViewModel = ViewModelProvider(this)
-            .get(ServiceViewModel::class.java)
+                .get(ServiceViewModel::class.java)
 
         gAdapter = GroupAdapter()
 
@@ -135,7 +163,11 @@ class Tfola : Fragment() {
 
         getNonDelegatableServicesFromServer()
 
+        pollingAdapterState()
+
         reloadServices()
+
+        returnHome()
 
         if (isAdded) {
             getServiceProviderData()
@@ -143,10 +175,12 @@ class Tfola : Fragment() {
 
         filterServicesByCategory()
 
-        mixpanel = MixpanelAPI.getInstance(
-            requireContext(),
-            resources.getString(R.string.mixpanelToken)
+        mixpanelAPI = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
         )
+
+        category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
 
         /** Refreshing services with [tfola_swipe_refresher] **/
         tfolaBinding.tfolaSwipeRefresher.setOnRefreshListener {
@@ -154,10 +188,32 @@ class Tfola : Fragment() {
             tfolaBinding.tfolaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
 
-            mixpanel?.track("discoverFragment_refreshed")
+            mixpanelAPI.track("discoverFragment_refreshed")
         }
 
         return view
+    }
+
+    private fun noServicesInCategory() {
+        tfolaBinding.noServicesRelativeLayout.visibility = View.VISIBLE
+        tfolaBinding.offlineLayout.visibility = View.GONE
+        tfolaBinding.tfolaServicesRecyclerView.visibility = View.GONE
+        tfolaBinding.loadProgressBar.visibility = View.GONE
+
+        if (isAdded) {
+            val mixpanel = MixpanelAPI.getInstance(
+                requireContext(),
+                resources.getString(R.string.mixpanelToken)
+            )
+            mixpanel?.track("discoverFragment_noServicesInCategory")
+        }
+    }
+
+    private fun hideNoServicesLayout() {
+        tfolaBinding.noServicesRelativeLayout.visibility = View.GONE
+        tfolaBinding.tfolaSwipeRefresher.visibility = View.VISIBLE
+        tfolaBinding.loadProgressBar.visibility = View.GONE
+        tfolaBinding.offlineLayout.visibility = View.GONE
     }
 
     private fun filterServicesByCategory() {
@@ -166,34 +222,37 @@ class Tfola : Fragment() {
             Timber.e("CHECKED GROUP -> $group")
             Timber.e("CHECKED CHIP -> $checkedId")
 
-            when (checkedId) {
+            val titleOrNull = group.findViewById<Chip>(checkedId)?.text
+            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
 
-                2131361939 -> {
+            when (titleOrNull) {
+
+                "All Services" -> {
                     Timber.e("CHECKED ALL")
                     Timber.e("SERVICE PROVIDER -> $serviceProviderList")
                     getNonDelegatableServicesFromServer()
 
                 }
-                2131362251 -> {
+                "Home Affairs" -> {
                     Timber.e("CHECKED HOME AFFAIRS")
                     displayServiceByCategory("601268725ad77100154da834")
-                    mixpanel.track("discoverFragment_homeAffairs_selected")
+                    mixpanelAPI.track("discoverFragment_homeAffairs_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
-                2131362041 -> {
+                "Commerce" -> {
                     Timber.e("CHECKED COMMERCE")
                     displayServiceByCategory("601266be5ad77100154da833")
-                    mixpanel.track("discoverFragment_commerce_selected")
+                    mixpanelAPI.track("discoverFragment_commerce_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Commerce"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
                 }
-                2131362498 -> {
+                "Revenue" -> {
                     Timber.e("CHECKED REVENUE")
                     displayServiceByCategory("601268ff5ad77100154da835")
-                    mixpanel.track("discoverFragment_revenue_selected")
+                    mixpanelAPI.track("discoverFragment_revenue_selected")
                     loadingCategoryServicesEvent.categoryLoading = "Revenue"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -209,12 +268,10 @@ class Tfola : Fragment() {
         object : GetServiceProvider(requireActivity()) {
             override fun done(data: List<ServiceProviderData>, code: Number) {
                 if (code == 200) {
-                    Timber.e("SERVICE-PROVIDERS -> $data")
                     serviceProviderList = data
 
                     for (i in data.indices) {
                         serviceProviderData = data[i]
-                        Timber.e("SERVICE-PROVIDER -> $serviceProviderData")
                     }
                 } else {
                     Timber.e("NO SERVICE PROVIDERS FOUND -> $code")
@@ -224,7 +281,7 @@ class Tfola : Fragment() {
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
-     * the User the [offlineLayout] and allowing them to reload the services manually **/
+     * the User the [offline_layout] and allowing them to reload the services manually **/
     private fun reloadServices() {
         tfolaBinding.reloadTfolaServicesButton.setOnClickListener {
 
@@ -243,9 +300,11 @@ class Tfola : Fragment() {
 
             override fun onFinish() {
                 if (gAdapter.itemCount == 0) {
-                    showOfflineState()
+//                    showOfflineState()
+                    noServicesInCategory()
                 } else {
                     hideOfflineState()
+                    hideNoServicesLayout()
                 }
             }
         }
@@ -295,11 +354,27 @@ class Tfola : Fragment() {
         }
     }
 
+    private fun returnHome() {
+        tfolaBinding.goHomeButton.setOnClickListener {
+            openFragment(ServiceCategories())
+        }
+    }
+
+    private fun openFragment(fragment: Fragment) {
+
+        val fragmentTransaction: FragmentTransaction = requireActivity().supportFragmentManager
+            .beginTransaction()
+
+        fragmentTransaction.replace(R.id.frame, fragment)
+        fragmentTransaction.commit()
+    }
+
+    @AddTrace(name = "get_non_delegatable_services_from_server")
     private fun getNonDelegatableServicesFromServer() {
         object : GetAllServices(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 if (code == 200) {
-                    allServices = JSONArray(String(data))
+                    allServices = JSONObject(String(data)).getJSONArray("payload")
 
                     gAdapter.clear()
 
@@ -321,11 +396,10 @@ class Tfola : Fragment() {
         var service: JSONObject
 
         for (i in 0 until allServices.length()) {
-            Timber.e("ALL SERVICES [$i]-> ${allServices[i]}")
             service = allServices[i] as JSONObject
             delegatable = service.getBoolean("delegatable")
 
-            if (!delegatable) {
+            if (!delegatable && category == service.getString(SERVICE_CATEGORY)) {
                 parseSingleService(service)
             }
         }
@@ -363,10 +437,25 @@ class Tfola : Fragment() {
         viewCount = serviceJSONObject.getInt("service_view_count") //15
         serviceProvider = serviceJSONObject.getString("service_provider") //16
 
+        /** Checking if [serviceBenefits] exists in the [Service] object,
+         * since not all services have benefits listed under them. **/
+        serviceBenefitJSONArray = if (serviceJSONObject.has(SERVICE_BENEFITS)) {
+            Timber.e("SERVICE BENEFIT FOUND")
+            serviceJSONObject.getJSONArray(SERVICE_BENEFITS)
+        } else {
+            val noServiceBenefit = ServiceBenefit("", "")
+            Timber.e("NO SERVICE BENEFIT -> $noServiceBenefit")
+            serviceBenefitJSONArray.put(0, noServiceBenefit)
+        }
+
+        serviceBenefits = fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
+
         serviceLink = if (serviceJSONObject.getString("service_link").isNotEmpty())
             serviceJSONObject.getString("service_link") //17
         else
             ""
+
+        serviceCategory = serviceJSONObject.getString(SERVICE_CATEGORY)
 
         try {
             serviceAttachmentJSONArray =
@@ -390,7 +479,8 @@ class Tfola : Fragment() {
             delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
             approvalCount, disapprovalCount, serviceComments,
             commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL
+            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL, serviceCategory,
+            serviceBenefits
         )
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
@@ -419,8 +509,6 @@ class Tfola : Fragment() {
         if (isAdded) {
             gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))
             Timber.e("GROUPIE-ADAPTER [2] -> ${gAdapter.itemCount}")
-            gAdapter.notifyDataSetChanged()
-
             checkingAdapterState()
         }
     }

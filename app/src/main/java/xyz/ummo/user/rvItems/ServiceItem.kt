@@ -1,7 +1,6 @@
 package xyz.ummo.user.rvItems
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -14,10 +13,11 @@ import android.view.View
 import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.perf.metrics.AddTrace
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.content_detailed_service.view.*
@@ -31,23 +31,17 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.*
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.models.ServiceCommentObject
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen.Companion.AGENT_ID
-import xyz.ummo.user.ui.MainScreen.Companion.CURRENT_SERVICE_PENDING
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_ID
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_PENDING
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATED_SERVICE_ID
-import xyz.ummo.user.ui.detailedService.DetailedServiceActivity.Companion.DELEGATION_ID
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceExtrasBottomSheetDialogFragment
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
-import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
-import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.*
+import xyz.ummo.user.ui.fragments.bottomSheets.serviceComments.ServiceComments
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -63,12 +57,13 @@ class ServiceItem(
     private var serviceId: String = ""
     private val bundle = Bundle()
 
+    private val serviceCommentsBundle = Bundle()
+    private var serviceComments = ArrayList<ServiceCommentObject>()
+
     /** Shared Preferences for storing user actions **/
     private lateinit var serviceItemPrefs: SharedPreferences
     private lateinit var savingServiceOfflineAnimation: AnimationDrawable
 
-    private val mode = Activity.MODE_PRIVATE
-    private val ummoUserPreferences = "UMMO_USER_PREFERENCES"
     private var upVote: Boolean = false
     private var downVote: Boolean = false
     private var commentedOn: Boolean = false
@@ -115,6 +110,7 @@ class ServiceItem(
 
     //private lateinit var serviceCentresTextView: TextView
     private lateinit var serviceRequirementsTextView: TextView
+    private lateinit var picasso: Picasso
 
     init {
         upVote = savedUserActions.getBoolean("UP-VOTE")
@@ -133,7 +129,12 @@ class ServiceItem(
     }
 
     @SuppressLint("SimpleDateFormat")
+    @AddTrace(name = "service_item_binding_view_holder")
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+
+        /** Initializing [Picasso] **/
+        picasso = Picasso.get()
+
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
             .get(DelegatedServiceViewModel::class.java)
 
@@ -146,11 +147,6 @@ class ServiceItem(
             context?.resources?.getString(R.string.mixpanelToken)
         )
         val serviceItemObject = JSONObject()
-
-//        Timber.e("UP-VOTE -> $upVote")
-//        Timber.e("DOWN-VOTE -> $downVote")
-//        Timber.e("COMMENTED-ON -> $commentedOn")
-//        Timber.e("BOOKMARKED -> $bookmarked")
 
         /** Initializing sharedPreferences **/
         serviceItemPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
@@ -166,77 +162,39 @@ class ServiceItem(
 
         checkIfServiceIsSavedOffline(serviceId, viewHolder)
 
-        /** Parsing and displaying the service centres in the Service Centres linear layout **/
-        if (service.serviceCentres.isNotEmpty()) {
-            viewHolder.itemView.service_centres_chip_group.removeAllViews()
-//            viewHolder.itemView.service_centres_linear_layout.removeAllViews()
-            for (i in service.serviceCentres.indices) {
-
-                val serviceCentreChipItem = inflater.inflate(
-                    R.layout.service_centre_chip_item,
-                    null, false
-                ) as Chip
-
-                serviceCentreChipItem.text = service.serviceCentres[i]
-                Timber.e("CENTRE_CHIP -> ${service.serviceCentres[i]}")
-
-                viewHolder.itemView.service_centres_chip_group.setOnCheckedChangeListener { group, checkedId ->
-                    serviceItemObject.put("SERVICE_CENTRE_CHIP", service.serviceCentres[i])
-                    Timber.e("SERVICE CENTRE CHECKED [GROUP] -> ${service.serviceCentres[i]}")
-                    mixpanel?.track("serviceCard_serviceCentreChecked", serviceItemObject)
-                }
-
-                serviceCentreChipItem.setOnCheckedChangeListener { compoundButton, b ->
-                    Timber.e("SERVICE CENTRE CHECKED [GROUP] -> ${service.serviceCentres[i]}")
-                }
-                /*if (serviceCentreChipItem.isChecked) {
-                    serviceItemObject.put("CENTRE_CHIP", service.serviceCentres)
-                    mixpanel?.track("serviceCard_centreChipChecked", serviceItemObject)
-
-                    Timber.e("CENTRE_CHIP_CHECKED -> ${service.serviceCentres}")
-                }*/
-
-                viewHolder.itemView.service_centres_chip_group.addView(serviceCentreChipItem)
+        when {
+            service.serviceName.contains("Motor Vehicle License Disc", true) -> {
+                picasso.load(R.drawable.mvl_disc)
+                    .into(viewHolder.itemView.service_image_view)
             }
+            service.serviceName.contains("Passport", true) -> {
+                picasso.load(R.drawable.passport)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Travel Document", true) -> {
+                picasso.load(R.drawable.travel_document)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Driver's License", true)
+                    || service.serviceName.contains("Learner's License") -> {
+                picasso.load(R.drawable.drivers_licence)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("Change Vehicle Ownership", true) -> {
+                picasso.load(R.drawable.vehicle_exchange)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+            service.serviceName.contains("ID Card", true) -> {
+                picasso.load(R.drawable.national_id)
+                    .into(viewHolder.itemView.service_image_view)
+            }
+
         }
 
         /** Parsing Service Costs**/
         parseServiceCostBySpec(service)
-        /** Listening for Item Selected **/
-        /*addListenerOnSpinnerItemSelected(viewHolder)
-//        viewHolder.itemView.service_cost_text_view.text = service.serviceCost //6
-        serviceCostSpinner = viewHolder.itemView.service_cost_spinner
-        serviceCostAdapter = ArrayAdapter(context,
-                R.layout.support_simple_spinner_dropdown_item, serviceCostArrayList)
-        serviceCostSpinner?.adapter = serviceCostAdapter*/
 
         selectingServiceSpec(viewHolder)
-
-        viewHolder.itemView.service_duration_text_view.text = service.serviceDuration //7
-//        viewHolder.itemView.service_requirements_text_view.text = service.serviceDocuments.toString() //8
-
-        /** Parsing and displaying the service requirements in the Service Requirements linear layout **/
-        if (service.serviceDocuments.isNotEmpty()) {
-            viewHolder.itemView.service_requirements_chip_group.removeAllViews()
-            for (i in service.serviceDocuments.indices) {
-                val serviceRequirementsChipItem = inflater.inflate(
-                    R.layout.service_centre_chip_item,
-                    null, false
-                ) as Chip
-
-                serviceRequirementsChipItem.text = service.serviceDocuments[i]
-                viewHolder.itemView.service_requirements_chip_group.addView(
-                    serviceRequirementsChipItem
-                )
-
-                viewHolder.itemView.service_requirements_chip_group.setOnCheckedChangeListener { group, checkedId ->
-                    Timber.e("DOCS CHECKED -> ${service.serviceDocuments[i]}")
-                    serviceItemObject.put("SERVICE_DOC_CHIP", service.serviceDocuments[i])
-                    mixpanel?.track("serviceCard_serviceDocChecked", serviceItemObject)
-
-                }
-            }
-        }
 
         //TODO: Assign serviceEntity to serviceValues
         assignServiceEntity(serviceEntity)
@@ -247,6 +205,14 @@ class ServiceItem(
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
             mixpanel?.track("serviceCard_cardTitleTapped", mixpanelServiceObject)
+        }
+
+        viewHolder.itemView.service_image_view.setOnClickListener {
+            showServiceDetails()
+
+            val mixpanelServiceObject = JSONObject()
+            mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
+            mixpanel?.track("serviceCard_cardImageTapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
@@ -324,69 +290,6 @@ class ServiceItem(
             mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
         }
 
-        viewHolder.itemView.service_query_icon_relative_layout.setOnClickListener {
-
-            bundle.putString(SERVICE_ID, serviceId)
-            val serviceFeeQueryBottomSheetFragment = ServiceFeeQuery()
-            serviceFeeQueryBottomSheetFragment.show(
-                context.supportFragmentManager,
-                ServiceFeeQuery.TAG
-            )
-
-            serviceItemObject.put("SERVICE_ID", serviceId)
-            mixpanel?.track("serviceCard_queryIconTapped", serviceItemObject)
-        }
-
-        /** Expand Service Card to reveal more info - Layout-Click... **/
-        viewHolder.itemView.action_layout.setOnClickListener {
-            if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.VISIBLE
-                viewHolder.itemView.expand_image_view.visibility = View.GONE
-                viewHolder.itemView.collapse_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.action_text_view.text = "CLOSE"*/
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-                /*viewHolder.itemView.expandable_relative_layout.visibility = View.GONE
-                viewHolder.itemView.expand_image_view.visibility = View.VISIBLE
-                viewHolder.itemView.collapse_image_view.visibility = View.GONE
-                viewHolder.itemView.action_text_view.text = "MORE INFO"
-
-                serviceItemObject.put("EVENT_DATE_TIME", currentDate)
-                        .put("SERVICE_ID", serviceId)
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)*/
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            }
-        }
-
-        /** Expand Service Card to reveal more info - Text-Click... **/
-        viewHolder.itemView.action_text_view.setOnClickListener {
-            if (viewHolder.itemView.action_text_view.text == "MORE INFO") {
-
-                showServiceDetails()
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-                mixpanel?.track("serviceCard_infoExpanded", serviceItemObject)
-
-            } else if (viewHolder.itemView.action_text_view.text == "CLOSE") {
-
-                serviceItemObject.put("SERVICE_NAME", serviceEntity.serviceName)
-
-                mixpanel?.track("serviceCard_infoCollapsed", serviceItemObject)
-
-            }
-        }
 
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {
@@ -476,24 +379,29 @@ class ServiceItem(
             serviceItemObject.remove("SERVICE_DOWNVOTED")
         }
 
-        /** [3] Service Feedback Click Handlers **/
+        /** [3] Service Comments Click Handlers on the entire Relative Layout **/
         viewHolder.itemView.service_comments_relative_layout.setOnClickListener {
-            makeServiceComment(viewHolder, currentDate)
+            /*makeServiceComment(viewHolder, currentDate)
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                 .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
-            serviceItemObject.remove("SERVICE_COMMENTED_ON")
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")*/
+
+            viewServiceComments()
+
         }
         viewHolder.itemView.service_comments_image.setOnClickListener {
-            makeServiceComment(viewHolder, currentDate)
+            /*makeServiceComment(viewHolder, currentDate)
             //TODO: remove commentTriggeredChangeStates(viewHolder)
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                 .put("SERVICE_COMMENTED_ON", serviceId)
             mixpanel?.track("serviceCard_serviceCommentTapped", serviceItemObject)
-            serviceItemObject.remove("SERVICE_COMMENTED_ON")
+            serviceItemObject.remove("SERVICE_COMMENTED_ON")*/
+
+            viewServiceComments()
         }
 
         /** [4] Save Service Click Handlers **/
@@ -553,6 +461,7 @@ class ServiceItem(
 
         /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
         intent.putExtra(SERVICE_OBJECT, service as Serializable)
+//        intent.putExtra(SERVICE_IMAGE, )
         Timber.e("SHOWING SERVICE DETAILS -> $service")
 
         serviceViewModel.addService(serviceEntity)
@@ -628,11 +537,24 @@ class ServiceItem(
                 requestBundle.putSerializable(SERVICE_OBJECT, service)
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
-                serviceRequestBottomSheetDialog
-                    .show(
+
+                val introduceDelegateBottomSheetDialog = IntroduceDelegate()
+                introduceDelegateBottomSheetDialog.arguments = requestBundle
+
+                /** Checking if [DELEGATION_INTRO_IS_CONFIRMED], at which, we show the appropriate
+                 * dialog, as per User's awareness **/
+                if (serviceItemPrefs.getBoolean(DELEGATION_INTRO_IS_CONFIRMED, false)) {
+                    serviceRequestBottomSheetDialog.show(
                         context!!.supportFragmentManager,
                         ServiceRequestBottomSheet.TAG
                     )
+                } else {
+                    introduceDelegateBottomSheetDialog.show(
+                        context!!.supportFragmentManager,
+                        IntroduceDelegate.TAG
+                    )
+                }
+
             }
 //            }
         }
@@ -651,7 +573,7 @@ class ServiceItem(
         for (i in offlineServices.indices) {
             if (mServiceId == offlineServices[i].serviceId) {
                 Timber.e("OFFLINE SERVICE -> ${offlineServices[i].serviceName}")
-                viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
+//                viewHolder.itemView.you_saved_this_text_view.visibility = View.VISIBLE
                 viewHolder.itemView.save_service_image.setImageResource(R.drawable.ic_saved_offline_pin_24)
             }
         }
@@ -855,7 +777,6 @@ class ServiceItem(
         if (serviceEntity.usefulCount != 0) {
             serviceEntity.usefulCount = serviceEntity.usefulCount?.minus(1)
             Timber.e("UPVOTE COUNT -> ${serviceEntity.usefulCount}")
-
         }
 
         /** Initializing sharedPreferences **/
@@ -1108,6 +1029,47 @@ class ServiceItem(
         } catch (jse: JSONException) {
             Timber.e("JSONException ->$jse")
         }
+    }
+
+
+    /** Let's display the Service Comments Bottom here **/
+    private fun viewServiceComments() {
+
+        /** We're going to display the Service Comments Bottom Sheet below **/
+        val serviceCommentsBottomSheet = ServiceComments()
+
+        serviceCommentsBundle.putString(SERVICE_ID, serviceId)
+        serviceCommentsBundle.putString(SERVICE_NAME, service.serviceName)
+
+        serviceCommentsBottomSheet.arguments = serviceCommentsBundle
+
+        serviceCommentsBottomSheet.show(
+            supportFM,
+            ServiceComments.TAG
+        )
+
+        /*object : ViewServiceComments(context, serviceId) {
+            override fun done(data: ByteArray, code: Number) {
+                if (code == 200) {
+                    Timber.e("SERVICE COMMENTS -> ${String(data)}")
+
+                    */
+        /** Filling up [serviceComments] with [parseServiceCommentsPayload] **//*
+                    serviceComments = parseServiceCommentsPayload(data)
+
+                    serviceCommentsBundle.putSerializable(SERVICE_COMMENTS, serviceComments)
+                    */
+        /** We're going to display the Service Comments Bottom Sheet below **//*
+                    val serviceCommentsBottomSheet = ServiceComments()
+                    serviceCommentsBottomSheet.arguments = serviceCommentsBundle
+
+                    serviceCommentsBottomSheet.show(
+                        supportFM,
+                        ServiceComments.TAG
+                    )
+                }
+            }
+        }*/
     }
 
     /** With this function, we're simply displaying the commentDialog  && capturing the comment

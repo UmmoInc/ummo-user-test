@@ -14,7 +14,7 @@ abstract class GeneralFeedback(var context: Context, feedback: String, userConta
         val feedbackObject = JSONObject().put("feedbackText", feedback)
                 .put("userContact", userContact)
 
-        Fuel.post("${context.getString(R.string.serverUrl)}/api/feedback")
+        Fuel.post("${context.getString(R.string.serverUrl)}/feedback")
                 .jsonBody(feedbackObject.toString())
                 .response { request, response, result ->
                     (context as Activity).runOnUiThread {

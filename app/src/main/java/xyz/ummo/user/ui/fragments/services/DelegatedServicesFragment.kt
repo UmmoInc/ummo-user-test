@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import org.json.JSONArray
 import org.json.JSONException
 import timber.log.Timber
-import xyz.ummo.user.models.DelegatedService
 import xyz.ummo.user.R
 import xyz.ummo.user.api.Service
+import xyz.ummo.user.models.DelegatedService
 import java.util.*
 
 /**
@@ -41,8 +41,8 @@ class DelegatedServicesFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mParam1 = arguments!!.getString(ARG_PARAM1)
-            mParam2 = arguments!!.getString(ARG_PARAM2)
+            mParam1 = requireArguments().getString(ARG_PARAM1)
+            mParam2 = requireArguments().getString(ARG_PARAM2)
         }
         addDelegatedServices()
         delegatedServiceAdapter = DelegatedServiceAdapter(delegatedServiceArrayList)
@@ -56,7 +56,7 @@ class DelegatedServicesFragment : Fragment() {
         loadDelegatedServicesProgressBar = view.findViewById(R.id.load_delegated_services_progress_bar)
         val linearLayoutManager = LinearLayoutManager(context)
         val ATTRS = intArrayOf(android.R.attr.listDivider)
-        val a = context!!.obtainStyledAttributes(ATTRS)
+        val a = requireContext().obtainStyledAttributes(ATTRS)
         val divider = a.getDrawable(0)
         val insetRight = resources.getDimensionPixelSize(R.dimen.divider_item_right)
         val insetLeft = resources.getDimensionPixelSize(R.dimen.divider_item_left)
@@ -111,7 +111,7 @@ class DelegatedServicesFragment : Fragment() {
     }
 
     private fun addDelegatedServices() {
-        object : Service(activity!!) {
+        object : Service(requireActivity()) {
             override fun done(data: ByteArray, code: Number) {
                 activity!!.runOnUiThread {
                     try {

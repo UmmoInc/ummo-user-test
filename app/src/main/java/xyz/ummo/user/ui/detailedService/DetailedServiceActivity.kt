@@ -44,14 +44,15 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.MainScreen.Companion.SERVICE_OBJECT
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException
@@ -59,24 +60,35 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DetailedServiceActivity : AppCompatActivity() {
+    private lateinit var serviceBenefitsRelativeLayout: RelativeLayout
+    private lateinit var dividerView: View
     private val WRITE_PERMISSION: Int = 1001
     var attachmentDownloadId: Long = 0
     var nestedScrollView: NestedScrollView? = null
     var mCollapsingToolbarLayout: CollapsingToolbarLayout? = null
+    var serviceImageView: ImageView? = null
     var serviceDescriptionTextView: TextView? = null
     var serviceNameTextView: TextView? = null
+    var serviceBenefitsHeaderTextView: TextView? = null
+    var serviceBenefitOneTitle: TextView? = null
+    var serviceBenefitOneBody: TextView? = null
+    var serviceBenefitTwoTitle: TextView? = null
+    var serviceBenefitTwoBody: TextView? = null
+    var serviceBenefitThreeTitle: TextView? = null
+    var serviceBenefitThreeBody: TextView? = null
+    var expandCollapseTextView: TextView? = null
     var serviceCostTextView: TextView? = null
     var serviceDurationTextView: TextView? = null
     var serviceDocsTextView: TextView? = null
     var serviceCentresTextView: TextView? = null
     var serviceStepsTextView: TextView? = null
 
-    //    var serviceDocsChipGroup: ChipGroup? = null
     var serviceDocsLayout: LinearLayout? = null
+    var expandCollapseAction: RelativeLayout? = null
 
-    //    var serviceCentresChipGroup: ChipGroup? = null
     var serviceCentresLinearLayout: LinearLayout? = null
     var serviceAttachmentLayout: LinearLayout? = null
+    var serviceBenefitsLayout: RelativeLayout? = null
     var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
@@ -92,18 +104,12 @@ class DetailedServiceActivity : AppCompatActivity() {
     var stepsList: ArrayList<String>? = null
     var docsList: ArrayList<String>? = null
     var serviceCentresList: ArrayList<String>? = null
+    var serviceBenefitsList: ArrayList<ServiceBenefit>? = null
     private var agentRequestStatus = "Requesting agent..."
     private var agentDelegate = JSONObject()
     private var agentName: String? = null
     private var serviceId: String? = null
-    private val delegatedProductId: String? = null
-    private val serviceProgress: String? = null
     private var _serviceName: String? = null
-    private var _description: String? = null
-    private var _cost: String? = null
-    private val _duration: String? = null
-    private val _steps: String? = null
-    private val _docs: String? = null
     private var progress: ProgressDialog? = null
     var agentRequestDialog: AlertDialog.Builder? = null
     var agentNotFoundDialog: AlertDialog.Builder? = null
@@ -116,7 +122,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     private lateinit var detailedServicePrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
-    private lateinit var mixpanel: MixpanelAPI
+    private lateinit var mixpanelAPI: MixpanelAPI
 
     private var serviceCostAdapter: ArrayAdapter<ServiceCostModel>? = null
     private var serviceCostSpinner: Spinner? = null
@@ -127,11 +133,23 @@ class DetailedServiceActivity : AppCompatActivity() {
     private var specCost = ""
     private var chosenServiceCentre = ""
 
+    override fun onStart() {
+        super.onStart()
+        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mixpanelAPI.track("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mixpanel = MixpanelAPI.getInstance(this,
-                resources.getString(R.string.mixpanelToken))
+        mixpanelAPI = MixpanelAPI.getInstance(
+                this,
+                resources.getString(R.string.mixpanelToken)
+        )
 
         /** Binding Layout Views **/
         detailedServiceBinding = ActivityDetailedServiceBinding.inflate(layoutInflater)
@@ -154,8 +172,24 @@ class DetailedServiceActivity : AppCompatActivity() {
         requestAgentBtn = findViewById(R.id.request_agent_btn)
         webViewLink = findViewById(R.id.link_source_text_view)
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout)
+        serviceImageView = findViewById(R.id.service_image_view)
         val appBar = findViewById<AppBarLayout>(R.id.app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
+        serviceBenefitsHeaderTextView = findViewById(R.id.service_benefits_header_text_view)
+        serviceBenefitsRelativeLayout =
+            findViewById<RelativeLayout>(R.id.service_benefits_main_relative_layout)
+        dividerView = findViewById(R.id.divider_2)
+
+        serviceBenefitOneTitle = findViewById(R.id.benefit_one_title_text_view)
+        serviceBenefitOneBody = findViewById(R.id.benefit_one_body_text_view)
+
+        serviceBenefitTwoTitle = findViewById(R.id.benefit_two_title_text_view)
+        serviceBenefitTwoBody = findViewById(R.id.benefit_two_body_text_view)
+
+        serviceBenefitThreeTitle = findViewById(R.id.benefit_three_title_text_view)
+        serviceBenefitThreeBody = findViewById(R.id.benefit_three_body_text_view)
+
+        expandCollapseTextView = findViewById(R.id.action_text_view)
         serviceDescriptionTextView = findViewById(R.id.detailed_description_text_view)
 //        serviceCostTextView = findViewById(R.id.detailed_service_cost_text_view)
         serviceDurationTextView = findViewById(R.id.detailed_service_duration_text_view)
@@ -163,12 +197,22 @@ class DetailedServiceActivity : AppCompatActivity() {
 //        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
         serviceCentresLinearLayout = findViewById(R.id.service_centre_linear_layout)
         serviceAttachmentLayout = findViewById(R.id.service_attachments_linear_layout)
+        serviceBenefitsLayout = findViewById(R.id.service_benefits_holder_relative_layout)
 
         appBar.addOnOffsetChangedListener(OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            if (mCollapsingToolbarLayout!!.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(mCollapsingToolbarLayout!!)) {
-                toolbar!!.navigationIcon!!.setColorFilter(resources.getColor(R.color.black), PorterDuff.Mode.SRC_ATOP)
+            if (mCollapsingToolbarLayout!!.height + verticalOffset < 2 * ViewCompat.getMinimumHeight(
+                    mCollapsingToolbarLayout!!
+                )
+            ) {
+                toolbar!!.navigationIcon!!.setColorFilter(
+                    resources.getColor(R.color.black),
+                    PorterDuff.Mode.SRC_ATOP
+                )
             } else {
-                toolbar!!.navigationIcon!!.setColorFilter(resources.getColor(R.color.UmmoPurple), PorterDuff.Mode.SRC_ATOP)
+                toolbar!!.navigationIcon!!.setColorFilter(
+                    resources.getColor(R.color.UmmoPurple),
+                    PorterDuff.Mode.SRC_ATOP
+                )
             }
         })
 
@@ -184,14 +228,10 @@ class DetailedServiceActivity : AppCompatActivity() {
         editor = detailedServicePrefs.edit()
 
         detailedProductViewModel = ViewModelProvider(this)
-                .get(DetailedProductViewModel::class.java)
+            .get(DetailedProductViewModel::class.java)
 
         delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
-
-        /** Instantiating Service Cost Spinner **/
-//TODO: undo        addListenerOnSpinnerItemSelected()
-//        serviceCostSpinner = findViewById(R.id.detailed_service_cost_dropdown)
+            .get(DelegatedServiceViewModel::class.java)
 
         serviceCostTextInputLayout = findViewById(R.id.detailed_service_cost_dropdown)
 
@@ -209,26 +249,41 @@ class DetailedServiceActivity : AppCompatActivity() {
          * environment.**/
         webViewLink!!.setOnClickListener { openWebLink() }
         service_link_relative_layout.setOnClickListener { openWebLink() }
+
+        showServiceBenefits(serviceObject)
+    }
+
+    /** With the function below, we're ...**/
+    private fun showServiceBenefits(mService: ServiceObject) {
+        val serviceName = mService.serviceName
+        val serviceBenefitTitle =
+            String.format(resources.getString(R.string.service_benefits_title_text), serviceName)
+        serviceBenefitsHeaderTextView!!.text = serviceBenefitTitle
     }
 
     private fun openWebLink() {
         val webViewIntent = Intent(this, WebViewActivity::class.java)
+        val webLinkJSON = JSONObject()
         webViewIntent.putExtra("LINK", serviceObject.serviceLink)
         Timber.e("WEB LINK -> ${serviceObject.serviceLink}")
         if (serviceObject.serviceLink.isNotEmpty()) {
             showSnackbarWhite("Opening link...", 0)
             startActivity(webViewIntent)
-            mixpanel.track("detailedService_serviceLinkOpened")
+            webLinkJSON.put("LINK_OPENED", serviceObject.serviceLink)
+            mixpanelAPI.track("detailedService_serviceLinkOpened", webLinkJSON)
         } else {
             showSnackbarYellow("No link for '${serviceObject.serviceName}' found", -1)
         }
     }
 
     private fun selectingServiceSpec() {
-        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.detailed_service_cost_text_View)
+        val autoCompleteTextView =
+            findViewById<AutoCompleteTextView>(R.id.detailed_service_cost_text_View)
 
-        serviceCostAdapter = ArrayAdapter(this,
-                R.layout.list_item, serviceCostArrayList)
+        serviceCostAdapter = ArrayAdapter(
+            this,
+            R.layout.list_item, serviceCostArrayList
+        )
 
         autoCompleteTextView?.setAdapter(serviceCostAdapter)
 
@@ -254,7 +309,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             serviceSpecCost
                     .put("SERVICE_SPEC", serviceSpec)
                     .put("SPEC_COST", specCost)
-            mixpanel.track("detailedService_serviceSpecSelected", serviceSpecCost)
+            mixpanelAPI.track("detailedService_serviceSpecSelected", serviceSpecCost)
 
             checkForDelegatedServiceAndCompare()
         }
@@ -262,7 +317,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     private fun checkForDelegatedServiceAndCompare() {
         delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         val countOfDelegatedServices = delegatedServiceViewModel!!.getCountOfDelegatedServices()
 
@@ -272,24 +327,28 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceViewModel!!.delegatedServiceEntityLiveData
-                    .observe(this, { delegatedServiceEntity ->
-                        val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                        val serviceAgent = detailedServicePrefs.getString(SERVICE_AGENT_ID, SERVICE_AGENT_ID)!!
-                        val delegationId = detailedServicePrefs.getString(DELEGATED_SERVICE_ID, DELEGATED_SERVICE_ID)!!
-                        if (serviceObject.serviceId == delegatedServiceId) {
-                            requestAgentBtn?.text = "VIEW PROGRESS"
-                            requestAgentBtn?.isActivated = false
-                            requestAgentBtn?.setBackgroundColor(this.resources.getColor(R.color.ummo_3))
+                .observe(this, { delegatedServiceEntity ->
+                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                    val serviceAgent =
+                        detailedServicePrefs.getString(SERVICE_AGENT_ID, SERVICE_AGENT_ID)!!
+                    val delegationId =
+                        detailedServicePrefs.getString(DELEGATED_SERVICE_ID, DELEGATED_SERVICE_ID)!!
+                    if (serviceObject.serviceId == delegatedServiceId) {
+                        requestAgentBtn?.text = "VIEW PROGRESS"
+                        requestAgentBtn?.isActivated = false
+                        requestAgentBtn?.setBackgroundColor(this.resources.getColor(R.color.ummo_3))
 
-                            requestAgentBtn?.setOnClickListener {
-                                launchDelegatedService(this@DetailedServiceActivity,
-                                        delegatedServiceId, serviceAgent, delegationId)
-                            }
-
-                            /** Tracking a repeat request **/
-                            mixpanel.track("detailedService_repeatingRequest", serviceRequestObject)
+                        requestAgentBtn?.setOnClickListener {
+                            launchDelegatedService(
+                                this@DetailedServiceActivity,
+                                delegatedServiceId, serviceAgent, delegationId
+                            )
                         }
-                    })
+
+                        /** Tracking a repeat request **/
+                        mixpanelAPI.track("detailedService_repeatingRequest", serviceRequestObject)
+                    }
+                })
 
         } else {
             requestAgentBtn!!.setOnClickListener {
@@ -299,16 +358,19 @@ class DetailedServiceActivity : AppCompatActivity() {
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
                 serviceRequestBottomSheetDialog
-                        .show(this.supportFragmentManager,
-                                ServiceRequestBottomSheet.TAG)
+                    .show(
+                        this.supportFragmentManager,
+                        ServiceRequestBottomSheet.TAG
+                    )
 
-                mixpanel.track("detailedService_requestingService", serviceRequestObject)
+                mixpanelAPI.track("detailedService_requestingService", serviceRequestObject)
             }
         }
     }
 
     private fun detailedServiceFeeQuery() {
-        val detailedServiceFeeQueryLayout = findViewById<RelativeLayout>(R.id.detailed_service_query_icon_relative_layout)
+        val detailedServiceFeeQueryLayout =
+            findViewById<RelativeLayout>(R.id.detailed_service_query_icon_relative_layout)
         val detailedServiceFeeQueryIcon = findViewById<ImageView>(R.id.detailed_query_image_view)
 
         detailedServiceFeeQueryLayout.setOnClickListener { openServiceFeeSelfSupport() }
@@ -319,13 +381,21 @@ class DetailedServiceActivity : AppCompatActivity() {
     private fun openServiceFeeSelfSupport() {
         val serviceFeeQuery = ServiceFeeQuery()
         serviceFeeQuery.show(this.supportFragmentManager, ServiceFeeQuery.TAG)
-        mixpanel.track("detailedService_serviceFeeSelfSupport")
+        mixpanelAPI.track("detailedService_serviceFeeSelfSupport")
 
     }
 
     override fun onBackPressed() {
-        mixpanel.track("detailedService_navigateBack")
+        super.onBackPressed()
+
+        val intent = Intent(this, MainScreen::class.java)
+        val bundle = Bundle()
+        bundle.putString(VIEW_SOURCE, DETAILED_SERVICE)
+        intent.putExtra(VIEW_SOURCE, bundle)
+        startActivity(intent)
         finish()
+
+        mixpanelAPI.track("detailedService_navigateBack")
     }
 
     override fun onPause() {
@@ -357,7 +427,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         if (mService.serviceAttachmentURL.isEmpty()) {
             serviceAttachmentLayout!!.removeAllViews()
             val noAttachmentTextView = TextView(this)
-            noAttachmentTextView.text = "No attachments for this service."
+            noAttachmentTextView.text = "No attachments found for this service."
             noAttachmentTextView.textSize = 10F
             noAttachmentTextView.setTextColor(resources.getColor(R.color.greyProfile))
             serviceAttachmentLayout!!.addView(noAttachmentTextView)
@@ -372,8 +442,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             /** Configuring the Attachment's [RelativeLayout] container **/
             attachmentRelativeLayout.layoutParams =
-                    RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT)
+                RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
 
             /** Setting AttachmentImageView's parameters **/
             val imageViewParams = RelativeLayout.LayoutParams(200, 200)
@@ -394,8 +466,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             /** Setting TextView's layout parameters: setting it below ImageView's **/
             val nameTextViewParams = RelativeLayout
-                    .LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT)
+                .LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
             nameTextViewParams.addRule(RelativeLayout.BELOW, attachmentImageView.id)
             nameTextViewParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
             attachmentNameTextView.layoutParams = nameTextViewParams
@@ -408,8 +482,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             /** Setting TextView's layout parameters: setting it below ImageView's **/
             val sizeTextViewParams = RelativeLayout
-                    .LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT)
+                .LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                )
             sizeTextViewParams.addRule(RelativeLayout.CENTER_HORIZONTAL)
             sizeTextViewParams.addRule(RelativeLayout.BELOW, attachmentNameTextView.id)
 
@@ -418,10 +494,10 @@ class DetailedServiceActivity : AppCompatActivity() {
             attachmentImageView.setOnClickListener {
                 val attachmentObject = JSONObject()
                 attachmentObject
-                        .put("FILE_NAME", serviceObject.serviceAttachmentName)
-                        .put("FILE_URL", serviceObject.serviceAttachmentURL)
+                    .put("FILE_NAME", serviceObject.serviceAttachmentName)
+                    .put("FILE_URL", serviceObject.serviceAttachmentURL)
 
-                mixpanel.track("attachment_downloadTapped", attachmentObject)
+                mixpanelAPI.track("attachment_downloadTapped", attachmentObject)
 
                 /** Checking if attachment has been downloaded; handling UX appropriately **/
                 if (!attachmentDownloaded) {
@@ -458,7 +534,6 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         docsList = ArrayList(serviceObject.serviceDocuments)
-        Timber.e("DOCS-LIST -> $docsList")
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
@@ -485,7 +560,8 @@ class DetailedServiceActivity : AppCompatActivity() {
                 serviceCentresTextView = TextView(applicationContext)
                 serviceCentresTextView!!.id = i
 
-                serviceCentresTextView!!.text = "\u25CB " + serviceCentresList!![i].replace("\"\"", "")
+                serviceCentresTextView!!.text =
+                    "\u25CB " + serviceCentresList!![i].replace("\"\"", "")
                 serviceCentresTextView!!.textSize = 14F
                 serviceCentresTextView!!.setTextColor(resources.getColor(R.color.black))
                 serviceCentresLinearLayout!!.addView(serviceCentresTextView)
@@ -493,9 +569,76 @@ class DetailedServiceActivity : AppCompatActivity() {
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
         }
+
+        serviceBenefitsList = ArrayList(serviceObject.serviceBenefits)
+        parseServiceBenefits(serviceBenefitsList!!)
+
+        if (serviceBenefitsList!!.size > 0) {
+            toggleServiceBenefits()
+        } else {
+            serviceBenefitsRelativeLayout.visibility = View.GONE
+            dividerView.visibility = View.GONE
+        }
+
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    /** We need the User to toggle between showing Service Benefits, and hiding them **/
+    private fun toggleServiceBenefits() {
+        val toggleServiceBenefitsRelativeLayout = findViewById<RelativeLayout>(R.id.action_layout)
+        val toggleServiceBenefitsTextView = findViewById<TextView>(R.id.action_text_view)
+        val expandServiceBenefitsImageView = findViewById<ImageView>(R.id.expand_image_view)
+        val collapseServiceBenefitsImageView = findViewById<ImageView>(R.id.collapse_image_view)
+
+        toggleServiceBenefitsRelativeLayout.setOnClickListener {
+
+            if (serviceBenefitsLayout?.visibility == View.VISIBLE) {
+                serviceBenefitsLayout?.visibility = View.GONE
+                toggleServiceBenefitsTextView.text = "Show Benefits"
+                expandServiceBenefitsImageView.visibility = View.GONE
+                collapseServiceBenefitsImageView.visibility = View.VISIBLE
+                mixpanelAPI.track("detailedService_showingBenefits")
+
+            } else {
+                serviceBenefitsLayout?.visibility = View.VISIBLE
+                toggleServiceBenefitsTextView.text = "Hide Benefits"
+                expandServiceBenefitsImageView.visibility = View.VISIBLE
+                collapseServiceBenefitsImageView.visibility = View.GONE
+                mixpanelAPI.track("detailedService_hidingBenefits")
+            }
+        }
+    }
+
+    /** With this function, we'll be parsing all service benefits into their custom UI components **/
+    private fun parseServiceBenefits(mServiceBenefits: ArrayList<ServiceBenefit>) {
+        var benefitTitle: String
+        var benefitBody: String
+        val benefitTitleTextView = TextView(this)
+        val benefitBodyTextView = TextView(this)
+
+        for (i in 0 until mServiceBenefits.size) {
+            benefitTitle = mServiceBenefits[i].benefitTitle
+            benefitBody = mServiceBenefits[i].benefitBody
+            benefitTitleTextView.text = benefitTitle
+            benefitBodyTextView.text = benefitBody
+
+            if (i == 0) {
+                serviceBenefitOneTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitOneBody?.text = benefitBody
+            } else if (i == 1) {
+                serviceBenefitTwoTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitTwoBody?.text = benefitBody
+            } else if (i == 2) {
+                serviceBenefitThreeTitle?.text = "${i + 1}. $benefitTitle"
+                serviceBenefitThreeBody?.text = benefitBody
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == WRITE_PERMISSION) {
@@ -510,21 +653,28 @@ class DetailedServiceActivity : AppCompatActivity() {
     @TargetApi(Build.VERSION_CODES.M)
     fun askPermissions() {
         if (ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+            != PackageManager.PERMISSION_GRANTED
+        ) {
             if (ActivityCompat
-                            .shouldShowRequestPermissionRationale(this, WRITE_EXTERNAL_STORAGE)) {
+                    .shouldShowRequestPermissionRationale(this, WRITE_EXTERNAL_STORAGE)
+            ) {
                 AlertDialog.Builder(this)
-                        .setTitle("Permission required")
-                        .setMessage("Permission required to save files from the Web.")
-                        .setPositiveButton("Accept") { dialog, id ->
-                            ActivityCompat.requestPermissions(this,
-                                    arrayOf(WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
-                        }
-                        .setNegativeButton("Deny") { dialog, id -> dialog.cancel() }
-                        .show()
+                    .setTitle("Permission required")
+                    .setMessage("Permission required to save files from the Web.")
+                    .setPositiveButton("Accept") { dialog, id ->
+                        ActivityCompat.requestPermissions(
+                            this,
+                            arrayOf(WRITE_EXTERNAL_STORAGE),
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+                        )
+                    }
+                    .setNegativeButton("Deny") { dialog, id -> dialog.cancel() }
+                    .show()
             } else {
-                ActivityCompat.requestPermissions(this, arrayOf(WRITE_EXTERNAL_STORAGE),
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(WRITE_EXTERNAL_STORAGE),
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+                )
             }
         } else {
             // Permission has already been granted
@@ -532,54 +682,60 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
     }
 
-    private fun downloadAttachment(attachmentLink: String?) = CoroutineScope(Dispatchers.IO).launch {
+    private fun downloadAttachment(attachmentLink: String?) =
+        CoroutineScope(Dispatchers.IO).launch {
 
-        try {
-            Timber.e("DOWNLOADING ATTACHMENT -> $attachmentLink")
-            showSnackbarWhite("Downloading file...", -1)
+            try {
+                Timber.e("DOWNLOADING ATTACHMENT -> $attachmentLink")
+                showSnackbarWhite("Downloading file...", -1)
 
-            val downloadRequest = DownloadManager
+                val downloadRequest = DownloadManager
                     .Request(Uri.parse(attachmentLink))
                     .setTitle(serviceObject.serviceAttachmentName)
-                    .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                            serviceObject.serviceAttachmentName)
+                    .setDestinationInExternalPublicDir(
+                        Environment.DIRECTORY_DOWNLOADS,
+                        serviceObject.serviceAttachmentName
+                    )
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                     .setAllowedOverMetered(true)
-            val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-            attachmentDownloadId = downloadManager.enqueue(downloadRequest)
+                val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                attachmentDownloadId = downloadManager.enqueue(downloadRequest)
 
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Timber.e("Unable to download file -> ${e.message}")
-            }
-        } catch (malformedURLException: MalformedURLException) {
-            withContext(Dispatchers.Main) {
-                Timber.e("URL is deformed -> ${malformedURLException.message}")
-            }
-        } catch (se: SecurityException) {
-            withContext(Dispatchers.Main) {
-                Timber.e("Security Exception -> ${se.message}")
-            }
-        }
-
-        val broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(p0: Context?, p1: Intent?) {
-                val id: Long? = p1?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                val attachmentObject = JSONObject()
-                attachmentObject.put("file_url", attachmentLink)
-                        .put("file_name", serviceObject.serviceAttachmentName)
-
-                if (id == attachmentDownloadId) {
-                    showSnackbarGreen("Download complete", -1)
-                    editor.putBoolean(ATTACHMENT_DOWNLOADED, true).apply()
-                    mixpanel.track("detailedService_attachmentDownloaded", attachmentObject)
-
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Timber.e("Unable to download file -> ${e.message}")
+                }
+            } catch (malformedURLException: MalformedURLException) {
+                withContext(Dispatchers.Main) {
+                    Timber.e("URL is deformed -> ${malformedURLException.message}")
+                }
+            } catch (se: SecurityException) {
+                withContext(Dispatchers.Main) {
+                    Timber.e("Security Exception -> ${se.message}")
                 }
             }
-        }
 
-        registerReceiver(broadcastReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-    }
+            val broadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(p0: Context?, p1: Intent?) {
+                    val id: Long? = p1?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                    val attachmentObject = JSONObject()
+                    attachmentObject.put("file_url", attachmentLink)
+                        .put("file_name", serviceObject.serviceAttachmentName)
+
+                    if (id == attachmentDownloadId) {
+                        showSnackbarGreen("Download complete", -1)
+                        editor.putBoolean(ATTACHMENT_DOWNLOADED, true).apply()
+                        mixpanelAPI.track("detailedService_attachmentDownloaded", attachmentObject)
+
+                    }
+                }
+            }
+
+            registerReceiver(
+                broadcastReceiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+            )
+        }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
@@ -591,10 +747,12 @@ class DetailedServiceActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun launchDelegatedService(context: Context?,
-                                       delegatedServiceId: String,
-                                       agentId: String,
-                                       delegationId: String) {
+    private fun launchDelegatedService(
+        context: Context?,
+        delegatedServiceId: String,
+        agentId: String,
+        delegationId: String
+    ) {
 
         val bundle = Bundle()
         bundle.putString(DELEGATED_SERVICE_ID, delegatedServiceId)
@@ -608,7 +766,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         val progress = java.util.ArrayList<String>()
         val delegatedServiceEntity = DelegatedServiceEntity()
         val delegatedServiceViewModel = ViewModelProvider((context as FragmentActivity?)!!)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         /** Setting Service as Delegated **/
         delegatedServiceEntity.delegationId = delegationId
@@ -626,10 +784,15 @@ class DetailedServiceActivity : AppCompatActivity() {
          *  Length is -1 for Snackbar.LENGTH_SHORT
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
-        val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
+        val snackbar = Snackbar.make(
+            this@DetailedServiceActivity.findViewById(android.R.id.content),
+            message,
+            length
+        )
         val requestAgentButton = findViewById<Button>(R.id.request_agent_btn)
         snackbar.setTextColor(resources.getColor(R.color.appleWhite))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = requestAgentButton
         snackbar.show()
@@ -641,10 +804,15 @@ class DetailedServiceActivity : AppCompatActivity() {
          *  Length is -1 for Snackbar.LENGTH_SHORT
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
-        val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
+        val snackbar = Snackbar.make(
+            this@DetailedServiceActivity.findViewById(android.R.id.content),
+            message,
+            length
+        )
         val requestAgentButton = findViewById<Button>(R.id.request_agent_btn)
         snackbar.setTextColor(resources.getColor(R.color.lawn_green))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = requestAgentButton
         snackbar.show()
@@ -656,20 +824,18 @@ class DetailedServiceActivity : AppCompatActivity() {
          *  Length is -1 for Snackbar.LENGTH_SHORT
          *  Length is -2 for Snackbar.LENGTH_INDEFINITE
          *  **/
-        val snackbar = Snackbar.make(this@DetailedServiceActivity.findViewById(android.R.id.content), message, length)
+        val snackbar = Snackbar.make(
+            this@DetailedServiceActivity.findViewById(android.R.id.content),
+            message,
+            length
+        )
         val requestAgentButton = findViewById<Button>(R.id.request_agent_btn)
         snackbar.setTextColor(resources.getColor(R.color.gold))
-        val textView = snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = requestAgentButton
         snackbar.show()
     }
 
-    companion object {
-        const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
-        const val DELEGATED_SERVICE_ID = "DELEGATED_SERVICE_ID"
-        const val SERVICE_AGENT_ID = "SERVICE_AGENT_ID"
-        const val DELEGATION_ID = "DELEGATION_ID"
-        const val ATTACHMENT_DOWNLOADED = "ATTACHMENT_DOWNLOADED"
-    }
 }

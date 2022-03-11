@@ -1,7 +1,6 @@
 package xyz.ummo.user.ui.signup
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.IntentFilter
@@ -9,12 +8,16 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.onesignal.OneSignal
 import io.sentry.Sentry
@@ -25,13 +28,11 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.databinding.CompleteSignUpBinding
 import xyz.ummo.user.api.Login
 import xyz.ummo.user.api.SocketIO
-import xyz.ummo.user.ui.MainScreen
-import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_CONTACT
-import xyz.ummo.user.ui.signup.RegisterActivity.Companion.USER_NAME
-import xyz.ummo.user.utilities.PrefManager
+import xyz.ummo.user.databinding.CompleteSignUpBinding
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.ContactAutoVerificationEvent
 import xyz.ummo.user.utilities.eventBusEvents.NetworkStateEvent
@@ -41,6 +42,7 @@ import java.util.*
 
 class CompleteSignUpActivity : AppCompatActivity() {
 
+    private var fcmToken: String? = ""
     private var readyToSignUp: Boolean = false
     private lateinit var viewBinding: CompleteSignUpBinding
     private var userName: String = ""
@@ -73,10 +75,14 @@ class CompleteSignUpActivity : AppCompatActivity() {
         EventBus.getDefault().register(this)
 
         /** Init OneSignal **/
-        OneSignal.startInit(this)
+        /*OneSignal.startInit(this)
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
-                .init()
+                .init()*/
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
+
+        OneSignal.initWithContext(this)
+        OneSignal.setAppId(getString(R.string.onesignal_app_id))
 
         /** Init firebaseAuth **/
         firebaseAuth = FirebaseAuth.getInstance()
@@ -89,9 +95,23 @@ class CompleteSignUpActivity : AppCompatActivity() {
             finish()
         }
 
+        getFCMToken()
 //        checkForSocketConnection()
 
         completeSignUp()
+    }
+
+    private fun getFCMToken() {
+        /** Instantiating Firebase Instance **/
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.e("Fetching FCM registration token failed -> ${task.exception}")
+                return@OnCompleteListener
+            }
+
+            fcmToken = task.result
+            Timber.e("FCM TOKEN -> $fcmToken")
+        })
     }
 
     override fun onStart() {
@@ -143,11 +163,14 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun completeSignUp() {
-        val mixpanel = MixpanelAPI.getInstance(this,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            this,
+            resources.getString(R.string.mixpanelToken)
+        )
 
-        val status = OneSignal.getPermissionSubscriptionState()
-        val onePlayerId = status.subscriptionStatus.userId
+//        val status = OneSignal.getPermissionSubscriptionState()
+        val deviceState = OneSignal.getDeviceState()
+        val onePlayerId = deviceState!!.userId
 
         viewBinding.signUpBtn.setOnClickListener {
             val emailField: EditText = viewBinding.userEmailTextInputEditText
@@ -176,24 +199,24 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     val userObject = JSONObject()
 
                     /** Retrieving OneSignal PlayerId before signing up **/
-                    OneSignal.idsAvailable { userPID, registrationId ->
-                        if (!userPID.isNullOrEmpty()) {
-                            try {
-                                userObject.put("userName", userName)
-                                userObject.put("userContact", userContact)
-                                userObject.put("userEmail", userEmail)
+//                    OneSignal.idsAvailable { userPID, registrationId ->
+                    if (!onePlayerId.isNullOrEmpty()) {
+                        try {
+                            userObject.put("userName", userName)
+                            userObject.put("userContact", userContact)
+                            userObject.put("userEmail", userEmail)
 
-                                /** Logging Mixpanel User profile **/
-                                if (mixpanel != null) {
-                                    mixpanel.track("completeSignUp", userObject)
-                                    mixpanel.people.identify(userContact)
-                                    mixpanel.people.set("PID", userPID)
+                            /** Logging Mixpanel User profile **/
+                            if (mixpanel != null) {
+                                mixpanel.track("completeSignUp", userObject)
+                                mixpanel.people.identify(userContact)
+//                                    mixpanel.people.set("PID", userPID)
                                     mixpanel.people.set("User-Name", userName)
                                     mixpanel.people.set("User-Contact", userContact)
                                 }
 
                                 //Ummo server sign-up
-                                signUp(userName, userEmail, userContact, userPID)
+                            signUp(userName, userEmail, userContact, onePlayerId)
                                 //Firebase email-auth sign-up
                                 createUserWithEmailAndPassword(userEmail, userContact)
                                 progress.dismiss()
@@ -203,9 +226,11 @@ class CompleteSignUpActivity : AppCompatActivity() {
                                 Timber.e("User Signup JSON Exception -> $e")
                             }
                         } else {
-                            Timber.e("USER-PID is null/empty -> $userPID")
-                        }
+                        Timber.e("USER-PID is null/empty -> $onePlayerId")
+                        progress.dismiss()
+                        showSnackbarBlue("We missed something. Please try again.", -1)
                     }
+//                    }
                 }
             }
         }
@@ -240,25 +265,26 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     launchHomeScreen()
                     /** Saving user details in Shared Preferences */
                     val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
-                    val editor: SharedPreferences.Editor
-                    editor = sharedPreferences.edit()
-                    editor.putBoolean("SIGNED_UP", true)
-                    editor.putString("USER_NAME", name)
-                    editor.putString("USER_CONTACT", contact)
-                    editor.putString("USER_EMAIL", email)
-                    editor.putString("USER_PID", playerId)
-                    editor.putBoolean("NEW_SESSION", true)
+                    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+                    editor.putBoolean(SIGNED_UP, true)
+                    editor.putString(USER_NAME, name)
+                    editor.putString(USER_CONTACT, contact)
+                    editor.putString(USER_EMAIL, email)
+                    editor.putString(USER_PID, playerId)
+                    editor.putBoolean(NEW_SESSION, true)
                     editor.apply()
 
                     /** [MixpanelAPI] 1. Identifying User by contact &&
                      *                2. Tracking sign_up activity **/
                     val userObject = JSONObject()
-                    userObject.put("USER_NAME", name)
-                    userObject.put("USER_CONTACT", contact)
-                    userObject.put("USER_EMAIL", email)
-                    userObject.put("SIGN_UP_DATE", currentDate)
+                    userObject.put(USER_NAME, name)
+                    userObject.put(USER_CONTACT, contact)
+                    userObject.put(USER_EMAIL, email)
+                    userObject.put(SIGN_UP_DATE, currentDate)
+                    userObject.put(MIXPANEL_NAME, name)
 
                     mixpanel?.people?.identify(contact)
+                    mixpanel?.identify(contact)
                     mixpanel?.track("userRegistering_userDetails", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
                 } else {
@@ -285,7 +311,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(applicationContext,
-                            Objects.requireNonNull(task.exception)?.message,
+                            Objects.requireNonNull(task.exception)!!.message,
                             Toast.LENGTH_SHORT).show()
                 }
             }
@@ -299,8 +325,20 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, length)
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val bottomNav = findViewById<View>(R.id.bottom_nav)
+        val snackbar =
+            Snackbar.make(this.findViewById(android.R.id.content), message, length)
         snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 14F
+        snackbar.anchorView = bottomNav
         snackbar.show()
     }
 

@@ -6,13 +6,13 @@ import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.extensions.jsonBody
-import com.github.nkzawa.socketio.client.IO
+import io.socket.client.IO
 import org.json.JSONObject
 import timber.log.Timber
-import xyz.ummo.user.R.string.*
+import xyz.ummo.user.R.string.serverUrl
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.ui.MainScreen
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.main.MainScreen
 import java.net.URISyntaxException
 
 abstract class Login(var context: Context, name: String, email: String, mobile_contact: String, user_pid: String) {
@@ -32,9 +32,8 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
                 .jsonBody(_user.toString())
                 .response { request, response, result ->
                     if (response.statusCode == 200) {
-                        val jwt = response.headers["Jwt"].elementAt(0).toString()
-
-                        Timber.e("Jwt -> $jwt")
+                        val payload = JSONObject(response.body().asString("application/json")).getJSONObject("payload")
+                        val jwt = payload.getString("jwt")
 
                         FuelManager.instance.baseHeaders = mapOf("jwt" to jwt)
 
@@ -42,7 +41,7 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
                                 .getDefaultSharedPreferences(context)
                                 .edit()
                                 .putString("jwt", jwt)
-                                .putString("user", String(response.data))
+                                .putString("user", payload.toString())
                                 .apply()
 
                         initializeSocket(User.getUserId(jwt))
@@ -85,7 +84,7 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
                         }
 
                         SocketIO.mSocket?.on("connect_error") {
-                            Timber.e("Socket Connect-ERROR-> ${it[0].toString() + SocketIO.mSocket?.io()}")
+                            Timber.e("Socket Connect-ERROR-> ${it[0]}")
                         }
 
                         SocketIO.mSocket?.on("error") {
@@ -104,8 +103,8 @@ abstract class Login(var context: Context, name: String, email: String, mobile_c
     private fun initializeSocket(_id: String) {
         try {
             Timber.e("Trying connection...")
-            SocketIO.mSocket = IO.socket("${context.getString(serverUrl)}/user-$_id")
-            Timber.e("${context.getString(serverUrl)}/user-$_id")
+            SocketIO.mSocket = IO.socket(context.getString(serverUrl))
+            Timber.e("SOCKET USER TOKEN ${context.getString(serverUrl)}/user-$_id")
             SocketIO.mSocket?.connect()
             SocketIO.anything = "Hello World"
             if (SocketIO.mSocket == null) {

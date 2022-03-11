@@ -190,11 +190,17 @@
                 android:id="@+id/service_intro_card"
                 layout="@layout/delegation_intro_card"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
-            <include
+            <!--<include
                 android:id="@+id/share_delegation_card"
                 layout="@layout/share_delegation_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />-->
+
+            <include
+                android:id="@+id/whatsapp_support_card"
+                layout="@layout/whatsapp_service_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -202,7 +208,7 @@
                 android:id="@+id/delegated_service_card_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/share_delegation_card"
+                android:layout_below="@id/whatsapp_support_card"
                 android:layout_margin="4dp"
                 app:cardBackgroundColor="@color/White"
                 app:cardCornerRadius="4dp"
@@ -241,9 +247,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignTop="@+id/delegated_service_header_image_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                android:text="Delegated Service"
-                                android:textColor="@color/Grey"
-                                android:textSize="16sp" />
+                                android:text="My Service"
+                                android:textColor="@color/black"
+                                android:textSize="20sp" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_name"
@@ -253,7 +259,7 @@
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Service Name"
                                 android:textColor="@color/black"
-                                android:textSize="20sp" />
+                                android:textSize="18sp" />
 
                         </RelativeLayout>
 
@@ -349,7 +355,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/product_cost"
                                         android:textColor="@color/Grey"
-                                        android:textSize="12sp" />
+                                        android:textSize="16sp" />
 
                                     <TextView
                                         android:id="@+id/service_cost_text_view"
@@ -357,8 +363,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/cost_header_text_view"
                                         android:text="@string/cost"
-                                        android:textColor="@color/ummo_2"
-                                        android:textSize="16sp" />
+                                        android:textColor="@color/black"
+                                        android:textSize="14sp" />
 
                                     <RelativeLayout
                                         android:id="@+id/delegation_fee__query_icon_relative_layout"
@@ -419,8 +425,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Service Date"
-                                        android:textColor="@color/Grey"
-                                        android:textSize="12sp" />
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
 
                                     <TextView
                                         android:id="@+id/service_schedule_text_view"
@@ -428,8 +434,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/duration_header_text_view"
                                         android:text="Thursday, 14 May 2021"
-                                        android:textColor="@color/ummo_2"
-                                        android:textSize="14sp" />
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp" />
 
                                     <TextView
                                         android:id="@+id/reschedule_text_view"
@@ -505,7 +511,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/divider_4"
-                                android:layout_marginTop="8dp">
+                                android:layout_marginTop="8dp"
+                                android:visibility="gone">
 
                                 <ImageView
                                     android:id="@+id/service_progress_image_view"
@@ -568,6 +575,7 @@
                                 android:layout_below="@+id/service_progress_layout"
                                 android:layout_margin="8dp"
                                 android:layout_marginEnd="0dp"
+                                android:visibility="gone"
                                 app:spb_animateToCurrentProgressState="true"
                                 app:spb_checkStateCompleted="true"
                                 app:spb_currentStateDescriptionColor="@color/colorAccent"
@@ -588,7 +596,7 @@
                                 android:background="@drawable/rounded_border_transparent_yellow"
                                 android:padding="4dp"
                                 android:visibility="gone"
-                                tools:visibility="visible">
+                                tools:visibility="gone">
 
                                 <ImageView
                                     android:id="@+id/service_interruption_image"

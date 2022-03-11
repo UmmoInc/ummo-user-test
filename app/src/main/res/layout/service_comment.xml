@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/service_comment_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/service_comment_main_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/service_comment_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/user_avatar_image_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    app:srcCompat="@drawable/ic_round_person_blue_24" />
+
+                <TextView
+                    android:id="@+id/user_name_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/user_avatar_image_view"
+                    android:layout_toEndOf="@id/user_avatar_image_view"
+                    android:text="Username"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/bullet_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/user_avatar_image_view"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toEndOf="@id/user_name_text_view"
+                    android:text="\u2022"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/comment_datetime_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/user_avatar_image_view"
+                    android:layout_toEndOf="@id/bullet_text_view"
+                    android:text="Monday, 14th October 2021"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    android:id="@+id/service_comment_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/user_name_text_view"
+                    android:layout_marginTop="14dp"
+                    android:layout_toEndOf="@id/user_avatar_image_view"
+                    android:text="This is the comment that User-1 has made. We will rejoice, and be glad with it."
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+
+            <View
+                android:id="@+id/divider_1"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_below="@id/service_comment_layout"
+                android:layout_marginStart="55dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="50dp"
+                android:background="@color/screenWhite" />
+
+            <!--<LinearLayout
+                android:id="@+id/service_actions_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/service_comment_layout"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RelativeLayout
+                    android:id="@+id/approve_service_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/approve_service_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="4dp"
+                        app:srcCompat="@drawable/ic_outline_thumb_up_grey_24" />
+
+                    <TextView
+                        android:id="@+id/approve_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/approve_service_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/approval_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/approved_service_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/approved_service_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="4dp"
+                        app:srcCompat="@drawable/ic_thumb_up_filled_24" />
+
+                    <TextView
+                        android:id="@+id/approved_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/approved_service_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/approval_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/disapprove_service_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/disapprove_service_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        app:srcCompat="@drawable/ic_outline_thumb_down_grey_24" />
+
+                    <TextView
+                        android:id="@+id/disapprove_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/disapprove_service_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/disapproval_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/disapproved_service_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/disapproved_service_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="4dp"
+                        app:srcCompat="@drawable/ic_thumb_down_filled_24" />
+
+                    <TextView
+                        android:id="@+id/disapproved_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/disapproved_service_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/disapproval_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/service_comments_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="4dp">
+
+                    <ImageView
+                        android:id="@+id/service_comments_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
+
+                    <TextView
+                        android:id="@+id/service_comments_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/service_comments_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/comments_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>
+
+                &lt;!&ndash;<RelativeLayout
+                    android:id="@+id/share_service_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
+
+                    <ImageView
+                        android:id="@+id/share_service_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="4dp"
+                        app:srcCompat="@drawable/ic_outline_share_blue_24" />
+
+                    <TextView
+                        android:id="@+id/share_count_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/share_service_image"
+                        android:fontFamily="@font/rubik"
+                        android:text="@string/shares_placeholder"
+                        android:textSize="12sp"
+                        app:fontFamily="@font/rubik" />
+
+                </RelativeLayout>&ndash;&gt;
+
+                <RelativeLayout
+                    android:id="@+id/service_share_icon_relative_layout"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
+
+                    <ImageView
+                        android:id="@+id/service_share_image_view"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="4dp"
+                        android:contentDescription="@string/save_service"
+                        android:padding="4dp"
+                        app:srcCompat="@drawable/ic_share_grey_24" />
+                </RelativeLayout>
+            </LinearLayout>-->
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

@@ -22,25 +22,48 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:overrideLibrary="com.mongodb.stitch.android"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        tools:targetApi="m">
+        <activity
+            android:name=".ui.intro.Intro"
+            android:exported="true" />
 
-        <receiver android:name=".utilities.broadcastreceivers.ShareBroadCastReceiver" android:exported="false"/>
+        <receiver
+            android:name=".utilities.broadcastreceivers.ShareBroadCastReceiver"
+            android:exported="false" />
+
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
 
         <meta-data
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
+        <meta-data
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:value="com.onesignal.example.NotificationServiceExtension" />
+        <!--<meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />-->
+        <!-- <meta-data
+             android:name="com.onesignal.suppressLaunchURLs"
+             android:value="false"/>-->
+
+        <service
+            android:name=".utilities.fcm.UmmoFirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity android:name=".ui.WebViewActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainScreen" />
+                android:value=".ui.main.MainScreen" />
         </activity>
-
-        <meta-data
-            android:name="com.onesignal.NotificationOpened.DEFAULT"
-            android:value="DISABLE" />
-
         <activity android:name=".ui.signup.CompleteSignUpActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -57,7 +80,8 @@
                 android:value="@string/safety_net_api_key" />
         </activity>
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
-        <activity android:name=".ui.SelfDelegateActivity">
+
+        <!--<activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -68,12 +92,14 @@
                     android:host="ummo.page.link"
                     android:scheme="https" />
             </intent-filter>
-        </activity>
+        </activity>-->
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
+
         <activity
             android:name=".ui.detailedService.DetailedServiceActivity"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
@@ -86,34 +112,46 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <meta-data
+        <!--<meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="@string/google_maps_key" />-->
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://c46e9ae28cb847e7ab39746902f6c29a@o90029.ingest.sentry.io/1485110" />
 
         <activity
             android:name=".ui.Splash"
+            android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="ummo.page.link"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity
-            android:name=".ui.MainScreen"
+            android:name=".ui.main.MainScreen"
             android:label="@string/title_activity_confirm_location"
+            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="ummo.xyz"
-                    android:scheme="https"/>
+                    android:scheme="https" />
             </intent-filter>
         </activity>
     </application>

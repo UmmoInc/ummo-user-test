@@ -14,7 +14,7 @@ abstract class GetServiceProvider(val activity: Activity) {
             try {
                 activity.runOnUiThread {
                     if (response.data.isNotEmpty()) {
-                        val array = JSONArray(String(response.data))
+                        val array = JSONObject(String(response.data)).getJSONArray("payload")
 //                        Timber.e("SERVICE-PROVIDER-DATA -> ${response.data}")
                         done(fromJSONList(array), response.statusCode)
                     } else {
@@ -40,9 +40,7 @@ abstract class GetServiceProvider(val activity: Activity) {
         return tmp
     }
 
-    /** Function a JSON Object and returns a PublicServiceData **/
     private fun fromJSONObject(obj: JSONObject): ServiceProviderData {
-        Timber.e("fromJSONOBJECT-> $obj")
         val serviceProviderId = get(obj, "_id", "serviceProviderId") as String
         val serviceProviderName = get(obj, "service_provider_name", "serviceProviderName") as String
         val serviceProviderDescription = get(obj, "service_provider_description", "serviceProviderDescription") as String

@@ -8,14 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.android.synthetic.main.fragment_share_service_info_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.fragment_share_service_progress_bottom_sheet.view.*
 import xyz.ummo.user.R
 import xyz.ummo.user.databinding.FragmentShareServiceProgressBottomSheetBinding
-import xyz.ummo.user.ui.MainScreen
+import xyz.ummo.user.utilities.SERVICE_NAME
 import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 
 class ShareServiceProgressBottomSheet : BottomSheetDialogFragment() {
@@ -36,7 +34,7 @@ class ShareServiceProgressBottomSheet : BottomSheetDialogFragment() {
             context?.resources?.getString(R.string.mixpanelToken)
         )
 
-        serviceName = arguments?.getString(MainScreen.SERVICE_NAME, serviceName)!!
+        serviceName = arguments?.getString(SERVICE_NAME, serviceName)!!
     }
 
     override fun onCreateView(
