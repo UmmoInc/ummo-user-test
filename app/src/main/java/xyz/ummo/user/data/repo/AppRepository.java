@@ -19,12 +19,14 @@ import timber.log.Timber;
 import xyz.ummo.user.data.dao.DelegatedServiceDao;
 import xyz.ummo.user.data.dao.ProductDao;
 import xyz.ummo.user.data.dao.ProfileDao;
+import xyz.ummo.user.data.dao.ServiceCategoryDao;
 import xyz.ummo.user.data.dao.ServiceDao;
 import xyz.ummo.user.data.dao.ServiceProviderDao;
 import xyz.ummo.user.data.db.UserRoomDatabase;
 import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
+import xyz.ummo.user.data.entity.ServiceCategoryEntity;
 import xyz.ummo.user.data.entity.ServiceEntity;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 
@@ -40,6 +42,7 @@ public class AppRepository {
     private final ProductDao productDao;
     private final ServiceProviderDao serviceProviderDao;
     private final ServiceDao serviceDao;
+    private final ServiceCategoryDao serviceCategoryDao;
 
     private LiveData<DelegatedServiceEntity> delegatedServiceEntityLiveData;
     private final LiveData<ProfileEntity> profileEntityLiveData;
@@ -47,6 +50,7 @@ public class AppRepository {
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
+    private List<ServiceCategoryEntity> serviceCategoryEntities;
     private List<ServiceEntity> delegatableServices;
     private List<ServiceEntity> nonDelegatableServices;
     private List<ServiceEntity> bookmarkedServiceEntityListData;
@@ -74,6 +78,9 @@ public class AppRepository {
 
         serviceDao = userRoomDatabase.serviceDao();
         serviceEntityLiveData = serviceDao.getServiceLiveData();
+
+        serviceCategoryDao = userRoomDatabase.serviceCategoryDao();
+//        serviceCategoryEntities = serviceCategoryDao.getAllCategories();
     }
 
     public int getDelegatedServiceCount() {
@@ -771,17 +778,49 @@ public class AppRepository {
         }
     }
 
-    /*GetProducts getProducts = new GetProducts() {
-        @Override
-        public void done(@NotNull byte[] data, @NotNull Number code) {
-            if (code.equals(200)){
-                Log.e(TAG+" GetProducts", "Logging Products->"+new String(data));
-            } else {
-                Log.e(TAG+" GetProducts", "WTF happened->"+code);
-//                logWithStaticAPI();
-            }
+    public void insertServiceCategory(ServiceCategoryEntity serviceCategoryEntity) {
+        new insertServiceCategoryAsyncTask(serviceCategoryDao).execute(serviceCategoryEntity);
+    }
+
+    public List<ServiceCategoryEntity> getServiceCategoryEntities() {
+        try {
+            return new getServiceCategoriesAsyncTask(serviceCategoryDao).execute().get();
+        } catch (ExecutionException | InterruptedException ie) {
+            return null;
         }
-    };*/
+    }
+
+    /**
+     * Inserting Service Categories into Room
+     **/
+    private static class insertServiceCategoryAsyncTask extends AsyncTask<ServiceCategoryEntity, Void, Void> {
+        private final ServiceCategoryDao mServiceCategoryDao;
+
+        private insertServiceCategoryAsyncTask(ServiceCategoryDao serviceCategoryDao) {
+            this.mServiceCategoryDao = serviceCategoryDao;
+        }
+
+        @Override
+        protected Void doInBackground(final ServiceCategoryEntity... serviceCategoryEntities) {
+            mServiceCategoryDao.insertCategory(serviceCategoryEntities[0]);
+            return null;
+        }
+    }
+
+    private static class getServiceCategoriesAsyncTask extends AsyncTask<Void, Void, List<ServiceCategoryEntity>> {
+        private final ServiceCategoryDao mServiceCategoryAsyncTaskDao;
+        private final List<ServiceCategoryEntity> mServiceCategoryEntityList = new ArrayList<>();
+
+        getServiceCategoriesAsyncTask(ServiceCategoryDao serviceCategoryDao) {
+            this.mServiceCategoryAsyncTaskDao = serviceCategoryDao;
+        }
+
+        @Override
+        protected List<ServiceCategoryEntity> doInBackground(Void... voids) {
+            mServiceCategoryEntityList.addAll(mServiceCategoryAsyncTaskDao.getAllCategories());
+            return mServiceCategoryEntityList;
+        }
+    }
 
     private void unsafeMethod() {
         throw new UnsupportedOperationException("This needs attention!");

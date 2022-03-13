@@ -18,6 +18,10 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_tfuma.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
@@ -97,7 +101,16 @@ class Tfuma : Fragment() {
     lateinit var category: String
     var countOfServices: Int = 0
 
+    /** The following object will be used to cache offline services**/
+    lateinit var offlineServiceObject: ServiceObject
+
     private var tfumaViewModel: TfumaViewModel? = null
+
+    /** SharedPref Editor **/
+    private lateinit var editor: SharedPreferences.Editor
+
+    /** JSON Value for Mixpanel **/
+    private var categoryJSONObject: JSONObject = JSONObject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,33 +126,44 @@ class Tfuma : Fragment() {
                 as ArrayList<ServiceEntity>?)!!
 
         delegatedServicePrefs = this.requireActivity()
-                .getSharedPreferences(ummoUserPreferences, mode)
+            .getSharedPreferences(ummoUserPreferences, mode)
 
         /** Initing TfumaViewModel **/
         tfumaViewModel = ViewModelProvider(this).get(TfumaViewModel::class.java)
+
+        /** Initing Shared Pref. Editor **/
+        editor = delegatedServicePrefs.edit()
+
+        categoryJSONObject.put(
+            "CATEGORY",
+            parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        )
+
     }
 
     override fun onStart() {
         super.onStart()
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
-        mixpanelAPI.timeEvent("Viewing TFUMA ($category)")
+        mixpanelAPI.timeEvent("Viewing TFUMA")
+        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
-        mixpanelAPI.track("Viewing TFUMA ($category)")
+        mixpanelAPI.track("Viewing TFUMA", categoryJSONObject)
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         tfumaBinding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_tfuma,
-                container,
+            inflater,
+            R.layout.fragment_tfuma,
+            container,
             false
         )
 
@@ -158,44 +182,153 @@ class Tfuma : Fragment() {
 
         getDelegatableServicesFromServer()
 
-        Timber.e("DELEGATED SERVICES LIST [0] -> ${delegatableServicesArrayList.size}")
-
         mixpanelAPI = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
         )
 
         reloadServices()
 
         returnHome()
 
-//        checkServicesAfterSomeTime()
-
         /** Refreshing services with [tfuma_swipe_refresher] **/
         tfumaBinding.tfumaSwipeRefresher.setOnRefreshListener {
-            delegatableServicesArrayList.clear()
             gAdapter.clear()
             getDelegatableServicesFromServer()
+            pollingAdapterState()
             tfumaBinding.tfumaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
-            mixpanelAPI.track("delegateFragment_refreshed")
+            mixpanelAPI.track("delegateFragment_manuallyRefreshed")
         }
 
         return view
     }
 
+    private fun showProgressBar() {
+        tfumaBinding.loadProgressBar.visibility = View.VISIBLE
+        tfumaBinding.noServicesRelativeLayout.visibility = View.GONE
+        tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
+        tfumaBinding.offlineLayout.visibility = View.GONE
+    }
+
     @Subscribe
-    fun checkSocketConnectionState(socketStateEvent: SocketStateEvent) {
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
         if (!socketStateEvent.socketConnected!!) {
-            loadOfflineServices()
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+
+                    Timber.e("OFFLINE")
+
+                    val timer = object : CountDownTimer(3000, 1000) {
+                        override fun onTick(p0: Long) {
+                            Timber.e("Countdown to Offline Display")
+                            gAdapter.clear()
+                            showProgressBar()
+                        }
+
+                        override fun onFinish() {
+                            loadOfflineServices()
+
+                            /** Registering that we've loaded offline services in Shared Prefs. **/
+                            editor.putBoolean("$OFFLINE_LOADED-$category", true).apply()
+                        }
+                    }
+
+                    if (!delegatedServicePrefs.getBoolean("$OFFLINE_LOADED-$category", false)) {
+                        timer.start()
+                    } else
+                        timer.cancel()
+                }
+            }
+
+        } else {
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    gAdapter.clear()
+                    Timber.e("ONLINE")
+
+                    hideOfflineState()
+
+                    val timer = object : CountDownTimer(3000, 1000) {
+                        override fun onTick(p0: Long) {
+                            Timber.e("Loading fresh data")
+                            gAdapter.clear()
+                            tfumaBinding.loadProgressBar.visibility = View.VISIBLE
+                        }
+
+                        override fun onFinish() {
+                            getDelegatableServicesFromServer()
+                            showSnackbarBlue("Getting fresh data", -1)
+                            /** Clearing the offline service state from Shared Prefs **/
+                            editor.putBoolean("$OFFLINE_LOADED-$category", false).apply()
+                        }
+                    }
+                    timer.start()
+                }
+            }
         }
     }
 
-    //TODO: Attend to
     private fun loadOfflineServices() {
-        /** Setting up Socket Worker from TfumaViewModel **/
-//        tfumaViewModel!!.socketConnect()
-        Timber.e("OFFLINE SERVICES -> $delegatableServicesArrayList")
+        /** Hiding load progress bar **/
+        tfumaBinding.loadProgressBar.visibility = View.GONE
+
+        /** Placeholder Service Cost **/
+        val serviceCostArray = ArrayList<ServiceCostModel>()
+        serviceCostArray.add(ServiceCostModel("Cost Unavailable", 0))
+
+        /** Placeholder Service Benefits **/
+        val serviceBenefitsArray = ArrayList<ServiceBenefit>()
+        serviceBenefitsArray.add(ServiceBenefit("", ""))
+
+        Timber.e("Loading Offline Services")
+
+        if (delegatableServicesArrayList.isNotEmpty()) {
+            for (i in 0 until delegatableServicesArrayList.size) {
+                val delegatableServiceEntity = delegatableServicesArrayList[i]
+                Timber.e("DELEGATABLE SERVICES ARE -> ${delegatableServiceEntity.serviceName}")
+                offlineServiceObject = ServiceObject(
+                    delegatableServiceEntity.serviceId!!,
+                    delegatableServiceEntity.serviceName!!,
+                    delegatableServiceEntity.serviceDescription!!,
+                    delegatableServiceEntity.serviceEligibility!!,
+                    delegatableServiceEntity.serviceCentres!!,
+                    delegatableServiceEntity.delegatable!!,
+                    serviceCostArray,
+                    delegatableServiceEntity.serviceDocuments!!,
+                    delegatableServiceEntity.serviceDuration!!,
+                    delegatableServiceEntity.usefulCount!!,
+                    delegatableServiceEntity.notUsefulCount!!,
+                    delegatableServiceEntity.serviceComments!!,
+                    delegatableServiceEntity.commentCount!!,
+                    delegatableServiceEntity.serviceShares!!,
+                    delegatableServiceEntity.serviceViews!!,
+                    delegatableServiceEntity.serviceProvider!!,
+                    "No Link", "No Attachments",
+                    "0", "", "", serviceBenefits
+                )
+
+                getSavedUserActionsFromSharedPrefs(delegatableServiceEntity.serviceId!!)
+
+                /** 1. Checking if the Fragment has been added to the Activity context.
+                 *  2. Checking if the Offline Service's category is the same as the category we're in. **/
+                if (isAdded && category == delegatableServiceEntity.serviceCategory) {
+                    hideNoServicesLayout()
+                    hideOfflineState()
+
+                    gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
+                    Timber.e("Displaying offline services -> ${offlineServiceObject.serviceName}")
+                    showSnackbarBlue("Showing offline services", -2)
+                } else {
+                    showOfflineState()
+                    hideNoServicesLayout()
+                }
+            }
+        } else {
+            Timber.e("No offline services -> ${delegatableServicesArrayList.size}")
+            hideNoServicesLayout()
+            showOfflineState()
+        }
     }
 
     /** Below: we're checking if there are any services to be displayed. If not, then we show
@@ -205,7 +338,7 @@ class Tfuma : Fragment() {
 
             pollingAdapterState()
 
-            loadOfflineServices()
+            Timber.e("Reloading Services")
 
             /** Posting this EventBus in order to display the Snackbar **/
             reloadingServicesEvent.reloadingServices = true
@@ -236,8 +369,9 @@ class Tfuma : Fragment() {
 
             override fun onFinish() {
                 if (gAdapter.itemCount == 0) {
-//                    showOfflineState()
+                    showOfflineState()
                     noServicesInCategory()
+                    loadOfflineServices()
                 } else {
                     hideOfflineState()
                     hideNoServicesLayout()
@@ -277,6 +411,7 @@ class Tfuma : Fragment() {
         tfumaBinding.tfumaSwipeRefresher.visibility = View.GONE
         tfumaBinding.loadProgressBar.visibility = View.GONE
         tfumaBinding.offlineLayout.visibility = View.VISIBLE
+        tfumaBinding.noServicesRelativeLayout.visibility = View.GONE
 
         if (isAdded) {
 
@@ -404,26 +539,7 @@ class Tfuma : Fragment() {
                                     serviceBenefits
                                 )
 
-                                /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
-                                 * 2. wrapping those values in a JSON Object
-                                 * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
-                                serviceUpVoteBoolean = delegatedServicePrefs
-                                    .getBoolean("UP-VOTE-${serviceId}", false)
-
-                                serviceDownVoteBoolean = delegatedServicePrefs
-                                    .getBoolean("DOWN-VOTE-${serviceId}", false)
-
-                                serviceCommentBoolean = delegatedServicePrefs
-                                    .getBoolean("COMMENTED-ON-${serviceId}", false)
-
-                                serviceBookmarked = delegatedServicePrefs
-                                    .getBoolean("BOOKMARKED-${serviceId}", false)
-
-                                savedUserActions
-                                    .put("UP-VOTE", serviceUpVoteBoolean)
-                                    .put("DOWN-VOTE", serviceDownVoteBoolean)
-                                    .put("COMMENTED-ON", serviceCommentBoolean)
-                                    .put("BOOKMARKED", serviceBookmarked)
+                                getSavedUserActionsFromSharedPrefs(serviceId)
 
                                 if (isAdded) {
                                     gAdapter
@@ -457,6 +573,29 @@ class Tfuma : Fragment() {
                 }
             }
         }
+    }
+
+    private fun getSavedUserActionsFromSharedPrefs(serviceID: String) {
+        /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+         * 2. wrapping those values in a JSON Object
+         * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+        serviceUpVoteBoolean = delegatedServicePrefs
+            .getBoolean("UP-VOTE-${serviceID}", false)
+
+        serviceDownVoteBoolean = delegatedServicePrefs
+            .getBoolean("DOWN-VOTE-${serviceID}", false)
+
+        serviceCommentBoolean = delegatedServicePrefs
+            .getBoolean("COMMENTED-ON-${serviceID}", false)
+
+        serviceBookmarked = delegatedServicePrefs
+            .getBoolean("BOOKMARKED-${serviceID}", false)
+
+        savedUserActions
+            .put("UP-VOTE", serviceUpVoteBoolean)
+            .put("DOWN-VOTE", serviceDownVoteBoolean)
+            .put("COMMENTED-ON", serviceCommentBoolean)
+            .put("BOOKMARKED", serviceBookmarked)
     }
 
     private fun showSnackbarBlue(message: String, length: Int) {

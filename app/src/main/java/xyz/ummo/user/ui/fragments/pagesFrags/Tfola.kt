@@ -19,7 +19,12 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_tfola.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -38,12 +43,10 @@ import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
-import xyz.ummo.user.utilities.SERVICE_BENEFITS
-import xyz.ummo.user.utilities.SERVICE_CATEGORY
+import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.ReloadingServicesEvent
-import xyz.ummo.user.utilities.mode
-import xyz.ummo.user.utilities.ummoUserPreferences
+import xyz.ummo.user.utilities.eventBusEvents.SocketStateEvent
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 
 class Tfola : Fragment() {
@@ -111,28 +114,53 @@ class Tfola : Fragment() {
 
     lateinit var mixpanelAPI: MixpanelAPI
 
+    /** SharedPref Editor **/
+    private lateinit var editor: SharedPreferences.Editor
+
+    /** JSON Value for Mixpanel **/
+    private var categoryJSONObject: JSONObject = JSONObject()
+
+    /** The following object will be used to cache offline services**/
+    lateinit var offlineServiceObject: ServiceObject
+
     override fun onStart() {
         super.onStart()
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
-        mixpanelAPI.timeEvent("Viewing TFOLA ($category)")
+        mixpanelAPI.timeEvent("Viewing TFOLA")
+        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
-        mixpanelAPI.track("Viewing TFOLA ($category)")
+        mixpanelAPI.track("Viewing TFOLA", categoryJSONObject)
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         serviceViewModel = ViewModelProvider(this)
-                .get(ServiceViewModel::class.java)
+            .get(ServiceViewModel::class.java)
 
         gAdapter = GroupAdapter()
 
         nonDelegatedServicePrefs = this.requireActivity()
             .getSharedPreferences(ummoUserPreferences, mode)
+        /** Instantiating [delegatableServicesArrayList]; filling it with data from
+         * [serviceViewModel]'s DelegatableServices **/
+        nonDelegatableServicesArrayList = (serviceViewModel?.getNonDelegatableServices()
+                as ArrayList<ServiceEntity>?)!!
+
+        Timber.e("SAVED DISCOVER SERVICES -> ${nonDelegatableServicesArrayList.size}")
+
+        /** Initing Shared Pref. Editor **/
+        editor = nonDelegatedServicePrefs.edit()
+
+        categoryJSONObject.put(
+            "CATEGORY",
+            parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
+        )
 
     }
 
@@ -184,11 +212,12 @@ class Tfola : Fragment() {
 
         /** Refreshing services with [tfola_swipe_refresher] **/
         tfolaBinding.tfolaSwipeRefresher.setOnRefreshListener {
+            gAdapter.clear()
             getNonDelegatableServicesFromServer()
+            pollingAdapterState()
             tfolaBinding.tfolaSwipeRefresher.isRefreshing = false
             showSnackbarBlue("Services refreshed...", -1)
-
-            mixpanelAPI.track("discoverFragment_refreshed")
+            mixpanelAPI.track("discoverFragment_manuallyRefreshed")
         }
 
         return view
@@ -280,6 +309,157 @@ class Tfola : Fragment() {
         }
     }
 
+    private fun showProgressBar() {
+        tfolaBinding.loadProgressBar.visibility = View.VISIBLE
+        tfolaBinding.noServicesRelativeLayout.visibility = View.GONE
+        tfolaBinding.tfolaSwipeRefresher.visibility = View.GONE
+        tfolaBinding.offlineLayout.visibility = View.GONE
+    }
+
+    @Subscribe
+    fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
+        if (!socketStateEvent.socketConnected!!) {
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+
+                    Timber.e("OFFLINE")
+
+                    val timer = object : CountDownTimer(3000, 1000) {
+                        override fun onTick(p0: Long) {
+                            Timber.e("Countdown to Offline Display")
+                            gAdapter.clear()
+                            showProgressBar()
+                        }
+
+                        override fun onFinish() {
+                            loadOfflineServices()
+
+                            /** Registering that we've loaded offline services in Shared Prefs. **/
+                            editor.putBoolean("$OFFLINE_LOADED-$category", true).apply()
+                        }
+                    }
+
+                    if (!nonDelegatedServicePrefs.getBoolean("$OFFLINE_LOADED-$category", false)) {
+                        timer.start()
+                    } else
+                        timer.cancel()
+                }
+            }
+
+        } else {
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    gAdapter.clear()
+                    Timber.e("ONLINE")
+
+                    hideOfflineState()
+
+                    val timer = object : CountDownTimer(3000, 1000) {
+                        override fun onTick(p0: Long) {
+                            Timber.e("Loading fresh data")
+                            gAdapter.clear()
+                            tfolaBinding.loadProgressBar.visibility = View.VISIBLE
+                        }
+
+                        override fun onFinish() {
+                            getNonDelegatableServicesFromServer()
+                            showSnackbarBlue("Getting fresh data", -1)
+                            /** Clearing the offline service state from Shared Prefs **/
+                            /** Clearing the offline service state from Shared Prefs **/
+                            editor.putBoolean("$OFFLINE_LOADED-$category", false).apply()
+                        }
+                    }
+                    timer.start()
+                }
+            }
+        }
+    }
+
+    private fun loadOfflineServices() {
+        /** Hiding load progress bar **/
+        tfolaBinding.loadProgressBar.visibility = View.GONE
+
+        /** Placeholder Service Cost **/
+        val serviceCostArray = ArrayList<ServiceCostModel>()
+        serviceCostArray.add(ServiceCostModel("Cost Unavailable", 0))
+
+        /** Placeholder Service Benefits **/
+        val serviceBenefitsArray = ArrayList<ServiceBenefit>()
+        serviceBenefitsArray.add(ServiceBenefit("", ""))
+
+        Timber.e("Loading Offline Services")
+
+        if (nonDelegatableServicesArrayList.isNotEmpty()) {
+            for (i in 0 until nonDelegatableServicesArrayList.size) {
+                val nonDelegatableServiceEntity = nonDelegatableServicesArrayList[i]
+                Timber.e("NON-DELEGATABLE SERVICES ARE -> ${nonDelegatableServiceEntity.serviceName}")
+                offlineServiceObject = ServiceObject(
+                    nonDelegatableServiceEntity.serviceId!!,
+                    nonDelegatableServiceEntity.serviceName!!,
+                    nonDelegatableServiceEntity.serviceDescription!!,
+                    nonDelegatableServiceEntity.serviceEligibility!!,
+                    nonDelegatableServiceEntity.serviceCentres!!,
+                    nonDelegatableServiceEntity.delegatable!!,
+                    serviceCostArray,
+                    nonDelegatableServiceEntity.serviceDocuments!!,
+                    nonDelegatableServiceEntity.serviceDuration!!,
+                    nonDelegatableServiceEntity.usefulCount!!,
+                    nonDelegatableServiceEntity.notUsefulCount!!,
+                    nonDelegatableServiceEntity.serviceComments!!,
+                    nonDelegatableServiceEntity.commentCount!!,
+                    nonDelegatableServiceEntity.serviceShares!!,
+                    nonDelegatableServiceEntity.serviceViews!!,
+                    nonDelegatableServiceEntity.serviceProvider!!,
+                    "No Link", "No Attachments",
+                    "0", "", "", serviceBenefits
+                )
+
+                getSavedUserActionsFromSharedPrefs(nonDelegatableServiceEntity.serviceId!!)
+
+                /** 1. Checking if the Fragment has been added to the Activity context.
+                 *  2. Checking if the Offline Service's category is the same as the category we're in. **/
+                if (isAdded && category == nonDelegatableServiceEntity.serviceCategory) {
+                    hideNoServicesLayout()
+                    hideOfflineState()
+
+                    gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
+                    Timber.e("Displaying offline services -> ${offlineServiceObject.serviceName}")
+                    showSnackbarBlue("Showing offline services", -2)
+                } else {
+                    hideNoServicesLayout()
+                    showOfflineState()
+                }
+            }
+        } else {
+            Timber.e("No offline services -> ${nonDelegatableServicesArrayList.size}")
+            hideNoServicesLayout()
+            showOfflineState()
+        }
+    }
+
+    private fun getSavedUserActionsFromSharedPrefs(serviceID: String) {
+        /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
+         * 2. wrapping those values in a JSON Object
+         * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
+        serviceUpVoteBoolean = nonDelegatedServicePrefs
+            .getBoolean("UP-VOTE-${serviceID}", false)
+
+        serviceDownVoteBoolean = nonDelegatedServicePrefs
+            .getBoolean("DOWN-VOTE-${serviceID}", false)
+
+        serviceCommentBoolean = nonDelegatedServicePrefs
+            .getBoolean("COMMENTED-ON-${serviceID}", false)
+
+        serviceBookmarked = nonDelegatedServicePrefs
+            .getBoolean("BOOKMARKED-${serviceID}", false)
+
+        savedUserActions
+            .put("UP-VOTE", serviceUpVoteBoolean)
+            .put("DOWN-VOTE", serviceDownVoteBoolean)
+            .put("COMMENTED-ON", serviceCommentBoolean)
+            .put("BOOKMARKED", serviceBookmarked)
+    }
+
     /** Below: we're checking if there are any services to be displayed. If not, then we show
      * the User the [offline_layout] and allowing them to reload the services manually **/
     private fun reloadServices() {
@@ -326,16 +506,14 @@ class Tfola : Fragment() {
     }
 
     private fun showOfflineState() {
+        tfolaBinding.noServicesRelativeLayout.visibility = View.GONE
         tfolaBinding.tfolaSwipeRefresher.visibility = View.GONE
         tfolaBinding.loadProgressBar.visibility = View.GONE
         tfolaBinding.offlineLayout.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
-            )
-            mixpanel?.track("discoverFragment_showingOffline")
+
+            mixpanelAPI.track("discoverFragment_showingOffline")
         }
 
     }
@@ -346,11 +524,7 @@ class Tfola : Fragment() {
         tfolaBinding.tfolaSwipeRefresher.visibility = View.VISIBLE
 
         if (isAdded) {
-            val mixpanel = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
-            )
-            mixpanel?.track("discoverFragment_hidingOffline")
+            mixpanelAPI.track("discoverFragment_hidingOffline")
         }
     }
 
@@ -485,26 +659,7 @@ class Tfola : Fragment() {
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")
 
-        /**1. capturing $UP-VOTE, $DOWN-VOTE && $COMMENTED-ON values from RoomDB, using the $serviceId
-         * 2. wrapping those values in a JSON Object
-         * 3. pushing that $savedUserActions JSON Object to $ServiceItem, via gAdapter **/
-        serviceUpVoteBoolean = nonDelegatedServicePrefs
-            .getBoolean("UP-VOTE-${serviceId}", false)
-
-        serviceDownVoteBoolean = nonDelegatedServicePrefs
-            .getBoolean("DOWN-VOTE-${serviceId}", false)
-
-        serviceCommentBoolean = nonDelegatedServicePrefs
-            .getBoolean("COMMENTED-ON-${serviceId}", false)
-
-        serviceBookmarked = nonDelegatedServicePrefs
-            .getBoolean("BOOKMARKED-${serviceId}", false)
-
-        savedUserActions
-            .put("UP-VOTE", serviceUpVoteBoolean)
-            .put("DOWN-VOTE", serviceDownVoteBoolean)
-            .put("COMMENTED-ON", serviceCommentBoolean)
-            .put("BOOKMARKED", serviceBookmarked)
+        getSavedUserActionsFromSharedPrefs(serviceId)
 
         if (isAdded) {
             gAdapter.add(ServiceItem(nonDelegatableService, context, savedUserActions))

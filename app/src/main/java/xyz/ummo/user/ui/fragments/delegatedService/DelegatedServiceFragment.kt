@@ -534,13 +534,13 @@ class DelegatedServiceFragment : Fragment {
         //TODO: cater for null-safety on non-null live-data
         if (serviceViewModel != null) {
             serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
-                    .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
-                        serviceName = serviceEntity.serviceName!!
-                        delegatedProductNameTextView!!.text = serviceEntity.serviceName
+                .observe(viewLifecycleOwner) { serviceEntity: ServiceEntity ->
+                    serviceName = serviceEntity.serviceName!!
+                    delegatedProductNameTextView!!.text = serviceEntity.serviceName
 //                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
 
-                        delegatedProductCostTextView!!.text = "E$delegationFee"
-                    })
+                    delegatedProductCostTextView!!.text = "E$delegationFee"
+                }
         } else {
             Timber.e("NO SERVICE VIEW MODEL!")
             return

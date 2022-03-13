@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.main
 
+//import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
@@ -38,7 +39,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.api.*
+import xyz.ummo.user.api.GeneralFeedback
+import xyz.ummo.user.api.GetAllServices
+import xyz.ummo.user.api.GetServiceProvider
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -58,10 +61,8 @@ import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.broadcastreceivers.ConnectivityReceiver
 import xyz.ummo.user.utilities.eventBusEvents.*
-//import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainScreen : AppCompatActivity() {
 
@@ -477,7 +478,7 @@ class MainScreen : AppCompatActivity() {
     @Subscribe
     fun onSocketStateEvent(socketStateEvent: SocketStateEvent) {
         if (!socketStateEvent.socketConnected!!) {
-            showSnackbarRed("Can't reach Ummo network", -2)
+//            showSnackbarRed("Can't reach Ummo network", -2)
         } else {
             showSnackbarBlue("Ummo network found...", -1)
 //            val pagesFragment = PagesFragment()

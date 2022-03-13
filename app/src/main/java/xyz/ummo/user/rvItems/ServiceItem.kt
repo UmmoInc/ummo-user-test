@@ -46,7 +46,6 @@ import xyz.ummo.user.utilities.eventBusEvents.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ServiceItem(
     private val service: ServiceObject,
@@ -938,7 +937,6 @@ class ServiceItem(
         mServiceEntity.serviceEligibility = service.serviceEligibility //3
         mServiceEntity.serviceCentres = service.serviceCentres //4
         mServiceEntity.delegatable = service.delegatable //5
-        //TODO: undo 16
 //        mServiceEntity.serviceCost = service.serviceCost //6
         mServiceEntity.serviceDocuments = service.serviceDocuments //7
         mServiceEntity.serviceDuration = service.serviceDuration //8
@@ -949,6 +947,7 @@ class ServiceItem(
         mServiceEntity.serviceShares = service.serviceShareCount //13
         mServiceEntity.serviceViews = service.serviceViewCount //14
         mServiceEntity.serviceProvider = service.serviceProvider //15
+        mServiceEntity.serviceCategory = service.serviceCategory
     }
 
     private fun makeServiceUpdate(viewHolder: GroupieViewHolder, updateType: String, date: String) {

@@ -143,7 +143,7 @@
                 android:layout_below="@+id/offlineTextView"
                 android:layout_centerInParent="true"
                 android:layout_margin="10dp"
-                android:background="@drawable/rounded_button_transparent_purple"
+                android:background="#1111"
                 android:text="@string/retry_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>

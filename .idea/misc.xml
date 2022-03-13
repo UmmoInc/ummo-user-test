@@ -29,6 +29,8 @@
         <entry key="app/src/main/res/drawable/ic_twotone_mark_email_verified_24.xml" value="0.42592592592592593" />
         <entry key="app/src/main/res/drawable/ic_twotone_school_24.xml" value="0.30925925925925923" />
         <entry key="app/src/main/res/drawable/ic_user_privacy_blue_24.xml" value="0.3453703703703704" />
+        <entry key="app/src/main/res/drawable/rounded_button_transparent_blue.xml" value="0.2245" />
+        <entry key="app/src/main/res/drawable/rounded_button_transparent_purple.xml" value="0.2615" />
         <entry key="app/src/main/res/layout/activity_detailed_service.xml" value="0.21574074074074073" />
         <entry key="app/src/main/res/layout/activity_feedback.xml" value="0.21203703703703702" />
         <entry key="app/src/main/res/layout/activity_intro.xml" value="0.33" />

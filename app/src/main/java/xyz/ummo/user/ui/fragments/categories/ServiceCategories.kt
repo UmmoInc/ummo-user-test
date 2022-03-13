@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -20,6 +21,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.GetCategorySummary
+import xyz.ummo.user.data.entity.ServiceCategoryEntity
 import xyz.ummo.user.databinding.FragmentServiceCategoriesBinding
 import xyz.ummo.user.models.ServiceCategoryModel
 import xyz.ummo.user.rvItems.ServiceCategoryItem
@@ -43,6 +45,8 @@ class ServiceCategories : Fragment() {
     private var totalTravel = 0
     private var totalAgriculture = 0
     private var totalEducation = 0
+    private var serviceCategoriesViewModel: ServiceCategoriesViewModel? = null
+    private val serviceCategoryEntity = ServiceCategoryEntity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +57,9 @@ class ServiceCategories : Fragment() {
 
         mixpanelAPI = MixpanelAPI
             .getInstance(context, context?.resources?.getString(R.string.mixpanelToken))
+
+        serviceCategoriesViewModel =
+            ViewModelProvider(this).get(ServiceCategoriesViewModel::class.java)
 
     }
 
@@ -100,6 +107,14 @@ class ServiceCategories : Fragment() {
                         val categoryObjects: JSONArray = categorySummary.getJSONArray("payload")
                         var categoryObject: JSONObject
 
+                        for (j in 0 until categoryObjects.length()) {
+                            categoryObject = categoryObjects[j] as JSONObject
+
+                            serviceCategoryEntity.serviceCategory = categoryObject.getString("_id")
+                            serviceCategoryEntity.serviceCount = categoryObject.getInt("total")
+                            serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)
+                        }
+
                         for (i in 0 until categoryObjects.length()) {
                             categoryObject = categoryObjects[i] as JSONObject
                             Timber.e("CATEGORY OBJECT -> $categoryObject")
@@ -108,34 +123,74 @@ class ServiceCategories : Fragment() {
                                 /** 1. VEHICLES **/
                                 categoryObject.get("_id") == "vehicles" -> {
                                     totalVehicles = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "VEHICLES"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 2. BUSINESS **/
                                 categoryObject.get("_id") == "business" -> {
                                     totalBusiness = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "BUSINESS"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 3. IDEAS **/
                                 categoryObject.get("_id") == "ideas" -> {
                                     totalIdeas = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "IDEAS"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 4. IDENTITY **/
                                 categoryObject.get("_id") == "identity" -> {
                                     totalIdentity = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "IDENTITY"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 5. EDUCATION **/
                                 categoryObject.get("_id") == "education" -> {
                                     totalEducation = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "EDUCATION"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 6. AGRICULTURE **/
                                 categoryObject.get("_id") == "agriculture" -> {
                                     totalAgriculture = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "AGRICULTURE"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 7. HEALTH **/
                                 categoryObject.get("_id") == "health" -> {
                                     totalHealth = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "HEALTH"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                                 /** 8. TRAVEL **/
                                 categoryObject.get("_id") == "travel" -> {
                                     totalTravel = categoryObject.getInt("total")
+
+                                    /*serviceCategoryEntity.serviceCategory = "TRAVEL"
+                                    serviceCategoryEntity.serviceCount =
+                                        categoryObject.getInt("total")
+                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
                                 }
                             }
 

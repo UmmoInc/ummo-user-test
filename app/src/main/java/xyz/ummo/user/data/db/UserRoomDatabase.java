@@ -1,5 +1,7 @@
 package xyz.ummo.user.data.db;
 
+import static androidx.room.Room.databaseBuilder;
+
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -11,34 +13,29 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import xyz.ummo.user.data.dao.DelegatedServiceDao;
+import xyz.ummo.user.data.dao.ProductDao;
 import xyz.ummo.user.data.dao.ProfileDao;
-//import xyz.ummo.user.data.dao.ServiceProviderDao;
+import xyz.ummo.user.data.dao.ServiceCategoryDao;
 import xyz.ummo.user.data.dao.ServiceDao;
 import xyz.ummo.user.data.dao.ServiceProviderDao;
+import xyz.ummo.user.data.entity.DelegatedServiceEntity;
 import xyz.ummo.user.data.entity.ProductEntity;
 import xyz.ummo.user.data.entity.ProfileEntity;
-//import xyz.ummo.user.data.entity.ServiceProviderEntityOld;
+import xyz.ummo.user.data.entity.ServiceCategoryEntity;
 import xyz.ummo.user.data.entity.ServiceEntity;
 import xyz.ummo.user.data.entity.ServiceProviderEntity;
 import xyz.ummo.user.data.utils.Converters;
-//import xyz.ummo.user.data.dao.AgentDao;
-import xyz.ummo.user.data.dao.DelegatedServiceDao;
-import xyz.ummo.user.data.dao.ProductDao;
-//import xyz.ummo.user.data.dao.ServiceProviderDao;
-//import xyz.ummo.user.data.entity.AgentEntity;
-import xyz.ummo.user.data.entity.DelegatedServiceEntity;
-//import xyz.ummo.user.data.entity.ProductEntity;
-//import xyz.ummo.user.data.entity.ServiceProviderEntity;
-
-import static androidx.room.Room.databaseBuilder;
+import xyz.ummo.user.data.utils.ServiceCostTypeConverter;
 
 @Database(entities = {
         DelegatedServiceEntity.class,
         ProductEntity.class,
         ProfileEntity.class,
         ServiceProviderEntity.class,
-        ServiceEntity.class}, version = 9, exportSchema = false)
-@TypeConverters({Converters.class})
+        ServiceEntity.class,
+        ServiceCategoryEntity.class}, version = 12, exportSchema = false)
+@TypeConverters({Converters.class, ServiceCostTypeConverter.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
@@ -52,6 +49,14 @@ public abstract class UserRoomDatabase extends RoomDatabase {
     public abstract ServiceProviderDao serviceProviderDao();
 
     public abstract ServiceDao serviceDao();
+
+    private static final RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
+        @Override
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+            super.onOpen(db);
+            new PopulateDbAsync(INSTANCE).execute();
+        }
+    };
 
     //    public abstract ServiceProviderDao serviceProviderDao();
     private static volatile UserRoomDatabase INSTANCE;
@@ -107,20 +112,15 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         });
     }*/
 
-    private static RoomDatabase.Callback roomDatabaseCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onOpen(@NonNull SupportSQLiteDatabase db) {
-            super.onOpen(db);
-            new PopulateDbAsync(INSTANCE).execute();
-        }
-    };
+    public abstract ServiceCategoryDao serviceCategoryDao();
 
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
         private final ProfileDao profileDao;
-        private DelegatedServiceDao delegatedServiceDao;
-        private ProductDao productDao;
-        private ServiceProviderDao serviceProviderDao;
-        private ServiceDao serviceDao;
+        private final DelegatedServiceDao delegatedServiceDao;
+        private final ProductDao productDao;
+        private final ServiceProviderDao serviceProviderDao;
+        private final ServiceDao serviceDao;
+        private final ServiceCategoryDao serviceCategoryDao;
 
         private PopulateDbAsync(UserRoomDatabase userRoomDatabase) {
             profileDao = userRoomDatabase.profileDao();
@@ -128,6 +128,7 @@ public abstract class UserRoomDatabase extends RoomDatabase {
             productDao = userRoomDatabase.productDao();
             serviceProviderDao = userRoomDatabase.serviceProviderDao();
             serviceDao = userRoomDatabase.serviceDao();
+            serviceCategoryDao = userRoomDatabase.serviceCategoryDao();
         }
 
         @Override
