@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/service_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom" />
+
+    <item
         android:id="@+id/feedback_icon"
         android:icon="@drawable/message_toolbar_icon"
         android:title="@string/feedback"
@@ -12,5 +19,5 @@
         android:id="@+id/user_support"
         android:icon="@drawable/ic_baseline_support_agent_24"
         android:title="@string/support"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

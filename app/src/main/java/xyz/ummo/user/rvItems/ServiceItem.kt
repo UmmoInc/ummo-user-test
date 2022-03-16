@@ -455,6 +455,7 @@ class ServiceItem(
         requestingAgent(viewHolder)
     }
 
+    /** When a service is tapped on, it should expand to a detailed view with more info. **/
     private fun showServiceDetails() {
         val intent = Intent(context, DetailedServiceActivity::class.java)
 
@@ -586,23 +587,23 @@ class ServiceItem(
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceModel.delegatedServiceEntityLiveData.observe(
-                context as FragmentActivity,
-                { delegatedServiceEntity: DelegatedServiceEntity ->
+                context as FragmentActivity
+            ) { delegatedServiceEntity: DelegatedServiceEntity ->
 
-                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                    Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
-                    if (serviceEntity.serviceId == delegatedServiceId) {
-                        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
-                        viewHolder.itemView.request_agent_button.text =
-                            "IN-PROGRESS" //TODO: direct User to Delegation progress
+                val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+                if (serviceEntity.serviceId == delegatedServiceId) {
+                    Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                    viewHolder.itemView.request_agent_button.text =
+                        "IN-PROGRESS" //TODO: direct User to Delegation progress
 
-                        viewHolder.itemView.request_agent_button
-                            .setBackgroundColor(context.resources.getColor(R.color.Grey))
-                        viewHolder.itemView.request_agent_button.icon =
-                            context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
-                        viewHolder.itemView.request_agent_button.isActivated = false
-                    }
-                })
+                    viewHolder.itemView.request_agent_button
+                        .setBackgroundColor(context.resources.getColor(R.color.Grey))
+                    viewHolder.itemView.request_agent_button.icon =
+                        context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                    viewHolder.itemView.request_agent_button.isActivated = false
+                }
+            }
         } else {
             Timber.e("NOTHING DELEGATED YET")
         }
@@ -947,7 +948,7 @@ class ServiceItem(
         mServiceEntity.serviceShares = service.serviceShareCount //13
         mServiceEntity.serviceViews = service.serviceViewCount //14
         mServiceEntity.serviceProvider = service.serviceProvider //15
-        mServiceEntity.serviceCategory = service.serviceCategory
+        mServiceEntity.serviceCategory = service.serviceCategory //16
     }
 
     private fun makeServiceUpdate(viewHolder: GroupieViewHolder, updateType: String, date: String) {

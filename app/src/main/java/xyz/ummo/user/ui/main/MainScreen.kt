@@ -2,6 +2,8 @@ package xyz.ummo.user.ui.main
 
 //import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import android.annotation.SuppressLint
+import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
@@ -16,6 +18,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
@@ -42,10 +45,13 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.GeneralFeedback
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
+import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
+import xyz.ummo.user.data.repo.AllServicesRepository
+import xyz.ummo.user.data.repo.AllServicesViewModelProviderFactory
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
@@ -56,6 +62,8 @@ import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
+import xyz.ummo.user.ui.fragments.search.AllServices
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
@@ -134,11 +142,20 @@ class MainScreen : AppCompatActivity() {
     /** SharedPref Editor **/
     private lateinit var editor: SharedPreferences.Editor
 
+    /** AllServicesViewModel declaration **/
+    lateinit var allServicesViewModel: AllServicesViewModel
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         checkingForDelegatedServiceFromRoom()
+
+        /** Instantiating [allServicesViewModel] with AllServicesRepository **/
+        val allServicesRepository = AllServicesRepository(AllServicesDatabase(this))
+        val viewModelProviderFactory = AllServicesViewModelProviderFactory(allServicesRepository)
+        allServicesViewModel =
+            ViewModelProvider(this, viewModelProviderFactory).get(AllServicesViewModel::class.java)
 
         Timber.e("ON_CREATE")
 //        bundle = intent.getBundleExtra(VIEW_SOURCE)!!
@@ -765,6 +782,17 @@ class MainScreen : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
 
+                R.id.bottom_navigation_search -> {
+                    val allServicesFragment = AllServices()
+                    openFragment(allServicesFragment)
+
+                    mixpanel?.track(
+                        "bottomNavigation_allServicesTapped"
+                    )
+
+                    return@OnNavigationItemSelectedListener true
+                }
+
                 /*R.id.bottom_navigation_service -> {
 
                     */
@@ -1004,6 +1032,12 @@ class MainScreen : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.top_app_bar, menu)
+
+        /** Associating searchable config with SearchView **/
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu!!.findItem(R.id.service_search).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        }
 
         return true
     }

@@ -70,36 +70,34 @@ class Tfuma : Fragment() {
     lateinit var serviceDescription: String //3
     lateinit var serviceEligibility: String //4
     var serviceCentres = ArrayList<String>() //5
-    lateinit var serviceCentresJSONArray: JSONArray //5
+    lateinit var serviceCentresJSONArray: JSONArray //5.1
     var delegatable: Boolean = false //6
-
     lateinit var serviceCost: String //7
-    lateinit var serviceCostArrayList: ArrayList<ServiceCostModel>
-    lateinit var serviceCostJSONArray: JSONArray
-    lateinit var mixpanelAPI: MixpanelAPI
-
+    lateinit var serviceCostArrayList: ArrayList<ServiceCostModel> //7.1
+    lateinit var serviceCostJSONArray: JSONArray //7.1
     var serviceDocuments = ArrayList<String>() //8
-    lateinit var serviceDocumentsJSONArray: JSONArray //8
+    lateinit var serviceDocumentsJSONArray: JSONArray //8.1
     lateinit var serviceDuration: String //9
     var approvalCount: Int = 0 //10
     var disapprovalCount: Int = 0 //11
     var serviceComments = ArrayList<String>() //12
-    lateinit var serviceCommentsJSONArray: JSONArray //12
+    lateinit var serviceCommentsJSONArray: JSONArray //12.1
     var commentCount: Int = 0 //13
     var shareCount: Int = 0 //14
     var viewCount: Int = 0 //15
     lateinit var serviceProvider: String //16
     var serviceLink: String = "" //17
-    var serviceAttachmentJSONArray = JSONArray()
-    var serviceAttachmentJSONObject = JSONObject()
-    var serviceBenefitJSONArray = JSONArray()
-    var serviceBenefits = ArrayList<ServiceBenefit>()
-    var serviceAttachmentName = ""
-    var serviceAttachmentSize = ""
-    var serviceAttachmentURL = ""
-    var serviceCategory = ""
+    var serviceAttachmentJSONArray = JSONArray() //18
+    var serviceAttachmentJSONObject = JSONObject() //18.1
+    var serviceAttachmentName = "" //18.2
+    var serviceAttachmentSize = "" //18.3
+    var serviceAttachmentURL = "" //18.4
+    var serviceBenefitJSONArray = JSONArray() //19
+    var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
+    var serviceCategory = "" //20
     lateinit var category: String
     var countOfServices: Int = 0
+    lateinit var mixpanelAPI: MixpanelAPI
 
     /** The following object will be used to cache offline services**/
     lateinit var offlineServiceObject: ServiceObject

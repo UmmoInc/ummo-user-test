@@ -54,6 +54,7 @@ public class AppRepository {
     private List<ServiceEntity> delegatableServices;
     private List<ServiceEntity> nonDelegatableServices;
     private List<ServiceEntity> bookmarkedServiceEntityListData;
+    private List<ServiceEntity> serviceQueryResponses;
 //    private List<ServiceProviderEntityOld> serviceProviders = new ArrayList<>();
 
     public AppRepository(Application application) {
@@ -78,6 +79,8 @@ public class AppRepository {
 
         serviceDao = userRoomDatabase.serviceDao();
         serviceEntityLiveData = serviceDao.getServiceLiveData();
+
+        serviceQueryResponses = serviceDao.getServiceListData();
 
         serviceCategoryDao = userRoomDatabase.serviceCategoryDao();
 //        serviceCategoryEntities = serviceCategoryDao.getAllCategories();
@@ -665,6 +668,40 @@ public class AppRepository {
             return mBookmarkedServicesList;
         }
     }
+
+    /*private static class searchDatabaseAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceDaoAsyncTask;
+        private final List<ServiceEntity> mDBSearchedServicesList = new ArrayList<>();
+
+        searchDatabaseAsyncTask(ServiceDao serviceDao) {
+            this.mServiceDaoAsyncTask = serviceDao;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mDBSearchedServicesList.addAll(mServiceDaoAsyncTask.searchRoomDB(voids));
+            Timber.e("SEARCHING FOR SERVICES -> %s", mDBSearchedServicesList);
+            return mDBSearchedServicesList;
+        }
+    }*/
+
+    public List<ServiceEntity> searchDatabase(String query) {
+        serviceQueryResponses = serviceDao.searchRoomDB(query);
+        Timber.e("SERVICE SEARCHES ->" + serviceQueryResponses);
+        return serviceQueryResponses;
+    }
+
+    /*private static class searchDatabaseAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mDBSearchedServicesList = new ArrayList<>();
+
+        searchDatabaseAsyncTask(ServiceDao serviceDao) {this.mDBSearchedServicesList = serviceDao}
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mServiceAsyncTaskDao.searchRoomDB()
+        }
+    }*/
 
     /**
      * 5.1

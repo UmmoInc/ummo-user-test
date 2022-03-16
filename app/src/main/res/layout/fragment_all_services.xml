@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="?android:attr/actionBarSize"
+        android:background="#1111"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/all_services_intro_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="2dp"
+            app:cardMaxElevation="1dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/Grey"
+            app:strokeWidth="1dp">
+
+            <RelativeLayout
+                android:id="@+id/all_services_intro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/all_services_intro_title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:fontFamily="@font/rubik"
+                    android:padding="5dp"
+                    android:text="Search"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <SearchView
+                    android:id="@+id/service_search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/all_services_intro_title_text_view"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="5dp"
+                    app:iconifiedByDefault="true"
+                    app:queryHint="Search for your service..." />
+
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!--<include
+            android:id="@+id/home_info_card"
+            layout="@layout/info_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>-->
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/all_services_swipe_refresher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/all_services_intro_card_view"
+            android:layout_marginBottom="10dp"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/all_services_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/service_slice" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/load_all_services_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:visibility="visible" />
+
+        <RelativeLayout
+            android:id="@+id/offline_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/offline_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_baseline_cloud_off_24" />
+
+            <TextView
+                android:id="@+id/offlineTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offline_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="We're currently having trouble loading services for you. \n\nPlease retry connecting."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+
+            <!--<Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offlineTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
+            <Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offlineTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/no_services_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_folder_open_24" />
+
+            <TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="There are no services under this category at the moment.\n\nPlease check again soon."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/go_home_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_text_view"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="@string/return_button_string"
+                android:textColor="@color/ummo_1" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</layout>
