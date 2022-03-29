@@ -45,13 +45,10 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.GeneralFeedback
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
-import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
-import xyz.ummo.user.data.repo.AllServicesRepository
-import xyz.ummo.user.data.repo.AllServicesViewModelProviderFactory
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
@@ -152,10 +149,11 @@ class MainScreen : AppCompatActivity() {
         checkingForDelegatedServiceFromRoom()
 
         /** Instantiating [allServicesViewModel] with AllServicesRepository **/
-        val allServicesRepository = AllServicesRepository(AllServicesDatabase(this))
+        //TODO: Saved for issue [UMMO-75]
+        /*val allServicesRepository = AllServicesRepository(AllServicesDatabase(this))
         val viewModelProviderFactory = AllServicesViewModelProviderFactory(allServicesRepository)
         allServicesViewModel =
-            ViewModelProvider(this, viewModelProviderFactory).get(AllServicesViewModel::class.java)
+            ViewModelProvider(this, viewModelProviderFactory).get(AllServicesViewModel::class.java)*/
 
         Timber.e("ON_CREATE")
 //        bundle = intent.getBundleExtra(VIEW_SOURCE)!!
@@ -243,6 +241,12 @@ class MainScreen : AppCompatActivity() {
 
         /** Checking User Email verifier **/
         verifyEmail()
+
+        /** Instantiating the Service Search function **/
+        val serviceSearchIcon = findViewById<ActionMenuItemView>(R.id.service_search)
+        serviceSearchIcon.setOnClickListener {
+            startServiceSearch()
+        }
 
         /** Instantiating the Feedback function from the `feedback_icon`**/
         val feedbackIcon = findViewById<ActionMenuItemView>(R.id.feedback_icon)
@@ -625,6 +629,11 @@ class MainScreen : AppCompatActivity() {
         super.onResume()
         Timber.e("ON_RESUME")
         checkingForDelegatedServiceFromRoom()
+    }
+
+    private fun startServiceSearch() {
+        val allServicesFragment = AllServices()
+        openFragment(allServicesFragment)
     }
 
     fun feedback() {

@@ -43,7 +43,7 @@
         <entry key="app/src/main/res/layout/content_detailed_service.xml" value="0.32685185185185184" />
         <entry key="app/src/main/res/layout/delegate_agent_dialog.xml" value="0.3277777777777778" />
         <entry key="app/src/main/res/layout/feedback_dialog.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_get_help.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_give_feedback.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_how_ummo_works.xml" value="0.33" />

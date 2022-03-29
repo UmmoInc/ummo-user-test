@@ -1,31 +1,26 @@
 package xyz.ummo.user.ui.fragments.search
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_all_services.view.*
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.adapters.SearchServicesAdapter
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.Service
-import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.rvItems.ServiceSliceItem
-import xyz.ummo.user.ui.main.MainScreen
-import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
@@ -35,8 +30,10 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
     private lateinit var rootView: View
     private lateinit var recyclerView: RecyclerView
-    private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
-    private lateinit var serviceArrayList: ArrayList<ServiceEntity>
+
+    //    private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
+    private lateinit var searchServiceAdapter: SearchServicesAdapter
+    private lateinit var serviceArrayList: ArrayList<ServiceObject>
 
     private lateinit var serviceMini: ServiceObject
     lateinit var serviceId: String //1
@@ -71,13 +68,16 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
     var serviceCategory = "" //20
 
     /** Initializing ServiceViewModel **/
-    private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
-        .get(ServiceViewModel::class.java)
+    /*private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
+        .get(ServiceViewModel::class.java)*/
     lateinit var allServicesViewModel: AllServicesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        gAdapter = GroupAdapter()
+
+        serviceArrayList = ArrayList(listOf<ServiceObject>())
+
+        getAllServices()
     }
 
     override fun onCreateView(
@@ -92,7 +92,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         )
 
         /** Instantiating [allServicesViewModel] **/
-        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+//        allServicesViewModel = (activity as MainScreen).allServicesViewModel
 
         rootView = allServiceBinding.root
 
@@ -100,7 +100,8 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         recyclerView = rootView.all_services_recycler_view
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = rootView.all_services_recycler_view?.layoutManager
-        recyclerView.adapter = gAdapter
+
+        setupSearchView()
 
         getAllServices()
 
@@ -203,11 +204,15 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
                                 serviceBenefits
                             )
 
-                            Timber.e("MINI SERVICE -> $serviceName")
+                            serviceArrayList.add(i, serviceMini)
+
+//                            Timber.e("SERVICE Array List -> $serviceArrayList")
+//                            Timber.e("MINI SERVICE -> $serviceName")
                             if (isAdded) {
                                 allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
-                                gAdapter.add(ServiceSliceItem(serviceMini, context))
-
+                                /*gAdapter.add(ServiceSliceItem(serviceMini, context))*/
+                                searchServiceAdapter = SearchServicesAdapter(serviceArrayList)
+                                recyclerView.adapter = searchServiceAdapter
                             }
                         }
                     } catch (jse: JSONException) {
@@ -218,7 +223,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.top_app_bar, menu)
 
         val search: MenuItem = menu.findItem(R.id.service_search)
@@ -228,6 +233,11 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
 
         searchView.setOnQueryTextListener(this)
         return super.onCreateOptionsMenu(menu, inflater)
+    }*/
+
+    private fun setupSearchView() {
+        allServiceBinding.serviceSearchView.setOnQueryTextListener(this)
+        Timber.e("Search View Setup")
     }
 
     companion object {
@@ -242,24 +252,22 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         if (query != null) {
-            searchDatabase(query)
+            searchServiceArrayList(query)
         }
-        return true
+        return false
     }
 
     override fun onQueryTextChange(query: String?): Boolean {
         if (query != null) {
-            searchDatabase(query)
+            searchServiceArrayList(query)
         }
-        return true
+        return false
     }
 
-    private fun searchDatabase(query: String?) {
+    private fun searchServiceArrayList(query: String?) {
         val searchQuery = "%$query%"
-        serviceViewModel.searchServiceDatabase(query!!)
-
-        Timber.e("SEARCH QUERY -> $query")
-
+        searchServiceAdapter.filter.filter(query)
+        Timber.e("SERVICE FILTER LIST QUERY -> $query")
         /** 1. With the ViewModel, search database and observe the liveData
          *  2. Using the liveData, populate the adapter **/
 

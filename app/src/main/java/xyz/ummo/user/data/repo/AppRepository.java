@@ -80,7 +80,7 @@ public class AppRepository {
         serviceDao = userRoomDatabase.serviceDao();
         serviceEntityLiveData = serviceDao.getServiceLiveData();
 
-        serviceQueryResponses = serviceDao.getServiceListData();
+//        serviceQueryResponses = serviceDao.getServiceListData();
 
         serviceCategoryDao = userRoomDatabase.serviceCategoryDao();
 //        serviceCategoryEntities = serviceCategoryDao.getAllCategories();

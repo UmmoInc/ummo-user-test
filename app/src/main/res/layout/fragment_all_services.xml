@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="1dp"
+            app:cardElevation="1dp"
             app:cardMaxElevation="1dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="true"
@@ -30,17 +30,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-
                 <TextView
                     android:id="@+id/all_services_intro_title_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/rubik"
-                    android:padding="5dp"
-                    android:text="Search"
+                    android:padding="4dp"
+                    android:text="Search for a government service below..."
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <SearchView
@@ -48,9 +48,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/all_services_intro_title_text_view"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_margin="10dp"
+                    android:background="#1111"
                     app:iconifiedByDefault="true"
                     app:queryHint="Search for your service..." />
 

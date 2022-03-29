@@ -44,8 +44,8 @@ class ServiceViewModel(application: Application) : AndroidViewModel(application)
         return appRepository.nonDelegatableServices
     }
 
-    fun searchServiceDatabase(searchQuery: String): List<ServiceEntity> {
+    /*fun searchServiceDatabase(searchQuery: String): List<ServiceEntity> {
         return appRepository.searchDatabase(searchQuery)
-    }
+    }*/
 
 }

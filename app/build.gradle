@@ -45,7 +45,7 @@ android {
         //[END] OneSignal Integration
     }
     buildTypes {
-        student{
+        student {
             minifyEnabled true
             debuggable true
             signingConfig signingConfigs.debug
@@ -85,6 +85,7 @@ dependencies {
     def lifecycle_version = '2.2.0'
     def room_version = '2.2.6'
     def versions_work = "2.7.1"
+    def latestFastAdapterRelease = "5.6.0"
 
     /**Dex**/
     implementation "androidx.multidex:multidex:$multidex_version"
