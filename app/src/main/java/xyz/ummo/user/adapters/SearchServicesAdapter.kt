@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
+import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.databinding.ServiceSliceBinding
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.utilities.SERVICE_OBJECT
+import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 import java.io.Serializable
 import java.util.*
 
@@ -19,6 +21,7 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
     var fullServiceList = ArrayList<ServiceObject>()
     var servicesList = ArrayList<ServiceObject>()
+    val searchResultsEvent = SearchResultsEvent()
 
     private lateinit var mContext: Context
 
@@ -87,6 +90,9 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
                             Timber.e("SERVICE FILTER LIST 1 -> NOT FOUND")
                         }
                     }
+                    /** Publishing the searched service name to AllServices **/
+                    searchResultsEvent.searchedService = filterPattern
+                    EventBus.getDefault().post(searchResultsEvent)
                 }
                 filterResults.values = filteredServiceObjectsList
                 filterResults.count = filteredServiceObjectsList.size
@@ -99,7 +105,16 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
 
                 if (filterResults!!.values != null) {
                     fullServiceList.addAll(filterResults.values as ArrayList<ServiceObject>)
-                    notifyDataSetChanged()
+                    Timber.e("SERVICE FILTER LIST 3 -> $fullServiceList")
+
+                    if (fullServiceList.size != 0) {
+                        notifyDataSetChanged()
+                        searchResultsEvent.searchResultsFound = true
+                        EventBus.getDefault().post(searchResultsEvent)
+                    } else {
+                        searchResultsEvent.searchResultsFound = false
+                        EventBus.getDefault().post(searchResultsEvent)
+                    }
                 } else {
                     Timber.e("SERVICE FILTER 3 NULL")
                 }
@@ -110,64 +125,6 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
             }
         }
     }
-
-    /*override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val filterResults = FilterResults()
-
-                val charSearch = constraint.toString()
-
-                if (charSearch.isEmpty()) {
-                    fullServiceList = allServicesArrayList!!
-                    Timber.e("EMPTY SEARCH -> $fullServiceList")
-                } else {
-                    for (service in allServicesArrayList!!) {
-                        if (service.serviceName.toLowerCase(Locale.ROOT).contains(
-                                charSearch.toLowerCase(
-                                    Locale.ROOT
-                                )
-                            )
-                        ) {
-                            Timber.e("FOUND SERVICE OBJECT -> $service")
-                            resultsList.add(service)
-                            Timber.e("FOUND SERVICE LIST -> $resultsList")
-//                            Timber.e("FOUND SERVICE (Char Search) -> $charSearch")
-//                            Timber.e("FOUND SERVICE (Name) -> ${service.serviceName}")
-                        }
-                    }
-                    *//*fullServiceList.clear()
-                    fullServiceList.addAll(resultsList)*//*
-                    Timber.e("SERVICE FILTER LIST 1 -> $resultsList")
-                }
-                filterResults.values = resultsList
-                filterResults.count = resultsList.size
-                Timber.e("SERVICE FILTER LIST 2 -> ${filterResults.values}")
-
-                return filterResults
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-//                fullServiceList.clear()
-//                fullServiceList = results?.values as ArrayList<ServiceObject>
-                fullServiceList.clear()
-
-                if (results!!.values != null) {
-                    fullServiceList.addAll(results.values as ArrayList<ServiceObject>)
-                    Timber.e("SERVICE FILTER LIST 3 -> $fullServiceList")
-                    notifyDataSetChanged()
-                } else {
-                    Timber.e("SERVICE FILTER LIST 3 NULL")
-                }
-
-            }
-
-            override fun convertResultToString(resultValue: Any?): CharSequence {
-                return super.convertResultToString(resultValue)
-            }
-        }
-    }*/
 
     /** When a service is tapped on, it should expand to a detailed view with more info. **/
     private fun showServiceDetails(pos: Int) {

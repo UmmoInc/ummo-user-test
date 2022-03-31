@@ -99,10 +99,10 @@ class RequestServiceAssistance : BottomSheetDialogFragment() {
 
         /** Retrieving the User's name to attach to the request message down by [completeRequestOnWhatsApp]**/
         profileViewModel.profileEntityLiveData.observe(
-            viewLifecycleOwner, { profileEntity: ProfileEntity ->
-                userName = profileEntity.profileName
-            }
-        )
+            viewLifecycleOwner
+        ) { profileEntity: ProfileEntity ->
+            userName = profileEntity.profileName
+        }
 
         return view
     }

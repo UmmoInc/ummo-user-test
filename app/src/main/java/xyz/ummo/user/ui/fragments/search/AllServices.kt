@@ -1,14 +1,23 @@
 package xyz.ummo.user.ui.fragments.search
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_all_services.view.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,9 +31,11 @@ import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.utilities.*
+import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
+import xyz.ummo.user.workers.makeStatusNotification
 
 class AllServices : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -67,6 +78,9 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
     var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
     var serviceCategory = "" //20
 
+    private lateinit var loadServicesProgressBar: ProgressBar
+    private lateinit var mixpanel: MixpanelAPI
+
     /** Initializing ServiceViewModel **/
     /*private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
         .get(ServiceViewModel::class.java)*/
@@ -78,6 +92,21 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         serviceArrayList = ArrayList(listOf<ServiceObject>())
 
         getAllServices()
+
+        mixpanel = MixpanelAPI.getInstance(
+            context,
+            resources.getString(R.string.mixpanelToken)
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreateView(
@@ -105,7 +134,134 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
 
         getAllServices()
 
+        checkForServices()
+
+        /** Checking if SearchView is expanded **/
+        allServiceBinding.serviceSearchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus || !allServiceBinding.serviceSearchView.isIconified) {
+                /** If focused, hide title text **/
+                allServiceBinding.allServicesIntroTitleTextView.visibility = View.GONE
+            } else if (!hasFocus || allServiceBinding.serviceSearchView.isIconified) {
+                allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
+            }
+        }
+
+        /** Reloading all services on either Refresh or Thank You events **/
+        allServiceBinding.thankYouButton.setOnClickListener {
+            reloadAllServices()
+        }
+
         return rootView
+    }
+
+    private fun reloadAllServices() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
+                allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
+                allServiceBinding.serviceSearchView.isIconified = true
+                allServiceBinding.serviceSearchView.clearFocus()
+                getAllServices()
+            }
+        }
+        timer.start()
+    }
+
+    @Subscribe
+    fun onSearchResultsEvent(searchResultsEvent: SearchResultsEvent) {
+
+        if (searchResultsEvent.searchResultsFound!!) {
+            Timber.e("SEARCH RESULTS FOUND -> ${searchResultsEvent.searchedService}!")
+
+        } else {
+            Timber.e("SEARCH RESULTS NOT FOUND -> ${searchResultsEvent.searchedService}!")
+            displayNoServicesFound()
+
+            allServiceBinding.letMeKnowButton.setOnClickListener {
+                Timber.e("CLICKING BUTTON -> ${searchResultsEvent.searchedService}")
+                capturingMissingService(searchResultsEvent.searchedService)
+            }
+        }
+    }
+
+    /** First, we want to capture the value of the missing service and then send it over to
+     *  Mixpanel for record keeping. In doing so, our UX needs to make it appealing to the
+     *  User. It needs to take care of the following:
+     *  1. Inform them that their query's been sent back for review;
+     *  2. Let them know that we'll reach out to them as soon as we find more info on their service
+     *  3. Tie ourselves to an SLA of no more than 2 days.
+     *  Let's begin! **/
+    private fun capturingMissingService(missingService: String) {
+        val missingServiceObject = JSONObject()
+        missingServiceObject.put("Missing Service", missingService)
+        mixpanel.track("Service Not Found", missingServiceObject)
+        allServiceBinding.noResultsLayout.visibility = View.GONE
+        displayMissingServiceCapturedUI()
+
+    }
+
+    private fun displayMissingServiceCapturedUI() {
+
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.missingServiceCapturedLayout.visibility = View.VISIBLE
+                makeStatusNotification(
+                    "Service Sent",
+                    "We'll let you know by SMS when we find your service",
+                    context!!
+                )
+            }
+        }
+        timer.start()
+    }
+
+    private fun checkForServices() {
+        val timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(p0: Long) {
+
+            }
+
+            override fun onFinish() {
+                if (serviceArrayList.isEmpty()) {
+                    displayNoServicesFound()
+                }
+            }
+        }
+
+        timer.start()
+    }
+
+    /** This function displays a loader for 2 seconds && displays that no service was found from
+     *  the search **/
+    private fun displayNoServicesFound() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+
+                allServiceBinding.noResultsLayout.visibility = View.VISIBLE
+            }
+        }
+        timer.start()
     }
 
     private fun getAllServices() {
@@ -161,10 +317,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
                             serviceBenefits =
                                 fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
 
-                            serviceLink = if (service.getString(SERV_LINK).isNotEmpty())
-                                service.getString(SERV_LINK) //17
-                            else
-                                ""
+                            serviceLink = service.getString(SERV_LINK).ifEmpty { "" }
 
                             serviceCategory = service.getString(SERVICE_CATEGORY)
 
@@ -252,22 +405,35 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         if (query != null) {
-            searchServiceArrayList(query)
+//            searchServiceArrayList(query)
         }
         return false
     }
 
     override fun onQueryTextChange(query: String?): Boolean {
-        if (query != null) {
-            searchServiceArrayList(query)
+
+        var job: Job? = null
+
+        job?.cancel()
+        job = MainScope().launch {
+            delay(500L)
+            query?.let {
+                if (query.isNotEmpty()) {
+                    searchServiceArrayList(query)
+                }
+            }
         }
+        /*if (query != null) {
+
+            searchServiceArrayList(query)
+        }*/
         return false
     }
+
 
     private fun searchServiceArrayList(query: String?) {
         val searchQuery = "%$query%"
         searchServiceAdapter.filter.filter(query)
-        Timber.e("SERVICE FILTER LIST QUERY -> $query")
         /** 1. With the ViewModel, search database and observe the liveData
          *  2. Using the liveData, populate the adapter **/
 

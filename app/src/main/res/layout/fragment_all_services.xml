@@ -32,25 +32,30 @@
 
                 <TextView
                     android:id="@+id/all_services_intro_title_text_view"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/rubik"
                     android:padding="4dp"
-                    android:text="Search for a government service below..."
+                    android:text="Search for a government service..."
                     android:textColor="@color/black"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <SearchView
                     android:id="@+id/service_search_view"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/all_services_intro_title_text_view"
-                    android:layout_margin="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="#1111"
-                    app:iconifiedByDefault="true"
+                    android:focusable="true"
+                    app:iconifiedByDefault="false"
                     app:queryHint="Search for your service..." />
 
             </RelativeLayout>
@@ -75,7 +80,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/service_slice" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -91,7 +95,7 @@
             android:visibility="visible" />
 
         <RelativeLayout
-            android:id="@+id/offline_layout"
+            android:id="@+id/no_results_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -101,31 +105,34 @@
             tools:visibility="invisible">
 
             <ImageView
-                android:id="@+id/offline_image_view"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:id="@+id/no_results_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                app:srcCompat="@drawable/ic_baseline_cloud_off_24" />
+                app:srcCompat="@drawable/ic_baseline_search_off_24" />
 
             <TextView
-                android:id="@+id/offlineTextView"
+                android:id="@+id/no_results_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/offline_image_view"
+                android:layout_below="@+id/no_results_image_view"
                 android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="We're currently having trouble loading services for you. \n\nPlease retry connecting."
+                android:text="@string/service_not_found_message"
                 android:textAlignment="center"
                 android:textColor="@color/ummo_2"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <!--<Button
                 android:id="@+id/reload_all_services_services_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/offlineTextView"
+                android:layout_below="@+id/no_resultsTextView"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
@@ -135,22 +142,93 @@
                 android:text="@string/retry_button_string"
                 android:textColor="@color/ummo_1" />-->
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/let_me_know_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_results_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Let me know"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_baseline_mark_chat_unread_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/missing_service_captured_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/missing_service_captured_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_unarchive_24" />
+
+            <TextView
+                android:id="@+id/missing_service_captured_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/missing_service_captured_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Great! \n\nSo, our team will look for your service and let you know within two days."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <!--<Button
                 android:id="@+id/reload_all_services_services_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/offlineTextView"
+                android:layout_below="@+id/no_resultsTextView"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:background="#1111"
+                android:background="@drawable/rounded_button_transparent_blue"
                 android:text="@string/retry_button_string"
-                android:textColor="@color/ummo_1" />
+                android:textColor="@color/ummo_1" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/thank_you_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/missing_service_captured_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Thank you"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_sharing_is_caring_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <!--<RelativeLayout
             android:id="@+id/no_services_relative_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -168,7 +246,7 @@
                 android:layout_marginBottom="20dp"
                 app:srcCompat="@drawable/ic_twotone_folder_open_24" />
 
-            <TextView
+            &lt;!&ndash;<TextView
                 android:id="@+id/no_services_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -179,22 +257,22 @@
                 android:text="There are no services under this category at the moment.\n\nPlease check again soon."
                 android:textAlignment="center"
                 android:textColor="@color/ummo_2"
-                android:textSize="18sp" />
+                android:textSize="18sp" />&ndash;&gt;
 
             <Button
-                android:id="@+id/go_home_button"
+                android:id="@+id/let_me_know_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/no_services_text_view"
+                android:layout_below="@+id/no_resultsTextView"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="#1111"
-                android:text="@string/return_button_string"
+                android:text="Let me know"
                 android:textColor="@color/ummo_1" />
-        </RelativeLayout>
+        </RelativeLayout>-->
 
     </RelativeLayout>
 
