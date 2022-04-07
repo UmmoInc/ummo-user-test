@@ -27,8 +27,10 @@ import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
+import xyz.ummo.user.utilities.serviceutils.SaveServiceLocally
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
@@ -82,7 +84,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
     /** Initializing ServiceViewModel **/
     /*private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
         .get(ServiceViewModel::class.java)*/
-    lateinit var allServicesViewModel: AllServicesViewModel
+    private lateinit var allServicesViewModel: AllServicesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +121,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         )
 
         /** Instantiating [allServicesViewModel] **/
-//        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
 
         rootView = allServiceBinding.root
 
@@ -294,6 +296,10 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
                     try {
                         for (i in 0 until allServices.length()) {
                             service = allServices[i] as JSONObject
+
+                            /** Saving services locally **/
+                            val saveServiceLocally = SaveServiceLocally(service, context!!)
+                            saveServiceLocally.savingService()
 
                             serviceId = service.getString("_id") //1
                             serviceName = service.getString(SERV_NAME) //2

@@ -565,7 +565,7 @@ public class AppRepository {
         protected Void doInBackground(ServiceEntity... serviceEntities) {
 
             for (ServiceEntity serviceEntity : serviceEntities) {
-                mServiceDao.insertService(serviceEntity); //TODO: There's an issue here!
+                mServiceDao.upsertService(serviceEntity); //TODO: There's an issue here!
 
                 Timber.e("ASYNC SAVE - NAME %s", serviceEntity.getServiceName());
                 Timber.e("ASYNC SAVE - DEL. %s", serviceEntity.getDelegatable());

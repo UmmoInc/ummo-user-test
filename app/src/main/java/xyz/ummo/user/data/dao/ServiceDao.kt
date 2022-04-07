@@ -7,7 +7,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 @Dao
 interface ServiceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertService(serviceEntity: ServiceEntity)
+    fun upsertService(serviceEntity: ServiceEntity)
 
     @get:Query("SELECT * FROM service")
     val serviceLiveData: LiveData<ServiceEntity?>?

@@ -67,9 +67,9 @@ class ServiceEntity : ServiceModel {
     @ColumnInfo(name = "bookmarked") //16
     override var bookmarked: Boolean? = false
 
-    @ColumnInfo(name = "is_delegated")
+    @ColumnInfo(name = "is_delegated") //17
     override var isDelegated: Boolean? = false
 
-    @ColumnInfo(name = "service_category")
+    @ColumnInfo(name = "service_category") //18
     override var serviceCategory: String? = null
 }

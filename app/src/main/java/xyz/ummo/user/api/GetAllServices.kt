@@ -10,7 +10,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
 
-
 abstract class GetAllServices(private val activity: Activity) {
 
     var client = OkHttpClient()
@@ -41,7 +40,7 @@ abstract class GetAllServices(private val activity: Activity) {
     }
 
     @AddTrace(name = "get_all_services")
-    private fun getAllServices() {
+    fun getAllServices() {
         Fuel.get("/product")
             .response { request, response, result ->
                 activity.runOnUiThread {
