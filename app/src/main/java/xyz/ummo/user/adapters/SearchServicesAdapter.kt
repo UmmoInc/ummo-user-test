@@ -61,6 +61,11 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
         return fullServiceList.size
     }
 
+    fun clearAdapter() {
+        fullServiceList.clear()
+        notifyDataSetChanged()
+    }
+
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -97,6 +102,18 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
                 filterResults.values = filteredServiceObjectsList
                 filterResults.count = filteredServiceObjectsList.size
                 Timber.e("SERVICE FILTER LIST 2 -> ${filterResults.values}")
+
+                val filterResultsValues = filterResults.values as ArrayList<ServiceObject>
+
+                for (i in 0 until filterResultsValues.size) {
+                    Timber.e("SERVICE FILTER VALUE 1 -> $filterResultsValues")
+
+                    if (filterResultsValues[i].serviceName == filterResultsValues[i + 1].serviceName) {
+                        filterResultsValues.removeAt(i)
+                    }
+                    Timber.e("SERVICE FILTER VALUE 2 -> $filterResultsValues")
+                }
+
                 return filterResults
             }
 

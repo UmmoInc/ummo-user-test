@@ -190,7 +190,7 @@
                 android:fontFamily="@font/rubik"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="Great! \n\nSo, our team will look for your service and let you know within two days."
+                android:text="Great! \n\nSo, our team will look for your service and let you know ASAP."
                 android:textAlignment="center"
                 android:textColor="@color/ummo_2"
                 android:textSize="16sp" />

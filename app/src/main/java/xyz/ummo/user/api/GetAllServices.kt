@@ -61,22 +61,5 @@ abstract class GetAllServices(private val activity: Activity) {
         return call
     }
 
-    /*private fun getAllServicesOk() {
-        val okHttp = OkHttpClient()
-
-        val requestBuilder =
-            Request.Builder()
-                .url("${activity.getString(R.string.serverUrl)}/product")
-                .build()
-
-        activity.runOnUiThread {
-
-
-            if (response.isSuccessful) {
-                Timber.e("OK HTTP RESPONSE -> ${response.body}")
-            }
-        }
-    }*/
-
     abstract fun done(data: ByteArray, code: Number)
 }

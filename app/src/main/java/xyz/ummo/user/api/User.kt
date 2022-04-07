@@ -323,8 +323,22 @@ class User : MultiDexApplication() {
             val body = result.notification.body
             val data = result.notification.rawPayload
             val dataObject = JSONObject(data)
-            val customObject = JSONObject(dataObject.getString("custom")).getJSONObject("a")
-            val openURL = customObject.getString("OPEN_URL")
+            var customObject = JSONObject()
+            var a = JSONObject()
+            var openURL = ""
+
+            if (dataObject.has("custom")) {
+                customObject = JSONObject(dataObject.getString("custom"))
+            }
+
+            if (customObject.has("a")) {
+                a = customObject.getJSONObject("a")
+            }
+
+            if (customObject.has("OPEN_URL")) {
+                openURL = customObject.getString("OPEN_URL")
+
+            }
             val url = result.notification.launchURL
 
             val notificationJSONObject = JSONObject()
@@ -352,7 +366,7 @@ class User : MultiDexApplication() {
             Timber.e("OS NOTIFICATION TITLE -> $title")
             Timber.e("OS NOTIFICATION BODY -> $body")
             Timber.e("OS NOTIFICATION DATA -> $dataObject")
-            Timber.e("OS NOTIFICATION CUSTOM DATA -> $customObject")
+            Timber.e("OS NOTIFICATION CUSTOM DATA -> $a")
             Timber.e("OS NOTIFICATION OPEN URL -> $openURL")
         }
     }

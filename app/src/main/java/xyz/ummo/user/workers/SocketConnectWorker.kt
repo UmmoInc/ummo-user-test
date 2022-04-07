@@ -49,7 +49,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {
-//                        makeStatusNotification("Socket", "We're LIVE!", appContext)
+                        makeStatusNotification("Socket", "We're LIVE!", appContext)
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 

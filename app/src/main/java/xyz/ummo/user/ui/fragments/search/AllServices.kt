@@ -12,10 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_all_services.view.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONArray
@@ -36,6 +33,7 @@ import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
 import xyz.ummo.user.workers.makeStatusNotification
+
 
 class AllServices : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -150,6 +148,15 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.thankYouButton.setOnClickListener {
             reloadAllServices()
         }
+        allServiceBinding.missingServiceCapturedImageView.setOnClickListener {
+            reloadAllServices()
+        }
+
+        allServiceBinding.allServicesSwipeRefresher.setOnRefreshListener {
+            reloadAllServices()
+            allServiceBinding.allServicesSwipeRefresher.isRefreshing = false
+            mixpanel.track("All Services View Refreshed")
+        }
 
         return rootView
     }
@@ -159,17 +166,24 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
             override fun onTick(p0: Long) {
                 allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
                 allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                searchServiceAdapter.clearAdapter()
             }
 
             override fun onFinish() {
-                allServiceBinding.noResultsLayout.visibility = View.GONE
-                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
-                allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
-                allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
-                allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
-                allServiceBinding.serviceSearchView.isIconified = true
-                allServiceBinding.serviceSearchView.clearFocus()
-                getAllServices()
+                MainScope().launch {
+                    withContext(Dispatchers.Default) {
+
+                    }
+                    allServiceBinding.noResultsLayout.visibility = View.GONE
+                    allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                    allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+                    allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
+                    allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
+                    allServiceBinding.serviceSearchView.isIconified = true
+                    allServiceBinding.serviceSearchView.clearFocus()
+                    getAllServices()
+                }
             }
         }
         timer.start()
@@ -216,14 +230,20 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
             }
 
             override fun onFinish() {
-                allServiceBinding.noResultsLayout.visibility = View.GONE
-                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
-                allServiceBinding.missingServiceCapturedLayout.visibility = View.VISIBLE
-                makeStatusNotification(
-                    "Service Sent",
-                    "We'll let you know by SMS when we find your service",
-                    context!!
-                )
+
+                MainScope().launch {
+                    withContext(Dispatchers.Default) {
+                        Timber.e("BACKGROUND WORK - 1")
+                    }
+                    allServiceBinding.noResultsLayout.visibility = View.GONE
+                    allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                    allServiceBinding.missingServiceCapturedLayout.visibility = View.VISIBLE
+                    makeStatusNotification(
+                        "Service Sent",
+                        "We'll let you know by SMS when we find your service",
+                        context!!
+                    )
+                }
             }
         }
         timer.start()
@@ -416,7 +436,7 @@ class AllServices : Fragment(), SearchView.OnQueryTextListener {
 
         job?.cancel()
         job = MainScope().launch {
-            delay(500L)
+            delay(1000L)
             query?.let {
                 if (query.isNotEmpty()) {
                     searchServiceArrayList(query)
