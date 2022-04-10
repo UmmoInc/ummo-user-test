@@ -9,18 +9,18 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.ServiceSliceBinding
-import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.utilities.SERVICE_OBJECT
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 import java.io.Serializable
 import java.util.*
 
-class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceObject>?) :
+class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceEntity>?) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), Filterable {
-    var fullServiceList = ArrayList<ServiceObject>()
-    var servicesList = ArrayList<ServiceObject>()
+    var fullServiceList = ArrayList<ServiceEntity>()
+    var servicesList = ArrayList<ServiceEntity>()
     val searchResultsEvent = SearchResultsEvent()
 
     private lateinit var mContext: Context
@@ -70,7 +70,7 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val filterResults = FilterResults()
-                val filteredServiceObjectsList = ArrayList<ServiceObject>()
+                val filteredServiceObjectsList = ArrayList<ServiceEntity>()
                 val charSearch = constraint.toString()
 
                 if (charSearch.isEmpty()) {
@@ -83,7 +83,7 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
 
                     for (service in servicesList) {
 //                        if (service.serviceName.toLowerCase(Locale.ROOT).contains(filterPattern))
-                        if (service.serviceName.toLowerCase(Locale.ROOT).contains(
+                        if (service.serviceName!!.toLowerCase(Locale.ROOT).contains(
                                 charSearch.toLowerCase(
                                     Locale.ROOT
                                 )
@@ -103,7 +103,7 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
                 filterResults.count = filteredServiceObjectsList.size
                 Timber.e("SERVICE FILTER LIST 2 -> ${filterResults.values}")
 
-                val filterResultsValues = filterResults.values as ArrayList<ServiceObject>
+                val filterResultsValues = filterResults.values as ArrayList<ServiceEntity>
 
                 for (i in 0 until filterResultsValues.size) {
                     Timber.e("SERVICE FILTER VALUE 1 -> $filterResultsValues")
@@ -121,7 +121,7 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceO
                 fullServiceList.clear()
 
                 if (filterResults!!.values != null) {
-                    fullServiceList.addAll(filterResults.values as ArrayList<ServiceObject>)
+                    fullServiceList.addAll(filterResults.values as ArrayList<ServiceEntity>)
                     Timber.e("SERVICE FILTER LIST 3 -> $fullServiceList")
 
                     if (fullServiceList.size != 0) {

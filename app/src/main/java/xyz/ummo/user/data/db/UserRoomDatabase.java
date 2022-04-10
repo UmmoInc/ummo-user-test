@@ -13,6 +13,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import okhttp3.OkHttpClient;
 import xyz.ummo.user.data.dao.DelegatedServiceDao;
 import xyz.ummo.user.data.dao.ProductDao;
 import xyz.ummo.user.data.dao.ProfileDao;
@@ -34,7 +35,7 @@ import xyz.ummo.user.data.utils.ServiceCostTypeConverter;
         ProfileEntity.class,
         ServiceProviderEntity.class,
         ServiceEntity.class,
-        ServiceCategoryEntity.class}, version = 12, exportSchema = false)
+        ServiceCategoryEntity.class}, version = 13, exportSchema = false)
 @TypeConverters({Converters.class, ServiceCostTypeConverter.class})
 public abstract class UserRoomDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "UMMO-USER-DB";
@@ -55,8 +56,10 @@ public abstract class UserRoomDatabase extends RoomDatabase {
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
             new PopulateDbAsync(INSTANCE).execute();
+
         }
     };
+    OkHttpClient client = new OkHttpClient();
 
     //    public abstract ServiceProviderDao serviceProviderDao();
     private static volatile UserRoomDatabase INSTANCE;

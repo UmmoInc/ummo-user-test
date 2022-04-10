@@ -8,18 +8,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.service_slice.view.*
 import xyz.ummo.user.R
-import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.data.entity.ServiceEntity
 
 class ServicesAdapter : RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>() {
 
-    inner class ServiceViewHolder(serviceView: View): RecyclerView.ViewHolder(serviceView)
+    inner class ServiceViewHolder(serviceView: View) : RecyclerView.ViewHolder(serviceView)
 
-    private val differCallback = object : DiffUtil.ItemCallback<ServiceObject>() {
-        override fun areItemsTheSame(oldItem: ServiceObject, newItem: ServiceObject): Boolean {
+    private val differCallback = object : DiffUtil.ItemCallback<ServiceEntity>() {
+        override fun areItemsTheSame(oldItem: ServiceEntity, newItem: ServiceEntity): Boolean {
             return oldItem.serviceId == newItem.serviceId
         }
 
-        override fun areContentsTheSame(oldItem: ServiceObject, newItem: ServiceObject): Boolean {
+        override fun areContentsTheSame(oldItem: ServiceEntity, newItem: ServiceEntity): Boolean {
             return oldItem == newItem
         }
     }
@@ -37,14 +37,14 @@ class ServicesAdapter : RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>(
     }
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
-        val serviceObject = differ.currentList[position]
+        val serviceEntity = differ.currentList[position]
 
         holder.itemView.apply {
-            service_title_text_view_slice.text = serviceObject.serviceName
-            service_description_text_view_slice.text = serviceObject.serviceDescription
+            service_title_text_view_slice.text = serviceEntity.serviceName
+            service_description_text_view_slice.text = serviceEntity.serviceDescription
             setOnClickListener {
                 onItemClickListener?.let {
-                    it(serviceObject)
+                    it(serviceEntity)
                 }
             }
             open_service_image_slice.setOnClickListener {
@@ -53,9 +53,9 @@ class ServicesAdapter : RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>(
         }
     }
 
-    private var onItemClickListener: ((ServiceObject) -> Unit)? = null
+    private var onItemClickListener: ((ServiceEntity) -> Unit)? = null
 
-    fun setOnItemClickListener(listener: (ServiceObject) -> Unit) {
+    fun setOnItemClickListener(listener: (ServiceEntity) -> Unit) {
         onItemClickListener = listener
     }
 

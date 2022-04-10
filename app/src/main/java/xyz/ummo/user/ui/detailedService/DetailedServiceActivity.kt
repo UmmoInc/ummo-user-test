@@ -1,6 +1,6 @@
 package xyz.ummo.user.ui.detailedService
 
-import android.Manifest.permission.*
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.TargetApi
 import android.app.DownloadManager
 import android.app.ProgressDialog
@@ -14,7 +14,6 @@ import android.os.Environment
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -30,9 +29,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
-import kotlinx.android.synthetic.main.service_card.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,8 +53,6 @@ import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException
-import java.util.*
-import kotlin.collections.ArrayList
 
 class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var serviceBenefitsRelativeLayout: RelativeLayout

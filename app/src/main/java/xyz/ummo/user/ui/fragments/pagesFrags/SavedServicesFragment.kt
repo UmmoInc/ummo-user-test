@@ -100,7 +100,7 @@ class SavedServicesFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = groupAdapter
 
-        getBookmarkedServicesFromSharedPrefs()
+        //getBookmarkedServicesFromSharedPrefs()
 
 //        getBookmarkedServices()
 
@@ -141,7 +141,7 @@ class SavedServicesFragment : Fragment() {
             Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServicesList[i].serviceName}")
             Timber.e("BOOKMARKED LIST SIZE [1]-> ${bookmarkedServicesList.size}")
 
-            serviceId = bookmarkedServicesList[i].serviceId!! //0
+            serviceId = bookmarkedServicesList[i].serviceId //0
             serviceName = bookmarkedServicesList[i].serviceName!! //1
             serviceDescription = bookmarkedServicesList[i].serviceDescription!! //2
             serviceEligibility = bookmarkedServicesList[i].serviceEligibility!! //3
@@ -202,7 +202,7 @@ class SavedServicesFragment : Fragment() {
         }*/
     }
 
-    private fun getBookmarkedServicesFromSharedPrefs() {
+    /*private fun getBookmarkedServicesFromSharedPrefs() {
 
         val services = serviceViewModel?.getServicesList()
         val serviceEntity = ServiceEntity()
@@ -240,7 +240,7 @@ class SavedServicesFragment : Fragment() {
 
             }
         }
-    }
+    }*/
 
     @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {

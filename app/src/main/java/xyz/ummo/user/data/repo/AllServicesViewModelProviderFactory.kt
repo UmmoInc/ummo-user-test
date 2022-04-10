@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 
 class AllServicesViewModelProviderFactory(
-    val allServicesRepository: AllServicesRepository
+    private val allServicesRepository: AllServicesRepository
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AllServicesViewModel(allServicesRepository) as T
     }
 }

@@ -1,6 +1,5 @@
 package xyz.ummo.user.ui.main
 
-//import xyz.ummo.user.utilities.oneSignal.UmmoNotificationOpenedHandler.Companion.OPEN_DELEGATION
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
@@ -38,7 +37,6 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -48,7 +46,6 @@ import xyz.ummo.user.api.GetServiceProvider
 import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
-import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.data.repo.AllServicesRepository
 import xyz.ummo.user.data.repo.AllServicesViewModelProviderFactory
@@ -62,7 +59,7 @@ import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
-import xyz.ummo.user.ui.fragments.search.AllServices
+import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -75,10 +72,6 @@ import java.util.*
 class MainScreen : AppCompatActivity() {
 
     private var serviceObject = JSONObject()
-    private val serviceEntity = ServiceEntity()
-    private var homeAffairsServiceEntities = ServiceEntity()
-    private var revenueServiceEntities = ServiceEntity()
-    private var commerceServiceEntities = ServiceEntity()
     private var serviceViewModel: ServiceViewModel? = null
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
     private var serviceProviderEntity = ServiceProviderEntity()
@@ -88,7 +81,6 @@ class MainScreen : AppCompatActivity() {
     private var toolbar: Toolbar? = null
 
     private var feedbackIcon: ImageView? = null
-//    private var circularProgressBarButton: ProgressBar? = null
 
     private var mAuth: FirebaseAuth? = null
 
@@ -153,10 +145,11 @@ class MainScreen : AppCompatActivity() {
 
         /** Instantiating [allServicesViewModel] with AllServicesRepository **/
         //TODO: Saved for issue [UMMO-75]
-        /*val allServicesRepository = AllServicesRepository(AllServicesDatabase(this))
+        val allServicesRepository = AllServicesRepository(AllServicesDatabase(this), this)
         val viewModelProviderFactory = AllServicesViewModelProviderFactory(allServicesRepository)
+
         allServicesViewModel =
-            ViewModelProvider(this, viewModelProviderFactory).get(AllServicesViewModel::class.java)*/
+            ViewModelProvider(this, viewModelProviderFactory)[AllServicesViewModel::class.java]
 
         Timber.e("ON_CREATE")
 //        bundle = intent.getBundleExtra(VIEW_SOURCE)!!
@@ -635,7 +628,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     private fun startServiceSearch() {
-        val allServicesFragment = AllServices()
+        val allServicesFragment = AllServicesFragment()
         openFragment(allServicesFragment)
     }
 
@@ -795,7 +788,7 @@ class MainScreen : AppCompatActivity() {
                 }
 
                 R.id.bottom_navigation_search -> {
-                    val allServicesFragment = AllServices()
+                    val allServicesFragment = AllServicesFragment()
                     openFragment(allServicesFragment)
 
                     mixpanel?.track(

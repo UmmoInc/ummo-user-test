@@ -113,8 +113,7 @@ class Tfuma : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        serviceViewModel = ViewModelProvider(this)
-            .get(ServiceViewModel::class.java)
+        serviceViewModel = ViewModelProvider(this)[ServiceViewModel::class.java]
 
         gAdapter = GroupAdapter()
 
@@ -286,7 +285,7 @@ class Tfuma : Fragment() {
                 val delegatableServiceEntity = delegatableServicesArrayList[i]
                 Timber.e("DELEGATABLE SERVICES ARE -> ${delegatableServiceEntity.serviceName}")
                 offlineServiceObject = ServiceObject(
-                    delegatableServiceEntity.serviceId!!,
+                    delegatableServiceEntity.serviceId,
                     delegatableServiceEntity.serviceName!!,
                     delegatableServiceEntity.serviceDescription!!,
                     delegatableServiceEntity.serviceEligibility!!,
@@ -306,7 +305,7 @@ class Tfuma : Fragment() {
                     "0", "", "", serviceBenefits
                 )
 
-                getSavedUserActionsFromSharedPrefs(delegatableServiceEntity.serviceId!!)
+                getSavedUserActionsFromSharedPrefs(delegatableServiceEntity.serviceId)
 
                 /** 1. Checking if the Fragment has been added to the Activity context.
                  *  2. Checking if the Offline Service's category is the same as the category we're in. **/

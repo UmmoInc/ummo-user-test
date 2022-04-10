@@ -3,7 +3,7 @@ package xyz.ummo.user.data.utils
 import androidx.room.TypeConverter
 import xyz.ummo.user.models.ServiceCostModel
 
-object ServiceCostTypeConverter {
+class ServiceCostTypeConverter {
     @TypeConverter
     fun fromStringToServiceCostModel(serviceCostString: String): ServiceCostModel {
         val serviceSpec = serviceCostString.substring(0, serviceCostString.indexOf("E"))

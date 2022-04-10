@@ -86,13 +86,13 @@ class ServiceItem(
     private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
 
     /** Initializing ServiceViewModel **/
-    private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
-        .get(ServiceViewModel::class.java)
+    private var serviceViewModel =
+        ViewModelProvider(context as FragmentActivity)[ServiceViewModel::class.java]
 
-    private var delegatedServiceModel = ViewModelProvider(context as FragmentActivity)
-        .get(DelegatedServiceViewModel::class.java)
+    private var delegatedServiceModel =
+        ViewModelProvider(context as FragmentActivity)[DelegatedServiceViewModel::class.java]
 
-    private var serviceEntity = ServiceEntity()
+    private lateinit var serviceEntity: ServiceEntity
 
     private var userContactPref = ""
     private val inflater = LayoutInflater.from(context)

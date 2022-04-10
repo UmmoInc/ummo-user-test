@@ -50,6 +50,7 @@ public class AppRepository {
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
+    private ArrayList<LiveData<ServiceEntity>> serviceEntitiesLiveData;
     private List<ServiceCategoryEntity> serviceCategoryEntities;
     private List<ServiceEntity> delegatableServices;
     private List<ServiceEntity> nonDelegatableServices;
@@ -685,11 +686,21 @@ public class AppRepository {
         }
     }*/
 
-    public List<ServiceEntity> searchDatabase(String query) {
-        serviceQueryResponses = serviceDao.searchRoomDB(query);
-        Timber.e("SERVICE SEARCHES ->" + serviceQueryResponses);
-        return serviceQueryResponses;
-    }
+    /*private static class searchServiceDatabaseAsyncTask(String searchParam) extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mSearchedServicesList = new ArrayList<>();
+
+        searchServiceDatabaseAsyncTask(ServiceDao serviceDao {
+            this.mServiceAsyncTaskDao = serviceDao;
+            this.mSearchString = searchParam;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mSearchedServicesList.addAll(mServiceAsyncTaskDao.searchRoomDB(mSearchString));
+            return mSearchedServicesList;
+        }
+    }*/
 
     /*private static class searchDatabaseAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
         private final ServiceDao mServiceAsyncTaskDao;
