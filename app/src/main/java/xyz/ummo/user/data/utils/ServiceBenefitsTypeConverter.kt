@@ -1,11 +1,23 @@
 package xyz.ummo.user.data.utils
 
 import androidx.room.TypeConverter
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import xyz.ummo.user.models.ServiceBenefit
 
 class ServiceBenefitsTypeConverter {
+
     @TypeConverter
-    fun fromStringArrayListToServiceBenefitArrayList(stringArrayList: String): ArrayList<ServiceBenefit> {
+    fun toServiceBenefitArrayList(string: String): ArrayList<ServiceBenefit> {
+        val listType = object : TypeToken<ArrayList<ServiceBenefit>>() {}.type
+        return GsonBuilder().create().fromJson(string, listType)
+    }
+
+    @TypeConverter
+    fun toServiceBenefitString(serviceBenefitArrayList: ArrayList<ServiceBenefit>): String {
+        return GsonBuilder().create().toJson(serviceBenefitArrayList)
+    }
+    /*fun fromStringArrayListToServiceBenefitArrayList(stringArrayList: String): ArrayList<ServiceBenefit> {
         val serviceBenefitArrayList = ArrayList<ServiceBenefit>()
 
         for (charValue in stringArrayList) {
@@ -17,7 +29,7 @@ class ServiceBenefitsTypeConverter {
             serviceBenefitArrayList.add(serviceBenefit)
         }
         return serviceBenefitArrayList
-    }
+    }*/
 
     /*@TypeConverter
     fun fromServiceBenefitArrayListToStringArrayList(serviceBenefitArrayList: ArrayList<ServiceBenefit>): ArrayList<String> {
@@ -29,12 +41,12 @@ class ServiceBenefitsTypeConverter {
         return stringArrayList
     }*/
 
-    @TypeConverter
+    /*@TypeConverter
     fun fromServiceBenefitArrayListToString(serviceBenefitArrayList: ArrayList<ServiceBenefit>): String {
         var serviceBenefitString: String = ""
         for (serviceBenefit in serviceBenefitArrayList) {
             serviceBenefitString = serviceBenefit.toString()
         }
         return serviceBenefitString
-    }
+    }*/
 }

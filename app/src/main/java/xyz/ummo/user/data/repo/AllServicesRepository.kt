@@ -19,6 +19,7 @@ import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.fromJSONArray
+import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
 
 //TODO: Saved for [UMMO-75]
@@ -106,7 +107,7 @@ class AllServicesRepository(
                     }
 
 //                    serviceBenefits = fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
-                    serviceBenefits = fromJSONArray(serviceBenefitJSONArray)
+                    serviceBenefits = fromServiceBenefitsJSONArray(serviceBenefitJSONArray)
                     serviceLink = service.getString(SERV_LINK).ifEmpty { "" }
 
                     serviceCategory = service.getString(SERVICE_CATEGORY)
@@ -131,12 +132,13 @@ class AllServicesRepository(
                     serviceEntity = ServiceEntity(
                         serviceId, serviceName,
                         serviceDescription, serviceEligibility, serviceCentres,
-                        delegatable/*, serviceCostArrayList*/, serviceDocuments,
+                        delegatable, serviceCostArrayList, serviceDocuments,
                         serviceDuration, approvalCount, disapprovalCount,
                         serviceComments, commentCount, shareCount, viewCount,
                         serviceProvider,
                         true, false, // TODO: Attend to these special bools
-                        serviceCategory, serviceLink, serviceBenefits
+                        serviceCategory, serviceLink, serviceAttachmentName, serviceAttachmentSize,
+                        serviceAttachmentURL, serviceBenefits
                     )
 
                     servicesArrayList.add(serviceEntity)
@@ -158,7 +160,7 @@ class AllServicesRepository(
         }
     }
 
-    fun searchServices(searchQuery: String) = serviceDao.searchRoomDB(searchQuery)
+    suspend fun searchServices(searchQuery: String) = serviceDao.searchRoomDB(searchQuery)
 
     fun getLocallyStoredServices(): ArrayList<ServiceEntity> {
         return serviceDao.serviceListData as ArrayList<ServiceEntity>

@@ -4,6 +4,11 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import xyz.ummo.user.data.utils.ServiceBenefitsTypeConverter
+import xyz.ummo.user.data.utils.ServiceCostTypeConverter
+import xyz.ummo.user.models.ServiceBenefit
+import xyz.ummo.user.models.ServiceCostModel
 import java.io.Serializable
 
 @Entity(tableName = "service")
@@ -33,9 +38,9 @@ data class ServiceEntity(
     @ColumnInfo(name = "delegatable") //5
     var delegatable: Boolean? = null,
 
-    /*@NonNull
+    @NonNull
     @ColumnInfo(name = "service_cost") //6
-    var serviceCost: ArrayList<ServiceCostModel>? = null*/
+    var serviceCost: ArrayList<ServiceCostModel>? = null,
 
     @ColumnInfo(name = "service_documents") //7
     var serviceDocuments: ArrayList<String>? = null,
@@ -49,6 +54,7 @@ data class ServiceEntity(
     @ColumnInfo(name = "not_useful_count") //10
     var notUsefulCount: Int? = null,
 
+    @TypeConverters(ServiceCostTypeConverter::class)
     @ColumnInfo(name = "service_comment") //11
     var serviceComments: ArrayList<String>? = null,
 
@@ -76,6 +82,16 @@ data class ServiceEntity(
     @ColumnInfo(name = "service_link")
     var serviceLink: String? = null,
 
+    @ColumnInfo(name = "service_attachment_name")
+    var serviceAttachmentName: String? = null,
+
+    @ColumnInfo(name = "service_attachment_size")
+    var serviceAttachmentSize: String? = null,
+
+    @ColumnInfo(name = "service_attachment_url")
+    var serviceAttachmentURL: String? = null,
+
+    @TypeConverters(ServiceBenefitsTypeConverter::class)
     @ColumnInfo(name = "service_benefits")
-    var serviceBenefits: ArrayList<String> //TODO: Revert back to type: ServiceBenefit
+    var serviceBenefits: ArrayList<ServiceBenefit> //TODO: Revert back to type: ServiceBenefit
 ) : Serializable

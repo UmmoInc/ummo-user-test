@@ -5,6 +5,7 @@ package xyz.ummo.user.utilities
 import android.app.Activity
 import org.json.JSONArray
 import org.json.JSONObject
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 
 /** Notification Channel constants
@@ -42,6 +43,7 @@ const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
 const val SERVICE_ID = "SERVICE_ID"
 const val DELEGATION_ID = "DELEGATION_ID"
 const val SERVICE_OBJECT = "SERVICE_OBJECT"
+const val SERVICE_ENTITY = "SERVICE_ENTITY"
 const val SERVICE_IMAGE = "SERVICE_IMAGE"
 const val SERVICE_COMMENTS = "SERVICE_COMMENTS"
 const val DELEGATION_FEE = "DELEGATION_FEE"
@@ -150,5 +152,5 @@ var serviceAttachmentName = "" //18.2
 var serviceAttachmentSize = "" //18.3
 var serviceAttachmentURL = "" //18.4
 var serviceBenefitJSONArray = JSONArray() //19
-var serviceBenefits = ArrayList<String>() //19.1 //TODO: Revert back to type: ServiceBenefit
+var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
 var serviceCategory = "" //20

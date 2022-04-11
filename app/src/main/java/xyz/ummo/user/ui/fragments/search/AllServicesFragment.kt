@@ -20,7 +20,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.adapters.SearchServicesAdapter
 import xyz.ummo.user.adapters.ServicesAdapter
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentAllServicesBinding
@@ -29,13 +28,11 @@ import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 import xyz.ummo.user.workers.makeStatusNotification
 
-
 class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
     private lateinit var rootView: View
     private lateinit var recyclerView: RecyclerView
 
-    private lateinit var searchServiceAdapter: SearchServicesAdapter
     private lateinit var allServicesAdapter: ServicesAdapter
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
@@ -44,13 +41,6 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var loadServicesProgressBar: ProgressBar
     private lateinit var mixpanel: MixpanelAPI
-
-    /*private val coroutineExceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { _, throwable ->
-            coroutineScope.launch(Dispatchers.IO) {
-
-            }
-        }*/
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
 
@@ -348,15 +338,14 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         return false
     }
 
-    private suspend fun searchServiceArrayList(searchQueryString: String?) {
-        val searchQuery = "%$searchQueryString%"
-//        searchServiceAdapter.filter.filter(query)
+    private fun searchServiceArrayList(searchQueryString: String?) {
         if (searchQueryString!!.isNotEmpty()) {
-            allServicesViewModel.searchServices(searchQueryString)
-            allServicesViewModel.searchedServicesLiveDataList.observe(viewLifecycleOwner) { searchResults ->
-                Timber.e("SEARCHING FOR -> $searchResults")
-                allServicesAdapter.differ.submitList(searchResults)
-            }
+            allServicesViewModel.searchForServices(searchQueryString)
+            allServicesViewModel.searchedServicesLiveDataList
+                .observe(viewLifecycleOwner) { searchResults ->
+                    Timber.e("SEARCHING FOR -> $searchResults")
+                    allServicesAdapter.differ.submitList(searchResults)
+                }
         }
         /** 1. With the ViewModel, search database and observe the liveData
          *  2. Using the liveData, populate the adapter **/
