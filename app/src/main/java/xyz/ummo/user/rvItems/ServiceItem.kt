@@ -33,7 +33,6 @@ import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.models.ServiceCommentObject
 import xyz.ummo.user.models.ServiceCostModel
-import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.*
 import xyz.ummo.user.ui.fragments.bottomSheets.serviceComments.ServiceComments
@@ -48,7 +47,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ServiceItem(
-    private val service: ServiceObject,
+    private val service: ServiceEntity,
     val context: Context?,
     savedUserActions: JSONObject
 ) : Item<GroupieViewHolder>() {
@@ -86,13 +85,13 @@ class ServiceItem(
     private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
 
     /** Initializing ServiceViewModel **/
-    private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
-        .get(ServiceViewModel::class.java)
+    private var serviceViewModel =
+        ViewModelProvider(context as FragmentActivity)[ServiceViewModel::class.java]
 
-    private var delegatedServiceModel = ViewModelProvider(context as FragmentActivity)
-        .get(DelegatedServiceViewModel::class.java)
+    private var delegatedServiceModel =
+        ViewModelProvider(context as FragmentActivity)[DelegatedServiceViewModel::class.java]
 
-    private var serviceEntity = ServiceEntity()
+    private lateinit var serviceEntity: ServiceEntity
 
     private var userContactPref = ""
     private val inflater = LayoutInflater.from(context)
@@ -119,6 +118,7 @@ class ServiceItem(
 
         serviceId = service.serviceId
 
+        serviceEntity = service
     }
 
     var jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
@@ -162,28 +162,28 @@ class ServiceItem(
         checkIfServiceIsSavedOffline(serviceId, viewHolder)
 
         when {
-            service.serviceName.contains("Motor Vehicle License Disc", true) -> {
+            service.serviceName!!.contains("Motor Vehicle License Disc", true) -> {
                 picasso.load(R.drawable.mvl_disc)
                     .into(viewHolder.itemView.service_image_view)
             }
-            service.serviceName.contains("Passport", true) -> {
+            service.serviceName!!.contains("Passport", true) -> {
                 picasso.load(R.drawable.passport)
                     .into(viewHolder.itemView.service_image_view)
             }
-            service.serviceName.contains("Travel Document", true) -> {
+            service.serviceName!!.contains("Travel Document", true) -> {
                 picasso.load(R.drawable.travel_document)
                     .into(viewHolder.itemView.service_image_view)
             }
-            service.serviceName.contains("Driver's License", true)
-                    || service.serviceName.contains("Learner's License") -> {
+            service.serviceName!!.contains("Driver's License", true)
+                    || service.serviceName!!.contains("Learner's License") -> {
                 picasso.load(R.drawable.drivers_licence)
                     .into(viewHolder.itemView.service_image_view)
             }
-            service.serviceName.contains("Change Vehicle Ownership", true) -> {
+            service.serviceName!!.contains("Change Vehicle Ownership", true) -> {
                 picasso.load(R.drawable.vehicle_exchange)
                     .into(viewHolder.itemView.service_image_view)
             }
-            service.serviceName.contains("ID Card", true) -> {
+            service.serviceName!!.contains("ID Card", true) -> {
                 picasso.load(R.drawable.national_id)
                     .into(viewHolder.itemView.service_image_view)
             }
@@ -194,9 +194,6 @@ class ServiceItem(
         parseServiceCostBySpec(service)
 
         selectingServiceSpec(viewHolder)
-
-        //TODO: Assign serviceEntity to serviceValues
-        assignServiceEntity(serviceEntity)
 
         viewHolder.itemView.service_info_title_relative_layout.setOnClickListener {
             showServiceDetails()
@@ -222,12 +219,12 @@ class ServiceItem(
             service.notUsefulCount.toString() //10.1
 
         viewHolder.itemView.service_comments_count_text_view.text =
-            service.serviceComments.size.toString() //11
+            service.serviceComments!!.size.toString() //11
 //        viewHolder.itemView.save_count_text_view.text = service.serviceShareCount.toString() //12
 //        viewHolder.itemView.share_count_text_view.text = service.serviceShareCount.toString() //12
 
         /** If service is not delegatable, we don't need to draw the $RequestAgentButton **/
-        if (service.delegatable) {
+        if (service.delegatable == true) {
             viewHolder.itemView.request_agent_button.visibility = View.VISIBLE
         } else {
             viewHolder.itemView.request_agent_button.visibility = View.GONE
@@ -259,7 +256,7 @@ class ServiceItem(
 
         viewHolder.itemView.service_info_icon_relative_layout.setOnClickListener {
 
-            bundle.putBoolean("SERVICE_DELEGATABLE", service.delegatable)
+            bundle.putBoolean("SERVICE_DELEGATABLE", service.delegatable == true)
             val serviceExtrasBottomSheetDialogFragment = ServiceExtrasBottomSheetDialogFragment()
             serviceExtrasBottomSheetDialogFragment.arguments = bundle
             serviceExtrasBottomSheetDialogFragment
@@ -455,11 +452,12 @@ class ServiceItem(
         requestingAgent(viewHolder)
     }
 
+    /** When a service is tapped on, it should expand to a detailed view with more info. **/
     private fun showServiceDetails() {
         val intent = Intent(context, DetailedServiceActivity::class.java)
 
         /** Passing Service to [DetailedServiceActivity] via [Serializable] object **/
-        intent.putExtra(SERVICE_OBJECT, service as Serializable)
+        intent.putExtra(SERVICE_ENTITY, service as Serializable)
 //        intent.putExtra(SERVICE_IMAGE, )
         Timber.e("SHOWING SERVICE DETAILS -> $service")
 
@@ -559,8 +557,8 @@ class ServiceItem(
         }
     }
 
-    private fun parseServiceCostBySpec(serviceObject: ServiceObject) {
-        serviceCostArrayList = serviceObject.serviceCost
+    private fun parseServiceCostBySpec(serviceEntity: ServiceEntity) {
+        serviceCostArrayList = serviceEntity.serviceCost!!
         Timber.e("SERVICE COST ARRAY LIST -> $serviceCostArrayList")
     }
 
@@ -586,23 +584,23 @@ class ServiceItem(
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceModel.delegatedServiceEntityLiveData.observe(
-                context as FragmentActivity,
-                { delegatedServiceEntity: DelegatedServiceEntity ->
+                context as FragmentActivity
+            ) { delegatedServiceEntity: DelegatedServiceEntity ->
 
-                    val delegatedServiceId = delegatedServiceEntity.delegatedProductId
-                    Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
-                    if (serviceEntity.serviceId == delegatedServiceId) {
-                        Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
-                        viewHolder.itemView.request_agent_button.text =
-                            "IN-PROGRESS" //TODO: direct User to Delegation progress
+                val delegatedServiceId = delegatedServiceEntity.delegatedProductId
+                Timber.e("MARKING DELEGATED ALREADY -> $delegatedServiceId")
+                if (serviceEntity.serviceId == delegatedServiceId) {
+                    Timber.e("SERVICE ${serviceEntity.serviceName} has been delegated!")
+                    viewHolder.itemView.request_agent_button.text =
+                        "IN-PROGRESS" //TODO: direct User to Delegation progress
 
-                        viewHolder.itemView.request_agent_button
-                            .setBackgroundColor(context.resources.getColor(R.color.Grey))
-                        viewHolder.itemView.request_agent_button.icon =
-                            context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
-                        viewHolder.itemView.request_agent_button.isActivated = false
-                    }
-                })
+                    viewHolder.itemView.request_agent_button
+                        .setBackgroundColor(context.resources.getColor(R.color.Grey))
+                    viewHolder.itemView.request_agent_button.icon =
+                        context.resources.getDrawable(R.drawable.ic_hourglass_top_24)
+                    viewHolder.itemView.request_agent_button.isActivated = false
+                }
+            }
         } else {
             Timber.e("NOTHING DELEGATED YET")
         }
@@ -930,7 +928,7 @@ class ServiceItem(
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.INVISIBLE
     }
 
-    private fun assignServiceEntity(mServiceEntity: ServiceEntity) {
+    /*private fun assignServiceEntity(mServiceEntity: ServiceEntity) {
         mServiceEntity.serviceId = service.serviceId //0
         mServiceEntity.serviceName = service.serviceName //1
         mServiceEntity.serviceDescription = service.serviceDescription //2
@@ -947,8 +945,8 @@ class ServiceItem(
         mServiceEntity.serviceShares = service.serviceShareCount //13
         mServiceEntity.serviceViews = service.serviceViewCount //14
         mServiceEntity.serviceProvider = service.serviceProvider //15
-        mServiceEntity.serviceCategory = service.serviceCategory
-    }
+        mServiceEntity.serviceCategory = service.serviceCategory //16
+    }*/
 
     private fun makeServiceUpdate(viewHolder: GroupieViewHolder, updateType: String, date: String) {
         val serviceUpdate = JSONObject()
@@ -988,7 +986,6 @@ class ServiceItem(
         val serviceCommentEditor: SharedPreferences.Editor = serviceItemPrefs.edit()
         serviceCommentEditor.putBoolean("COMMENTED-ON-${serviceEntity.serviceId}", true).apply()
 
-        assignServiceEntity(serviceEntity)
         showCommentDialog(viewHolder, date)
     }
 

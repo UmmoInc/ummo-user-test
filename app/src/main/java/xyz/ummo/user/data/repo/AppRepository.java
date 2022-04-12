@@ -50,10 +50,12 @@ public class AppRepository {
     private LiveData<ProductEntity> productEntityLiveData;
     private LiveData<ServiceProviderEntity> serviceProviderEntityLiveData;
     private LiveData<ServiceEntity> serviceEntityLiveData;
+    private ArrayList<LiveData<ServiceEntity>> serviceEntitiesLiveData;
     private List<ServiceCategoryEntity> serviceCategoryEntities;
     private List<ServiceEntity> delegatableServices;
     private List<ServiceEntity> nonDelegatableServices;
     private List<ServiceEntity> bookmarkedServiceEntityListData;
+    private List<ServiceEntity> serviceQueryResponses;
 //    private List<ServiceProviderEntityOld> serviceProviders = new ArrayList<>();
 
     public AppRepository(Application application) {
@@ -78,6 +80,8 @@ public class AppRepository {
 
         serviceDao = userRoomDatabase.serviceDao();
         serviceEntityLiveData = serviceDao.getServiceLiveData();
+
+//        serviceQueryResponses = serviceDao.getServiceListData();
 
         serviceCategoryDao = userRoomDatabase.serviceCategoryDao();
 //        serviceCategoryEntities = serviceCategoryDao.getAllCategories();
@@ -562,7 +566,7 @@ public class AppRepository {
         protected Void doInBackground(ServiceEntity... serviceEntities) {
 
             for (ServiceEntity serviceEntity : serviceEntities) {
-                mServiceDao.insertService(serviceEntity); //TODO: There's an issue here!
+                mServiceDao.upsertService(serviceEntity); //TODO: There's an issue here!
 
                 Timber.e("ASYNC SAVE - NAME %s", serviceEntity.getServiceName());
                 Timber.e("ASYNC SAVE - DEL. %s", serviceEntity.getDelegatable());
@@ -665,6 +669,50 @@ public class AppRepository {
             return mBookmarkedServicesList;
         }
     }
+
+    /*private static class searchDatabaseAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceDaoAsyncTask;
+        private final List<ServiceEntity> mDBSearchedServicesList = new ArrayList<>();
+
+        searchDatabaseAsyncTask(ServiceDao serviceDao) {
+            this.mServiceDaoAsyncTask = serviceDao;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mDBSearchedServicesList.addAll(mServiceDaoAsyncTask.searchRoomDB(voids));
+            Timber.e("SEARCHING FOR SERVICES -> %s", mDBSearchedServicesList);
+            return mDBSearchedServicesList;
+        }
+    }*/
+
+    /*private static class searchServiceDatabaseAsyncTask(String searchParam) extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mSearchedServicesList = new ArrayList<>();
+
+        searchServiceDatabaseAsyncTask(ServiceDao serviceDao {
+            this.mServiceAsyncTaskDao = serviceDao;
+            this.mSearchString = searchParam;
+        }
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mSearchedServicesList.addAll(mServiceAsyncTaskDao.searchRoomDB(mSearchString));
+            return mSearchedServicesList;
+        }
+    }*/
+
+    /*private static class searchDatabaseAsyncTask extends AsyncTask<Void, Void, List<ServiceEntity>> {
+        private final ServiceDao mServiceAsyncTaskDao;
+        private final List<ServiceEntity> mDBSearchedServicesList = new ArrayList<>();
+
+        searchDatabaseAsyncTask(ServiceDao serviceDao) {this.mDBSearchedServicesList = serviceDao}
+
+        @Override
+        protected List<ServiceEntity> doInBackground(Void... voids) {
+            mServiceAsyncTaskDao.searchRoomDB()
+        }
+    }*/
 
     /**
      * 5.1

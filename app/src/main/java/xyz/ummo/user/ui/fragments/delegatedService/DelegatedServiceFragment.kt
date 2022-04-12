@@ -39,7 +39,7 @@ import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceProgressBottomSheet
-import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
@@ -549,13 +549,13 @@ class DelegatedServiceFragment : Fragment {
 
     private fun takeMeHome() {
         viewBinding.homeButton.setOnClickListener {
-            val pagesFragment: Fragment = PagesFragment()
+            val serviceCategoriesFragment: Fragment = ServiceCategories()
 
             mixpanel.track("delegatedServiceFragment_takingUserHome")
 
             val fm: FragmentManager = activity?.supportFragmentManager!!
             val transaction: FragmentTransaction = fm.beginTransaction()
-            transaction.replace(R.id.frame, pagesFragment)
+            transaction.replace(R.id.frame, serviceCategoriesFragment)
             transaction.commit()
         }
     }

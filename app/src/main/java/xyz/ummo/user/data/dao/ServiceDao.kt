@@ -7,7 +7,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 @Dao
 interface ServiceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertService(serviceEntity: ServiceEntity)
+    fun upsertService(serviceEntity: ServiceEntity)
 
     @get:Query("SELECT * FROM service")
     val serviceLiveData: LiveData<ServiceEntity?>?
@@ -35,4 +35,12 @@ interface ServiceDao {
 
     @Query("DELETE FROM service")
     fun deleteServices()
+
+    @Query(
+        "SELECT * FROM service WHERE service.service_name LIKE :searchQuery " +
+                "OR service.service_description LIKE :searchQuery " +
+                "OR service.service_category LIKE :searchQuery"
+    )
+    /*OR service_category LIKE :searchQuery OR service_description LIKE :searchQuery"*/
+    suspend fun searchRoomDB(searchQuery: String): List<ServiceEntity>
 }

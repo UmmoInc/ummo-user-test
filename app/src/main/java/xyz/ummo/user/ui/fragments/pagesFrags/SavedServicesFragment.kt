@@ -23,7 +23,6 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentSavedServicesBinding
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -100,10 +99,6 @@ class SavedServicesFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = groupAdapter
 
-        getBookmarkedServicesFromSharedPrefs()
-
-//        getBookmarkedServices()
-
         return view
     }
 
@@ -141,7 +136,7 @@ class SavedServicesFragment : Fragment() {
             Timber.e("BOOKMARKED SERVICES -> ${bookmarkedServicesList[i].serviceName}")
             Timber.e("BOOKMARKED LIST SIZE [1]-> ${bookmarkedServicesList.size}")
 
-            serviceId = bookmarkedServicesList[i].serviceId!! //0
+            serviceId = bookmarkedServicesList[i].serviceId //0
             serviceName = bookmarkedServicesList[i].serviceName!! //1
             serviceDescription = bookmarkedServicesList[i].serviceDescription!! //2
             serviceEligibility = bookmarkedServicesList[i].serviceEligibility!! //3
@@ -187,7 +182,7 @@ class SavedServicesFragment : Fragment() {
 
             Timber.e("SAVED USER ACTIONS -> ${savedUserActions.getString("BOOKMARKED")}")
 
-            groupAdapter.add(ServiceItem(bookmarkedService, context, savedUserActions))
+//            groupAdapter.add(ServiceItem(bookmarkedService, context, savedUserActions))
         }
 
         //TODO: stashing this method for now. Let's try retrieve bookmarked services via sharedPrefs
@@ -202,7 +197,7 @@ class SavedServicesFragment : Fragment() {
         }*/
     }
 
-    private fun getBookmarkedServicesFromSharedPrefs() {
+    /*private fun getBookmarkedServicesFromSharedPrefs() {
 
         val services = serviceViewModel?.getServicesList()
         val serviceEntity = ServiceEntity()
@@ -240,7 +235,7 @@ class SavedServicesFragment : Fragment() {
 
             }
         }
-    }
+    }*/
 
     @Subscribe
     fun onServiceBookmarkedEvent(serviceBookmarkedEvent: ServiceBookmarkedEvent) {

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mini_service_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="1dp"
+    app:cardElevation="1dp"
+    app:cardMaxElevation="1dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:contentPaddingBottom="4dp"
+    app:contentPaddingTop="4dp"
+    app:strokeColor="@color/Grey"
+    app:strokeWidth="1dp">
+
+    <RelativeLayout
+        android:id="@+id/mini_service_root_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/card_header_relative_layout_slice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <RelativeLayout
+                android:id="@+id/service_info_title_relative_layout_slice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp">
+
+                <ImageView
+                    android:id="@+id/service_card_avatar_image_view_slice"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    app:srcCompat="@drawable/esw_gov" />
+
+                <TextView
+                    android:id="@+id/service_title_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
+                    android:fontFamily="@font/rubik"
+                    android:text="@string/service_name"
+                    android:textColor="@color/ummo_2"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/rubik" />
+
+                <TextView
+                    android:id="@+id/service_description_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/service_title_text_view_slice"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/service_description"
+                    android:textSize="14sp"
+                    app:fontFamily="@font/rubik" />
+
+                <!--<TextView
+                    android:id="@+id/service_eligibility_title_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_description_text_view_slice"
+                    android:layout_marginStart="46dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/rubik"
+                    android:text="@string/service_eligibility"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />-->
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/view_service_relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="end"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <ImageView
+                    android:id="@+id/open_service_image_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_24" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/card_content_relative_layout_slice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card_header_relative_layout">
+
+            <!-- Header Layout-->
+            <!--<RelativeLayout
+                android:id="@+id/service_header_layout_slice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/service_eligibility_title_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="56dp"
+                    android:text="@string/service_eligibility"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/service_eligibility_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_eligibility_title_text_view_slice"
+                    android:layout_marginStart="56dp"
+                    android:text="@string/service_eligibility_placeholder"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>-->
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

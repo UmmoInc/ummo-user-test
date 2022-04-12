@@ -3,6 +3,10 @@
 package xyz.ummo.user.utilities
 
 import android.app.Activity
+import org.json.JSONArray
+import org.json.JSONObject
+import xyz.ummo.user.models.ServiceBenefit
+import xyz.ummo.user.models.ServiceCostModel
 
 /** Notification Channel constants
  * Name of Notification Channel for verbose notifications of background work **/
@@ -39,6 +43,7 @@ const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
 const val SERVICE_ID = "SERVICE_ID"
 const val DELEGATION_ID = "DELEGATION_ID"
 const val SERVICE_OBJECT = "SERVICE_OBJECT"
+const val SERVICE_ENTITY = "SERVICE_ENTITY"
 const val SERVICE_IMAGE = "SERVICE_IMAGE"
 const val SERVICE_COMMENTS = "SERVICE_COMMENTS"
 const val DELEGATION_FEE = "DELEGATION_FEE"
@@ -118,4 +123,38 @@ const val DELEGATED_SERVICE_FRAGMENT = "DELEGATED_SERVICE_FRAGMENT"
 
 const val OFFLINE_LOADED = "OFFLINE_LOADED"
 
-/** Crash states**/
+/** Service Variables **/
+lateinit var serviceId: String //1
+lateinit var serviceName: String //2
+lateinit var serviceDescription: String //3
+lateinit var serviceEligibility: String //4
+var serviceCentres = ArrayList<String>() //5
+lateinit var serviceCentresJSONArray: JSONArray //5.1
+var delegatable: Boolean = false //6
+lateinit var serviceCost: String //7
+lateinit var serviceCostArrayList: ArrayList<ServiceCostModel> //7.1
+lateinit var serviceCostJSONArray: JSONArray //7.1
+var serviceDocuments = ArrayList<String>() //8
+lateinit var serviceDocumentsJSONArray: JSONArray //8.1
+lateinit var serviceDuration: String //9
+var approvalCount: Int = 0 //10
+var disapprovalCount: Int = 0 //11
+var serviceComments = ArrayList<String>() //12
+lateinit var serviceCommentsJSONArray: JSONArray //12.1
+var commentCount: Int = 0 //13
+var shareCount: Int = 0 //14
+var viewCount: Int = 0 //15
+lateinit var serviceProvider: String //16
+var serviceLink: String = "" //17
+var serviceAttachmentJSONArray = JSONArray() //18
+var serviceAttachmentJSONObject = JSONObject() //18.1
+var serviceAttachmentName = "" //18.2
+var serviceAttachmentSize = "" //18.3
+var serviceAttachmentURL = "" //18.4
+var serviceBenefitJSONArray = JSONArray() //19
+var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
+var serviceCategory = "" //20
+
+const val PARENT = "PARENT"
+const val FRAGMENT_DESTINATION = "FRAG_DEN"
+const val OPEN_DELEGATED_SERVICE_FRAG = "OPEN_DELEGATED_SERVICE_FRAG"

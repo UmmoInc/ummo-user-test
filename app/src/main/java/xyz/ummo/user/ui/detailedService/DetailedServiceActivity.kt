@@ -1,6 +1,6 @@
 package xyz.ummo.user.ui.detailedService
 
-import android.Manifest.permission.*
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.TargetApi
 import android.app.DownloadManager
 import android.app.ProgressDialog
@@ -14,7 +14,6 @@ import android.os.Environment
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -30,9 +29,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
-import kotlinx.android.synthetic.main.service_card.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,24 +37,24 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.adapters.ServicesAdapter
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
-import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException
-import java.util.*
-import kotlin.collections.ArrayList
 
 class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var serviceBenefitsRelativeLayout: RelativeLayout
@@ -115,7 +112,10 @@ class DetailedServiceActivity : AppCompatActivity() {
     var agentNotFoundDialog: AlertDialog.Builder? = null
     private lateinit var detailedServiceBinding: ActivityDetailedServiceBinding
     private lateinit var detailedServiceContentBinding: ContentDetailedServiceBinding
-    private lateinit var serviceObject: ServiceObject
+
+    //    private lateinit var serviceObject: ServiceObject
+    private lateinit var serviceEntity: ServiceEntity
+    private lateinit var summoningParent: String
 
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val serviceSpecifiedEvent = ServiceSpecifiedEvent()
@@ -135,20 +135,20 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceEntity.serviceName})")
     }
 
     override fun onStop() {
         super.onStop()
-        mixpanelAPI.track("Viewing DETAILED SERVICE (${serviceObject.serviceName})")
+        mixpanelAPI.track("Viewing DETAILED SERVICE (${serviceEntity.serviceName})")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mixpanelAPI = MixpanelAPI.getInstance(
-                this,
-                resources.getString(R.string.mixpanelToken)
+            this,
+            resources.getString(R.string.mixpanelToken)
         )
 
         /** Binding Layout Views **/
@@ -217,11 +217,15 @@ class DetailedServiceActivity : AppCompatActivity() {
         })
 
         /** Assigning [serviceObject] with the [serviceObject] we receive from ServiceItem **/
-        serviceObject = intent.extras!!.get(SERVICE_OBJECT) as ServiceObject
-        Timber.e("SERVICE OBJECT -> $serviceObject")
-        serviceId = serviceObject.serviceId
+//        serviceObject = intent.extras!!.get(SERVICE_OBJECT) as ServiceObject
+        serviceEntity = intent.extras!!.get(SERVICE_ENTITY) as ServiceEntity
+        summoningParent = intent.extras!!.getString(PARENT, "")
 
-        populateDetailedServiceElements(serviceObject)
+        Timber.e("SERVICE OBJECT -> $serviceEntity")
+        Timber.e("SUMMONING PARENT -> $summoningParent")
+        serviceId = serviceEntity.serviceId
+
+        populateDetailedServiceElements(serviceEntity)
 
         detailedServicePrefs = getSharedPreferences(ummoUserPreferences, mode)
 
@@ -250,11 +254,11 @@ class DetailedServiceActivity : AppCompatActivity() {
         webViewLink!!.setOnClickListener { openWebLink() }
         service_link_relative_layout.setOnClickListener { openWebLink() }
 
-        showServiceBenefits(serviceObject)
+        showServiceBenefits(serviceEntity)
     }
 
     /** With the function below, we're ...**/
-    private fun showServiceBenefits(mService: ServiceObject) {
+    private fun showServiceBenefits(mService: ServiceEntity) {
         val serviceName = mService.serviceName
         val serviceBenefitTitle =
             String.format(resources.getString(R.string.service_benefits_title_text), serviceName)
@@ -264,15 +268,15 @@ class DetailedServiceActivity : AppCompatActivity() {
     private fun openWebLink() {
         val webViewIntent = Intent(this, WebViewActivity::class.java)
         val webLinkJSON = JSONObject()
-        webViewIntent.putExtra("LINK", serviceObject.serviceLink)
-        Timber.e("WEB LINK -> ${serviceObject.serviceLink}")
-        if (serviceObject.serviceLink.isNotEmpty()) {
+        webViewIntent.putExtra("LINK", serviceEntity.serviceLink)
+        Timber.e("WEB LINK -> ${serviceEntity.serviceLink}")
+        if (serviceEntity.serviceLink!!.isNotEmpty()) {
             showSnackbarWhite("Opening link...", 0)
             startActivity(webViewIntent)
-            webLinkJSON.put("LINK_OPENED", serviceObject.serviceLink)
+            webLinkJSON.put("LINK_OPENED", serviceEntity.serviceLink)
             mixpanelAPI.track("detailedService_serviceLinkOpened", webLinkJSON)
         } else {
-            showSnackbarYellow("No link for '${serviceObject.serviceName}' found", -1)
+            showSnackbarYellow("No link for '${serviceEntity.serviceName}' found", -1)
         }
     }
 
@@ -307,8 +311,8 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             val serviceSpecCost = JSONObject()
             serviceSpecCost
-                    .put("SERVICE_SPEC", serviceSpec)
-                    .put("SPEC_COST", specCost)
+                .put("SERVICE_SPEC", serviceSpec)
+                .put("SPEC_COST", specCost)
             mixpanelAPI.track("detailedService_serviceSpecSelected", serviceSpecCost)
 
             checkForDelegatedServiceAndCompare()
@@ -321,9 +325,9 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         val countOfDelegatedServices = delegatedServiceViewModel!!.getCountOfDelegatedServices()
 
-        /** Declaring [serviceObject] for request event tracking **/
+        /** Declaring [serviceEntity] for request event tracking **/
         val serviceRequestObject = JSONObject()
-        serviceRequestObject.put("REQUESTING", serviceObject.serviceName)
+        serviceRequestObject.put("REQUESTING", serviceEntity.serviceName)
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceViewModel!!.delegatedServiceEntityLiveData
@@ -333,7 +337,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         detailedServicePrefs.getString(SERVICE_AGENT_ID, SERVICE_AGENT_ID)!!
                     val delegationId =
                         detailedServicePrefs.getString(DELEGATED_SERVICE_ID, DELEGATED_SERVICE_ID)!!
-                    if (serviceObject.serviceId == delegatedServiceId) {
+                    if (serviceEntity.serviceId == delegatedServiceId) {
                         requestAgentBtn?.text = "VIEW PROGRESS"
                         requestAgentBtn?.isActivated = false
                         requestAgentBtn?.setBackgroundColor(this.resources.getColor(R.color.ummo_3))
@@ -354,7 +358,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             requestAgentBtn!!.setOnClickListener {
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
-                requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
+                requestBundle.putSerializable(SERVICE_OBJECT, serviceEntity)
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
                 serviceRequestBottomSheetDialog
@@ -381,21 +385,23 @@ class DetailedServiceActivity : AppCompatActivity() {
     private fun openServiceFeeSelfSupport() {
         val serviceFeeQuery = ServiceFeeQuery()
         serviceFeeQuery.show(this.supportFragmentManager, ServiceFeeQuery.TAG)
-        mixpanelAPI.track("detailedService_serviceFeeSelfSupport")
+        mixpanelAPI.track("Detailed Service - Service Fee Self-Support")
 
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
 
+        summoningParent = intent.extras!!.getString(PARENT, "")
+
         val intent = Intent(this, MainScreen::class.java)
         val bundle = Bundle()
         bundle.putString(VIEW_SOURCE, DETAILED_SERVICE)
         intent.putExtra(VIEW_SOURCE, bundle)
-        startActivity(intent)
+
         finish()
 
-        mixpanelAPI.track("detailedService_navigateBack")
+        mixpanelAPI.track("Detailed Service - Navigate Back")
     }
 
     override fun onPause() {
@@ -406,7 +412,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun populateDetailedServiceElements(mService: ServiceObject) {
+    private fun populateDetailedServiceElements(mService: ServiceEntity) {
         Timber.e("UNPACKING SERVICE INTO UI ELEMENTS $mService")
         detailedServicePrefs = getSharedPreferences(ummoUserPreferences, mode)
 
@@ -416,7 +422,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceDescriptionTextView!!.text = mService.serviceDescription
 
         /** Checking if [mService] has ServiceLink **/
-        if (mService.serviceLink.isEmpty()) {
+        if (mService.serviceLink!!.isEmpty()) {
             webViewLink!!.text = "No link found for this service."
             webViewLink!!.textSize = 10F
             webViewLink!!.setTextColor(resources.getColor(R.color.greyProfile))
@@ -424,7 +430,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         /** Checking if [mService] has ServiceAttachments **/
-        if (mService.serviceAttachmentURL.isEmpty()) {
+        if (mService.serviceAttachmentURL!!.isEmpty()) {
             serviceAttachmentLayout!!.removeAllViews()
             val noAttachmentTextView = TextView(this)
             noAttachmentTextView.text = "No attachments found for this service."
@@ -477,7 +483,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             /** Setting AttachmentSizeTextView's parameters **/
             attachmentSizeTextView.text = mService.serviceAttachmentSize
             attachmentSizeTextView.textSize = 8F
-            attachmentNameTextView.id = mService.serviceAttachmentName.length
+            attachmentNameTextView.id = mService.serviceAttachmentName!!.length
             attachmentSizeTextView.setTextColor(resources.getColor(R.color.black))
 
             /** Setting TextView's layout parameters: setting it below ImageView's **/
@@ -494,8 +500,8 @@ class DetailedServiceActivity : AppCompatActivity() {
             attachmentImageView.setOnClickListener {
                 val attachmentObject = JSONObject()
                 attachmentObject
-                    .put("FILE_NAME", serviceObject.serviceAttachmentName)
-                    .put("FILE_URL", serviceObject.serviceAttachmentURL)
+                    .put("FILE_NAME", serviceEntity.serviceAttachmentName)
+                    .put("FILE_URL", serviceEntity.serviceAttachmentURL)
 
                 mixpanelAPI.track("attachment_downloadTapped", attachmentObject)
 
@@ -524,16 +530,16 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         /** Filling up [serviceCostArrayList] with [mService]'s serviceCost **/
-        serviceCostArrayList = mService.serviceCost
+        serviceCostArrayList = mService.serviceCost!!
         serviceDurationTextView!!.text = mService.serviceDuration
 
-        if (mService.delegatable) {
+        if (mService.delegatable!!) {
             requestAgentBtn!!.visibility = View.VISIBLE
         } else {
             requestAgentBtn!!.visibility = View.GONE
         }
 
-        docsList = ArrayList(serviceObject.serviceDocuments)
+        docsList = ArrayList(serviceEntity.serviceDocuments)
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
@@ -550,7 +556,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
 
         /** Parsing Service Centres into Chip-items **/
-        serviceCentresList = ArrayList(serviceObject.serviceCentres)
+        serviceCentresList = ArrayList(serviceEntity.serviceCentres)
         Timber.e("CENTRES-LIST -> $serviceCentresList")
 
         if (serviceCentresList!!.isNotEmpty()) {
@@ -570,7 +576,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             Timber.e("onCreate: docsList is EMPTY!")
         }
 
-        serviceBenefitsList = ArrayList(serviceObject.serviceBenefits)
+        serviceBenefitsList = serviceEntity.serviceBenefits
         parseServiceBenefits(serviceBenefitsList!!)
 
         if (serviceBenefitsList!!.size > 0) {
@@ -643,7 +649,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         if (requestCode == WRITE_PERMISSION) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                downloadAttachment(serviceObject.serviceAttachmentURL)
+                downloadAttachment(serviceEntity.serviceAttachmentURL)
             } else {
                 showSnackbarYellow("Permission denied!", -1)
             }
@@ -678,7 +684,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             }
         } else {
             // Permission has already been granted
-            downloadAttachment(serviceObject.serviceAttachmentURL)
+            downloadAttachment(serviceEntity.serviceAttachmentURL)
         }
     }
 
@@ -691,10 +697,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 
                 val downloadRequest = DownloadManager
                     .Request(Uri.parse(attachmentLink))
-                    .setTitle(serviceObject.serviceAttachmentName)
+                    .setTitle(serviceEntity.serviceAttachmentName)
                     .setDestinationInExternalPublicDir(
                         Environment.DIRECTORY_DOWNLOADS,
-                        serviceObject.serviceAttachmentName
+                        serviceEntity.serviceAttachmentName
                     )
                     .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                     .setAllowedOverMetered(true)
@@ -720,7 +726,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                     val id: Long? = p1?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                     val attachmentObject = JSONObject()
                     attachmentObject.put("file_url", attachmentLink)
-                        .put("file_name", serviceObject.serviceAttachmentName)
+                        .put("file_name", serviceEntity.serviceAttachmentName)
 
                     if (id == attachmentDownloadId) {
                         showSnackbarGreen("Download complete", -1)
@@ -740,7 +746,13 @@ class DetailedServiceActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             val intent = Intent(this, MainScreen::class.java)
-            startActivity(intent)
+            if (summoningParent == MainScreen.toString()) {
+                startActivity(intent)
+            } else if (summoningParent == ServicesAdapter().toString()) {
+                intent.putExtra(FRAGMENT_DESTINATION, AllServicesFragment.toString())
+                Timber.e("FRAG DESTINATION -> ${intent.extras!!.getString(FRAGMENT_DESTINATION)}")
+                startActivity(intent)
+            }
             finish()
             return true
         }

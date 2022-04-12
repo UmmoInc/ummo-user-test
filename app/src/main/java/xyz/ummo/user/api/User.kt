@@ -122,15 +122,16 @@ class User : MultiDexApplication() {
 
         /** Init Mixpanel **/
         mixpanelAPI = MixpanelAPI.getInstance(
-                applicationContext,
-                resources.getString(R.string.mixpanelToken)
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
         )
+
+        /** Auth JWT **/
+        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString("jwt", "").toString()
 
         /** Init MainViewModel **/
 //        mainViewModel = ViewModelProvider().get(MainViewModel::class.java)
-
-        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("jwt", "").toString()
 
         FuelManager.instance.basePath = getString(serverUrl)
 
@@ -155,21 +156,6 @@ class User : MultiDexApplication() {
             initializeSocketWithId(getUserId(jwt))
 
             Timber.e("{JWT} No Socket Event - Server URL [1]->${getString(serverUrl)}")
-
-            //SocketIO.mSocket?.connect()
-            /*SocketIO.mSocket?.on("connect") {
-                socketStateEvent.socketConnected = true
-                EventBus.getDefault().post(socketStateEvent)
-                Timber.e("{JWT} Socket Connected Event - Server URL [1]->${getString(serverUrl)}")
-            }*/
-
-//            mainViewModel!!.socketConnect()
-
-            /*SocketIO.mSocket?.on("connect_error") {
-                Timber.e("{JWT} Socket Connection Error-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-                socketStateEvent.socketConnected = false
-                EventBus.getDefault().post(socketStateEvent)
-            }*/
 
             SocketIO.mSocket?.on("message1") {
                 Timber.e("it[0].toString()")
@@ -323,8 +309,22 @@ class User : MultiDexApplication() {
             val body = result.notification.body
             val data = result.notification.rawPayload
             val dataObject = JSONObject(data)
-            val customObject = JSONObject(dataObject.getString("custom")).getJSONObject("a")
-            val openURL = customObject.getString("OPEN_URL")
+            var customObject = JSONObject()
+            var a = JSONObject()
+            var openURL = ""
+
+            if (dataObject.has("custom")) {
+                customObject = JSONObject(dataObject.getString("custom"))
+            }
+
+            if (customObject.has("a")) {
+                a = customObject.getJSONObject("a")
+            }
+
+            if (customObject.has("OPEN_URL")) {
+                openURL = customObject.getString("OPEN_URL")
+
+            }
             val url = result.notification.launchURL
 
             val notificationJSONObject = JSONObject()
@@ -352,7 +352,7 @@ class User : MultiDexApplication() {
             Timber.e("OS NOTIFICATION TITLE -> $title")
             Timber.e("OS NOTIFICATION BODY -> $body")
             Timber.e("OS NOTIFICATION DATA -> $dataObject")
-            Timber.e("OS NOTIFICATION CUSTOM DATA -> $customObject")
+            Timber.e("OS NOTIFICATION CUSTOM DATA -> $a")
             Timber.e("OS NOTIFICATION OPEN URL -> $openURL")
         }
     }
