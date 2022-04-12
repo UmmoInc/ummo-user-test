@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.adapters.ServicesAdapter
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -48,6 +49,7 @@ import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
@@ -113,6 +115,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     //    private lateinit var serviceObject: ServiceObject
     private lateinit var serviceEntity: ServiceEntity
+    private lateinit var summoningParent: String
 
     private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val serviceSpecifiedEvent = ServiceSpecifiedEvent()
@@ -144,8 +147,8 @@ class DetailedServiceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         mixpanelAPI = MixpanelAPI.getInstance(
-                this,
-                resources.getString(R.string.mixpanelToken)
+            this,
+            resources.getString(R.string.mixpanelToken)
         )
 
         /** Binding Layout Views **/
@@ -216,7 +219,10 @@ class DetailedServiceActivity : AppCompatActivity() {
         /** Assigning [serviceObject] with the [serviceObject] we receive from ServiceItem **/
 //        serviceObject = intent.extras!!.get(SERVICE_OBJECT) as ServiceObject
         serviceEntity = intent.extras!!.get(SERVICE_ENTITY) as ServiceEntity
+        summoningParent = intent.extras!!.getString(PARENT, "")
+
         Timber.e("SERVICE OBJECT -> $serviceEntity")
+        Timber.e("SUMMONING PARENT -> $summoningParent")
         serviceId = serviceEntity.serviceId
 
         populateDetailedServiceElements(serviceEntity)
@@ -305,8 +311,8 @@ class DetailedServiceActivity : AppCompatActivity() {
 
             val serviceSpecCost = JSONObject()
             serviceSpecCost
-                    .put("SERVICE_SPEC", serviceSpec)
-                    .put("SPEC_COST", specCost)
+                .put("SERVICE_SPEC", serviceSpec)
+                .put("SPEC_COST", specCost)
             mixpanelAPI.track("detailedService_serviceSpecSelected", serviceSpecCost)
 
             checkForDelegatedServiceAndCompare()
@@ -379,21 +385,23 @@ class DetailedServiceActivity : AppCompatActivity() {
     private fun openServiceFeeSelfSupport() {
         val serviceFeeQuery = ServiceFeeQuery()
         serviceFeeQuery.show(this.supportFragmentManager, ServiceFeeQuery.TAG)
-        mixpanelAPI.track("detailedService_serviceFeeSelfSupport")
+        mixpanelAPI.track("Detailed Service - Service Fee Self-Support")
 
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
 
+        summoningParent = intent.extras!!.getString(PARENT, "")
+
         val intent = Intent(this, MainScreen::class.java)
         val bundle = Bundle()
         bundle.putString(VIEW_SOURCE, DETAILED_SERVICE)
         intent.putExtra(VIEW_SOURCE, bundle)
-        startActivity(intent)
+
         finish()
 
-        mixpanelAPI.track("detailedService_navigateBack")
+        mixpanelAPI.track("Detailed Service - Navigate Back")
     }
 
     override fun onPause() {
@@ -738,7 +746,13 @@ class DetailedServiceActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             val intent = Intent(this, MainScreen::class.java)
-            startActivity(intent)
+            if (summoningParent == MainScreen.toString()) {
+                startActivity(intent)
+            } else if (summoningParent == ServicesAdapter().toString()) {
+                intent.putExtra(FRAGMENT_DESTINATION, AllServicesFragment.toString())
+                Timber.e("FRAG DESTINATION -> ${intent.extras!!.getString(FRAGMENT_DESTINATION)}")
+                startActivity(intent)
+            }
             finish()
             return true
         }

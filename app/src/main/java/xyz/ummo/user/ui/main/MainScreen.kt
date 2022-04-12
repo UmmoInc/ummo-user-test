@@ -57,6 +57,8 @@ import xyz.ummo.user.ui.fragments.UmmoBrowser
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
+import xyz.ummo.user.ui.fragments.pagesFrags.Tfola
+import xyz.ummo.user.ui.fragments.pagesFrags.tfuma.Tfuma
 import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
@@ -77,7 +79,9 @@ class MainScreen : AppCompatActivity() {
     private var serviceProviderEntity = ServiceProviderEntity()
     private var serviceProviderData: ArrayList<ServiceProviderData> = ArrayList()
 
-    private var startFragmentExtra: Int = 0
+    private var startFragmentExtraInt: Int = 0
+
+    //    private lateinit var startFragmentExtraString: String
     private var toolbar: Toolbar? = null
 
     private var feedbackIcon: ImageView? = null
@@ -205,11 +209,6 @@ class MainScreen : AppCompatActivity() {
         editor = mainScreenPrefs.edit()
         profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
-        /** Starting DelegatedServiceFragment **/
-        startFragmentExtra = intent.getIntExtra("OPEN_DELEGATED_SERVICE_FRAG", 0)
-
-        //checkForAndLaunchDelegatedFragment()
-
         mixpanel = MixpanelAPI.getInstance(
             applicationContext,
             resources.getString(R.string.mixpanelToken)
@@ -274,6 +273,13 @@ class MainScreen : AppCompatActivity() {
 
         val openDelegation = intent.extras?.getInt(OPEN_DELEGATION)
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
+        /** Starting DelegatedServiceFragment **/
+        startFragmentExtraInt = intent.getIntExtra(OPEN_DELEGATED_SERVICE_FRAG, 0)
+        val startFragmentExtraString = intent.extras?.getString(FRAGMENT_DESTINATION, "")!!
+        //checkForAndLaunchDelegatedFragment()
+
+        if (startFragmentExtraString.isNotBlank())
+            checkForFragmentDestinationAndLaunch(startFragmentExtraString)
 
         /** Check for URL in intent extras and launch the Ummo Browser **/
         val launchURL = intent.extras?.getString(LAUNCH_URL)
@@ -289,6 +295,23 @@ class MainScreen : AppCompatActivity() {
         if (openDelegation == 1) {
             openFragment(DelegatedServiceFragment())
             Timber.e("$DELEGATION_STATE -> $delegationState")
+        }
+    }
+
+    private fun checkForFragmentDestinationAndLaunch(fragmentDestination: String) {
+        when (fragmentDestination) {
+            AllServicesFragment.toString() -> {
+                openFragment(AllServicesFragment())
+            }
+            Tfuma.toString() -> {
+                openFragment(Tfuma())
+            }
+            Tfola.toString() -> {
+                openFragment(Tfola())
+            }
+            else -> {
+                return
+            }
         }
     }
 
@@ -766,7 +789,7 @@ class MainScreen : AppCompatActivity() {
 
                     val homeEventObject = JSONObject()
                     homeEventObject.put("EVENT_DATE_TIME", currentDate)
-                    mixpanel?.track("bottomNavigation_homeTapped", homeEventObject)
+                    mixpanel?.track("BottomNavigation - Home Tapped", homeEventObject)
 
                     return@OnNavigationItemSelectedListener true
                 }
@@ -780,7 +803,7 @@ class MainScreen : AppCompatActivity() {
                     val delegatedServiceEventObject = JSONObject()
                     delegatedServiceEventObject.put("EVENT_DATE_TIME", currentDate)
                     mixpanel?.track(
-                        "bottomNavigation_delegatedServiceTapped",
+                        "BottomNavigation - Delegated Service Tapped",
                         delegatedServiceEventObject
                     )
 
@@ -792,46 +815,11 @@ class MainScreen : AppCompatActivity() {
                     openFragment(allServicesFragment)
 
                     mixpanel?.track(
-                        "bottomNavigation_allServicesTapped"
+                        "BottomNavigation - All Services Tapped"
                     )
 
                     return@OnNavigationItemSelectedListener true
                 }
-
-                /*R.id.bottom_navigation_service -> {
-
-                    */
-                /** Modify info card **//*
-                *//* infoCardBinding.infoBodyTextView.text = "Congratulations, you have a service running."
-
-                 sharedPrefServiceId = mainScreenPrefs.getString("SERVICE_ID", "")!!
-                 sharedPrefAgentId = mainScreenPrefs.getString("SERVICE_AGENT_ID", "")!!
-                 sharedPrefProductId = mainScreenPrefs.getString("DELEGATED_PRODUCT_ID", "")!!
-
-                 if (sharedPrefServiceId.isEmpty()) {
- //                    launchDelegatedServiceWithoutArgs() TODO: figure out what causes the null
-                     val bottomNav = findViewById<View>(R.id.bottom_nav)
-                     val snackbar = Snackbar.make(this.findViewById(android.R.id.content), "No Services yet...", Snackbar.LENGTH_LONG)
-                     snackbar.anchorView = bottomNav
-                     snackbar.show()
-
-                 } else {
-                     launchDelegatedServiceWithArgs(sharedPrefServiceId, sharedPrefAgentId, sharedPrefProductId)
-                 }
-
-                 mixpanel?.track("getService_bottomNav")*//*
-
-                supportActionBar?.title = "Your Service Bookmarks"
-
-                val savedServicesFragment = SavedServicesFragment()
-                openFragment(savedServicesFragment)
-
-                val bookmarkEventObject = JSONObject()
-                bookmarkEventObject.put("EVENT_DATE_TIME", currentDate)
-                mixpanel?.track("bottomNavigation_bookmarksTapped", bookmarkEventObject)
-
-                return@OnNavigationItemSelectedListener true
-            }*/
 
                 R.id.bottom_navigation_profile -> {
                     val profileFragment = ProfileFragment()
@@ -839,7 +827,7 @@ class MainScreen : AppCompatActivity() {
 
                     val profileEventObject = JSONObject()
                     profileEventObject.put("EVENT_DATE_TIME", currentDate)
-                    mixpanel?.track("bottomNavigation_profileTapped", profileEventObject)
+                    mixpanel?.track("BottomNavigation - Profile Tapped", profileEventObject)
 
                     return@OnNavigationItemSelectedListener true
                 }

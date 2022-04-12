@@ -36,7 +36,11 @@ interface ServiceDao {
     @Query("DELETE FROM service")
     fun deleteServices()
 
-    @Query("SELECT * FROM service WHERE service.service_name LIKE :searchQuery")
+    @Query(
+        "SELECT * FROM service WHERE service.service_name LIKE :searchQuery " +
+                "OR service.service_description LIKE :searchQuery " +
+                "OR service.service_category LIKE :searchQuery"
+    )
     /*OR service_category LIKE :searchQuery OR service_description LIKE :searchQuery"*/
     suspend fun searchRoomDB(searchQuery: String): List<ServiceEntity>
 }

@@ -71,7 +71,7 @@ class Tfola : Fragment() {
     private lateinit var serviceFilterChipBinding: ServiceFilterChipLayoutBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
-    private lateinit var nonDelegatableService: ServiceObject
+    private lateinit var nonDelegatableService: ServiceEntity
 
     lateinit var serviceId: String //1
     lateinit var serviceName: String //2
@@ -204,8 +204,8 @@ class Tfola : Fragment() {
         filterServicesByCategory()
 
         mixpanelAPI = MixpanelAPI.getInstance(
-                requireContext(),
-                resources.getString(R.string.mixpanelToken)
+            requireContext(),
+            resources.getString(R.string.mixpanelToken)
         )
 
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()
@@ -394,7 +394,7 @@ class Tfola : Fragment() {
                 val nonDelegatableServiceEntity = nonDelegatableServicesArrayList[i]
                 Timber.e("NON-DELEGATABLE SERVICES ARE -> ${nonDelegatableServiceEntity.serviceName}")
                 offlineServiceObject = ServiceObject(
-                    nonDelegatableServiceEntity.serviceId!!,
+                    nonDelegatableServiceEntity.serviceId,
                     nonDelegatableServiceEntity.serviceName!!,
                     nonDelegatableServiceEntity.serviceDescription!!,
                     nonDelegatableServiceEntity.serviceEligibility!!,
@@ -414,7 +414,7 @@ class Tfola : Fragment() {
                     "0", "", "", serviceBenefits
                 )
 
-                getSavedUserActionsFromSharedPrefs(nonDelegatableServiceEntity.serviceId!!)
+                getSavedUserActionsFromSharedPrefs(nonDelegatableServiceEntity.serviceId)
 
                 /** 1. Checking if the Fragment has been added to the Activity context.
                  *  2. Checking if the Offline Service's category is the same as the category we're in. **/
@@ -422,7 +422,7 @@ class Tfola : Fragment() {
                     hideNoServicesLayout()
                     hideOfflineState()
 
-                    gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
+                    //gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
                     Timber.e("Displaying offline services -> ${offlineServiceObject.serviceName}")
                     showSnackbarBlue("Showing offline services", -2)
                 } else {
@@ -647,14 +647,14 @@ class Tfola : Fragment() {
             Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
         }
 
-        nonDelegatableService = ServiceObject(
-            serviceId, serviceName,
-            serviceDescription, serviceEligibility, serviceCentres,
-            delegatable, serviceCostArrayList, serviceDocuments, serviceDuration,
-            approvalCount, disapprovalCount, serviceComments,
-            commentCount, shareCount, viewCount, serviceProvider, serviceLink,
-            serviceAttachmentName, serviceAttachmentSize, serviceAttachmentURL, serviceCategory,
-            serviceBenefits
+        nonDelegatableService = ServiceEntity(
+            serviceId, serviceName, serviceDescription, serviceEligibility,
+            serviceCentres, delegatable, serviceCostArrayList,
+            serviceDocuments, serviceDuration, approvalCount,
+            disapprovalCount, serviceComments, commentCount, shareCount,
+            viewCount, serviceProvider, true, false,
+            serviceCategory, serviceLink, serviceAttachmentName,
+            serviceAttachmentSize, serviceAttachmentURL, serviceBenefits
         )
 
         Timber.e("NON-DELEGATED---SERVICE -> $nonDelegatableService")

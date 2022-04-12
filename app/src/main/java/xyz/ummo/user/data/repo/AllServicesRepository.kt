@@ -16,13 +16,11 @@ import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
 
-//TODO: Saved for [UMMO-75]
 /** This repo will get data from DB and/or our API and propagate it to the viewModel associated **/
 class AllServicesRepository(
     val db: AllServicesDatabase,
@@ -39,12 +37,14 @@ class AllServicesRepository(
         serviceDao = allServicesDatabase.serviceDao()!!
     }
 
-    private lateinit var allServicesViewModel: AllServicesViewModel
-
     /** Auth JWT **/
     val jwt: String = PreferenceManager.getDefaultSharedPreferences(activity.applicationContext)
         .getString("jwt", "").toString()
 
+    /** - Using an OkHttp request, we're fetching service data from the server and returning a
+     * string value to be parsed later by [parseServicesStringReturnServiceEntityArrayList].
+     *
+     * - We currently need the [jwt] to authenticate our API request. **/
     private fun fetchAllServicesFromServer(): String {
         val request = Request.Builder()
             .url("${activity.resources.getString(R.string.serverUrl)}/product")
@@ -56,6 +56,10 @@ class AllServicesRepository(
         }
     }
 
+    /** - This is a dual purpose function:
+     *   1. We call [fetchAllServicesFromServer] in a coroutine with an IO (network) dispatcher.
+     *   2. We then parse the string response in [ServiceEntity] attributes.
+     *   3. Finally, we add each [serviceEntity] into [servicesArrayList] and return it. **/
     private suspend fun parseServicesStringReturnServiceEntityArrayList(): ArrayList<ServiceEntity> {
         val serviceResponse = withContext(Dispatchers.IO) {
             fetchAllServicesFromServer()
@@ -152,6 +156,9 @@ class AllServicesRepository(
         return servicesArrayList
     }
 
+    /** Our MVP function!
+     *  1. Retrieving [servicesArrayList] from [parseServicesStringReturnServiceEntityArrayList]
+     *  2. Inserting a single [serviceEntity] into Room using [serviceDao]. **/
     suspend fun saveServicesInRoom() {
         val mServicesArrayList = parseServicesStringReturnServiceEntityArrayList()
         for (serviceEntity in mServicesArrayList) {
@@ -160,8 +167,12 @@ class AllServicesRepository(
         }
     }
 
+    /** This is where the magic happens!
+     *  Returning the [serviceEntity] being searched for from the [searchQuery] provided via
+     *  [serviceDao]. **/
     suspend fun searchServices(searchQuery: String) = serviceDao.searchRoomDB(searchQuery)
 
+    /** Retrieving the services saved by [saveServicesInRoom], returning [servicesArrayList] **/
     fun getLocallyStoredServices(): ArrayList<ServiceEntity> {
         return serviceDao.serviceListData as ArrayList<ServiceEntity>
     }

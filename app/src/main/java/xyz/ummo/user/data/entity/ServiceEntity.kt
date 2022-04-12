@@ -93,5 +93,5 @@ data class ServiceEntity(
 
     @TypeConverters(ServiceBenefitsTypeConverter::class)
     @ColumnInfo(name = "service_benefits")
-    var serviceBenefits: ArrayList<ServiceBenefit> //TODO: Revert back to type: ServiceBenefit
+    var serviceBenefits: ArrayList<ServiceBenefit>
 ) : Serializable

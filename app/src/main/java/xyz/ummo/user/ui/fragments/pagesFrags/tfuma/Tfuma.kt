@@ -54,7 +54,7 @@ class Tfuma : Fragment() {
 
     //    private lateinit var delegatableServicesArrayList: List<ServiceEntity>
     private lateinit var delegatableServicesArrayList: ArrayList<ServiceEntity>
-    private lateinit var delegatableService: ServiceObject
+    private lateinit var delegatableService: ServiceEntity
     private lateinit var delegatedServicePrefs: SharedPreferences
     private var serviceViewModel: ServiceViewModel? = null
     private var serviceUpVoteBoolean: Boolean = false
@@ -313,7 +313,7 @@ class Tfuma : Fragment() {
                     hideNoServicesLayout()
                     hideOfflineState()
 
-                    gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
+//                    gAdapter.add(ServiceItem(offlineServiceObject, context, savedUserActions))
                     Timber.e("Displaying offline services -> ${offlineServiceObject.serviceName}")
                     showSnackbarBlue("Showing offline services", -2)
                 } else {
@@ -525,15 +525,14 @@ class Tfuma : Fragment() {
                                     Timber.e("ISSUE PARSING SERVICE ATTACHMENT -> $jse")
                                 }
 
-                                delegatableService = ServiceObject(
-                                    serviceId, serviceName,
-                                    serviceDescription, serviceEligibility, serviceCentres,
-                                    delegatable, serviceCostArrayList, serviceDocuments,
-                                    serviceDuration, approvalCount, disapprovalCount,
-                                    serviceComments, commentCount, shareCount, viewCount,
-                                    serviceProvider, serviceLink, serviceAttachmentName,
-                                    serviceAttachmentSize, serviceAttachmentURL, serviceCategory,
-                                    serviceBenefits
+                                delegatableService = ServiceEntity(
+                                    serviceId, serviceName, serviceDescription, serviceEligibility,
+                                    serviceCentres, delegatable, serviceCostArrayList,
+                                    serviceDocuments, serviceDuration, approvalCount,
+                                    disapprovalCount, serviceComments, commentCount, shareCount,
+                                    viewCount, serviceProvider, true, false,
+                                    serviceCategory, serviceLink, serviceAttachmentName,
+                                    serviceAttachmentSize, serviceAttachmentURL, serviceBenefits
                                 )
 
                                 getSavedUserActionsFromSharedPrefs(serviceId)

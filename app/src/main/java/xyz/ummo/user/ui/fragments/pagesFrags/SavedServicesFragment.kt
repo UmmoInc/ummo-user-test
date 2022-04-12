@@ -23,7 +23,6 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentSavedServicesBinding
 import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.rvItems.ServiceItem
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
@@ -99,10 +98,6 @@ class SavedServicesFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = groupAdapter
-
-        //getBookmarkedServicesFromSharedPrefs()
-
-//        getBookmarkedServices()
 
         return view
     }
@@ -187,7 +182,7 @@ class SavedServicesFragment : Fragment() {
 
             Timber.e("SAVED USER ACTIONS -> ${savedUserActions.getString("BOOKMARKED")}")
 
-            groupAdapter.add(ServiceItem(bookmarkedService, context, savedUserActions))
+//            groupAdapter.add(ServiceItem(bookmarkedService, context, savedUserActions))
         }
 
         //TODO: stashing this method for now. Let's try retrieve bookmarked services via sharedPrefs

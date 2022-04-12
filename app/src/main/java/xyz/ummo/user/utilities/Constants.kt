@@ -154,3 +154,7 @@ var serviceAttachmentURL = "" //18.4
 var serviceBenefitJSONArray = JSONArray() //19
 var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
 var serviceCategory = "" //20
+
+const val PARENT = "PARENT"
+const val FRAGMENT_DESTINATION = "FRAG_DEN"
+const val OPEN_DELEGATED_SERVICE_FRAG = "OPEN_DELEGATED_SERVICE_FRAG"

@@ -5,7 +5,6 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -26,7 +25,6 @@ import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
-import xyz.ummo.user.workers.makeStatusNotification
 
 class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -37,9 +35,6 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
 
-    private lateinit var serviceMini: ServiceObject
-
-    private lateinit var loadServicesProgressBar: ProgressBar
     private lateinit var mixpanel: MixpanelAPI
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
@@ -91,12 +86,13 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
 
         setupSearchView()
 
-        /** Checking if SearchView is expanded **/
+        /** Checking if SearchView is expanded to decide how to handle its appearance **/
         allServiceBinding.serviceSearchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus || !allServiceBinding.serviceSearchView.isIconified) {
                 /** If focused, hide title text **/
                 allServiceBinding.allServicesIntroTitleTextView.visibility = View.GONE
             } else if (!hasFocus || allServiceBinding.serviceSearchView.isIconified) {
+                /** Otherwise, leave it as is **/
                 allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
             }
         }
@@ -133,36 +129,54 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         /** Instantiating [allServicesViewModel] **/
         allServicesViewModel = (activity as MainScreen).allServicesViewModel
 
+        /** Within this [coroutineScope], we're fetching locally stored services **/
         coroutineScope.launch(Dispatchers.IO) {
             allServicesViewModel.getLocallyStoredServices()
         }
 
+        getAllServicesFromRoomAndDisplay()
+    }
+
+    /** 1. In getting all services from Room, we're actually observing the [allServicesViewModel]'s
+     *    livedata returned from [AllServicesViewModel.getLocallyStoredServices] suspend function;
+     *    this function runs a call on AllServicesRepository to getLocallyStoredServices for us.
+     *
+     *   2. With that result, we pass it to our diffUtil operation in [allServicesAdapter] whose
+     *     callback function compares if the adapter elements or contents are similar;
+     *     this is useful in ensuring that we have a clean list of info that doesn't repeat.
+     *
+     *   3. We then [checkForServices] and follow its UX functionality, accordingly.
+     *
+     *   4. But because the contents of the livedata may be empty, we then run another
+     *      [coroutineScope] on an IO dispatcher (b/c we're reading from the network) to actually
+     *      fetch service data from the server and store them in Room, before attempting to display
+     *      them again. **/
+    private fun getAllServicesFromRoomAndDisplay() {
         allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { response ->
             allServicesAdapter.differ.submitList(response)
-            Timber.e("ALL SERVICES ADAPTER -> $response")
-            showServicesViewHideEverythingElse()
+            showServicesAndViewHideEverythingElse()
             checkForServices(response)
 
             coroutineScope.launch(Dispatchers.IO) {
                 if (response.isEmpty()) {
                     allServicesViewModel.getAllServicesFromServer()
-                    showServicesViewHideEverythingElse()
+                    showServicesAndViewHideEverythingElse()
                     checkForServices(response)
                 }
             }
         }
     }
 
+    /** This will run everytime the UI is refreshed or when the User doesn't find a service &
+     * has to reload the UI accordingly. **/
     private fun reloadAllServices() {
         val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(p0: Long) {
                 showProgressBar()
-//                searchServiceAdapter.clearAdapter()
-
             }
 
             override fun onFinish() {
-                showServicesViewHideEverythingElse()
+                getAllServicesFromRoomAndDisplay()
             }
         }
         timer.start()
@@ -174,7 +188,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
     }
 
-    private fun showServicesViewHideEverythingElse() {
+    private fun showServicesAndViewHideEverythingElse() {
         allServiceBinding.noResultsLayout.visibility = View.GONE
         allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
         allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
@@ -182,6 +196,14 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
         allServiceBinding.serviceSearchView.isIconified = true
         allServiceBinding.serviceSearchView.clearFocus()
+    }
+
+
+    private fun justShowAllServicesReturnedFromAdapter() {
+        allServiceBinding.noResultsLayout.visibility = View.GONE
+        allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+        allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+        allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
     }
 
     @Subscribe
@@ -194,10 +216,13 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             Timber.e("SEARCH RESULTS NOT FOUND -> ${searchResultsEvent.searchedService}!")
             displayNoServicesFound()
 
-            allServiceBinding.letMeKnowButton.setOnClickListener {
-                Timber.e("CLICKING BUTTON -> ${searchResultsEvent.searchedService}")
-                capturingMissingService(searchResultsEvent.searchedService)
-            }
+            letMeKnowClicker(searchResultsEvent.searchedService)
+        }
+    }
+
+    private fun letMeKnowClicker(serviceString: String) {
+        allServiceBinding.letMeKnowButton.setOnClickListener {
+            capturingMissingService(serviceString)
         }
     }
 
@@ -214,39 +239,34 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         mixpanel.track("Service Not Found", missingServiceObject)
         allServiceBinding.noResultsLayout.visibility = View.GONE
         displayMissingServiceCapturedUI()
-
     }
 
     private fun displayMissingServiceCapturedUI() {
 
-        val timer = object : CountDownTimer(2000, 1000) {
+        val timer = object : CountDownTimer(1000, 1000) {
             override fun onTick(p0: Long) {
                 allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
             }
 
             override fun onFinish() {
 
-                //TODO: Improve Coroutine use
-                MainScope().launch {
-                    withContext(Dispatchers.Default) {
-                        Timber.e("BACKGROUND WORK - 1")
-                    }
+                coroutineScope.launch(Dispatchers.Main) {
                     allServiceBinding.noResultsLayout.visibility = View.GONE
                     allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                    allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
                     allServiceBinding.missingServiceCapturedLayout.visibility = View.VISIBLE
-                    makeStatusNotification(
-                        "Service Sent",
-                        "We'll let you know by SMS when we find your service",
-                        context!!
-                    )
                 }
             }
         }
         timer.start()
     }
 
+    /** This function is meant to give the "We're working on it, quickly!" UX. We show the progress
+     *  bar for 2 seconds and then check if the [serviceEntityArrayList] is empty or not.
+     *  If it IS empty, we [displayNoServicesFound] to the User;
+     *  Else, we [showServicesAndViewHideEverythingElse] **/
     private fun checkForServices(serviceEntityArrayList: ArrayList<ServiceEntity>) {
-        val timer = object : CountDownTimer(5000, 1000) {
+        val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(p0: Long) {
                 showProgressBar()
             }
@@ -255,7 +275,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (serviceEntityArrayList.isEmpty()) {
                     displayNoServicesFound()
                 } else {
-                    showServicesViewHideEverythingElse()
+                    showServicesAndViewHideEverythingElse()
                 }
             }
         }
@@ -296,7 +316,6 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun setupSearchView() {
         allServiceBinding.serviceSearchView.setOnQueryTextListener(this)
-        Timber.e("Search View Setup")
     }
 
     companion object {
@@ -313,9 +332,13 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        if (query != null) {
-            coroutineScope.launch(Dispatchers.IO) {
-                searchServiceArrayList(query)
+        MainScope().launch {
+            delay(1000L)
+            query?.let {
+                if (query.isNotEmpty()) {
+                    searchServiceArrayList(query)
+                } else
+                    getAllServicesFromRoomAndDisplay()
             }
         }
         return false
@@ -328,28 +351,32 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             query?.let {
                 if (query.isNotEmpty()) {
                     searchServiceArrayList(query)
-                }
+                } else
+                    getAllServicesFromRoomAndDisplay()
             }
         }
-        /*if (query != null) {
-
-            searchServiceArrayList(query)
-        }*/
         return false
     }
 
+    /** This is our MVP function!
+     *  It searches for services represented by [searchQueryString] using
+     *  [AllServicesViewModel.searchedServicesLiveDataList].
+     *  We observe for any response and alter the UI accordingly.**/
     private fun searchServiceArrayList(searchQueryString: String?) {
         if (searchQueryString!!.isNotEmpty()) {
             allServicesViewModel.searchForServices(searchQueryString)
             allServicesViewModel.searchedServicesLiveDataList
                 .observe(viewLifecycleOwner) { searchResults ->
                     Timber.e("SEARCHING FOR -> $searchResults")
-                    allServicesAdapter.differ.submitList(searchResults)
+
+                    if (searchResults.isNullOrEmpty()) {
+                        displayNoServicesFound()
+                        letMeKnowClicker(searchQueryString)
+                    } else {
+                        allServicesAdapter.differ.submitList(searchResults)
+                        justShowAllServicesReturnedFromAdapter()
+                    }
                 }
         }
-        /** 1. With the ViewModel, search database and observe the liveData
-         *  2. Using the liveData, populate the adapter **/
-
-        /** viewModel.searchDatabase(query).observe(this, { list -> list.let {gAdapter.setData(it)}}) **/
     }
 }
