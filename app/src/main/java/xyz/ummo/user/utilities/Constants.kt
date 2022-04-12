@@ -158,3 +158,11 @@ var serviceCategory = "" //20
 const val PARENT = "PARENT"
 const val FRAGMENT_DESTINATION = "FRAG_DEN"
 const val OPEN_DELEGATED_SERVICE_FRAG = "OPEN_DELEGATED_SERVICE_FRAG"
+
+/** Service Provider Constants **/
+const val EDUCATION = "61827579ab47d4cbaf5a3615"
+const val HEALTH = "61825c2dab47d4cbaf5a360a"
+const val AGRICULTURE = "61827559ab47d4cbaf5a3614"
+const val REVENUE = "601268ff5ad77100154da835"
+const val COMMERCE = "601266be5ad77100154da833"
+const val HOME_AFFAIRS = "601268725ad77100154da834"

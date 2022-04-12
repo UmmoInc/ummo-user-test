@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_all_services.*
 import kotlinx.android.synthetic.main.fragment_all_services.view.*
@@ -24,6 +25,8 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.utilities.*
+import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 
 class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -34,6 +37,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServicesAdapter: ServicesAdapter
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
+    private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
 
     private lateinit var mixpanel: MixpanelAPI
 
@@ -101,6 +105,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.thankYouButton.setOnClickListener {
             reloadAllServices()
         }
+
         allServiceBinding.missingServiceCapturedImageView.setOnClickListener {
             reloadAllServices()
         }
@@ -135,6 +140,8 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         getAllServicesFromRoomAndDisplay()
+
+        filterServicesByCategory()
     }
 
     /** 1. In getting all services from Room, we're actually observing the [allServicesViewModel]'s
@@ -154,13 +161,13 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun getAllServicesFromRoomAndDisplay() {
         allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { response ->
             allServicesAdapter.differ.submitList(response)
-            showServicesAndViewHideEverythingElse()
+            showServicesViewAndHideEverythingElse()
             checkForServices(response)
 
             coroutineScope.launch(Dispatchers.IO) {
                 if (response.isEmpty()) {
                     allServicesViewModel.getAllServicesFromServer()
-                    showServicesAndViewHideEverythingElse()
+                    showServicesViewAndHideEverythingElse()
                     checkForServices(response)
                 }
             }
@@ -188,7 +195,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
     }
 
-    private fun showServicesAndViewHideEverythingElse() {
+    private fun showServicesViewAndHideEverythingElse() {
         allServiceBinding.noResultsLayout.visibility = View.GONE
         allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
         allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
@@ -264,7 +271,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     /** This function is meant to give the "We're working on it, quickly!" UX. We show the progress
      *  bar for 2 seconds and then check if the [serviceEntityArrayList] is empty or not.
      *  If it IS empty, we [displayNoServicesFound] to the User;
-     *  Else, we [showServicesAndViewHideEverythingElse] **/
+     *  Else, we [showServicesViewAndHideEverythingElse] **/
     private fun checkForServices(serviceEntityArrayList: ArrayList<ServiceEntity>) {
         val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(p0: Long) {
@@ -275,7 +282,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (serviceEntityArrayList.isEmpty()) {
                     displayNoServicesFound()
                 } else {
-                    showServicesAndViewHideEverythingElse()
+                    showServicesViewAndHideEverythingElse()
                 }
             }
         }
@@ -356,6 +363,74 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
         return false
+    }
+
+    private fun filterServicesByCategory() {
+
+        allServiceBinding.serviceCategoryChipGroup.setOnCheckedChangeListener { group, checkedId ->
+            Timber.e("CHECKED GROUP -> $group")
+            Timber.e("CHECKED CHIP -> $checkedId")
+
+            val titleOrNull = group.findViewById<Chip>(checkedId)?.text
+            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
+
+            when (titleOrNull) {
+
+                "All Services" -> {
+                    mixpanel.track("All Services Filtered - All Services")
+                    getAllServicesFromRoomAndDisplay()
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Home Affairs" -> {
+                    searchServiceArrayList(HOME_AFFAIRS)
+                    mixpanel.track("All Services Filtered - Home-Affairs")
+                    loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Commerce" -> {
+                    searchServiceArrayList(COMMERCE)
+                    mixpanel.track("All Services Filtered - Commerce")
+                    loadingCategoryServicesEvent.categoryLoading = "Commerce"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Revenue" -> {
+                    searchServiceArrayList(REVENUE)
+                    mixpanel.track("All Services Filtered - Revenue")
+                    loadingCategoryServicesEvent.categoryLoading = "Revenue"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Agriculture" -> {
+                    searchServiceArrayList(AGRICULTURE)
+                    mixpanel.track("All Services Filtered - Agriculture")
+                    loadingCategoryServicesEvent.categoryLoading = "Agriculture"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Health" -> {
+                    searchServiceArrayList(HEALTH)
+                    mixpanel.track("All Services Filtered - Health")
+                    loadingCategoryServicesEvent.categoryLoading = "Health"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Education" -> {
+                    searchServiceArrayList(EDUCATION)
+                    mixpanel.track("All Services Filtered - Home-Affairs")
+                    loadingCategoryServicesEvent.categoryLoading = "Education"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+            }
+        }
     }
 
     /** This is our MVP function!
