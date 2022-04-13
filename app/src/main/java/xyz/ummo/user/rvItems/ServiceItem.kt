@@ -66,23 +66,17 @@ class ServiceItem(
     private var downVote: Boolean = false
     private var commentedOn: Boolean = false
 
-    //    private var bookmarked: Boolean = false
     private var anonymousComment: Boolean = false
     private val isUpvotedEvent = UpvoteServiceEvent()
     private val isDownvotedEvent = DownvoteServiceEvent()
     private val serviceCommentEvent = ServiceCommentEvent()
     private val serviceBookmarkedEvent = ServiceBookmarkedEvent()
 
-    //    private val isBookmarkedEvent = ServiceBookmarkedEvent()
-    private val paymentTermsEvent = ConfirmPaymentTermsEvent()
     private val delegateStateEvent = DelegateStateEvent()
-    private val passingServiceEvent = PassingServiceEvent()
     private val serviceSpecifiedEvent = ServiceSpecifiedEvent()
 
     private var isUpvotedPref: Boolean = false
     private var isDownvotedPref: Boolean = false
-
-    private val agentRequestDialog = MaterialAlertDialogBuilder(context!!)
 
     /** Initializing ServiceViewModel **/
     private var serviceViewModel =
@@ -91,7 +85,7 @@ class ServiceItem(
     private var delegatedServiceModel =
         ViewModelProvider(context as FragmentActivity)[DelegatedServiceViewModel::class.java]
 
-    private lateinit var serviceEntity: ServiceEntity
+    private var serviceEntity: ServiceEntity
 
     private var userContactPref = ""
     private val inflater = LayoutInflater.from(context)
@@ -927,26 +921,6 @@ class ServiceItem(
         viewHolder.itemView.service_comments_image.setImageResource(R.drawable.ic_outline_chat_bubble_grey_24)
         viewHolder.itemView.you_commented_on_this_text_view.visibility = View.INVISIBLE
     }
-
-    /*private fun assignServiceEntity(mServiceEntity: ServiceEntity) {
-        mServiceEntity.serviceId = service.serviceId //0
-        mServiceEntity.serviceName = service.serviceName //1
-        mServiceEntity.serviceDescription = service.serviceDescription //2
-        mServiceEntity.serviceEligibility = service.serviceEligibility //3
-        mServiceEntity.serviceCentres = service.serviceCentres //4
-        mServiceEntity.delegatable = service.delegatable //5
-//        mServiceEntity.serviceCost = service.serviceCost //6
-        mServiceEntity.serviceDocuments = service.serviceDocuments //7
-        mServiceEntity.serviceDuration = service.serviceDuration //8
-        mServiceEntity.usefulCount = service.usefulCount //9
-        mServiceEntity.notUsefulCount = service.notUsefulCount //10
-        mServiceEntity.serviceComments = service.serviceComments //11
-        mServiceEntity.commentCount = service.serviceCommentCount //12
-        mServiceEntity.serviceShares = service.serviceShareCount //13
-        mServiceEntity.serviceViews = service.serviceViewCount //14
-        mServiceEntity.serviceProvider = service.serviceProvider //15
-        mServiceEntity.serviceCategory = service.serviceCategory //16
-    }*/
 
     private fun makeServiceUpdate(viewHolder: GroupieViewHolder, updateType: String, date: String) {
         val serviceUpdate = JSONObject()

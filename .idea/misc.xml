@@ -46,7 +46,7 @@
         <entry key="app/src/main/res/layout/content_detailed_service.xml" value="0.32685185185185184" />
         <entry key="app/src/main/res/layout/delegate_agent_dialog.xml" value="0.3277777777777778" />
         <entry key="app/src/main/res/layout/feedback_dialog.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_delegated.xml" value="0.31296296296296294" />
         <entry key="app/src/main/res/layout/fragment_get_help.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_give_feedback.xml" value="0.5" />
@@ -57,7 +57,7 @@
         <entry key="app/src/main/res/layout/fragment_personal_info.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_privacy_policy.xml" value="0.19166666666666668" />
         <entry key="app/src/main/res/layout/fragment_request_service_assistance.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_service_categories.xml" value="0.2712962962962963" />
+        <entry key="app/src/main/res/layout/fragment_service_categories.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_service_comments.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_service_request_bottom_sheet.xml" value="0.25677083333333334" />
         <entry key="app/src/main/res/layout/fragment_share_service_info_bottom_sheet.xml" value="0.3277777777777778" />

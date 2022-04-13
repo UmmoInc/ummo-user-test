@@ -34,6 +34,7 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.RequestService
 import xyz.ummo.user.api.User
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
@@ -51,8 +52,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var serviceObjectParam: Serializable? = null
-    private var serviceObject: ServiceObject? = null
+    private var serviceEntityParam: Serializable? = null
+    private var serviceEntity: ServiceEntity? = null
     private var layouts: IntArray? = null
     var serviceCentresRadioGroup: RadioGroup? = null
     var serviceCentreRadioButton: RadioButton? = null
@@ -109,9 +110,9 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         )
 
         /** Unpacking [ServiceObject] from [getArguments]**/
-        serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
-        serviceObject = serviceObjectParam as ServiceObject
-        Timber.e("SERVICE OBJECT PARAM -> $serviceObjectParam")
+        serviceEntityParam = arguments?.getSerializable(SERVICE_ENTITY)
+        serviceEntity = serviceEntityParam as ServiceEntity
+        Timber.e("SERVICE OBJECT PARAM -> $serviceEntityParam")
 
         serviceRequestStepOne()
         serviceRequestStepTwo()
@@ -127,13 +128,13 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         /** Introducing Request Sheet to User**/
         val requestAgentText = String.format(
             resources.getString(R.string.request_ummo_agent),
-            serviceObject!!.serviceName
+            serviceEntity!!.serviceName
         )
         val requestAgentTextView = viewBinding.requestDescriptionTextView
         requestAgentTextView.text = requestAgentText
 
         /** Populating the Service Centre RadioGroup**/
-        val serviceCentresList = ArrayList(serviceObject!!.serviceCentres)
+        val serviceCentresList = ArrayList(serviceEntity!!.serviceCentres)
         var serviceCentreRadioButton: RadioButton?
         val serviceCentresRadioGroup: RadioGroup = viewBinding.serviceCentreRadioGroupDialogFragment
 
@@ -181,7 +182,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     private fun serviceRequestStepTwo() {
         val autoCompleteTextView = viewBinding.sheetServiceCostTextView
 
-        serviceCostArrayList = serviceObject!!.serviceCost
+        serviceCostArrayList = serviceEntity!!.serviceCost!!
         serviceCostAdapter =
             ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
 
@@ -337,7 +338,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                 confirmRequestButton.setOnClickListener {
                     requestAgentDelegate(
-                        serviceObject!!.serviceId,
+                        serviceEntity!!.serviceId,
                         delegationFee,
                         chosenServiceCentre
                     )
@@ -369,7 +370,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
             try {
                 serviceRequestObject.put("user_id", User.getUserId(jwt))
-                        .put("product_name", serviceObject!!.serviceName)
+                    .put("product_name", serviceEntity!!.serviceName)
                         .put("product_id", mServiceId)
                         .put("delegation_fee", mDelegationFee)
                         .put("chosen_service_centre", mChosenServiceCentre)
@@ -414,7 +415,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             //TODO: remove after service is done
                             editor.putString(
                                 DELEGATED_SERVICE_ID,
-                                serviceObject!!.serviceId
+                                serviceEntity!!.serviceId
                             )
 //                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
                             editor.putString(
