@@ -126,6 +126,7 @@ class Tfuma : Fragment() {
         recyclerView = view.tfuma_services_recycler_view
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = view.tfuma_services_recycler_view.layoutManager
+//        recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = gAdapter
 
         category = parentFragment?.arguments?.getString(SERVICE_CATEGORY).toString()

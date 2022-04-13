@@ -358,7 +358,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             requestAgentBtn!!.setOnClickListener {
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
-                requestBundle.putSerializable(SERVICE_OBJECT, serviceEntity)
+                requestBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
                 serviceRequestBottomSheetDialog
