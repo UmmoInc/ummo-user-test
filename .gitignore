@@ -13,3 +13,5 @@
 .externalNativeBuild
 .idea \n
 .idea
+
+app/release/app-release.aab
