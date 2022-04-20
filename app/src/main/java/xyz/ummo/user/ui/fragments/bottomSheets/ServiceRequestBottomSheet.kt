@@ -536,7 +536,6 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
-//        Timber.e("SERVICE_AGENT_ID -> $agentId")
         Timber.e("SERVICE_DATE -> $serviceDate")
 
         val progress = java.util.ArrayList<String>()

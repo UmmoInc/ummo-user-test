@@ -80,6 +80,7 @@ class MainScreen : AppCompatActivity() {
     private var serviceProviderData: ArrayList<ServiceProviderData> = ArrayList()
 
     private var startFragmentExtraInt: Int = 0
+    private var startFragmentExtraString: String? = ""
 
     //    private lateinit var startFragmentExtraString: String
     private var toolbar: Toolbar? = null
@@ -275,11 +276,10 @@ class MainScreen : AppCompatActivity() {
         val delegationState = intent.extras?.getString(DELEGATION_STATE)
         /** Starting DelegatedServiceFragment **/
         startFragmentExtraInt = intent.getIntExtra(OPEN_DELEGATED_SERVICE_FRAG, 0)
-        val startFragmentExtraString = intent.extras?.getString(FRAGMENT_DESTINATION, "")!!
-        //checkForAndLaunchDelegatedFragment()
+        startFragmentExtraString = intent.extras?.getString(FRAGMENT_DESTINATION)!!
 
-        if (startFragmentExtraString.isNotBlank())
-            checkForFragmentDestinationAndLaunch(startFragmentExtraString)
+        if (startFragmentExtraString != null && startFragmentExtraString!!.isNotBlank())
+            checkForFragmentDestinationAndLaunch(startFragmentExtraString!!)
 
         /** Check for URL in intent extras and launch the Ummo Browser **/
         val launchURL = intent.extras?.getString(LAUNCH_URL)

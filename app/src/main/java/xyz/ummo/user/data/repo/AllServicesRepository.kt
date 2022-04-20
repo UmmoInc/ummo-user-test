@@ -20,6 +20,7 @@ import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
+import java.util.concurrent.TimeUnit
 
 /** This repo will get data from DB and/or our API and propagate it to the viewModel associated **/
 class AllServicesRepository(
@@ -30,7 +31,11 @@ class AllServicesRepository(
     private var serviceDao: ServiceDao
     private var allServicesDatabase = AllServicesDatabase.invoke(activity.applicationContext)
 
-    private var client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(2, TimeUnit.MINUTES)
+        .readTimeout(2, TimeUnit.MINUTES)
+        .writeTimeout(2, TimeUnit.MINUTES).build()
+
     private var servicesArrayList = ArrayList<ServiceEntity>()
 
     init {

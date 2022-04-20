@@ -163,14 +163,9 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun completeSignUp() {
-        val mixpanel = MixpanelAPI.getInstance(
-            this,
-            resources.getString(R.string.mixpanelToken)
-        )
-
 //        val status = OneSignal.getPermissionSubscriptionState()
         val deviceState = OneSignal.getDeviceState()
-        val onePlayerId = deviceState!!.userId
+        var onePlayerId = deviceState!!.userId
 
         viewBinding.signUpBtn.setOnClickListener {
             val emailField: EditText = viewBinding.userEmailTextInputEditText
@@ -181,6 +176,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     emailField.error = "Please use a valid email..."
                     emailField.requestFocus()
                 }
+
                 emailField.length() == 0 -> {
                     emailField.error = "Please provide an email..."
                     emailField.requestFocus()
@@ -195,44 +191,60 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     Timber.e("User Email-> $userEmail")
                     Timber.e("Player ID-> $onePlayerId")
 
-                    /** UserObject used to store values to be passed onto Mixpanel**/
-                    val userObject = JSONObject()
-
                     /** Retrieving OneSignal PlayerId before signing up **/
-//                    OneSignal.idsAvailable { userPID, registrationId ->
                     if (!onePlayerId.isNullOrEmpty()) {
                         try {
-                            userObject.put("userName", userName)
-                            userObject.put("userContact", userContact)
-                            userObject.put("userEmail", userEmail)
-
-                            /** Logging Mixpanel User profile **/
-                            if (mixpanel != null) {
-                                mixpanel.track("completeSignUp", userObject)
-                                mixpanel.people.identify(userContact)
-//                                    mixpanel.people.set("PID", userPID)
-                                    mixpanel.people.set("User-Name", userName)
-                                    mixpanel.people.set("User-Contact", userContact)
-                                }
-
-                                //Ummo server sign-up
+                            setupMixpanelUserIdentity(userName, userContact, userEmail)
+                            //Ummo server sign-up
                             signUp(userName, userEmail, userContact, onePlayerId)
-                                //Firebase email-auth sign-up
-                                createUserWithEmailAndPassword(userEmail, userContact)
-                                progress.dismiss()
+                            //Firebase email-auth sign-up
+                            createUserWithEmailAndPassword(userEmail, userContact)
+                            progress.dismiss()
 
-                            } catch (e: JSONException) {
-                                e.printStackTrace()
-                                Timber.e("User Signup JSON Exception -> $e")
-                            }
-                        } else {
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                            Timber.e("User Signup JSON Exception -> $e")
+                        }
+                    } else {
                         Timber.e("USER-PID is null/empty -> $onePlayerId")
+
+                        onePlayerId = generatePID()
+                        setupMixpanelUserIdentity(userName, userContact, userEmail)
+                        signUp(userName, userEmail, userContact, onePlayerId)
+                        //Firebase email-auth sign-up
+                        createUserWithEmailAndPassword(userEmail, userContact)
+
                         progress.dismiss()
-                        showSnackbarBlue("We missed something. Please try again.", -1)
+                        showSnackbarBlue("We missed something. Trying again...", -1)
                     }
-//                    }
                 }
             }
+        }
+    }
+
+    private fun generatePID(): String {
+        return OneSignal.getDeviceState()!!.userId
+    }
+
+    private fun setupMixpanelUserIdentity(name: String, contact: String, email: String) {
+        val mixpanel = MixpanelAPI.getInstance(
+            this,
+            resources.getString(R.string.mixpanelToken)
+        )
+
+        /** UserObject used to store values to be passed onto Mixpanel**/
+        val userObject = JSONObject()
+        userObject.put("userName", name)
+        userObject.put("userContact", contact)
+        userObject.put("userEmail", email)
+
+        /** Logging Mixpanel User profile **/
+        if (mixpanel != null) {
+            mixpanel.track("completeSignUp", userObject)
+            mixpanel.people.identify(userContact)
+//                                    mixpanel.people.set("PID", userPID)
+            mixpanel.people.set("User-Name", userName)
+            mixpanel.people.set("User-Contact", userContact)
         }
     }
 
@@ -254,8 +266,10 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat")
     private fun signUp(name: String, email: String, contact: String, playerId: String) {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
         val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         val currentDate = simpleDateFormat.format(Date())
 
@@ -297,25 +311,32 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun createUserWithEmailAndPassword(email: String, contact: String) {
-        firebaseAuth!!.createUserWithEmailAndPassword(email, contact).addOnCompleteListener { task -> //progressBar.setVisibility(View.GONE);
-            if (task.isSuccessful) {
-                Toast.makeText(applicationContext,
+        firebaseAuth!!.createUserWithEmailAndPassword(email, contact)
+            .addOnCompleteListener { task -> //progressBar.setVisibility(View.GONE);
+                if (task.isSuccessful) {
+                    Toast.makeText(
+                        applicationContext,
                         "Registered Successfully!",
-                        Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainScreen::class.java))
-                finish()
-            } else {
-                if (task.exception is FirebaseAuthUserCollisionException) {
-                    Toast.makeText(applicationContext,
-                            "Already Registered!",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    startActivity(Intent(this, MainScreen::class.java))
+                    finish()
                 } else {
-                    Toast.makeText(applicationContext,
-                            Objects.requireNonNull(task.exception)!!.message,
-                            Toast.LENGTH_SHORT).show()
+                    if (task.exception is FirebaseAuthUserCollisionException) {
+                        Toast.makeText(
+                            applicationContext,
+                            "Already Registered!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            Objects.requireNonNull(task.exception).message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
-        }
     }
 
     private fun showSnackbarRed(message: String, length: Int) {
@@ -367,7 +388,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
         prefManager?.isFirstTimeLaunch = false
         Timber.e("launchHomeScreen: No Extras")
-        startActivity(Intent(this, MainScreen::class.java))
+        startActivity(Intent(this, MainScreen::class.java).putExtra(FRAGMENT_DESTINATION, ""))
         finish()
     }
 

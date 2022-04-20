@@ -2,6 +2,8 @@ package xyz.ummo.user.ui.fragments.search
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +30,7 @@ import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
+
 
 class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -167,8 +170,14 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             coroutineScope.launch(Dispatchers.IO) {
                 if (response.isEmpty()) {
                     allServicesViewModel.getAllServicesFromServer()
-                    showServicesViewAndHideEverythingElse()
-                    checkForServices(response)
+
+                    requireActivity().runOnUiThread {
+                        showServicesViewAndHideEverythingElse()
+                    }
+
+                    Handler(Looper.getMainLooper()).post {
+                        checkForServices(response)
+                    }
                 }
             }
         }
@@ -273,7 +282,9 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
      *  If it IS empty, we [displayNoServicesFound] to the User;
      *  Else, we [showServicesViewAndHideEverythingElse] **/
     private fun checkForServices(serviceEntityArrayList: ArrayList<ServiceEntity>) {
+
         val timer = object : CountDownTimer(2000, 1000) {
+
             override fun onTick(p0: Long) {
                 showProgressBar()
             }
@@ -281,12 +292,12 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             override fun onFinish() {
                 if (serviceEntityArrayList.isEmpty()) {
                     displayNoServicesFound()
+                    letMeKnowClicker("")
                 } else {
                     showServicesViewAndHideEverythingElse()
                 }
             }
         }
-
         timer.start()
     }
 

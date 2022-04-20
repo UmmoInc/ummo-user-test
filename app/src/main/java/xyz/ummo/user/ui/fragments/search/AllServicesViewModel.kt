@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.data.repo.AllServicesRepository
+import java.io.IOException
 
 class AllServicesViewModel(private val allServicesRepository: AllServicesRepository) : ViewModel() {
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
@@ -16,7 +17,11 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
     /** A simple suspend function for retrieving services from the online API **/
     suspend fun getAllServicesFromServer() {
         withContext(Dispatchers.IO) {
-            allServicesRepository.saveServicesInRoom()
+            try {
+                allServicesRepository.saveServicesInRoom()
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
         }
     }
 
