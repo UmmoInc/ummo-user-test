@@ -78,7 +78,14 @@ class User : MultiDexApplication() {
 
     companion object {
         fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
-            return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
+            return JSONObject(
+                String(
+                    Base64.decode(
+                        _jwt.split(".")[1],
+                        Base64.DEFAULT
+                    )
+                )
+            ).getString("_id")
         }
     }
 
@@ -87,35 +94,7 @@ class User : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-
-        /*
-        OneSignal.handleNotificationOpen(applicationContext, )
-        */
-
-        /*OneSignal.idsAvailable { userId: String?, registrationId: String? ->
-            Timber.e("IDs Available: USER -> $userId; REG -> $registrationId")
-
-            if (userId == null) {
-                val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
-                val editor: SharedPreferences.Editor
-                editor = sharedPreferences.edit()
-                editor.putString("USER_PID", userId)
-                editor.apply()
-            }
-        }*/
     }
-
-    /*override fun notificationOpened(result: OSNotificationOpenResult?) {
-        val actionType: OSNotificationAction.ActionType = result!!.action.type
-        val data: JSONObject = result.notification.payload.additionalData
-        if (data != null) {
-            Timber.e("NOTIFICATION OPENED [DATA] -> $data")
-        } else
-            Timber.e("NOTIFICATION DATA IS NULL!")
-        if (actionType == OSNotificationAction.ActionType.ActionTaken)
-            Timber.e("BUTTOn PRESSED WITH ID -> ${result.action.actionID}")
-        Timber.e("NOTIFICATION OPENED [actionType] -> $actionType")
-    }*/
 
     override fun onCreate() {
         super.onCreate()
@@ -236,14 +215,20 @@ class User : MultiDexApplication() {
                 val intent = Intent(this, MainScreen::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
-                intent.putExtra("SERVICE_ID", JSONObject(it[0].toString())
-                        .getString("_id"))
+                intent.putExtra(
+                    "SERVICE_ID", JSONObject(it[0].toString())
+                        .getString("_id")
+                )
 
-                intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString())
-                        .getString("agent"))
+                intent.putExtra(
+                    "SERVICE_AGENT_ID", JSONObject(it[0].toString())
+                        .getString("agent")
+                )
 
-                intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0].toString())
-                        .getString("product"))
+                intent.putExtra(
+                    "DELEGATED_PRODUCT_ID", JSONObject(it[0].toString())
+                        .getString("product")
+                )
 
                 intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG", 1)
 

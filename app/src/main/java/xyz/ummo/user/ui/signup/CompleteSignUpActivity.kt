@@ -301,6 +301,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     mixpanel?.identify(contact)
                     mixpanel?.track("userRegistering_userDetails", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
+                    identifyUserWithSentry()
                 } else {
                     Timber.e("Something happened... $code +  $data  + ${String(data)}")
 //                    Toast.makeText(this, "Something went Awfully bad", Toast.LENGTH_LONG).show()
@@ -331,7 +332,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             applicationContext,
-                            Objects.requireNonNull(task.exception)!!.message,
+                            Objects.requireNonNull(task.exception).message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -364,20 +365,24 @@ class CompleteSignUpActivity : AppCompatActivity() {
     }
 
     private fun logWithStaticAPI() {
-        val mainActPreferences = getSharedPreferences(ummoUserPreferences, mode)
-        val userName = mainActPreferences.getString("USER_NAME", "")
-        val userEmail = mainActPreferences.getString("USER_EMAIL", "")
-        Sentry.addBreadcrumb("User made an action")
-        val user = User()
-        user.email = userEmail
-        user.username = userName
-        Sentry.setUser(user)
+        identifyUserWithSentry()
         try {
             unsafeMethod()
             Timber.e("logWithStaticAPI, unsafeMethod")
         } catch (e: Exception) {
             Sentry.captureException(e)
         }
+    }
+
+    private fun identifyUserWithSentry() {
+        val mainActPreferences = getSharedPreferences(ummoUserPreferences, mode)
+
+        Sentry.addBreadcrumb("User made an action")
+        val user = User().apply {
+            email = mainActPreferences.getString(USER_EMAIL, "")
+            username = mainActPreferences.getString(USER_NAME, "")
+        }
+        Sentry.setUser(user)
     }
 
     private fun unsafeMethod() {
