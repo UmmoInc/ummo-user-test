@@ -166,7 +166,7 @@ class AllServicesRepository(
      *  2. Inserting a single [serviceEntity] into Room using [serviceDao]. **/
     suspend fun saveServicesInRoom() {
         val mServicesArrayList = parseServicesStringReturnServiceEntityArrayList()
-        for (serviceEntity in mServicesArrayList) {
+        for (serviceEntity in mServicesArrayList) { //TODO: ConcurrentModificationException BUG 1
             Timber.e("SAVING SERVICE IN ROOM ->  ${serviceEntity.serviceName}")
             serviceDao.upsertService(serviceEntity)
         }

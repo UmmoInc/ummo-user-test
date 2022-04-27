@@ -11,7 +11,7 @@ class ServiceCategoryEntity : ServiceCategory {
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "category_name")
-    override var serviceCategory: String? = null
+    override lateinit var serviceCategory: String
 
     @NonNull
     @ColumnInfo(name = "category_count")

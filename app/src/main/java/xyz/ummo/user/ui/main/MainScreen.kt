@@ -309,6 +309,9 @@ class MainScreen : AppCompatActivity() {
             Tfola.toString() -> {
                 openFragment(Tfola())
             }
+            DelegatedServiceFragment.toString() -> {
+                openFragment(DelegatedServiceFragment())
+            }
             else -> {
                 return
             }

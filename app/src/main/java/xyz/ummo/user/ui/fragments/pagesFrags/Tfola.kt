@@ -193,7 +193,7 @@ class Tfola : Fragment() {
 
             override fun onFinish() {
                 hideProgressBar()
-                if (serviceEntityArrayList.isNotEmpty()) {
+                if (serviceEntityArrayList.isNotEmpty() && isAdded) {
                     processAndDisplayDelegatableServices(serviceEntityArrayList)
                 }
             }

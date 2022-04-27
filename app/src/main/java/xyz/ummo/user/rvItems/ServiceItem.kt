@@ -525,7 +525,7 @@ class ServiceItem(
 
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
-                requestBundle.putSerializable(SERVICE_OBJECT, service)
+                requestBundle.putSerializable(SERVICE_ENTITY, service)
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
 

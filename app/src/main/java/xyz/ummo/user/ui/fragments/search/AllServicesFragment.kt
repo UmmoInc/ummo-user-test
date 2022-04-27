@@ -167,16 +167,20 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             showServicesViewAndHideEverythingElse()
             checkForServices(response)
 
-            coroutineScope.launch(Dispatchers.IO) {
-                if (response.isEmpty()) {
-                    allServicesViewModel.getAllServicesFromServer()
+            if (isAdded) {
 
-                    requireActivity().runOnUiThread {
-                        showServicesViewAndHideEverythingElse()
-                    }
+                coroutineScope.launch(Dispatchers.IO) {
+                    if (response.isEmpty()) {
+                        allServicesViewModel.getAllServicesFromServer()
 
-                    Handler(Looper.getMainLooper()).post {
-                        checkForServices(response)
+                        requireActivity().runOnUiThread {
+                            showServicesViewAndHideEverythingElse()
+                        }
+
+                        Handler(Looper.getMainLooper()).post {
+                            checkForServices(response)
+                        }
+
                     }
                 }
             }

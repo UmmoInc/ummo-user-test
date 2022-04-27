@@ -174,7 +174,7 @@ class Tfuma : Fragment() {
 
                 coroutineScope.launch(Dispatchers.IO) {
                     if (delegatableServices.isEmpty()) {
-                        delegatableServicesViewModel.getAllServicesFromServer()
+                        delegatableServicesViewModel.getAllServicesFromServer() //TODO: ConcurrentModificationException BUG 3
                     }
                 }
             }
@@ -188,7 +188,7 @@ class Tfuma : Fragment() {
 
             override fun onFinish() {
                 hideProgressBar()
-                if (serviceEntityArrayList.isNotEmpty()) {
+                if (serviceEntityArrayList.isNotEmpty() && isAdded) {
                     processAndDisplayDelegatableServices(serviceEntityArrayList)
                 }
             }

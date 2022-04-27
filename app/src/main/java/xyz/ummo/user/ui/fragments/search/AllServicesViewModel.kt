@@ -18,7 +18,7 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
     suspend fun getAllServicesFromServer() {
         withContext(Dispatchers.IO) {
             try {
-                allServicesRepository.saveServicesInRoom()
+                allServicesRepository.saveServicesInRoom() //TODO: ConcurrentModificationException BUG 2
             } catch (IOE: IOException) {
                 IOE.printStackTrace()
             }

@@ -12,10 +12,10 @@ class ProfileEntity : ProfileModel {
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "profile_contact")
-    override var profileContact: String? = null
+    override lateinit var profileContact: String
 
     @ColumnInfo(name = "profile_name")
-    override var profileName: String? = null
+    override lateinit var profileName: String
 
     @ColumnInfo(name = "profile_email")
     override var profileEmail: String? = null

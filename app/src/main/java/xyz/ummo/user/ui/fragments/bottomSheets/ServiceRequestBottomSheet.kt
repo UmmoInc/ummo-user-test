@@ -38,6 +38,7 @@ import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
@@ -533,6 +534,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 //        bundle.putString(SERVICE_AGENT_ID, agentId)
         bundle.putString(DELEGATION_ID, delegationId)
         bundle.putString(TAKE_ME_TO, DELEGATED_SERVICE_FRAGMENT)
+        bundle.putString(FRAGMENT_DESTINATION, DelegatedServiceFragment.toString())
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
