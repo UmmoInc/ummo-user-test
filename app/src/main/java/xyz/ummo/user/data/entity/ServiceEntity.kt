@@ -58,40 +58,43 @@ data class ServiceEntity(
     @ColumnInfo(name = "service_comment") //11
     var serviceComments: ArrayList<String>? = null,
 
-    @ColumnInfo(name = "comment_count") //12
+    @ColumnInfo(name = "service_steps") //12
+    var serviceSteps: ArrayList<String>? = null,
+
+    @ColumnInfo(name = "comment_count") //13
     var commentCount: Int? = null,
 
-    @ColumnInfo(name = "service_shares") //13
+    @ColumnInfo(name = "service_shares") //14
     var serviceShares: Int? = null,
 
-    @ColumnInfo(name = "service_views") //14
+    @ColumnInfo(name = "service_views") //15
     var serviceViews: Int? = null,
 
-    @ColumnInfo(name = "service_provider") //15
+    @ColumnInfo(name = "service_provider") //16
     var serviceProvider: String? = null,
 
-    @ColumnInfo(name = "bookmarked") //16
+    @ColumnInfo(name = "bookmarked") //17
     var bookmarked: Boolean? = false,
 
-    @ColumnInfo(name = "is_delegated") //17
+    @ColumnInfo(name = "is_delegated") //18
     var isDelegated: Boolean? = false,
 
-    @ColumnInfo(name = "service_category") //18
+    @ColumnInfo(name = "service_category") //19
     var serviceCategory: String? = null,
 
-    @ColumnInfo(name = "service_link")
+    @ColumnInfo(name = "service_link") //20
     var serviceLink: String? = null,
 
-    @ColumnInfo(name = "service_attachment_name")
+    @ColumnInfo(name = "service_attachment_name") //21
     var serviceAttachmentName: String? = null,
 
-    @ColumnInfo(name = "service_attachment_size")
+    @ColumnInfo(name = "service_attachment_size") //22
     var serviceAttachmentSize: String? = null,
 
-    @ColumnInfo(name = "service_attachment_url")
+    @ColumnInfo(name = "service_attachment_url") //23
     var serviceAttachmentURL: String? = null,
 
     @TypeConverters(ServiceBenefitsTypeConverter::class)
-    @ColumnInfo(name = "service_benefits")
+    @ColumnInfo(name = "service_benefits") //24
     var serviceBenefits: ArrayList<ServiceBenefit>
 ) : Serializable

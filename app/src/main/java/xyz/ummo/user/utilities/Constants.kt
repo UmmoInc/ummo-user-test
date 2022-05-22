@@ -76,6 +76,7 @@ const val SERV_DURATION = "service_duration"
 const val UPVOTE_COUNT = "useful_count"
 const val DOWNVOTE_COUNT = "not_useful_count"
 const val SERV_COMMENTS = "service_comments"
+const val SERV_STEPS = "service_steps"
 const val SERV_COMMENT_COUNT = "service_comment_count"
 const val SERV_SHARE_COUNT = "service_share_count"
 const val SERV_VIEW_COUNT = "service_view_count"
@@ -141,6 +142,8 @@ var approvalCount: Int = 0 //10
 var disapprovalCount: Int = 0 //11
 var serviceComments = ArrayList<String>() //12
 lateinit var serviceCommentsJSONArray: JSONArray //12.1
+var serviceSteps = ArrayList<String>()
+lateinit var serviceStepsJSONArray: JSONArray
 var commentCount: Int = 0 //13
 var shareCount: Int = 0 //14
 var viewCount: Int = 0 //15
@@ -154,6 +157,9 @@ var serviceAttachmentURL = "" //18.4
 var serviceBenefitJSONArray = JSONArray() //19
 var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
 var serviceCategory = "" //20
+
+var serviceCategoryName = ""
+var serviceCategoryTotal = 0
 
 const val PARENT = "PARENT"
 const val FRAGMENT_DESTINATION = "FRAG_DEN"

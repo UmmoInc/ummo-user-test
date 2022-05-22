@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.ummo.user.data.entity.ServiceEntity
-import xyz.ummo.user.data.repo.AllServicesRepository
+import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 import java.io.IOException
 
 class AllServicesViewModel(private val allServicesRepository: AllServicesRepository) : ViewModel() {

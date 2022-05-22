@@ -7,13 +7,13 @@ import androidx.room.PrimaryKey
 import xyz.ummo.user.data.model.ServiceCategory
 
 @Entity(tableName = "service_category")
-class ServiceCategoryEntity : ServiceCategory {
+data class ServiceCategoryEntity (
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "category_name")
-    override lateinit var serviceCategory: String
+    var serviceCategory: String,
 
     @NonNull
     @ColumnInfo(name = "category_count")
-    override var serviceCount: Int? = null
-}
+    var serviceCount: Int? = null
+)

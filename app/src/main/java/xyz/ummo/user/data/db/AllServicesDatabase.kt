@@ -13,7 +13,7 @@ import xyz.ummo.user.data.utils.ServiceCostTypeConverter
 
 @Database(
     entities = [ServiceEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(
@@ -29,8 +29,8 @@ abstract class AllServicesDatabase : RoomDatabase() {
         @Volatile
         /** Other threads can immediately see when a thread changes this instance**/
         private var instance: AllServicesDatabase? = null
-        private val LOCK = Any()
         /** To be used for syncing this instance to ensure that only one instance exists**/
+        private val LOCK = Any()
 
         /** We'll use this to sync this DB instance **/
         operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {

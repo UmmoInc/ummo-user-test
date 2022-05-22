@@ -26,7 +26,10 @@
                     android:id="@+id/delegated_service_card_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
                     app:cardBackgroundColor="@color/White"
                     app:cardCornerRadius="4dp"
                     app:cardElevation="8dp">
@@ -600,7 +603,7 @@
                                 </RelativeLayout>
                                 <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
 
-                                <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                                <!-- [START] Service Attachments Layout (ID: "service_attachments_layout")-->
                                 <RelativeLayout
                                     android:id="@+id/service_attachments_layout"
                                     android:layout_width="match_parent"
@@ -615,7 +618,10 @@
                                         android:id="@+id/service_attachments_image_view"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:layout_margin="8dp"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
                                         android:padding="8dp"
                                         app:srcCompat="@drawable/ic_file_present_24" />
 
@@ -631,7 +637,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:fontFamily="@font/rubik"
-                                            android:text="Service Documents:"
+                                            android:text="Service Documents"
                                             android:textColor="@color/black"
                                             android:textSize="18sp"
                                             android:textStyle="bold" />
@@ -648,14 +654,79 @@
                                     </RelativeLayout>
 
                                 </RelativeLayout>
-                                <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+                                <!-- [END] Service Attachments Layout (ID: "service_attachments_layout")-->
 
-                                <!-- [START] Service Centre Layout (ID: "service_centre_layout")-->
+                                <!-- [START] Service Steps Layout (ID: "service_steps_layout")-->
+                                <RelativeLayout
+                                    android:id="@+id/service_steps_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/service_attachments_layout"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginEnd="4dp"
+                                    android:layout_marginBottom="4dp">
+
+                                    <ImageView
+                                        android:id="@+id/service_steps_image_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="8dp"
+                                        android:layout_marginTop="8dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:layout_marginBottom="8dp"
+                                        android:padding="8dp"
+                                        app:srcCompat="@drawable/ic_twotone_format_list_numbered_24" />
+
+                                    <RelativeLayout
+                                        android:id="@+id/service_steps_relative_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:layout_toEndOf="@+id/service_steps_image_view">
+
+                                        <TextView
+                                            android:id="@+id/service_steps_header_text_view"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:fontFamily="@font/rubik"
+                                            android:text="Service Steps"
+                                            android:textColor="@color/black"
+                                            android:textSize="18sp"
+                                            android:textStyle="bold" />
+
+                                        <HorizontalScrollView
+                                            android:id="@+id/service_steps_horizontal_scroller"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/service_steps_header_text_view"
+                                            app:layout_constraintTop_toTopOf="parent">
+
+                                            <!--<com.google.android.material.chip.ChipGroup
+                                                android:id="@+id/detailed_service_steps_chip_group"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="match_parent"
+                                                app:chipSpacing="2dp"
+                                                app:chipSpacingHorizontal="2dp"
+                                                app:chipSpacingVertical="2dp"
+                                                app:selectionRequired="false"
+                                                app:singleLine="true"
+                                                app:singleSelection="false">
+
+                                            </com.google.android.material.chip.ChipGroup>-->
+                                        </HorizontalScrollView>
+
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+                                <!-- [END] Service Steps Layout (ID: "service_steps_layout")-->
+
+                                <!-- [START] Service Link Layout (ID: "service_link_layout")-->
                                 <RelativeLayout
                                     android:id="@+id/service_link_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/service_attachments_layout"
+                                    android:layout_below="@+id/service_steps_layout"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -727,7 +798,7 @@
                                     </RelativeLayout>
 
                                 </RelativeLayout>
-                                <!-- [END] Service Centre Layout (ID: "service_centre_layout")-->
+                                <!-- [END] Service Link Layout (ID: "service_link_layout")-->
 
                                 <!--ProductModel Steps Layout Start-->
                                 <!--<RelativeLayout

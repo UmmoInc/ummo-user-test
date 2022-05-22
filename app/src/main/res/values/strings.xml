@@ -154,7 +154,7 @@
     <string name="service_description">Service Description</string>
     <string name="service_eligibility">This service is for:</string>
     <string name="service_eligibility_placeholder">Who is eligible to receive this service?</string>
-    <string name="service_centres">Service found at:</string>
+    <string name="service_centres">Service found at</string>
     <string name="service_centre_placeholder">Service Centre</string>
     <string name="service_cost_string">Service Cost</string>
     <string name="service_cost_placeholder">Free</string>
@@ -210,8 +210,8 @@
     <string name="user_support_text">• Do you have any questions about your service? \n\n• Are you interested in knowing more about us? \n\n• We would love to talk.</string>
     <string name="scan_to_check_in">Scan to check in</string>
     <string name="service_created">Service Created</string>
-    <string name="service_requirements_detailed_info">You will need:</string>
-    <string name="service_duration_detailed_info">It usually takes:</string>
+    <string name="service_requirements_detailed_info">You will need</string>
+    <string name="service_duration_detailed_info">It usually takes</string>
     <string name="service_name_detailed_info">Service Name</string>
     <string name="view_service_prices">View Service Prices</string>
     <string name="show_you_care">Not knowing what to do can be frustrating. \n\nHelp a friend by sharing how to %1$s.</string>

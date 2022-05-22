@@ -36,7 +36,7 @@ import xyz.ummo.user.data.utils.ServiceCostTypeConverter;
         ProfileEntity.class,
         ServiceProviderEntity.class,
         ServiceEntity.class,
-        ServiceCategoryEntity.class}, version = 14, exportSchema = false)
+        ServiceCategoryEntity.class}, version = 15, exportSchema = false)
 @TypeConverters({Converters.class,
         ServiceCostTypeConverter.class,
         ServiceBenefitsTypeConverter.class})

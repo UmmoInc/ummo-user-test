@@ -1,4 +1,4 @@
-package xyz.ummo.user.data.repo
+package xyz.ummo.user.data.repo.allServices
 
 import android.app.Activity
 import android.preference.PreferenceManager
@@ -100,6 +100,15 @@ class AllServicesRepository(
                     serviceCommentsJSONArray = service.getJSONArray(SERV_COMMENTS)
                     serviceComments = fromJSONArray(serviceCommentsJSONArray)
 
+                    try {
+                        serviceStepsJSONArray = service.getJSONArray(SERV_STEPS)
+                        serviceSteps = fromJSONArray(serviceStepsJSONArray)
+                        Timber.e("Service Steps -> $serviceSteps")
+                    } catch (jse: JSONException) {
+                        serviceSteps = ArrayList()
+                        Timber.e("Service Steps -> $serviceSteps")
+                    }
+
                     commentCount = service.getInt(SERV_COMMENT_COUNT) //13
                     shareCount = service.getInt(SERV_SHARE_COUNT) //14
                     viewCount = service.getInt(SERV_VIEW_COUNT) //15
@@ -143,7 +152,7 @@ class AllServicesRepository(
                         serviceDescription, serviceEligibility, serviceCentres,
                         delegatable, serviceCostArrayList, serviceDocuments,
                         serviceDuration, approvalCount, disapprovalCount,
-                        serviceComments, commentCount, shareCount, viewCount,
+                        serviceComments, serviceSteps, commentCount, shareCount, viewCount,
                         serviceProvider,
                         true, false, // TODO: Attend to these special bools
                         serviceCategory, serviceLink, serviceAttachmentName, serviceAttachmentSize,

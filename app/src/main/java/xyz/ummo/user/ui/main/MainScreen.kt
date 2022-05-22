@@ -47,8 +47,8 @@ import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
-import xyz.ummo.user.data.repo.AllServicesRepository
-import xyz.ummo.user.data.repo.AllServicesViewModelProviderFactory
+import xyz.ummo.user.data.repo.allServices.AllServicesRepository
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
@@ -208,7 +208,7 @@ class MainScreen : AppCompatActivity() {
 
         mainScreenPrefs = this.getSharedPreferences(ummoUserPreferences, mode)
         editor = mainScreenPrefs.edit()
-        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
 
         mixpanel = MixpanelAPI.getInstance(
             applicationContext,

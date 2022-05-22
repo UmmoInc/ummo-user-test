@@ -59,7 +59,7 @@ class ServiceCategories : Fragment() {
             .getInstance(context, context?.resources?.getString(R.string.mixpanelToken))
 
         serviceCategoriesViewModel =
-            ViewModelProvider(this).get(ServiceCategoriesViewModel::class.java)
+            ViewModelProvider(this)[ServiceCategoriesViewModel::class.java]
 
     }
 

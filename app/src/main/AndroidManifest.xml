@@ -37,6 +37,10 @@
         <meta-data
             android:name="io.sentry.attach-screenshot"
             android:value="true" />
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="https://c46e9ae28cb847e7ab39746902f6c29a@o90029.ingest.sentry.io/1485110" />
+        <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
 
         <meta-data
             android:name="android.app.searchable"
@@ -123,9 +127,6 @@
         <!--<meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />-->
-        <meta-data
-            android:name="io.sentry.dsn"
-            android:value="https://c46e9ae28cb847e7ab39746902f6c29a@o90029.ingest.sentry.io/1485110" />
 
         <activity
             android:name=".ui.Splash"

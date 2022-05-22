@@ -26,6 +26,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -79,6 +81,9 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceDocsTextView: TextView? = null
     var serviceCentresTextView: TextView? = null
     var serviceStepsTextView: TextView? = null
+    var serviceStepsHorizontalScroller: HorizontalScrollView? = null
+    var serviceStepsChipGroup: ChipGroup? = null
+    lateinit var serviceStepChip: Chip
 
     var serviceDocsLayout: LinearLayout? = null
     var expandCollapseAction: RelativeLayout? = null
@@ -146,6 +151,8 @@ class DetailedServiceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        serviceStepChip = Chip(this)
+
         mixpanelAPI = MixpanelAPI.getInstance(
             this,
             resources.getString(R.string.mixpanelToken)
@@ -195,6 +202,8 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceDurationTextView = findViewById(R.id.detailed_service_duration_text_view)
         serviceDocsLayout = findViewById(R.id.service_requirements_linear_layout)
 //        serviceCentresChipGroup = findViewById(R.id.detailed_service_centres_chip_group)
+
+        serviceStepsHorizontalScroller = findViewById(R.id.service_steps_horizontal_scroller)
         serviceCentresLinearLayout = findViewById(R.id.service_centre_linear_layout)
         serviceAttachmentLayout = findViewById(R.id.service_attachments_linear_layout)
         serviceBenefitsLayout = findViewById(R.id.service_benefits_holder_relative_layout)
@@ -539,7 +548,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             requestAgentBtn!!.visibility = View.GONE
         }
 
-        docsList = ArrayList(serviceEntity.serviceDocuments)
+        docsList = serviceEntity.serviceDocuments?.let { ArrayList(it) }
 
         /** Parsing Service Docs into Chip-items **/
         if (docsList!!.isNotEmpty()) {
@@ -555,8 +564,40 @@ class DetailedServiceActivity : AppCompatActivity() {
             Timber.e("onCreate: docsList is EMPTY!")
         }
 
+        /** Parsing Service Steps **/
+        if (mService.serviceSteps!!.isNotEmpty()) {
+            serviceStepsHorizontalScroller?.removeAllViews()
+
+            serviceStepsChipGroup = ChipGroup(this)
+            serviceStepsChipGroup!!.setChipSpacing(2)
+//            serviceStepsChipGroup!!.chipSpacingHorizontal = 2
+//            serviceStepsChipGroup!!.chipSpacingVertical = 2
+//            serviceStepsChipGroup!!.isSelectionRequired = false
+
+            serviceStepsChipGroup!!.isSingleLine = true
+            serviceStepsChipGroup!!.layoutParams = ChipGroup.LayoutParams(
+                ChipGroup.LayoutParams.WRAP_CONTENT,
+                ChipGroup.LayoutParams.WRAP_CONTENT
+            )
+            serviceStepsChipGroup!!.removeView(serviceStepChip)
+            for (i in mService.serviceSteps!!.indices) {
+                var mServiceStepChip = Chip(this)
+                mServiceStepChip.id = i
+                mServiceStepChip.text = mService.serviceSteps!![i].toString().trim()
+                mServiceStepChip.textSize = 14F
+                mServiceStepChip.textEndPadding = 0F
+                mServiceStepChip.chipEndPadding = 0F
+                mServiceStepChip.closeIconEndPadding = 0F
+                mServiceStepChip.closeIconSize = 0F
+
+                mServiceStepChip.backgroundTintList = getColorStateList(R.color.mtrl_choice_chip_background_color)
+                serviceStepsChipGroup!!.addView(mServiceStepChip, i)
+            }
+            serviceStepsHorizontalScroller?.addView(serviceStepsChipGroup)
+        }
+
         /** Parsing Service Centres into Chip-items **/
-        serviceCentresList = ArrayList(serviceEntity.serviceCentres)
+        serviceCentresList = serviceEntity.serviceCentres?.let { ArrayList(it) }
         Timber.e("CENTRES-LIST -> $serviceCentresList")
 
         if (serviceCentresList!!.isNotEmpty()) {
@@ -602,14 +643,14 @@ class DetailedServiceActivity : AppCompatActivity() {
                 toggleServiceBenefitsTextView.text = "Show Benefits"
                 expandServiceBenefitsImageView.visibility = View.GONE
                 collapseServiceBenefitsImageView.visibility = View.VISIBLE
-                mixpanelAPI.track("detailedService_showingBenefits")
+                mixpanelAPI.track("Detailed Service - Showing Benefits")
 
             } else {
                 serviceBenefitsLayout?.visibility = View.VISIBLE
                 toggleServiceBenefitsTextView.text = "Hide Benefits"
                 expandServiceBenefitsImageView.visibility = View.VISIBLE
                 collapseServiceBenefitsImageView.visibility = View.GONE
-                mixpanelAPI.track("detailedService_hidingBenefits")
+                mixpanelAPI.track("Detailed Service - Hiding Benefits")
             }
         }
     }

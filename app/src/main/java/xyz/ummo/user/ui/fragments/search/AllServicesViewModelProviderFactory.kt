@@ -1,8 +1,8 @@
-package xyz.ummo.user.data.repo
+package xyz.ummo.user.ui.fragments.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 
 class AllServicesViewModelProviderFactory(
     private val allServicesRepository: AllServicesRepository
