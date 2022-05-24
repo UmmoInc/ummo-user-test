@@ -44,17 +44,20 @@ import xyz.ummo.user.api.GeneralFeedback
 import xyz.ummo.user.api.GetAllServices
 import xyz.ummo.user.api.GetServiceProvider
 import xyz.ummo.user.data.db.AllServicesDatabase
+import xyz.ummo.user.data.db.ServiceCategoryDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.data.repo.allServices.AllServicesRepository
-import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
+import xyz.ummo.user.data.repo.serviceCategories.ServiceCategoriesRepo
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
 import xyz.ummo.user.models.ServiceProviderData
 import xyz.ummo.user.ui.fragments.UmmoBrowser
 import xyz.ummo.user.ui.fragments.categories.ServiceCategories
+import xyz.ummo.user.ui.fragments.categories.ServiceCategoriesViewModel
+import xyz.ummo.user.ui.fragments.categories.ServiceCategoriesViewModelProviderFactory
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.pagesFrags.Tfola
@@ -63,6 +66,7 @@ import xyz.ummo.user.ui.fragments.profile.ProfileFragment
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
 import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
@@ -142,6 +146,9 @@ class MainScreen : AppCompatActivity() {
     /** AllServicesViewModel declaration **/
     lateinit var allServicesViewModel: AllServicesViewModel
 
+    /** ServiceCategoriesViewModel declaration **/
+    lateinit var serviceCategoriesViewModel: ServiceCategoriesViewModel
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,10 +158,24 @@ class MainScreen : AppCompatActivity() {
         /** Instantiating [allServicesViewModel] with AllServicesRepository **/
         //TODO: Saved for issue [UMMO-75]
         val allServicesRepository = AllServicesRepository(AllServicesDatabase(this), this)
-        val viewModelProviderFactory = AllServicesViewModelProviderFactory(allServicesRepository)
+        val allServicesViewModelProviderFactory =
+            AllServicesViewModelProviderFactory(allServicesRepository)
+
+        val serviceCategoriesRepo = ServiceCategoriesRepo(ServiceCategoryDatabase(this), this)
+        val serviceCategoriesViewModelProviderFactory =
+            ServiceCategoriesViewModelProviderFactory(serviceCategoriesRepo)
 
         allServicesViewModel =
-            ViewModelProvider(this, viewModelProviderFactory)[AllServicesViewModel::class.java]
+            ViewModelProvider(
+                this,
+                allServicesViewModelProviderFactory
+            )[AllServicesViewModel::class.java]
+
+        serviceCategoriesViewModel =
+            ViewModelProvider(
+                this,
+                serviceCategoriesViewModelProviderFactory
+            )[ServiceCategoriesViewModel::class.java]
 
         Timber.e("ON_CREATE")
 //        bundle = intent.getBundleExtra(VIEW_SOURCE)!!

@@ -5,16 +5,18 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import xyz.ummo.user.data.entity.ServiceCategoryEntity
-import xyz.ummo.user.data.repo.serviceCategories.CategoriesRepo
+import xyz.ummo.user.data.repo.serviceCategories.ServiceCategoriesRepo
 import java.io.IOException
 
-class ServiceCategoriesViewModel(private val categoriesRepo: CategoriesRepo) : ViewModel() {
-    val serviceCategoriesLiveData: MutableLiveData<ArrayList<ServiceCategoryEntity>> = MutableLiveData()
+class ServiceCategoriesViewModel(private val serviceCategoriesRepo: ServiceCategoriesRepo) :
+    ViewModel() {
+    val serviceCategoriesLiveData: MutableLiveData<ArrayList<ServiceCategoryEntity>> =
+        MutableLiveData()
 
-    suspend fun getAllServiceCategoriesFromServer() {
+    suspend fun saveAllServiceCategoriesFromServer() {
         withContext(Dispatchers.IO) {
             try {
-                categoriesRepo.saveServiceCategoriesInRoom()
+                serviceCategoriesRepo.saveServiceCategoriesInRoom()
             } catch (IOE: IOException) {
                 IOE.printStackTrace()
             }
@@ -23,7 +25,7 @@ class ServiceCategoriesViewModel(private val categoriesRepo: CategoriesRepo) : V
 
     suspend fun getLocallyStoredServiceCategories() {
         withContext(Dispatchers.IO) {
-            serviceCategoriesLiveData.postValue(categoriesRepo.getLocallyStoredServiceCategories())
+            serviceCategoriesLiveData.postValue(serviceCategoriesRepo.getLocallyStoredServiceCategories())
         }
     }
 }

@@ -127,6 +127,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         all_services_recycler_view.apply {
             adapter = allServicesAdapter
             layoutManager = LinearLayoutManager(activity)
+            hasFixedSize()
         }
     }
 

@@ -1,30 +1,29 @@
 package xyz.ummo.user.ui.fragments.categories
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import kotlinx.android.synthetic.main.fragment_service_categories.view.*
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
+import kotlinx.android.synthetic.main.fragment_service_categories.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.api.GetCategorySummary
-import xyz.ummo.user.data.entity.ServiceCategoryEntity
+import xyz.ummo.user.adapters.ServiceCategoriesAdapter
 import xyz.ummo.user.databinding.FragmentServiceCategoriesBinding
-import xyz.ummo.user.models.ServiceCategoryModel
-import xyz.ummo.user.rvItems.ServiceCategoryItem
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.USER_NAME
 import xyz.ummo.user.utilities.mode
 import xyz.ummo.user.utilities.ummoUserPreferences
@@ -45,21 +44,20 @@ class ServiceCategories : Fragment() {
     private var totalTravel = 0
     private var totalAgriculture = 0
     private var totalEducation = 0
-    private var serviceCategoriesViewModel: ServiceCategoriesViewModel? = null
-    private val serviceCategoryEntity = ServiceCategoryEntity()
+    private lateinit var serviceCategoriesViewModel: ServiceCategoriesViewModel
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
+    private lateinit var serviceCategoryAdapter: ServiceCategoriesAdapter
+//    private val serviceCategoryEntity = ServiceCategoryEntity()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gAdapter = GroupAdapter()
 
-        getCatSum(requireContext())
+//        getCatSum(requireContext())
 
         mixpanelAPI = MixpanelAPI
             .getInstance(context, context?.resources?.getString(R.string.mixpanelToken))
-
-        serviceCategoriesViewModel =
-            ViewModelProvider(this)[ServiceCategoriesViewModel::class.java]
 
     }
 
@@ -81,192 +79,101 @@ class ServiceCategories : Fragment() {
         val endOfFirstName = userName.indexOf(" ", 0, true)
         val firstName = userName.substring(0, endOfFirstName)
 
-        /** Scaffolding the [recyclerView] **/
-        recyclerView = rootView.service_category_recycler_view
-        recyclerView.setHasFixedSize(true)
-//        recyclerView.layoutManager = rootView.service_category_recycler_view.layoutManager
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
-        recyclerView.adapter = gAdapter
-
         viewBinding.homeBarTitleTextView.text = "Welcome, $firstName"
 
         return rootView
     }
 
-    private fun getCatSum(context: Context) {
-        object : GetCategorySummary(requireActivity()) {
-            override fun done(data: ByteArray, code: Number) {
-                if (code == 200) {
-                    Timber.e("CATEGORY SERVICE COUNT -> ${String(data)}")
+    private fun setupRecyclerView() {
+        /** Scaffolding the [recyclerView] **/
+        /*recyclerView = rootView.service_category_recycler_view
+        recyclerView.setHasFixedSize(true)
+//        recyclerView.layoutManager = rootView.service_category_recycler_view.layoutManager
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        recyclerView.adapter = gAdapter*/
 
-                    gAdapter = GroupAdapter()
-                    recyclerView.adapter = gAdapter
+        serviceCategoryAdapter = ServiceCategoriesAdapter()
+        service_category_recycler_view.apply {
+            adapter = serviceCategoryAdapter
+            layoutManager = GridLayoutManager(context, 2)
+            hasFixedSize()
+        }
+    }
 
-                    try {
-                        val categorySummary = JSONObject(String(data))
-                        val categoryObjects: JSONArray = categorySummary.getJSONArray("payload")
-                        var categoryObject: JSONObject
+    private fun getAllServiceCategoriesFromRoomAndDisplay() {
 
-                        for (j in 0 until categoryObjects.length()) {
-                            categoryObject = categoryObjects[j] as JSONObject
+        serviceCategoriesViewModel.serviceCategoriesLiveData.observe(viewLifecycleOwner) { response ->
+            serviceCategoryAdapter.differ.submitList(response)
+            if (activity != null && isAdded) {
+                coroutineScope.launch(Dispatchers.IO) {
 
-                            serviceCategoryEntity.serviceCategory = categoryObject.getString("_id")
-                            serviceCategoryEntity.serviceCount = categoryObject.getInt("total")
-                            serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)
+                    if (response.isNotEmpty()) {
+                        Timber.e("RESPONSE IS EMPTY")
+
+                        serviceCategoriesViewModel.saveAllServiceCategoriesFromServer()
+
+                        requireActivity().runOnUiThread {
+                            hideProgressBar()
                         }
 
-                        for (i in 0 until categoryObjects.length()) {
-                            categoryObject = categoryObjects[i] as JSONObject
-                            Timber.e("CATEGORY OBJECT -> $categoryObject")
-
-                            when {
-                                /** 1. VEHICLES **/
-                                categoryObject.get("_id") == "vehicles" -> {
-                                    totalVehicles = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "VEHICLES"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 2. BUSINESS **/
-                                categoryObject.get("_id") == "business" -> {
-                                    totalBusiness = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "BUSINESS"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 3. IDEAS **/
-                                categoryObject.get("_id") == "ideas" -> {
-                                    totalIdeas = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "IDEAS"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 4. IDENTITY **/
-                                categoryObject.get("_id") == "identity" -> {
-                                    totalIdentity = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "IDENTITY"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 5. EDUCATION **/
-                                categoryObject.get("_id") == "education" -> {
-                                    totalEducation = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "EDUCATION"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 6. AGRICULTURE **/
-                                categoryObject.get("_id") == "agriculture" -> {
-                                    totalAgriculture = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "AGRICULTURE"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 7. HEALTH **/
-                                categoryObject.get("_id") == "health" -> {
-                                    totalHealth = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "HEALTH"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                                /** 8. TRAVEL **/
-                                categoryObject.get("_id") == "travel" -> {
-                                    totalTravel = categoryObject.getInt("total")
-
-                                    /*serviceCategoryEntity.serviceCategory = "TRAVEL"
-                                    serviceCategoryEntity.serviceCount =
-                                        categoryObject.getInt("total")
-                                    serviceCategoriesViewModel?.insertCategory(serviceCategoryEntity)*/
-                                }
-                            }
-
-                            gAdapter.clear()
-                            gAdapter.add(
-                                0,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("vehicles", totalVehicles),
-                                    context
-                                )
-                            )
-                            gAdapter.add(
-                                1,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("business", totalBusiness),
-                                    context
-                                )
-                            )
-                            gAdapter.add(
-                                2,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("ideas", totalIdeas),
-                                    context
-                                )
-                            )
-                            gAdapter.add(
-                                3,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("identity", totalIdentity),
-                                    context
-                                )
-                            )
-                            gAdapter.add(
-                                4,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel(
-                                        "education",
-                                        totalEducation
-                                    ), context
-                                )
-                            )
-                            gAdapter.add(
-                                5,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel(
-                                        "agriculture",
-                                        totalAgriculture
-                                    ), context
-                                )
-                            )
-                            gAdapter.add(
-                                6,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("health", totalHealth),
-                                    context
-                                )
-                            )
-                            gAdapter.add(
-                                7,
-                                ServiceCategoryItem(
-                                    ServiceCategoryModel("travel", totalTravel),
-                                    context
-                                )
-                            )
-                            viewBinding.loadCategoriesProgressBar.visibility = View.GONE
-
+                        Handler(Looper.getMainLooper()).post {
+                            // TODO: Check for categories
                         }
-                    } catch (jse: JSONException) {
-                        Timber.e("THROWING JSE -> $jse")
+                    } else {
+                        Timber.e("RESPONSE IS NOT EMPTY")
+
                     }
                 }
             }
         }
     }
 
+    private fun reloadServiceCategories() {
+        reload_service_categories_button.setOnClickListener {
+            showProgressBar()
+            getAllServiceCategoriesFromRoomAndDisplay()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        showProgressBar()
+
+        serviceCategoriesViewModel = (activity as MainScreen).serviceCategoriesViewModel
+
+        coroutineScope.launch(Dispatchers.IO) {
+            serviceCategoriesViewModel.getLocallyStoredServiceCategories()
+        }.invokeOnCompletion {
+            Timber.e("FETCHED ALL SERVICE CATEGORIES")
+        }
+
+        getAllServiceCategoriesFromRoomAndDisplay()
+
+    }
+
+    private fun showProgressBar() {
+        load_categories_progress_bar.visibility = View.VISIBLE
+        service_category_nested_scroll_view.visibility = View.GONE
+        no_service_categories_layout.visibility = View.GONE
+    }
+
+    private fun hideProgressBar() {
+        load_categories_progress_bar.visibility = View.GONE
+        service_category_nested_scroll_view.visibility = View.VISIBLE
+        no_service_categories_layout.visibility = View.GONE
+    }
+
+    private fun noServiceCategoriesFound() {
+        load_categories_progress_bar.visibility = View.GONE
+        service_category_nested_scroll_view.visibility = View.GONE
+        no_service_categories_layout.visibility = View.VISIBLE
+    }
+
     companion object {
+
+        private val parentJob = Job()
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =

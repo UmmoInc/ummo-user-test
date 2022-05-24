@@ -18,7 +18,7 @@ import xyz.ummo.user.utilities.serviceCategoryTotal
 import java.util.concurrent.TimeUnit
 
 /** This repo will get data from DB and/or our API and propagate it to the viewModel associated **/
-class CategoriesRepo(
+class ServiceCategoriesRepo(
     val db: ServiceCategoryDatabase,
     private val activity: Activity
 ) {
@@ -56,13 +56,15 @@ class CategoriesRepo(
         }
     }
 
-    private suspend fun parseServiceCategoriesReturnServiceCategoryArrayList(): ArrayList<ServiceCategoryEntity> {
+    private suspend fun parseServiceCategoriesReturnServiceCategoryArrayList():
+            ArrayList<ServiceCategoryEntity> {
         val serviceCategoryResponse = withContext(Dispatchers.IO) {
             fetchAllServiceCategoriesFromServer()
         }
 
         if (serviceCategoryResponse.isNotEmpty()) {
             val allServiceCategories = JSONObject(serviceCategoryResponse).getJSONArray("payload")
+            Timber.e("SERVICE CATS -> $allServiceCategories")
             var serviceCategory: JSONObject
 
             try {
