@@ -168,7 +168,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
             showServicesViewAndHideEverythingElse()
             checkForServices(response)
 
-            if (isAdded) {
+            if (activity != null && isAdded) {
 
                 coroutineScope.launch(Dispatchers.IO) {
                     if (response.isEmpty()) {

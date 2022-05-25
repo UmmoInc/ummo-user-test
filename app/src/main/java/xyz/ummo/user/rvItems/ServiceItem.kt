@@ -265,9 +265,9 @@ class ServiceItem(
 
         /** Capturing the Share Service Info action (Phase-1)**/
         viewHolder.itemView.service_share_icon_relative_layout.setOnClickListener {
-            val sharedServiceObject = JSONObject()
+            val sharedServiceEntity = JSONObject()
             val shareBundle = Bundle()
-            shareBundle.putSerializable(SERVICE_OBJECT, service)
+            shareBundle.putSerializable(SERVICE_ENTITY, service)
 
             val shareServiceInfoBottomSheet = ShareServiceInfoBottomSheet()
             shareServiceInfoBottomSheet.arguments = shareBundle
@@ -276,7 +276,7 @@ class ServiceItem(
                 ShareServiceInfoBottomSheet.TAG
             )
 
-            sharedServiceObject.put("service_name", service.serviceName)
+            sharedServiceEntity.put("service_name", service.serviceName)
             mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
         }
 

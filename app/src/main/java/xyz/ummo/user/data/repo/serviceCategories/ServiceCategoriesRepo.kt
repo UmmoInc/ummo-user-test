@@ -89,8 +89,9 @@ class ServiceCategoriesRepo(
 
     suspend fun saveServiceCategoriesInRoom() {
         val mServiceCategoriesArrayList = parseServiceCategoriesReturnServiceCategoryArrayList()
-        for (serviceCategoryEntity in mServiceCategoriesArrayList) {
+        for (serviceCategoryEntity in mServiceCategoriesArrayList) { // TODO: BUG - Concurrent Modification Exception
             serviceCategoryDao.upsertCategory(serviceCategoryEntity)
+            Timber.e("UPSERTING CATEGORY -> $serviceCategoryEntity")
         }
     }
 

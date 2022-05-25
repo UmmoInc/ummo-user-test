@@ -25,7 +25,8 @@ class ServiceCategoriesViewModel(private val serviceCategoriesRepo: ServiceCateg
 
     suspend fun getLocallyStoredServiceCategories() {
         withContext(Dispatchers.IO) {
-            serviceCategoriesLiveData.postValue(serviceCategoriesRepo.getLocallyStoredServiceCategories())
+            serviceCategoriesLiveData
+                .postValue(serviceCategoriesRepo.getLocallyStoredServiceCategories())
         }
     }
 }

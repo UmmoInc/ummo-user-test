@@ -939,7 +939,7 @@ class MainScreen : AppCompatActivity() {
         snackbar.show()
     }
 
-    private fun showSnackbarYellow(message: String, length: Int) {
+    fun showSnackbarYellow(message: String, length: Int) {
         /**
          * Length is 0 for Snackbar.LENGTH_LONG
          *  Length is -1 for Snackbar.LENGTH_SHORT
@@ -956,7 +956,7 @@ class MainScreen : AppCompatActivity() {
         snackbar.show()
     }
 
-    private fun showSnackbarRed(message: String, length: Int) {
+    fun showSnackbarRed(message: String, length: Int) {
         val bottomNav = findViewById<View>(R.id.bottom_nav)
         val snackbar =
             Snackbar.make(this@MainScreen.findViewById(android.R.id.content), message, length)

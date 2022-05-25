@@ -14,9 +14,9 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_share_service_info_bottom_sheet.view.*
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentShareServiceInfoBottomSheetBinding
-import xyz.ummo.user.models.ServiceObject
-import xyz.ummo.user.utilities.SERVICE_OBJECT
+import xyz.ummo.user.utilities.SERVICE_ENTITY
 import xyz.ummo.user.utilities.broadcastreceivers.ShareBroadCastReceiver
 
 class ShareServiceInfoBottomSheet : BottomSheetDialogFragment() {
@@ -32,8 +32,8 @@ class ShareServiceInfoBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            val serviceObject = arguments?.getSerializable(SERVICE_OBJECT) as ServiceObject
-            Timber.e("Shared Service -> ${serviceObject.serviceName}")
+            val serviceEntity = arguments?.getSerializable(SERVICE_ENTITY) as ServiceEntity
+            Timber.e("Shared Service -> ${serviceEntity.serviceName}")
         }
 
         mixpanel = MixpanelAPI.getInstance(
@@ -53,8 +53,8 @@ class ShareServiceInfoBottomSheet : BottomSheetDialogFragment() {
         )
 
         val view = viewBinding.root
-        val serviceObject = arguments?.getSerializable(SERVICE_OBJECT) as ServiceObject
-        serviceName = serviceObject.serviceName
+        val serviceEntity = arguments?.getSerializable(SERVICE_ENTITY) as ServiceEntity
+        serviceName = serviceEntity.serviceName!!
         val showYouCare = String.format(resources.getString(R.string.show_you_care), serviceName)
         viewBinding.showCareMainTextView.text = showYouCare
         shareButton = view.share_info_button
@@ -82,19 +82,29 @@ class ShareServiceInfoBottomSheet : BottomSheetDialogFragment() {
 
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "Check out how to $newServiceNameBeingShared (and more) from the Ummo App. \n\nDon't like waiting in queues? Find out how Ummo can help you save time. \n\nTry it out from Google Play Store today: https://play.google.com/store/apps/details?id=xyz.ummo.user")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Check out how to $newServiceNameBeingShared (and more) from the Ummo App. \n\nDon't like waiting in queues? Find out how Ummo can help you save time. \n\nTry it out from Google Play Store today: https://play.google.com/store/apps/details?id=xyz.ummo.user"
+            )
             type = "text/plain"
         }
 
-        val pendingIntent = PendingIntent.getBroadcast(context, 0,
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0,
             Intent(context, ShareBroadCastReceiver::class.java),
-            PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         val shareIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            Intent.createChooser(sendIntent, "Share how to $newServiceNameBeingShared with your friends...",
-                pendingIntent.intentSender)
+            Intent.createChooser(
+                sendIntent, "Share how to $newServiceNameBeingShared with your friends...",
+                pendingIntent.intentSender
+            )
         } else {
-            Intent.createChooser(sendIntent, "Share how to $newServiceNameBeingShared with your friends...")
+            Intent.createChooser(
+                sendIntent,
+                "Share how to $newServiceNameBeingShared with your friends..."
+            )
         }
         /** Capturing the Share Service Info action (Phase-2)**/
         context?.startActivity(shareIntent)

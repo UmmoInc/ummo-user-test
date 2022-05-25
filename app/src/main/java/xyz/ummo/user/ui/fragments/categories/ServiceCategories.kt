@@ -2,6 +2,7 @@ package xyz.ummo.user.ui.fragments.categories
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -52,10 +53,6 @@ class ServiceCategories : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        gAdapter = GroupAdapter()
-
-//        getCatSum(requireContext())
-
         mixpanelAPI = MixpanelAPI
             .getInstance(context, context?.resources?.getString(R.string.mixpanelToken))
 
@@ -86,12 +83,6 @@ class ServiceCategories : Fragment() {
 
     private fun setupRecyclerView() {
         /** Scaffolding the [recyclerView] **/
-        /*recyclerView = rootView.service_category_recycler_view
-        recyclerView.setHasFixedSize(true)
-//        recyclerView.layoutManager = rootView.service_category_recycler_view.layoutManager
-        recyclerView.layoutManager = GridLayoutManager(context, 2)
-        recyclerView.adapter = gAdapter*/
-
         serviceCategoryAdapter = ServiceCategoriesAdapter()
         service_category_recycler_view.apply {
             adapter = serviceCategoryAdapter
@@ -102,37 +93,52 @@ class ServiceCategories : Fragment() {
 
     private fun getAllServiceCategoriesFromRoomAndDisplay() {
 
+        Timber.e("HAS OBSERVERS -> ${serviceCategoriesViewModel.serviceCategoriesLiveData.hasObservers()}")
+        Timber.e("HAS ACTIVE OBSERVERS -> ${serviceCategoriesViewModel.serviceCategoriesLiveData.hasActiveObservers()}")
+
+        coroutineScope.launch(Dispatchers.IO) {
+            serviceCategoriesViewModel.getLocallyStoredServiceCategories()
+        }
+        /** The LiveData below is first observed to later populate
+         * the [serviceCategoryAdapter] with its content. **/
         serviceCategoriesViewModel.serviceCategoriesLiveData.observe(viewLifecycleOwner) { response ->
+            Timber.e("CAT RESPONSES -> $response")
             serviceCategoryAdapter.differ.submitList(response)
+            hideProgressBar()
+
             if (activity != null && isAdded) {
-                coroutineScope.launch(Dispatchers.IO) {
+                if (response.isEmpty()) {
+                    noServiceCategoriesFound()
 
-                    if (response.isNotEmpty()) {
-                        Timber.e("RESPONSE IS EMPTY")
-
-                        serviceCategoriesViewModel.saveAllServiceCategoriesFromServer()
-
-                        requireActivity().runOnUiThread {
-                            hideProgressBar()
-                        }
-
-                        Handler(Looper.getMainLooper()).post {
-                            // TODO: Check for categories
-                        }
-                    } else {
-                        Timber.e("RESPONSE IS NOT EMPTY")
-
+                    Handler(Looper.getMainLooper()).post {
+                        reloadServiceCategories()
                     }
+                } else {
+                    hideProgressBar()
                 }
             }
         }
     }
 
     private fun reloadServiceCategories() {
-        reload_service_categories_button.setOnClickListener {
-            showProgressBar()
-            getAllServiceCategoriesFromRoomAndDisplay()
+        val timer = object : CountDownTimer(3000, 1000) {
+            override fun onTick(p0: Long) {
+                showProgressBar()
+                serviceCategoriesViewModel.serviceCategoriesLiveData.observe(viewLifecycleOwner) { serviceCategories ->
+                    if (serviceCategories.isEmpty()) {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            serviceCategoriesViewModel.saveAllServiceCategoriesFromServer()
+                        }
+                    } else
+                        return@observe
+                }
+            }
+
+            override fun onFinish() {
+                getAllServiceCategoriesFromRoomAndDisplay()
+            }
         }
+        timer.start()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -169,6 +175,12 @@ class ServiceCategories : Fragment() {
         load_categories_progress_bar.visibility = View.GONE
         service_category_nested_scroll_view.visibility = View.GONE
         no_service_categories_layout.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        serviceCategoriesViewModel.serviceCategoriesLiveData
+            .removeObservers(viewLifecycleOwner)
     }
 
     companion object {
