@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -50,6 +51,7 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.main.MainScreen
@@ -590,7 +592,8 @@ class DetailedServiceActivity : AppCompatActivity() {
                 mServiceStepChip.closeIconEndPadding = 0F
                 mServiceStepChip.closeIconSize = 0F
 
-                mServiceStepChip.backgroundTintList = getColorStateList(R.color.mtrl_choice_chip_background_color)
+                mServiceStepChip.backgroundTintList =
+                    getColorStateList(R.color.mtrl_choice_chip_background_color)
                 serviceStepsChipGroup!!.addView(mServiceStepChip, i)
             }
             serviceStepsHorizontalScroller?.addView(serviceStepsChipGroup)
@@ -796,6 +799,9 @@ class DetailedServiceActivity : AppCompatActivity() {
             }
             finish()
             return true
+        } else if (item.itemId == R.id.share_service_icon) {
+            shareServiceInfo()
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
@@ -829,6 +835,29 @@ class DetailedServiceActivity : AppCompatActivity() {
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
         startActivity(Intent(this, MainScreen::class.java).putExtras(bundle))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.detailed_service_menu, menu)
+
+        return true
+    }
+
+    private fun shareServiceInfo() {
+        val sharedServiceEntity = JSONObject()
+        val shareBundle = Bundle()
+        shareBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
+
+        val shareServiceInfoBottomSheet = ShareServiceInfoBottomSheet()
+        shareServiceInfoBottomSheet.arguments = shareBundle
+        shareServiceInfoBottomSheet.show(
+            this.supportFragmentManager,
+            ShareServiceInfoBottomSheet.TAG
+        )
+
+        sharedServiceEntity.put("service_name", serviceEntity.serviceName)
+        mixpanelAPI.track("Detailed Service - Sharing ServiceInfo: PhaseOne")
     }
 
     private fun showSnackbarWhite(message: String, length: Int) {

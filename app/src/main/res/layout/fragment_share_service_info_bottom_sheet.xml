@@ -46,18 +46,23 @@
             android:id="@+id/share_service_info_main_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginTop="8dp"
             android:layout_below="@+id/sharing_is_caring_text">
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/caring_image_view"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                app:srcCompat="@drawable/ic_care_24" />
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:srcCompat="@drawable/ic_care_24" />-->
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/show_care_title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,8 +70,9 @@
                 android:layout_toEndOf="@id/caring_image_view"
                 android:text="Show you care"
                 android:textColor="@color/black"
+                android:textStyle="bold"
                 android:layout_marginBottom="4dp"
-                android:textSize="16sp" />
+                android:textSize="18sp" />-->
 
             <TextView
                 android:id="@+id/show_care_main_text_view"
@@ -74,9 +80,10 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/show_care_title_text_view"
                 android:layout_toEndOf="@id/caring_image_view"
+                android:fontFamily="@font/rubik"
                 android:text="@string/show_you_care"
-                android:textColor="#666"
-                android:textSize="16sp" />
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
         </RelativeLayout>
 
