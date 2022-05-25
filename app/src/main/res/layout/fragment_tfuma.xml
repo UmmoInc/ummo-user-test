@@ -9,17 +9,15 @@
         android:layout_height="match_parent"
         android:layout_marginTop="104dp"
         android:background="#1111"
-        android:layout_marginBottom="?android:attr/actionBarSize"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp">
+        android:layout_marginBottom="?android:attr/actionBarSize">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/tfuma_intro_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="1dp"
+            app:cardElevation="1dp"
             app:cardMaxElevation="1dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="true"
@@ -53,6 +51,7 @@
                     android:fontFamily="@font/rubik"
                     android:text="You can hire an Agent to assist you with the following."
                     android:textSize="12sp"
+                    android:textColor="@color/black"
                     android:textStyle="normal" />
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -76,8 +75,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/service_card" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

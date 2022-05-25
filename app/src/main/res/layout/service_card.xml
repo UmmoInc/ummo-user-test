@@ -6,12 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="1dp"
+    app:cardElevation="1dp"
     app:cardMaxElevation="1dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
-    app:contentPaddingBottom="4dp"
+    app:contentPaddingBottom="0dp"
     app:contentPaddingTop="4dp"
     app:strokeColor="@color/Grey"
     app:strokeWidth="1dp"
@@ -26,7 +26,7 @@
             android:id="@+id/card_header_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp">
+            android:padding="2dp">
 
             <RelativeLayout
                 android:id="@+id/service_info_title_relative_layout"
@@ -52,7 +52,7 @@
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
                     android:textColor="@color/ummo_2"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:fontFamily="@font/rubik" />
 
@@ -66,7 +66,7 @@
                     android:paddingStart="0dp"
                     android:paddingEnd="8dp"
                     android:text="@string/service_description"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     app:fontFamily="@font/rubik" />
 
             </RelativeLayout>
@@ -178,13 +178,13 @@
                         android:id="@+id/service_header_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="4dp"
                         android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/delegated_service_header_image_view"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:layout_marginStart="8dp"
                             android:padding="8dp"
                             app:srcCompat="@drawable/ic_service_verification_24" />
@@ -197,7 +197,7 @@
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility"
                             android:textColor="@color/black"
-                            android:textSize="16sp"
+                            android:textSize="12sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -208,7 +208,7 @@
                             android:layout_toEndOf="@id/delegated_service_header_image_view"
                             android:text="@string/service_eligibility_placeholder"
                             android:textColor="@color/black"
-                            android:textSize="14sp" />
+                            android:textSize="10sp" />
 
                     </RelativeLayout>
 
@@ -575,10 +575,10 @@
                             <ImageView
                                 android:id="@+id/service_image_view"
                                 android:layout_width="match_parent"
-                                android:layout_height="300dp"
+                                android:layout_height="200dp"
                                 android:layout_centerHorizontal="true"
-                                android:paddingStart="10dp"
-                                android:paddingEnd="10dp"
+                                android:paddingStart="0dp"
+                                android:paddingEnd="0dp"
                                 android:src="@drawable/esw_gov" />
                         </RelativeLayout>
                     </RelativeLayout>
@@ -603,7 +603,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/divider_2"
                 android:layout_marginStart="8dp"
-                android:padding="4dp"
+                android:padding="2dp"
                 android:visibility="visible">
 
                 <LinearLayout
@@ -639,16 +639,16 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
                         android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/approve_service_image"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
+                            android:layout_margin="2dp"
                             app:srcCompat="@drawable/ic_outline_thumb_up_grey_24" />
 
                         <TextView
@@ -671,8 +671,8 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
                         android:visibility="gone">
 
                         <ImageView
@@ -680,7 +680,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
+                            android:layout_margin="2dp"
                             app:srcCompat="@drawable/ic_thumb_up_filled_24" />
 
                         <TextView
@@ -703,8 +703,8 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
                         android:visibility="visible">
 
                         <ImageView
@@ -712,10 +712,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginEnd="4dp"
-                            android:layout_marginBottom="4dp"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
                             app:srcCompat="@drawable/ic_outline_thumb_down_grey_24" />
 
                         <TextView
@@ -738,8 +738,8 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp"
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp"
                         android:visibility="gone">
 
                         <ImageView
@@ -747,7 +747,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_margin="4dp"
+                            android:layout_margin="2dp"
                             app:srcCompat="@drawable/ic_thumb_down_filled_24" />
 
                         <TextView
@@ -769,14 +769,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingStart="0dp"
-                        android:paddingEnd="4dp">
+                        android:paddingEnd="2dp">
 
                         <ImageView
                             android:id="@+id/service_comments_image"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            android:layout_marginStart="4dp"
+                            android:layout_margin="2dp"
+                            android:layout_marginStart="2dp"
                             app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
 
                         <TextView
@@ -830,17 +830,17 @@
                         android:layout_weight="1"
                         android:clickable="true"
                         android:focusable="true"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp">
+                        android:paddingStart="2dp"
+                        android:paddingEnd="2dp">
 
                         <ImageView
                             android:id="@+id/service_share_image_view"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_centerVertical="true"
-                            android:layout_marginEnd="4dp"
+                            android:layout_marginEnd="2dp"
                             android:contentDescription="@string/save_service"
-                            android:padding="4dp"
+                            android:padding="2dp"
                             app:srcCompat="@drawable/ic_share_grey_24" />
                     </RelativeLayout>
                 </LinearLayout>
@@ -914,7 +914,7 @@
                         android:textColor="@color/black"
                         android:textSize="8sp"
                         android:textStyle="italic"
-                        android:visibility="visible"
+                        android:visibility="invisible"
                         tools:ignore="SmallSp"
                         tools:visibility="invisible" />
                 </LinearLayout>
