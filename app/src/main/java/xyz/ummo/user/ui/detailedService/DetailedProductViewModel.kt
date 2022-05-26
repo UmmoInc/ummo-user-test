@@ -10,6 +10,7 @@ import xyz.ummo.user.data.repo.AppRepository
 class DetailedProductViewModel(application: Application) : AndroidViewModel(application) {
     private val appRepository: AppRepository = AppRepository(application)
     private val productEntityLiveData: LiveData<ProductEntity>
+
     fun insertProduct(productEntity: ProductEntity) {
         appRepository.insertProduct(productEntity)
         Timber.e("insertProduct: PRODUCT->%s", productEntity.productId)

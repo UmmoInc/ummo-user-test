@@ -194,7 +194,7 @@ class ServiceItem(
 
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
-            mixpanel?.track("serviceCard_cardTitleTapped", mixpanelServiceObject)
+            mixpanel?.track("Service Card - Card Title Tapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.service_image_view.setOnClickListener {
@@ -202,7 +202,7 @@ class ServiceItem(
 
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
-            mixpanel?.track("serviceCard_cardImageTapped", mixpanelServiceObject)
+            mixpanel?.track("Service Card - Card Image Tapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
