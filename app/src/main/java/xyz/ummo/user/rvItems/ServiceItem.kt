@@ -194,7 +194,7 @@ class ServiceItem(
 
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
-            mixpanel?.track("serviceCard_cardTitleTapped", mixpanelServiceObject)
+            mixpanel?.track("Service Card - Card Title Tapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.service_image_view.setOnClickListener {
@@ -202,7 +202,7 @@ class ServiceItem(
 
             val mixpanelServiceObject = JSONObject()
             mixpanelServiceObject.put("SERVICE_NAME", serviceEntity.serviceName)
-            mixpanel?.track("serviceCard_cardImageTapped", mixpanelServiceObject)
+            mixpanel?.track("Service Card - Card Image Tapped", mixpanelServiceObject)
         }
 
         viewHolder.itemView.approve_count_text_view.text = service.usefulCount.toString() //9
@@ -277,9 +277,8 @@ class ServiceItem(
             )
 
             sharedServiceEntity.put("service_name", service.serviceName)
-            mixpanel?.track("serviceCard_sharingServiceInfo_phaseOne")
+            mixpanel?.track("Service Card - Sharing Service Info: PhaseOne")
         }
-
 
         /** [1] Approve Service Click Handlers **/
         viewHolder.itemView.approve_service_relative_layout.setOnClickListener {
@@ -290,7 +289,7 @@ class ServiceItem(
 
             serviceItemObject.put("EVENT_DATE_TIME", currentDate)
                 .put("SERVICE_UPVOTED", serviceId)
-            mixpanel?.track("serviceCard_serviceUpvoted", serviceItemObject)
+            mixpanel?.track("Service Card - Service Upvoted", serviceItemObject)
             serviceItemObject.remove("SERVICE_UPVOTED")
 
         }

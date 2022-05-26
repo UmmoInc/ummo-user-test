@@ -10,7 +10,7 @@
         android:background="#1111"
         android:layout_marginTop="104dp"
         android:layout_marginBottom="?android:attr/actionBarSize"
-        android:padding="dp">
+        android:padding="0dp">
 
         <!--<include
             android:id="@+id/service_filter_inclusion"

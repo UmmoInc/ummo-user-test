@@ -7,10 +7,12 @@ import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -32,17 +34,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.content_detailed_service.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.adapters.ServicesAdapter
+import xyz.ummo.user.data.db.ServiceUtilityDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.repo.serviceUtility.ServiceUtilityRepo
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.models.ServiceBenefit
@@ -50,6 +51,7 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.main.MainScreen
@@ -57,6 +59,7 @@ import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
 import java.net.MalformedURLException
+import java.util.*
 
 class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var serviceBenefitsRelativeLayout: RelativeLayout
@@ -127,6 +130,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
     private lateinit var detailedServicePrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private val serviceUtilRatingObject = JSONObject()
     private lateinit var mixpanelAPI: MixpanelAPI
 
     private var serviceCostAdapter: ArrayAdapter<ServiceCostModel>? = null
@@ -138,9 +142,28 @@ class DetailedServiceActivity : AppCompatActivity() {
     private var specCost = ""
     private var chosenServiceCentre = ""
 
+    private lateinit var serviceUtilityViewModel: ServiceUtilityViewModel
+    private val coroutineScope = CoroutineScope((Dispatchers.Main + parentJob))
+    private val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+    private val currentTimeStamp = simpleDateFormat.format(Date())
+
+    companion object {
+        private val parentJob = Job()
+    }
+
     override fun onStart() {
         super.onStart()
         mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceEntity.serviceName})")
+
+        val serviceUtilityRepo = ServiceUtilityRepo(ServiceUtilityDatabase(this), this)
+        val serviceUtilityViewModelProviderFactory =
+            ServiceUtilityViewModelFactory(serviceUtilityRepo)
+        serviceUtilityViewModel = ViewModelProvider(
+            this,
+            serviceUtilityViewModelProviderFactory
+        )[ServiceUtilityViewModel::class.java]
+
+        checkServiceUtilityThumbs()
     }
 
     override fun onStop() {
@@ -264,6 +287,79 @@ class DetailedServiceActivity : AppCompatActivity() {
         service_link_relative_layout.setOnClickListener { openWebLink() }
 
         showServiceBenefits(serviceEntity)
+
+        checkServiceUtilityThumbs()
+        service_util_thumbs_up_image_view.setOnClickListener {
+            triggerHelpful()
+            reverseNotHelpful()
+            coroutineScope.launch(Dispatchers.IO) {
+                serviceUtilityViewModel.captureServiceUtility(
+                    serviceEntity.serviceId,
+                    serviceEntity.serviceName!!,
+                    1,
+                    0,
+                    currentTimeStamp
+                )
+            }
+            editor.putBoolean("HELPFUL-${serviceEntity.serviceId}", true).apply()
+            editor.putBoolean("NOT-HELPFUL-${serviceEntity.serviceId}", false).apply()
+            serviceUtilRatingObject.put("SERVICE NAME", serviceEntity.serviceName)
+            serviceUtilRatingObject.put("TIMESTAMP", currentTimeStamp)
+            mixpanelAPI.track("SERVICE INFO HELPFUL", serviceUtilRatingObject)
+        }
+
+        service_util_thumbs_down_image_view.setOnClickListener {
+            triggerNotHelpful()
+            reverseHelpful()
+            coroutineScope.launch(Dispatchers.IO) {
+                serviceUtilityViewModel.captureServiceUtility(
+                    serviceEntity.serviceId,
+                    serviceEntity.serviceName!!,
+                    0,
+                    1,
+                    currentTimeStamp
+                )
+            }
+            editor.putBoolean("NOT-HELPFUL-${serviceEntity.serviceId}", true).apply()
+            editor.putBoolean("HELPFUL-${serviceEntity.serviceId}", false).apply()
+            serviceUtilRatingObject.put("SERVICE NAME", serviceEntity.serviceName)
+            serviceUtilRatingObject.put("TIMESTAMP", currentTimeStamp)
+            mixpanelAPI.track("SERVICE INFO NOT-HELPFUL", serviceUtilRatingObject)
+        }
+        service_util_thumbs_up_selected_image_view.setOnClickListener {
+            reverseHelpful()
+            coroutineScope.launch(Dispatchers.IO) {
+                serviceUtilityViewModel.captureServiceUtility(
+                    serviceEntity.serviceId,
+                    serviceEntity.serviceName!!,
+                    -1,
+                    0,
+                    currentTimeStamp
+                )
+            }
+            editor.putBoolean("HELPFUL-${serviceEntity.serviceId}", false).apply()
+            serviceUtilRatingObject.put("SERVICE NAME", serviceEntity.serviceName)
+            serviceUtilRatingObject.put("TIMESTAMP", currentTimeStamp)
+            mixpanelAPI.track("SERVICE INFO HELPFUL-REVERSED", serviceUtilRatingObject)
+
+        }
+        service_util_thumbs_down_selected_image_view.setOnClickListener {
+            reverseNotHelpful()
+            coroutineScope.launch(Dispatchers.IO) {
+                serviceUtilityViewModel.captureServiceUtility(
+                    serviceEntity.serviceId,
+                    serviceEntity.serviceName!!,
+                    0,
+                    -1,
+                    currentTimeStamp
+                )
+            }
+            editor.putBoolean("NOT-HELPFUL-${serviceEntity.serviceId}", false).apply()
+            serviceUtilRatingObject.put("SERVICE NAME", serviceEntity.serviceName)
+            serviceUtilRatingObject.put("TIMESTAMP", currentTimeStamp)
+            mixpanelAPI.track("SERVICE INFO NOT-HELPFUL-REVERSED", serviceUtilRatingObject)
+        }
+
     }
 
     /** With the function below, we're ...**/
@@ -418,6 +514,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         progress!!.dismiss()
         agentRequestDialog!!.setOnDismissListener { Timber.e("onPause: onDialogDismiss!") }
         agentNotFoundDialog!!.setOnDismissListener { Timber.e("onPause: onDialogDismiss!") }
+        checkServiceUtilityThumbs()
         finish()
     }
 
@@ -590,7 +687,8 @@ class DetailedServiceActivity : AppCompatActivity() {
                 mServiceStepChip.closeIconEndPadding = 0F
                 mServiceStepChip.closeIconSize = 0F
 
-                mServiceStepChip.backgroundTintList = getColorStateList(R.color.mtrl_choice_chip_background_color)
+                mServiceStepChip.backgroundTintList =
+                    getColorStateList(R.color.mtrl_choice_chip_background_color)
                 serviceStepsChipGroup!!.addView(mServiceStepChip, i)
             }
             serviceStepsHorizontalScroller?.addView(serviceStepsChipGroup)
@@ -796,6 +894,9 @@ class DetailedServiceActivity : AppCompatActivity() {
             }
             finish()
             return true
+        } else if (item.itemId == R.id.share_service_icon) {
+            shareServiceInfo()
+            return true
         }
         return super.onOptionsItemSelected(item)
     }
@@ -829,6 +930,99 @@ class DetailedServiceActivity : AppCompatActivity() {
         delegatedServiceViewModel.insertDelegatedService(delegatedServiceEntity)
 
         startActivity(Intent(this, MainScreen::class.java).putExtras(bundle))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.detailed_service_menu, menu)
+
+        return true
+    }
+
+    private fun shareServiceInfo() {
+        val sharedServiceEntity = JSONObject()
+        val shareBundle = Bundle()
+        shareBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
+
+        val shareServiceInfoBottomSheet = ShareServiceInfoBottomSheet()
+        shareServiceInfoBottomSheet.arguments = shareBundle
+        shareServiceInfoBottomSheet.show(
+            this.supportFragmentManager,
+            ShareServiceInfoBottomSheet.TAG
+        )
+
+        sharedServiceEntity.put("service_name", serviceEntity.serviceName)
+        mixpanelAPI.track("Detailed Service - Sharing ServiceInfo: PhaseOne")
+    }
+
+    private fun checkServiceUtilityThumbs() {
+        val serviceHelpful = detailedServicePrefs
+            .getBoolean("HELPFUL-${serviceEntity.serviceId}", false)
+        val serviceNotHelpful = detailedServicePrefs
+            .getBoolean("NOT-HELPFUL-${serviceEntity.serviceId}", false)
+
+        if (serviceHelpful) {
+            service_util_thumbs_up_image_view.visibility = View.GONE
+            service_util_thumbs_up_selected_image_view.visibility = View.VISIBLE
+            service_util_thumbs_down_selected_image_view.visibility = View.GONE
+            service_util_thumbs_down_image_view.visibility = View.VISIBLE
+        } else if (!serviceHelpful) {
+            service_util_thumbs_up_image_view.visibility = View.VISIBLE
+            service_util_thumbs_up_selected_image_view.visibility = View.GONE
+        }
+
+        if (serviceNotHelpful) {
+            service_util_thumbs_down_selected_image_view.visibility = View.VISIBLE
+            service_util_thumbs_down_image_view.visibility = View.GONE
+            service_util_thumbs_up_selected_image_view.visibility = View.GONE
+            service_util_thumbs_up_image_view.visibility = View.VISIBLE
+        } else if (!serviceHelpful) {
+            service_util_thumbs_down_image_view.visibility = View.VISIBLE
+            service_util_thumbs_down_selected_image_view.visibility = View.GONE
+        }
+    }
+
+    /** When the User confirms that a service's info was helpful, we should:
+     *  1. Change the outlined thumbs-up icon to a full, colored thumbs-up icon;
+     *  2. TODO: (Possibly) Animate the state change to reward the User for choosing;
+     *  3. Save the response in RoomDB
+     *  4. TODO: Transmit the response via a ServiceHelpfulRepo to the server/Mongo;
+     *  5. TODO: Capture the event with [MixpanelAPI]
+     *  6. Store in SharedPrefs **/
+    private fun triggerHelpful() {
+        colourThumbsUpIcon()
+    }
+
+    private fun reverseHelpful() {
+        outlineThumbsUpIcon()
+    }
+
+    private fun triggerNotHelpful() {
+        colourThumbsDownIcon()
+    }
+
+    private fun reverseNotHelpful() {
+        outlineThumbsDownIcon()
+    }
+
+    private fun colourThumbsUpIcon() {
+        service_util_thumbs_up_image_view.visibility = View.GONE
+        service_util_thumbs_up_selected_image_view.visibility = View.VISIBLE
+    }
+
+    private fun outlineThumbsUpIcon() {
+        service_util_thumbs_up_image_view.visibility = View.VISIBLE
+        service_util_thumbs_up_selected_image_view.visibility = View.GONE
+    }
+
+    private fun colourThumbsDownIcon() {
+        service_util_thumbs_down_image_view.visibility = View.GONE
+        service_util_thumbs_down_selected_image_view.visibility = View.VISIBLE
+    }
+
+    private fun outlineThumbsDownIcon() {
+        service_util_thumbs_down_image_view.visibility = View.VISIBLE
+        service_util_thumbs_down_selected_image_view.visibility = View.GONE
     }
 
     private fun showSnackbarWhite(message: String, length: Int) {
