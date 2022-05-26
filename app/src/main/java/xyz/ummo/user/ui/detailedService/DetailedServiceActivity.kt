@@ -266,6 +266,22 @@ class DetailedServiceActivity : AppCompatActivity() {
         service_link_relative_layout.setOnClickListener { openWebLink() }
 
         showServiceBenefits(serviceEntity)
+
+        service_util_thumbs_up_image_view.setOnClickListener {
+            triggerHelpful()
+            reverseNotHelpful()
+        }
+        service_util_thumbs_down_image_view.setOnClickListener {
+            triggerNotHelpful()
+            reverseHelpful()
+        }
+        service_util_thumbs_up_selected_image_view.setOnClickListener {
+            reverseHelpful()
+        }
+        service_util_thumbs_down_selected_image_view.setOnClickListener {
+            reverseNotHelpful()
+        }
+
     }
 
     /** With the function below, we're ...**/
@@ -858,6 +874,48 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         sharedServiceEntity.put("service_name", serviceEntity.serviceName)
         mixpanelAPI.track("Detailed Service - Sharing ServiceInfo: PhaseOne")
+    }
+
+    /** When the User confirms that a service's info was helpful, we should:
+     *  1. Change the outlined thumbs-up icon to a full, colored thumbs-up icon;
+     *  2. TODO: (Possibly) Animate the state change to reward the User for choosing;
+     *  3. TODO: Save the response in RoomDB
+     *  4. TODO: Transmit the response via a ServiceHelpfulRepo to the server/Mongo;
+     *  5. TODO: Capture the event with [MixpanelAPI] **/
+    private fun triggerHelpful() {
+        colourThumbsUpIcon()
+    }
+
+    private fun reverseHelpful() {
+        outlineThumbsUpIcon()
+    }
+
+    private fun triggerNotHelpful() {
+        colourThumbsDownIcon()
+    }
+
+    private fun reverseNotHelpful() {
+        outlineThumbsDownIcon()
+    }
+
+    private fun colourThumbsUpIcon() {
+        service_util_thumbs_up_image_view.visibility = View.GONE
+        service_util_thumbs_up_selected_image_view.visibility = View.VISIBLE
+    }
+
+    private fun outlineThumbsUpIcon() {
+        service_util_thumbs_up_image_view.visibility = View.VISIBLE
+        service_util_thumbs_up_selected_image_view.visibility = View.GONE
+    }
+
+    private fun colourThumbsDownIcon() {
+        service_util_thumbs_down_image_view.visibility = View.GONE
+        service_util_thumbs_down_selected_image_view.visibility = View.VISIBLE
+    }
+
+    private fun outlineThumbsDownIcon() {
+        service_util_thumbs_down_image_view.visibility = View.VISIBLE
+        service_util_thumbs_down_selected_image_view.visibility = View.GONE
     }
 
     private fun showSnackbarWhite(message: String, length: Int) {
