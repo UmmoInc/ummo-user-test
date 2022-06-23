@@ -289,7 +289,7 @@ class MainScreen : AppCompatActivity() {
 
         showBadge()
 //        getDynamicLinks()
-        bottomNavigation.selectedItemId = R.id.bottom_navigation_home
+        bottomNavigation.selectedItemId = R.id.bottom_navigation_search
 //        checkForSocketConnection()
         getServiceProviderData()
 
@@ -804,10 +804,11 @@ class MainScreen : AppCompatActivity() {
 
             when (item.itemId) {
 
-                R.id.bottom_navigation_home -> {
+                /*R.id.bottom_navigation_home -> {
                     supportActionBar?.title = "Ummo"
 
-                    /** Modify info card **/
+                    */
+                /** Modify info card **//*
                     val serviceCategories = ServiceCategories()
                     openFragment(serviceCategories)
 
@@ -816,7 +817,7 @@ class MainScreen : AppCompatActivity() {
                     mixpanel?.track("BottomNavigation - Home Tapped", homeEventObject)
 
                     return@OnNavigationItemSelectedListener true
-                }
+                }*/
 
                 R.id.bottom_navigation_delegates -> {
                     val delegatedServiceFragment = DelegatedServiceFragment()

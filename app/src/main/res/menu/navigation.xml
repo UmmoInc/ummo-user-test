@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
+    <!--<item
         android:id="@+id/bottom_navigation_home"
         android:icon="@drawable/ic_we_gov_24"
-        android:title="@string/home_nav_title" />
+        android:title="@string/home_nav_title" />-->
 
     <item
         android:id="@+id/bottom_navigation_search"
-        android:icon="@drawable/ic_manage_search_24"
+        android:icon="@drawable/ic_we_gov_24"
         android:title="@string/search" />
 
     <item
