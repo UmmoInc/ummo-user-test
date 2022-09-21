@@ -5,9 +5,12 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +19,7 @@ import com.google.android.material.chip.Chip
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.fragment_all_services.*
 import kotlinx.android.synthetic.main.fragment_all_services.view.*
+import kotlinx.android.synthetic.main.service_slice.view.*
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -123,12 +127,39 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun setupRecyclerView() {
-        allServicesAdapter = ServicesAdapter()
+        allServicesAdapter = ServicesAdapter(object : ServicesAdapter.OptionsMenuClickListener {
+            override fun onOptionsMenuClicked(position: Int) {
+                performOptionsMenuClick(position)
+            }
+        })
+
         all_services_recycler_view.apply {
             adapter = allServicesAdapter
             layoutManager = LinearLayoutManager(activity)
             hasFixedSize()
         }
+    }
+
+    private fun performOptionsMenuClick(position: Int) {
+        val serviceMenu =
+            PopupMenu(requireContext(), recyclerView[position].options_menu_service_slice)
+        serviceMenu.inflate(R.menu.services_menu)
+
+        serviceMenu.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
+            override fun onMenuItemClick(item: MenuItem?): Boolean {
+                when (item?.itemId) {
+                    R.id.action_save_service -> {
+                        return true
+                    }
+                    R.id.action_share_service -> {
+                        return true
+                    }
+                }
+                return false
+            }
+
+        })
+        serviceMenu.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

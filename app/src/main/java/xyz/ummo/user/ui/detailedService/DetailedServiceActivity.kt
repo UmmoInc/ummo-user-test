@@ -38,7 +38,6 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.adapters.ServicesAdapter
 import xyz.ummo.user.data.db.ServiceUtilityDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
@@ -887,7 +886,7 @@ class DetailedServiceActivity : AppCompatActivity() {
             val intent = Intent(this, MainScreen::class.java)
             if (summoningParent == MainScreen.toString()) {
                 startActivity(intent)
-            } else if (summoningParent == ServicesAdapter().toString()) {
+            } else if (summoningParent == "ServicesAdapter") {
                 intent.putExtra(FRAGMENT_DESTINATION, AllServicesFragment.toString())
                 Timber.e("FRAG DESTINATION -> ${intent.extras!!.getString(FRAGMENT_DESTINATION)}")
                 startActivity(intent)

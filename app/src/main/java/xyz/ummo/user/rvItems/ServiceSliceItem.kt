@@ -51,7 +51,7 @@ class ServiceSliceItem(
         viewHolder.itemView.mini_service_root_relative_layout.setOnClickListener {
             showServiceDetails()
         }
-        viewHolder.itemView.card_header_relative_layout_slice.setOnClickListener {
+        viewHolder.itemView.service_header_relative_layout_slice.setOnClickListener {
             showServiceDetails()
         }
         viewHolder.itemView.service_info_title_relative_layout_slice.setOnClickListener {
@@ -63,9 +63,9 @@ class ServiceSliceItem(
         viewHolder.itemView.service_title_text_view_slice.setOnClickListener {
             showServiceDetails()
         }
-        viewHolder.itemView.open_service_image_slice.setOnClickListener {
+        /*viewHolder.itemView.open_service_image_slice.setOnClickListener {
             showServiceDetails()
-        }
+        }*/
     }
 
     /** When a service is tapped on, it should expand to a detailed view with more info. **/

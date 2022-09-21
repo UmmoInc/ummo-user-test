@@ -52,9 +52,9 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceE
             showServiceDetails(position)
         }
 
-        serviceViewHolder.viewBinding.openServiceImageSlice.setOnClickListener {
+        /*serviceViewHolder.viewBinding.openServiceImageSlice.setOnClickListener {
             showServiceDetails(position)
-        }
+        }*/
     }
 
     override fun getItemCount(): Int {
@@ -78,13 +78,13 @@ class SearchServicesAdapter(private var allServicesArrayList: ArrayList<ServiceE
                     filteredServiceObjectsList.addAll(servicesList)
                 } else {
 
-                    val filterPattern = charSearch.toLowerCase(Locale.ROOT).trim()
+                    val filterPattern = charSearch.lowercase(Locale.ROOT).trim()
                     Timber.e("SERVICE FILTER LIST 0 -> $fullServiceList")
 
                     for (service in servicesList) {
 //                        if (service.serviceName.toLowerCase(Locale.ROOT).contains(filterPattern))
-                        if (service.serviceName!!.toLowerCase(Locale.ROOT).contains(
-                                charSearch.toLowerCase(
+                        if (service.serviceName!!.lowercase(Locale.ROOT).contains(
+                                charSearch.lowercase(
                                     Locale.ROOT
                                 )
                             )

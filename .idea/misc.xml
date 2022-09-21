@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_chat_24.xml" value="0.40520833333333334" />
         <entry key="app/src/main/res/drawable/ic_baseline_cloud_off_24.xml" value="0.178" />
         <entry key="app/src/main/res/drawable/ic_baseline_search_off_24.xml" value="0.178" />
+        <entry key="app/src/main/res/drawable/ic_delegate_icon.xml" value="0.2885" />
         <entry key="app/src/main/res/drawable/ic_help_outline_black_24dp.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_account_circle_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_feedback_black_24.xml" value="0.43796296296296294" />
@@ -25,16 +26,19 @@
         <entry key="app/src/main/res/drawable/ic_outline_privacy_policy_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_terms_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_thumb_down_grey_24.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/drawable/ic_public_service.xml" value="0.291" />
         <entry key="app/src/main/res/drawable/ic_round_person_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_round_person_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_saved_offline_pin_24.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/drawable/ic_share_black_24.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/drawable/ic_share_grey_24.xml" value="0.40185185185185185" />
         <entry key="app/src/main/res/drawable/ic_share_purple_24.xml" value="0.24479166666666666" />
+        <entry key="app/src/main/res/drawable/ic_tfuma_24.xml" value="0.2885" />
         <entry key="app/src/main/res/drawable/ic_twotone_mark_email_verified_24.xml" value="0.42592592592592593" />
         <entry key="app/src/main/res/drawable/ic_twotone_school_24.xml" value="0.30925925925925923" />
         <entry key="app/src/main/res/drawable/ic_twotone_unarchive_24.xml" value="0.2145" />
         <entry key="app/src/main/res/drawable/ic_user_privacy_blue_24.xml" value="0.3453703703703704" />
+        <entry key="app/src/main/res/drawable/ic_we_gov_24.xml" value="0.291" />
         <entry key="app/src/main/res/drawable/rounded_button_transparent_blue.xml" value="0.2245" />
         <entry key="app/src/main/res/drawable/rounded_button_transparent_purple.xml" value="0.2615" />
         <entry key="app/src/main/res/layout/activity_detailed_service.xml" value="0.21574074074074073" />
@@ -79,7 +83,7 @@
         <entry key="app/src/main/res/layout/service_category.xml" value="0.33" />
         <entry key="app/src/main/res/layout/service_comment.xml" value="0.29739583333333336" />
         <entry key="app/src/main/res/layout/service_comment_dialog.xml" value="0.23981481481481481" />
-        <entry key="app/src/main/res/layout/service_slice.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/service_slice.xml" value="0.5" />
         <entry key="app/src/main/res/layout/taking_you_to_whatsapp.xml" value="0.3675925925925926" />
         <entry key="app/src/main/res/layout/user_support_dialog.xml" value="0.4166666666666667" />
         <entry key="app/src/main/res/menu/activity_main_screen_drawer.xml" value="0.3510204081632653" />
@@ -88,6 +92,7 @@
         <entry key="app/src/main/res/menu/menu_detailed.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/menu/navigation.xml" value="0.1" />
         <entry key="app/src/main/res/menu/personal_profile_menu.xml" value="0.22" />
+        <entry key="app/src/main/res/menu/services_menu.xml" value="0.4348958333333333" />
         <entry key="app/src/main/res/menu/top_app_bar.xml" value="0.16203703703703703" />
       </map>
     </option>

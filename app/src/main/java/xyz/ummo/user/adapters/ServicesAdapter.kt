@@ -18,11 +18,16 @@ import xyz.ummo.user.utilities.PARENT
 import xyz.ummo.user.utilities.SERVICE_ENTITY
 import java.io.Serializable
 
-class ServicesAdapter : RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>() {
+class ServicesAdapter(private var optionsMenuClickListener: OptionsMenuClickListener) :
+    RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>() {
 
     private lateinit var mContext: Context
 
     private lateinit var mixpanel: MixpanelAPI
+
+    interface OptionsMenuClickListener {
+        fun onOptionsMenuClicked(position: Int)
+    }
 
     inner class ServiceViewHolder(serviceView: View) : RecyclerView.ViewHolder(serviceView)
 
@@ -66,10 +71,18 @@ class ServicesAdapter : RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>(
                 }
             }
 
-            /** Let's let the user tap on any item on the view to launch more info **/
-            open_service_image_slice.setOnClickListener {
-                showServiceDetails(serviceEntity)
+            if (serviceEntity.delegatable!!) {
+                service_delegatable_tag_relative_layout.visibility = View.VISIBLE
             }
+
+            options_menu_service_slice.setOnClickListener {
+                optionsMenuClickListener.onOptionsMenuClicked(position)
+            }
+
+            /** Let's let the user tap on any item on the view to launch more info **/
+            /*open_service_image_slice.setOnClickListener {
+                showServiceDetails(serviceEntity)
+            }*/
             mini_service_card_view.setOnClickListener {
                 showServiceDetails(serviceEntity)
             }
