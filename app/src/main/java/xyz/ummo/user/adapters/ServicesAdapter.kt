@@ -2,9 +2,11 @@ package xyz.ummo.user.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -14,9 +16,11 @@ import org.json.JSONObject
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
 import xyz.ummo.user.utilities.PARENT
 import xyz.ummo.user.utilities.SERVICE_ENTITY
 import java.io.Serializable
+
 
 class ServicesAdapter(private var optionsMenuClickListener: OptionsMenuClickListener) :
     RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>() {
@@ -76,7 +80,19 @@ class ServicesAdapter(private var optionsMenuClickListener: OptionsMenuClickList
             }
 
             options_menu_service_slice.setOnClickListener {
-                optionsMenuClickListener.onOptionsMenuClicked(position)
+//                optionsMenuClickListener.onOptionsMenuClicked(position)
+                val serviceBundle = Bundle()
+                val serviceEntityObject = JSONObject()
+                val serviceOptionsMenuBottomSheet = ServiceOptionsMenuBottomSheet()
+                serviceBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
+                serviceOptionsMenuBottomSheet.arguments = serviceBundle
+                serviceOptionsMenuBottomSheet.show(
+                    (mContext as FragmentActivity).supportFragmentManager,
+                    ServiceOptionsMenuBottomSheet.TAG
+                )
+
+                serviceEntityObject.put("service_name", serviceEntity.serviceName)
+                mixpanel.track("Service Options Menu", serviceEntityObject)
             }
 
             /** Let's let the user tap on any item on the view to launch more info **/
