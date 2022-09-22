@@ -43,7 +43,7 @@
         <entry key="app/src/main/res/drawable/ic_we_gov_24.xml" value="0.291" />
         <entry key="app/src/main/res/drawable/rounded_button_transparent_blue.xml" value="0.2245" />
         <entry key="app/src/main/res/drawable/rounded_button_transparent_purple.xml" value="0.2615" />
-        <entry key="app/src/main/res/layout/activity_detailed_service.xml" value="0.21574074074074073" />
+        <entry key="app/src/main/res/layout/activity_detailed_service.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_feedback.xml" value="0.21203703703703702" />
         <entry key="app/src/main/res/layout/activity_intro.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main_screen.xml" value="0.1" />
@@ -51,6 +51,7 @@
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.27685185185185185" />
         <entry key="app/src/main/res/layout/app_bar_main_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/complete_sign_up.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/content_advanced_service_details_with_comments.xml" value="0.38445378151260506" />
         <entry key="app/src/main/res/layout/content_detailed_service.xml" value="0.32685185185185184" />
         <entry key="app/src/main/res/layout/delegate_agent_dialog.xml" value="0.3277777777777778" />
         <entry key="app/src/main/res/layout/feedback_dialog.xml" value="0.33" />

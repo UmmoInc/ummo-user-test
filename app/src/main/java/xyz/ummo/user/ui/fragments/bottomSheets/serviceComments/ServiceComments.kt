@@ -30,7 +30,6 @@ import xyz.ummo.user.utilities.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ServiceComments : BottomSheetDialogFragment() {
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
@@ -83,30 +82,26 @@ class ServiceComments : BottomSheetDialogFragment() {
         recyclerView.layoutManager = rootView.service_comment_recycler_view.layoutManager
         recyclerView.adapter = gAdapter
 
-        populateServiceCommentsRecyclerView()
-
-        submitServiceComment(serviceId)
-
+        /** Below, we're:
+         * 1. Initializing the Title with the Service Name,
+         * 2. Checking for comments and hiding the progress bar,
+         * 3. Populating the view with service comments returned,
+         * 4. Submitting a service comment with the service's ID **/
         initializeServiceCommentsBottomSheetTitle()
-
         checkForCommentsAndStopProgressBar()
+        populateServiceCommentsRecyclerView()
+        submitServiceComment(serviceId)
 
         return rootView
     }
 
     private fun initializeServiceCommentsBottomSheetTitle() {
-        /*val serviceCommentsSubtitleText =
-            String.format(
-                resources.getString(R.string.service_comments_subtitle),
-                serviceCommentObject.serviceName
-            )*/
-
         serviceName = arguments?.getString(SERVICE_NAME).toString()
         viewBinding.serviceCommentsHeaderSubtitleTextView.text = serviceName
     }
 
     private fun checkForCommentsAndStopProgressBar() {
-        val timer = object : CountDownTimer(5000, 1000) {
+        val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(p0: Long) {
                 viewBinding.loadServiceCommentsProgressBar.visibility = View.VISIBLE
                 viewBinding.noCommentsRelativeLayout.visibility = View.GONE

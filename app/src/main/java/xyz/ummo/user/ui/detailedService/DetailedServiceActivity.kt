@@ -202,7 +202,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         webViewLink = findViewById(R.id.link_source_text_view)
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout)
         serviceImageView = findViewById(R.id.service_image_view)
-        val appBar = findViewById<AppBarLayout>(R.id.app_bar_layout)
+        val appBar = findViewById<AppBarLayout>(R.id.service_details_app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
         serviceBenefitsHeaderTextView = findViewById(R.id.service_benefits_header_text_view)
         serviceBenefitsRelativeLayout =

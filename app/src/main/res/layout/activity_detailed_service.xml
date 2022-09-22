@@ -10,7 +10,7 @@
         tools:context=".ui.detailedService.DetailedServiceActivity">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar_layout"
+            android:id="@+id/service_details_app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_bar_height"
             android:fitsSystemWindows="true"
@@ -46,8 +46,10 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/content_detailed_service" />
+        <include layout="@layout/content_advanced_service_details_with_comments" />
+        <!--<include layout="@layout/content_detailed_service"/>-->
 
+        <!-- [START] Service Delegate-Button Layout -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -72,6 +74,7 @@
                 app:iconGravity="textStart"
                 tools:targetApi="lollipop" />
         </RelativeLayout>
+        <!-- [END] Service Delegate-Button Layout -->
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

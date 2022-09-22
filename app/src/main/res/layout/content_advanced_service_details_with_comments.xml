@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="65dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".ui.detailedService.DetailedServiceActivity"
+        tools:showIn="@layout/activity_detailed_service">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!-- [START] Service Details Containment Layout -->
+
+            <!-- [START] Service Details Layout -->
+            <include
+                android:id="@+id/service_details_layout"
+                layout="@layout/content_detailed_service"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <!-- [END] Service Details Layout -->
+
+            <!-- [START] Service Comments Layout -->
+            <include
+                android:id="@+id/service_comments_layout"
+                layout="@layout/fragment_service_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/service_details_layout" />
+            <!-- [END] Service Comments Layout -->
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>
