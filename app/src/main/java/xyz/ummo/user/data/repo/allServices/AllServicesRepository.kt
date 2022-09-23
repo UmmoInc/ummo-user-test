@@ -23,6 +23,7 @@ import xyz.ummo.user.workers.fromServiceCostJSONArray
 import java.util.concurrent.TimeUnit
 
 /** This repo will get data from DB and/or our API and propagate it to the viewModel associated **/
+//TODO: Remove the [OkHttp] direct call; use a dedicated class instead
 class AllServicesRepository(
     val db: AllServicesDatabase,
     private val activity: Activity
