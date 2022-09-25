@@ -9,7 +9,7 @@ import timber.log.Timber
 import xyz.ummo.user.api.ViewServiceComments
 import xyz.ummo.user.models.ServiceCommentObject
 
-class ServiceCommentsViewModel(application: Application) :
+class ServiceCommentsViewModelOld(application: Application) :
     AndroidViewModel(application) {
 
     private var serviceCommentsArrayList = ArrayList<ServiceCommentObject>()

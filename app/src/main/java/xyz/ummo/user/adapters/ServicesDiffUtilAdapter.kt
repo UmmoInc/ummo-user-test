@@ -22,8 +22,8 @@ import xyz.ummo.user.utilities.SERVICE_ENTITY
 import java.io.Serializable
 
 
-class ServicesAdapter(private var optionsMenuClickListener: OptionsMenuClickListener) :
-    RecyclerView.Adapter<ServicesAdapter.ServiceViewHolder>() {
+class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuClickListener) :
+    RecyclerView.Adapter<ServicesDiffUtilAdapter.ServiceViewHolder>() {
 
     private lateinit var mContext: Context
 

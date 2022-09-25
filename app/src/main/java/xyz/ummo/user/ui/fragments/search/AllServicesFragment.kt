@@ -26,7 +26,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.adapters.ServicesAdapter
+import xyz.ummo.user.adapters.ServicesDiffUtilAdapter
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceObject
@@ -41,7 +41,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var rootView: View
     private lateinit var recyclerView: RecyclerView
 
-    private lateinit var allServicesAdapter: ServicesAdapter
+    private lateinit var allServicesDiffUtilAdapter: ServicesDiffUtilAdapter
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
     private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
@@ -127,14 +127,15 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun setupRecyclerView() {
-        allServicesAdapter = ServicesAdapter(object : ServicesAdapter.OptionsMenuClickListener {
-            override fun onOptionsMenuClicked(position: Int) {
-                performOptionsMenuClick(position)
-            }
-        })
+        allServicesDiffUtilAdapter =
+            ServicesDiffUtilAdapter(object : ServicesDiffUtilAdapter.OptionsMenuClickListener {
+                override fun onOptionsMenuClicked(position: Int) {
+                    performOptionsMenuClick(position)
+                }
+            })
 
         all_services_recycler_view.apply {
-            adapter = allServicesAdapter
+            adapter = allServicesDiffUtilAdapter
             layoutManager = LinearLayoutManager(activity)
             hasFixedSize()
         }
@@ -183,7 +184,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
      *    livedata returned from [AllServicesViewModel.getLocallyStoredServices] suspend function;
      *    this function runs a call on AllServicesRepository to getLocallyStoredServices for us.
      *
-     *   2. With that result, we pass it to our diffUtil operation in [allServicesAdapter] whose
+     *   2. With that result, we pass it to our diffUtil operation in [allServicesDiffUtilAdapter] whose
      *     callback function compares if the adapter elements or contents are similar;
      *     this is useful in ensuring that we have a clean list of info that doesn't repeat.
      *
@@ -195,7 +196,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
      *      them again. **/
     private fun getAllServicesFromRoomAndDisplay() {
         allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { response ->
-            allServicesAdapter.differ.submitList(response)
+            allServicesDiffUtilAdapter.differ.submitList(response)
             showServicesViewAndHideEverythingElse()
             checkForServices(response)
 
@@ -212,7 +213,6 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
                         Handler(Looper.getMainLooper()).post {
                             checkForServices(response)
                         }
-
                     }
                 }
             }
@@ -495,7 +495,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
                         displayNoServicesFound()
                         letMeKnowClicker(searchQueryString)
                     } else {
-                        allServicesAdapter.differ.submitList(searchResults)
+                        allServicesDiffUtilAdapter.differ.submitList(searchResults)
                         justShowAllServicesReturnedFromAdapter()
                     }
                 }

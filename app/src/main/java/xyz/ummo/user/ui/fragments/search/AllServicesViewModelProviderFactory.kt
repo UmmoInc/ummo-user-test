@@ -8,6 +8,6 @@ class AllServicesViewModelProviderFactory(
     private val allServicesRepository: AllServicesRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AllServicesViewModel(allServicesRepository) as T
+        return AllServicesViewModel(allServicesRepository) as T //TODO: Check cast
     }
 }

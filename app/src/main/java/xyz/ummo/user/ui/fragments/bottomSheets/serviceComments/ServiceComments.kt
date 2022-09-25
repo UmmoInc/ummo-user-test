@@ -46,7 +46,7 @@ class ServiceComments : BottomSheetDialogFragment() {
     private lateinit var mixpanelAPI: MixpanelAPI
 
     private var profileViewModel: ProfileViewModel? = null
-    private var serviceCommentsViewModel: ServiceCommentsViewModel? = null
+    private var serviceCommentsViewModelOld: ServiceCommentsViewModelOld? = null
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -9,9 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Environment
+import android.os.*
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +23,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.OnOffsetChangedListener
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -38,16 +38,23 @@ import kotlinx.coroutines.*
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.adapters.ServiceCommentsDiffUtilAdapter
+import xyz.ummo.user.data.db.ServiceCommentsDatabase
 import xyz.ummo.user.data.db.ServiceUtilityDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
+import xyz.ummo.user.data.entity.ServiceCommentEntity
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.repo.serviceSomments.ServiceCommentsRepo
 import xyz.ummo.user.data.repo.serviceUtility.ServiceUtilityRepo
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
+import xyz.ummo.user.databinding.FragmentServiceCommentsBinding
 import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.ui.WebViewActivity
+import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModel
+import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModelFactory
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
@@ -112,7 +119,7 @@ class DetailedServiceActivity : AppCompatActivity() {
     private var agentRequestStatus = "Requesting agent..."
     private var agentDelegate = JSONObject()
     private var agentName: String? = null
-    private var serviceId: String? = null
+    private var mServiceId: String? = null
     private var _serviceName: String? = null
     private var progress: ProgressDialog? = null
     var agentRequestDialog: AlertDialog.Builder? = null
@@ -146,13 +153,23 @@ class DetailedServiceActivity : AppCompatActivity() {
     private val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
     private val currentTimeStamp = simpleDateFormat.format(Date())
 
+    private lateinit var serviceCommentsViewModel: ServiceCommentsViewModel
+    private lateinit var serviceCommentsDiffUtilAdapter: ServiceCommentsDiffUtilAdapter
+    private lateinit var serviceCommentsViewBinding: FragmentServiceCommentsBinding
+
+    var serviceCommentsHeaderSubtitle: TextView? = null
+    var serviceCommentsProgressBar: ProgressBar? = null
+    var serviceCommentsRecyclerView: RecyclerView? = null
+    var noServiceCommentsRelativeLayout: RelativeLayout? = null
+    var nestedServiceCommentsScrollView: NestedScrollView? = null
+
     companion object {
         private val parentJob = Job()
     }
 
     override fun onStart() {
         super.onStart()
-        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE (${serviceEntity.serviceName})")
+        mixpanelAPI.timeEvent("Viewing DETAILED SERVICE")
 
         val serviceUtilityRepo = ServiceUtilityRepo(ServiceUtilityDatabase(this), this)
         val serviceUtilityViewModelProviderFactory =
@@ -163,11 +180,100 @@ class DetailedServiceActivity : AppCompatActivity() {
         )[ServiceUtilityViewModel::class.java]
 
         checkServiceUtilityThumbs()
+
+        /** [START] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
+        val serviceCommentsRepo = ServiceCommentsRepo(ServiceCommentsDatabase(this), this)
+        val serviceCommentsViewModelProviderFactory =
+            ServiceCommentsViewModelFactory(mServiceId!!, serviceCommentsRepo)
+
+        serviceCommentsViewModel = ViewModelProvider(
+            this,
+            serviceCommentsViewModelProviderFactory
+        )[ServiceCommentsViewModel::class.java]
+
+        coroutineScope.launch(Dispatchers.IO) {
+            serviceCommentsViewModel.saveServiceCommentsToRoom()
+        }
+        /** [END] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
+
+        /** [START] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
+        coroutineScope.launch(Dispatchers.IO) {
+            serviceCommentsViewModel.getServiceCommentsFromRoom()
+        }
+        setupServiceCommentsRecyclerView()
+        getAllServiceCommentsFromRoomAndDisplay()
+        /** [END] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
+
     }
 
     override fun onStop() {
         super.onStop()
-        mixpanelAPI.track("Viewing DETAILED SERVICE (${serviceEntity.serviceName})")
+        mixpanelAPI.track("Viewing DETAILED SERVICE")
+    }
+
+    private fun setupServiceCommentsRecyclerView() {
+        serviceCommentsDiffUtilAdapter = ServiceCommentsDiffUtilAdapter()
+
+        val serviceCommentsRecyclerView =
+            this.findViewById<RecyclerView>(R.id.service_comment_recycler_view)
+        serviceCommentsRecyclerView.apply {
+            adapter = serviceCommentsDiffUtilAdapter
+            layoutManager = LinearLayoutManager(this@DetailedServiceActivity)
+            hasFixedSize()
+        }
+    }
+
+    private fun getAllServiceCommentsFromRoomAndDisplay() {
+        serviceCommentsViewModel.serviceCommentsMutableLiveData.observe(this@DetailedServiceActivity) { response ->
+            serviceCommentsDiffUtilAdapter.differ.submitList(response)
+            showServiceCommentsAndHideEverythingElse()
+            checkForServiceComments(response)
+
+            Timber.e("SERVICE COMMENTS RESPONSE -> $response")
+
+            if (true) {
+                coroutineScope.launch(Dispatchers.IO) {
+                    if (response.isEmpty()) {
+                        serviceCommentsViewModel.getServiceCommentsFromRoom()
+
+                        this@DetailedServiceActivity.runOnUiThread {
+                            showServiceCommentsAndHideEverythingElse()
+                        }
+
+                        Handler(Looper.getMainLooper()).post {
+                            checkForServiceComments(response)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkForServiceComments(serviceCommentsArrayList: ArrayList<ServiceCommentEntity>) {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                showProgressBar()
+            }
+
+            override fun onFinish() {
+                if (!serviceCommentsArrayList.isEmpty()) {
+                    showServiceCommentsAndHideEverythingElse()
+                }
+            }
+        }
+
+        timer.start()
+    }
+
+    private fun showServiceCommentsAndHideEverythingElse() {
+        noServiceCommentsRelativeLayout!!.visibility = View.GONE
+        serviceCommentsProgressBar!!.visibility = View.GONE
+        nestedServiceCommentsScrollView!!.visibility = View.VISIBLE
+    }
+
+    private fun showProgressBar() {
+        serviceCommentsProgressBar!!.visibility = View.VISIBLE
+        nestedServiceCommentsScrollView!!.visibility = View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,6 +289,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         /** Binding Layout Views **/
         detailedServiceBinding = ActivityDetailedServiceBinding.inflate(layoutInflater)
         detailedServiceContentBinding = ContentDetailedServiceBinding.inflate(layoutInflater)
+        serviceCommentsViewBinding = FragmentServiceCommentsBinding.inflate(layoutInflater)
 
         val view = detailedServiceBinding.root
 
@@ -196,6 +303,14 @@ class DetailedServiceActivity : AppCompatActivity() {
         progress = ProgressDialog(this)
         agentRequestDialog = AlertDialog.Builder(this@DetailedServiceActivity)
         agentNotFoundDialog = AlertDialog.Builder(this@DetailedServiceActivity)
+
+        /** [START] Service Comments View Elements **/
+        serviceCommentsHeaderSubtitle =
+            findViewById(R.id.service_comments_header_subtitle_text_view)
+        noServiceCommentsRelativeLayout = findViewById(R.id.no_comments_relative_layout)
+        serviceCommentsProgressBar = findViewById(R.id.load_service_comments_progress_bar)
+        nestedServiceCommentsScrollView = findViewById(R.id.service_comment_nested_scroll_view)
+        /** [END] Service Comments View Elements **/
 
         nestedScrollView = findViewById(R.id.nested_scrollview)
         requestAgentBtn = findViewById(R.id.request_agent_btn)
@@ -254,7 +369,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         Timber.e("SERVICE OBJECT -> $serviceEntity")
         Timber.e("SUMMONING PARENT -> $summoningParent")
-        serviceId = serviceEntity.serviceId
+        mServiceId = serviceEntity.serviceId
 
         populateDetailedServiceElements(serviceEntity)
 
@@ -524,6 +639,9 @@ class DetailedServiceActivity : AppCompatActivity() {
         toolbar!!.title = mService.serviceName
         mCollapsingToolbarLayout!!.title = mService.serviceName
         serviceNameTextView!!.text = mService.serviceName
+        /** Conveniently place in**/
+        serviceCommentsHeaderSubtitle!!.text = mService.serviceName
+
         serviceDescriptionTextView!!.text = mService.serviceDescription
 
         /** Checking if [mService] has ServiceLink **/
