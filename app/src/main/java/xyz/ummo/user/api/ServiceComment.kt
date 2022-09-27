@@ -1,6 +1,5 @@
 package xyz.ummo.user.api
 
-import android.app.Activity
 import android.content.Context
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.extensions.jsonBody
@@ -16,17 +15,8 @@ abstract class ServiceComment(context: Context, serviceComment: JSONObject) {
         Fuel.put("${context.getString(R.string.serverUrl)}/service/service_comment/")
             .jsonBody(serviceComment.toString())
             .response { request, response, result ->
-                (context as Activity).runOnUiThread {
-                    done(response.data, response.statusCode)
-
-                    if (response.statusCode == 200) {
-                        Timber.e("Responding well | Data -> ${String(response.data)}")
-                    } else {
-                        Timber.e("Status Code -> ${String(response.data)}")
-                    }
-                    }
-                }
+                done(response.data, response.statusCode)
+            }
     }
-
     abstract fun done(data: ByteArray, code: Number)
 }

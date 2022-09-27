@@ -9,12 +9,11 @@ import androidx.room.PrimaryKey
 data class ServiceCommentEntity(
     @NonNull
     @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "service_comment")
+    var serviceComment: String = "",
+
     @ColumnInfo(name = "service_id")
     var serviceId: String,
-
-    @NonNull
-    @ColumnInfo(name = "service_comment")
-    var serviceComment: String? = null,
 
     @NonNull
     @ColumnInfo(name = "comment_date_time")
@@ -22,5 +21,9 @@ data class ServiceCommentEntity(
 
     @NonNull
     @ColumnInfo(name = "user_name")
-    var userName: String? = null
+    var userName: String? = null,
+
+    @NonNull
+    @ColumnInfo(name = "user_contact")
+    var userContact: String? = null
 )

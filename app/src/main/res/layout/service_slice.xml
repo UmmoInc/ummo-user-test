@@ -7,13 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@android:color/white"
-    app:cardCornerRadius="1dp"
+    app:cardCornerRadius="4dp"
     app:cardElevation="1dp"
     app:cardMaxElevation="1dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="true"
     app:contentPaddingBottom="4dp"
-    app:contentPaddingTop="4dp"
+    app:contentPaddingTop="0dp"
     app:strokeColor="@color/Grey"
     app:strokeWidth="1dp">
 
@@ -47,7 +47,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_name"
@@ -140,8 +141,6 @@
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
                 </RelativeLayout>
-
-
             </RelativeLayout>
 
             <RelativeLayout

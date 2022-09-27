@@ -9,7 +9,7 @@ import xyz.ummo.user.data.entity.ServiceCommentEntity
 
 @Database(
     entities = [ServiceCommentEntity::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
 abstract class ServiceCommentsDatabase : RoomDatabase() {

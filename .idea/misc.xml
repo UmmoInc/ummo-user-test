@@ -30,6 +30,7 @@
         <entry key="app/src/main/res/drawable/ic_public_service.xml" value="0.291" />
         <entry key="app/src/main/res/drawable/ic_round_person_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_round_person_black_24.xml" value="0.43796296296296294" />
+        <entry key="app/src/main/res/drawable/ic_round_person_blue_24.xml" value="0.2235" />
         <entry key="app/src/main/res/drawable/ic_saved_offline_pin_24.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/drawable/ic_share_black_24.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/drawable/ic_share_blue_24.xml" value="0.2475" />
@@ -49,13 +50,13 @@
         <entry key="app/src/main/res/layout/activity_main_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_privacy_policy.xml" value="0.2657407407407407" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.27685185185185185" />
-        <entry key="app/src/main/res/layout/app_bar_main_screen.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/app_bar_main_screen.xml" value="0.33" />
         <entry key="app/src/main/res/layout/complete_sign_up.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/content_advanced_service_details_with_comments.xml" value="0.38445378151260506" />
+        <entry key="app/src/main/res/layout/content_advanced_service_details_with_comments.xml" value="0.20759493670886076" />
         <entry key="app/src/main/res/layout/content_detailed_service.xml" value="0.32685185185185184" />
         <entry key="app/src/main/res/layout/delegate_agent_dialog.xml" value="0.3277777777777778" />
         <entry key="app/src/main/res/layout/feedback_dialog.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_all_services.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_delegated.xml" value="0.31296296296296294" />
         <entry key="app/src/main/res/layout/fragment_get_help.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_give_feedback.xml" value="0.5" />
@@ -83,21 +84,23 @@
         <entry key="app/src/main/res/layout/notify_user_of_email_status_done.xml" value="0.45692307692307693" />
         <entry key="app/src/main/res/layout/register.xml" value="0.30462962962962964" />
         <entry key="app/src/main/res/layout/right_chat_bubble.xml" value="0.4791666666666667" />
-        <entry key="app/src/main/res/layout/service_card.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/service_card.xml" value="0.33" />
         <entry key="app/src/main/res/layout/service_category.xml" value="0.33" />
         <entry key="app/src/main/res/layout/service_comment.xml" value="0.29739583333333336" />
+        <entry key="app/src/main/res/layout/service_comment_bottom_sheet.xml" value="0.33240740740740743" />
         <entry key="app/src/main/res/layout/service_comment_dialog.xml" value="0.23981481481481481" />
         <entry key="app/src/main/res/layout/service_slice.xml" value="0.5" />
         <entry key="app/src/main/res/layout/taking_you_to_whatsapp.xml" value="0.3675925925925926" />
         <entry key="app/src/main/res/layout/user_support_dialog.xml" value="0.4166666666666667" />
         <entry key="app/src/main/res/menu/activity_main_screen_drawer.xml" value="0.3510204081632653" />
+        <entry key="app/src/main/res/menu/detailed_service_menu.xml" value="0.31197916666666664" />
         <entry key="app/src/main/res/menu/main_screen.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/menu/menu.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/menu/menu_detailed.xml" value="0.2388888888888889" />
-        <entry key="app/src/main/res/menu/navigation.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/navigation.xml" value="0.33" />
         <entry key="app/src/main/res/menu/personal_profile_menu.xml" value="0.22" />
         <entry key="app/src/main/res/menu/services_menu.xml" value="0.4348958333333333" />
-        <entry key="app/src/main/res/menu/top_app_bar.xml" value="0.16203703703703703" />
+        <entry key="app/src/main/res/menu/top_app_bar.xml" value="0.33" />
       </map>
     </option>
   </component>

@@ -10,6 +10,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.api.ServiceComment
 import xyz.ummo.user.data.dao.ServiceCommentDao
 import xyz.ummo.user.data.db.ServiceCommentsDatabase
 import xyz.ummo.user.data.entity.ServiceCommentEntity
@@ -51,6 +52,28 @@ class ServiceCommentsRepo(
         }
     }
 
+    private fun postServiceCommentToServer(serviceCommentEntity: ServiceCommentEntity) {
+        val serviceCommentObject = JSONObject()
+
+        try {
+            serviceCommentObject.put("_id", serviceCommentEntity.serviceId)
+                .put("service_comment", serviceCommentEntity.serviceComment)
+                .put("comment_date", serviceCommentEntity.commentDateTime)
+                .put("user_contact", serviceCommentEntity.userContact)
+
+            object : ServiceComment(activity.applicationContext, serviceCommentObject) {
+                override fun done(data: ByteArray, code: Number) {
+                    if (code == 200) {
+                        Timber.e("COMMENT SENT TO SERVER!")
+                    }
+                }
+            }
+
+        } catch (jse: JSONException) {
+            Timber.e("SERVICE-COMMENT-ERROR -> $jse")
+        }
+    }
+
     private suspend fun parseServiceCommentStringReturnServiceCommentEntityArrayList(serviceID: String): ArrayList<ServiceCommentEntity> {
         val serviceCommentResponse = withContext(Dispatchers.IO) {
             fetchServiceComments(serviceID)
@@ -75,12 +98,15 @@ class ServiceCommentsRepo(
                     commentDateTime = serviceComment.getString("comment_date")
                     userObject = serviceComment.getJSONObject("user_contact")
 
+                    /*if (!serviceComment.isNull("user_contact"))
+                        userObject = "Anonymous"*/
                     serviceCommentEntity =
                         ServiceCommentEntity(
-                            serviceId,
                             commentString,
+                            serviceId,
                             commentDateTime,
-                            userObject.getString("name")
+                            userObject.getString("name"),
+                            userObject.getString("mobile_contact")
                         )
 
                     serviceComments.add(serviceCommentEntity)
@@ -93,7 +119,7 @@ class ServiceCommentsRepo(
         return serviceComments
     }
 
-    suspend fun saveServiceCommentsToRoom(serviceID: String) {
+    suspend fun saveServiceCommentsFromServerToRoom(serviceID: String) {
         val mServiceCommentsArrayList =
             parseServiceCommentStringReturnServiceCommentEntityArrayList(serviceID)
         for (serviceComment in mServiceCommentsArrayList) {
@@ -102,7 +128,15 @@ class ServiceCommentsRepo(
         }
     }
 
-    fun getServiceCommentsFromRoom(): ArrayList<ServiceCommentEntity> {
-        return serviceCommentDao.serviceComment as ArrayList<ServiceCommentEntity>
+    fun saveServiceCommentFromInputToRoom(serviceCommentEntity: ServiceCommentEntity) {
+        postServiceCommentToServer(serviceCommentEntity)
+        serviceCommentDao.upsertServiceComment(serviceCommentEntity)
     }
+
+    fun getServiceCommentsFromRoomByServiceId(serviceID: String): ArrayList<ServiceCommentEntity> {
+        return serviceCommentDao.getServiceCommentsByServiceId(serviceID) as ArrayList<ServiceCommentEntity>
+    }
+
+    fun getServiceCommentsFromRoomByService(serviceID: String) =
+        serviceCommentDao.getServiceCommentsByServiceId(serviceID)
 }

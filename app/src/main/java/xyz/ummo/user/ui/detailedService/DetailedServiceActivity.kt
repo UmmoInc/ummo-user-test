@@ -31,8 +31,10 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -58,6 +60,7 @@ import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModel
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.serviceComments.ServiceComments
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
 import xyz.ummo.user.ui.main.MainScreen
@@ -98,11 +101,13 @@ class DetailedServiceActivity : AppCompatActivity() {
     var expandCollapseAction: RelativeLayout? = null
 
     var serviceCentresLinearLayout: LinearLayout? = null
+    var serviceActionsLinearLayout: LinearLayout? = null
     var serviceAttachmentLayout: LinearLayout? = null
     var serviceBenefitsLayout: RelativeLayout? = null
     var serviceCentreRadioButton: RadioButton? = null
     var toolbar: Toolbar? = null
     var requestAgentBtn: Button? = null
+    var shareServiceBtn: Button? = null
     var webViewLink: TextView? = null
 
     private val greenResponse = false
@@ -162,6 +167,8 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceCommentsRecyclerView: RecyclerView? = null
     var noServiceCommentsRelativeLayout: RelativeLayout? = null
     var nestedServiceCommentsScrollView: NestedScrollView? = null
+    var serviceCommentEditText: TextInputEditText? = null
+    var serviceCommentTextInputLayout: TextInputLayout? = null
 
     companion object {
         private val parentJob = Job()
@@ -197,18 +204,52 @@ class DetailedServiceActivity : AppCompatActivity() {
         /** [END] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
 
         /** [START] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
-        coroutineScope.launch(Dispatchers.IO) {
-            serviceCommentsViewModel.getServiceCommentsFromRoom()
-        }
+        /*coroutineScope.launch(Dispatchers.IO) {
+            serviceCommentsViewModel.getServiceCommentsFromRoomByServiceId(mServiceId!!)
+        }*/
+        shareServiceOnButtonClick()
         setupServiceCommentsRecyclerView()
         getAllServiceCommentsFromRoomAndDisplay()
+        checkIfCommentIsActiveAndHideRequestButton()
         /** [END] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
 
     }
 
+    private fun shareServiceOnButtonClick() {
+        shareServiceBtn!!.setOnClickListener {
+            shareServiceInfo()
+            mixpanelAPI.track("Share-Service Selected")
+        }
+    }
+
+    private fun checkIfCommentIsActiveAndHideRequestButton() {
+        val serviceCommentBottomSheet = ServiceComments()
+        val serviceCommentBundle = Bundle()
+        serviceCommentBundle.putString(SERVICE_ID, mServiceId)
+
+        serviceCommentEditText!!.setOnClickListener {
+            serviceCommentBottomSheet.arguments = serviceCommentBundle
+            serviceCommentBottomSheet.show(
+                supportFragmentManager,
+                ServiceComments.TAG
+            )
+        }
+
+        serviceCommentEditText!!.setOnFocusChangeListener { view, hasFocus ->
+            Timber.e("INPUT FIELD HAS FOCUS -> $hasFocus")
+            if (hasFocus) {
+                serviceCommentBottomSheet.arguments = serviceCommentBundle
+                serviceCommentBottomSheet.show(
+                    supportFragmentManager,
+                    ServiceComments.TAG
+                )
+            }
+        }
+    }
+
     override fun onStop() {
         super.onStop()
-        mixpanelAPI.track("Viewing DETAILED SERVICE")
+        mixpanelAPI.track("Viewing Detailed Service")
     }
 
     private fun setupServiceCommentsRecyclerView() {
@@ -223,7 +264,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         }
     }
 
-    private fun getAllServiceCommentsFromRoomAndDisplay() {
+    /*private fun getAllServiceCommentsFromRoomAndDisplay() {
         serviceCommentsViewModel.serviceCommentsMutableLiveData.observe(this@DetailedServiceActivity) { response ->
             serviceCommentsDiffUtilAdapter.differ.submitList(response)
             showServiceCommentsAndHideEverythingElse()
@@ -234,7 +275,8 @@ class DetailedServiceActivity : AppCompatActivity() {
             if (true) {
                 coroutineScope.launch(Dispatchers.IO) {
                     if (response.isEmpty()) {
-                        serviceCommentsViewModel.getServiceCommentsFromRoom()
+                        Timber.e("SERVICE ID -> $mServiceId")
+                        serviceCommentsViewModel.getServiceCommentsFromRoomByServiceId(mServiceId!!)
 
                         this@DetailedServiceActivity.runOnUiThread {
                             showServiceCommentsAndHideEverythingElse()
@@ -247,6 +289,17 @@ class DetailedServiceActivity : AppCompatActivity() {
                 }
             }
         }
+    }*/
+
+    private fun getAllServiceCommentsFromRoomAndDisplay() {
+        serviceCommentsViewModel.serviceComments.observe(this@DetailedServiceActivity) { response ->
+            serviceCommentsDiffUtilAdapter.differ.submitList(response)
+            showServiceCommentsAndHideEverythingElse()
+            checkForServiceComments(response as ArrayList<ServiceCommentEntity>)
+            Timber.e("SERVICE COMMENTS RESPONSE -> $response")
+            serviceCommentEditText?.clearFocus()
+            serviceCommentEditText?.isCursorVisible = false
+        }
     }
 
     private fun checkForServiceComments(serviceCommentsArrayList: ArrayList<ServiceCommentEntity>) {
@@ -258,6 +311,8 @@ class DetailedServiceActivity : AppCompatActivity() {
             override fun onFinish() {
                 if (!serviceCommentsArrayList.isEmpty()) {
                     showServiceCommentsAndHideEverythingElse()
+                } else {
+                    showThatThereAreNoServiceCommentsYet()
                 }
             }
         }
@@ -269,6 +324,12 @@ class DetailedServiceActivity : AppCompatActivity() {
         noServiceCommentsRelativeLayout!!.visibility = View.GONE
         serviceCommentsProgressBar!!.visibility = View.GONE
         nestedServiceCommentsScrollView!!.visibility = View.VISIBLE
+    }
+
+    private fun showThatThereAreNoServiceCommentsYet() {
+        noServiceCommentsRelativeLayout!!.visibility = View.VISIBLE
+        serviceCommentsProgressBar!!.visibility = View.GONE
+        nestedServiceCommentsScrollView!!.visibility = View.GONE
     }
 
     private fun showProgressBar() {
@@ -310,12 +371,16 @@ class DetailedServiceActivity : AppCompatActivity() {
         noServiceCommentsRelativeLayout = findViewById(R.id.no_comments_relative_layout)
         serviceCommentsProgressBar = findViewById(R.id.load_service_comments_progress_bar)
         nestedServiceCommentsScrollView = findViewById(R.id.service_comment_nested_scroll_view)
+        serviceCommentEditText = findViewById(R.id.service_comment_edit_text)
+        serviceCommentTextInputLayout = findViewById(R.id.service_comment_text_input_layout)
         /** [END] Service Comments View Elements **/
 
         nestedScrollView = findViewById(R.id.nested_scrollview)
         requestAgentBtn = findViewById(R.id.request_agent_btn)
+        shareServiceBtn = findViewById(R.id.share_service_btn)
         webViewLink = findViewById(R.id.link_source_text_view)
         mCollapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout)
+        serviceActionsLinearLayout = findViewById(R.id.service_actions_linear_layout)
         serviceImageView = findViewById(R.id.service_image_view)
         val appBar = findViewById<AppBarLayout>(R.id.service_details_app_bar_layout)
         serviceNameTextView = findViewById(R.id.detailed_service_name_text_view)
@@ -586,7 +651,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         ServiceRequestBottomSheet.TAG
                     )
 
-                mixpanelAPI.track("detailedService_requestingService", serviceRequestObject)
+                mixpanelAPI.track("Detailed Service - Requesting Service", serviceRequestObject)
             }
         }
     }
@@ -632,6 +697,14 @@ class DetailedServiceActivity : AppCompatActivity() {
         finish()
     }
 
+    override fun onResume() {
+        super.onResume()
+        serviceCommentEditText!!.clearFocus()
+        serviceCommentEditText!!.isFocusable = true
+
+        Timber.e("ON RESUME -> ${serviceCommentEditText!!.hasFocus()}")
+    }
+
     private fun populateDetailedServiceElements(mService: ServiceEntity) {
         Timber.e("UNPACKING SERVICE INTO UI ELEMENTS $mService")
         detailedServicePrefs = getSharedPreferences(ummoUserPreferences, mode)
@@ -640,7 +713,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         mCollapsingToolbarLayout!!.title = mService.serviceName
         serviceNameTextView!!.text = mService.serviceName
         /** Conveniently place in**/
-        serviceCommentsHeaderSubtitle!!.text = mService.serviceName
+//        serviceCommentsHeaderSubtitle!!.text = mService.serviceName
 
         serviceDescriptionTextView!!.text = mService.serviceDescription
 

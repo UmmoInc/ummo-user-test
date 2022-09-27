@@ -46,35 +46,82 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/content_advanced_service_details_with_comments" />
+        <include
+            android:id="@+id/service_details_with_comments_layout"
+            layout="@layout/content_advanced_service_details_with_comments" />
         <!--<include layout="@layout/content_detailed_service"/>-->
 
-        <!-- [START] Service Delegate-Button Layout -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@color/White">
+            android:layout_below="@id/service_details_with_comments_layout"
+            android:layout_gravity="bottom">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/request_agent_btn"
+            <LinearLayout
+                android:id="@+id/service_actions_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/service_comment_text_input_layout"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="15dp"
-                android:backgroundTint="@color/ummo_1"
-                android:padding="10dp"
-                android:text="@string/request_agent"
-                android:textColor="@color/White"
-                android:textSize="14sp"
-                app:icon="@drawable/ic_agent_add_24"
-                app:iconGravity="textStart"
-                tools:targetApi="lollipop" />
-        </RelativeLayout>
-        <!-- [END] Service Delegate-Button Layout -->
+                android:orientation="horizontal"
+                android:weightSum="2">
 
+                <!-- [START] Service Delegate-Button Layout -->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:background="@color/White">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/share_service_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@color/ummo_3"
+                        android:padding="5dp"
+                        android:text="@string/share_service"
+                        android:textColor="@color/White"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_share_blue_24"
+                        app:iconGravity="textStart"
+                        tools:targetApi="lollipop" />
+                </RelativeLayout>
+                <!-- [END] Service Delegate-Button Layout -->
+
+                <!-- [START] Service Delegate-Button Layout -->
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:background="@color/White">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/request_agent_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="@color/ummo_2"
+                        android:padding="5dp"
+                        android:text="@string/request_agent"
+                        android:textColor="@color/White"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_agent_add_24"
+                        app:iconGravity="textStart"
+                        tools:targetApi="lollipop" />
+                </RelativeLayout>
+                <!-- [END] Service Delegate-Button Layout -->
+
+            </LinearLayout>
+
+        </RelativeLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
