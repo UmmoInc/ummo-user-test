@@ -1,6 +1,5 @@
 package xyz.ummo.user.ui.intro
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -13,25 +12,27 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.ui.signup.RegisterActivity
-import xyz.ummo.user.utilities.CONTINUED
+import xyz.ummo.user.utilities.UMMO_INTRO_COMPLETE
 import xyz.ummo.user.utilities.mode
 import xyz.ummo.user.utilities.ummoUserPreferences
 
-class Intro : AppCompatActivity() {
+class UmmoIntro : AppCompatActivity() {
 
     private lateinit var continueButton: Button
     private lateinit var userDataPromiseText: TextView
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var context: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro)
 
-        //getDisplayMetrics()
+        val mixpanel = MixpanelAPI.getInstance(
+            this.applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         continueButton = findViewById(R.id.continue_button)
         userDataPromiseText = findViewById(R.id.user_agreement_text_view)
@@ -48,9 +49,9 @@ class Intro : AppCompatActivity() {
         }
 
         continueButton.setOnClickListener {
-            startActivity(Intent(this@Intro, RegisterActivity::class.java))
-
-            editor.putBoolean(CONTINUED, true).apply()
+            startActivity(Intent(this@UmmoIntro, AppIntro::class.java))
+            editor.putBoolean(UMMO_INTRO_COMPLETE, true).apply()
+            mixpanel?.track("UmmoIntro: Intro Complete")
         }
     }
 

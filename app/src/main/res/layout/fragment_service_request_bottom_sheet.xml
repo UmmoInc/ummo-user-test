@@ -64,7 +64,8 @@
                         android:fontFamily="@font/rubik"
                         android:text="@string/request_ummo_agent"
                         android:textColor="@color/ummo_2"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
                 </RelativeLayout>
 
             </RelativeLayout>
@@ -558,7 +559,7 @@
                                 android:fontFamily="@font/rubik"
                                 android:text="1. When would you like your service?"
                                 android:textColor="@color/black"
-                                android:textSize="20sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
 
@@ -601,10 +602,10 @@
                                     android:id="@+id/reserve_date_button"
                                     style="?attr/materialButtonOutlinedStyle"
                                     android:layout_width="match_parent"
-                                    android:layout_height="50dp"
+                                    android:layout_height="40dp"
                                     android:layout_below="@+id/selected_date_text_view"
                                     android:layout_marginEnd="10dp"
-                                    android:backgroundTint="@color/ummo_1"
+                                    android:backgroundTint="@color/ummo_2"
                                     android:fontFamily="@font/rubik"
                                     android:text="PICK A DATE"
                                     android:textColor="@color/White"
@@ -641,7 +642,7 @@
                                 android:fontFamily="@font/rubik"
                                 android:text="2. Service cost breakdown"
                                 android:textColor="@color/black"
-                                android:textSize="20sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
                         </RelativeLayout>
 

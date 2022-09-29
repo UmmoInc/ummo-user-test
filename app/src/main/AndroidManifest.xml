@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- <uses-permission android:name="android.permission.READ_SMS" /> -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -27,7 +28,10 @@
         tools:replace="android:allowBackup"
         tools:targetApi="m">
         <activity
-            android:name=".ui.intro.Intro"
+            android:name=".ui.intro.AppIntro"
+            android:exported="false" />
+        <activity
+            android:name=".ui.intro.UmmoIntro"
             android:exported="true" />
 
         <receiver
@@ -40,29 +44,31 @@
         <meta-data
             android:name="io.sentry.dsn"
             android:value="https://c46e9ae28cb847e7ab39746902f6c29a@o90029.ingest.sentry.io/1485110" />
-        <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
-
+        <meta-data
+            android:name="io.sentry.traces.sample-rate"
+            android:value="1.0" />
         <meta-data
             android:name="android.app.searchable"
             android:resource="@xml/searchable" />
-
         <meta-data
             android:name="firebase_performance_logcat_enabled"
             android:value="true" />
-
         <meta-data
             android:name="android.webkit.WebView.EnableSafeBrowsing"
             android:value="true" />
         <meta-data
             android:name="com.onesignal.NotificationServiceExtension"
             android:value="com.onesignal.example.NotificationServiceExtension" />
-        <!--<meta-data
+        <!--
+<meta-data
             android:name="com.onesignal.NotificationOpened.DEFAULT"
-            android:value="DISABLE" />-->
-        <!-- <meta-data
+            android:value="DISABLE" />
+        -->
+        <!--
+ <meta-data
              android:name="com.onesignal.suppressLaunchURLs"
-             android:value="false"/>-->
-
+             android:value="false"/>
+        -->
         <service
             android:name=".utilities.fcm.UmmoFirebaseService"
             android:exported="false">
@@ -92,8 +98,8 @@
                 android:value="@string/safety_net_api_key" />
         </activity>
         <activity android:name=".ui.serviceIssue.ServiceIssue" />
-
-        <!--<activity android:name=".ui.SelfDelegateActivity">
+        <!--
+<activity android:name=".ui.SelfDelegateActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -104,14 +110,13 @@
                     android:host="ummo.page.link"
                     android:scheme="https" />
             </intent-filter>
-        </activity>-->
+        </activity>
+        -->
         <activity android:name=".ui.serviceFeedback.Feedback" /> <!-- <activity android:name=".ui.Home" /> -->
-
         <activity
             android:name=".ui.detailedService.DetailedServiceActivity"
             android:label="@string/title_activity_detailed_service"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".ui.DelegationChat"
             android:label="@string/title_activity_delegation_chat"
@@ -124,16 +129,18 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <!--<meta-data
+        <!--
+<meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />-->
-
+            android:value="@string/google_maps_key" />
+        -->
         <activity
             android:name=".ui.Splash"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -149,8 +156,8 @@
         </activity>
         <activity
             android:name=".ui.main.MainScreen"
-            android:label="@string/title_activity_confirm_location"
             android:exported="true"
+            android:label="@string/title_activity_confirm_location"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

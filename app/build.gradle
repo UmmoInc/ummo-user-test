@@ -13,6 +13,7 @@ plugins {
 }
 
 repositories {
+    maven { url "https://jitpack.io" }
     maven { url 'https://maven.google.com' }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
@@ -223,6 +224,9 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // AppIntro
+    implementation 'com.github.AppIntro:AppIntro:6.2.0'
 
 }
 

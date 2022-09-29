@@ -18,13 +18,11 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import timber.log.Timber
 import xyz.ummo.user.R
-import xyz.ummo.user.ui.intro.Intro
+import xyz.ummo.user.ui.intro.AppIntro
+import xyz.ummo.user.ui.intro.UmmoIntro
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.signup.RegisterActivity
-import xyz.ummo.user.utilities.CONTINUED
-import xyz.ummo.user.utilities.FRAGMENT_DESTINATION
-import xyz.ummo.user.utilities.LAUNCH_URL
-import xyz.ummo.user.utilities.SIGNED_UP
+import xyz.ummo.user.utilities.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.security.SecureRandom
@@ -61,22 +59,24 @@ class Splash : Activity() {
 
         val context = this.applicationContext
         val mixpanel = MixpanelAPI.getInstance(
-                context,
-                resources.getString(R.string.mixpanelToken)
+            context,
+            resources.getString(R.string.mixpanelToken)
         )
-        mixpanel?.track("appLaunched")
+        mixpanel?.track("Splash: App Launched")
 
         //TODO: REPLACE WITH COROUTINE
         Thread {
             try {
-                Thread.sleep(1000)
+                Thread.sleep(2000)
             } catch (ie: InterruptedException) {
                 Timber.e(" onCreate-> $ie")
             }
             finish()
 
             val splashPreferences = getSharedPreferences(splashPrefs, mode)
-            val signedUp = splashPreferences.getBoolean(SIGNED_UP, false)
+            val hasGonePastUmmoIntro = splashPreferences.getBoolean(UMMO_INTRO_COMPLETE, false)
+            val hasGonePastAppIntro = splashPreferences.getBoolean(APP_INTRO_COMPLETE, false)
+            val hasCompletedSignUp = splashPreferences.getBoolean(SIGNED_UP, false)
             /*if (signedUp) {
                 Timber.e("onCreate - User has already signed up")
                 startActivity(Intent(this@Splash, MainScreen::class.java))
@@ -95,10 +95,34 @@ class Splash : Activity() {
             } else {
                 Timber.e("onCreate - User has not signed up yet!")
 
-                if (splashPreferences.getBoolean(CONTINUED, false)) {
+                /** 1. Checking if the User has not yet gone past UmmoIntro screen, at which point
+                 *     we begin the on-boarding experience **/
+                if (!hasGonePastUmmoIntro) {
+                    Timber.e("HAS NOT GONE PAST UMMO INTRO")
+                    startActivity(Intent(this@Splash, UmmoIntro::class.java))
+                }
+                /** 2. Checking if the User has already gone past UmmoIntro screen but hasn't gone
+                 *     through the AppIntro UX, we then take them to the AppIntro **/
+                else if (hasGonePastUmmoIntro && !hasGonePastAppIntro) {
+                    Timber.e("HAS NOT GONE PAST APP INTRO")
+                    startActivity(Intent(this@Splash, AppIntro::class.java))
+                }
+                /** 3. Checking if the User has gone past both UmmoIntro & AppIntro screens,
+                 *     but hasn't registered yet, then we take them to Registration UX **/
+                else if (hasGonePastUmmoIntro && hasGonePastAppIntro && !hasCompletedSignUp
+                ) {
+                    Timber.e("HAS NOT GONE PAST REGISTRATION")
                     startActivity(Intent(this@Splash, RegisterActivity::class.java))
-                } else {
-                    startActivity(Intent(this@Splash, Intro::class.java))
+                }
+                /** 4. Checking if the User has gone past both UmmoIntro & AppIntro screens,
+                 *     & has registered, then we take them to Home! **/
+                else if (hasGonePastUmmoIntro && hasGonePastAppIntro && hasCompletedSignUp
+                ) {
+                    Timber.e("HAS TO GO HOME")
+                    startActivity(
+                        Intent(this@Splash, MainScreen::class.java)
+                            .putExtra(LAUNCH_URL, "").putExtra(FRAGMENT_DESTINATION, "")
+                    )
                 }
                 /*startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -111,7 +135,8 @@ class Splash : Activity() {
         }.start()
 
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
-                == ConnectionResult.SUCCESS) {
+            == ConnectionResult.SUCCESS
+        ) {
             Timber.e("SafetyNet Attestation API is available")
         } else {
             Timber.e("WE NEED TO UPDATE Google Play services")
@@ -172,7 +197,7 @@ class Splash : Activity() {
         val task = client.attest(nonce!!, R.string.safety_net_api_key.toString())
 
         task.addOnSuccessListener(this, mSuccessListener)
-                .addOnFailureListener(this, mFailureListener)
+            .addOnFailureListener(this, mFailureListener)
     }
 
     /**
@@ -181,15 +206,16 @@ class Splash : Activity() {
      * [com.google.android.gms.safetynet.SafetyNetApi.AttestationResponse] that contains a
      * JwsResult with the attestation result.
      */
-    private val mSuccessListener = OnSuccessListener<SafetyNetApi.AttestationResponse> { attestationResponse ->
-        /** Successfully communicated with the SafetyNet API.
-         * Use result.getJwsResult() to get the signed result data.**/
+    private val mSuccessListener =
+        OnSuccessListener<SafetyNetApi.AttestationResponse> { attestationResponse ->
+            /** Successfully communicated with the SafetyNet API.
+             * Use result.getJwsResult() to get the signed result data.**/
 
-        mResult = attestationResponse.jwsResult
-        Timber.e("Success! SafetyNet Result -> \n$mResult\n")
+            mResult = attestationResponse.jwsResult
+            Timber.e("Success! SafetyNet Result -> \n$mResult\n")
 
-        //TODO: forward this result to Ummo server together with the nonce
-    }
+            //TODO: forward this result to Ummo server together with the nonce
+        }
 
     /** Called when an error occurred when communicating with SafetyNet API */
     private val mFailureListener = OnFailureListener { e ->
@@ -204,8 +230,10 @@ class Splash : Activity() {
     }
 
     override fun onDestroy() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
+        val mixpanel = MixpanelAPI.getInstance(
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
         mixpanel.flush()
         super.onDestroy()
     }

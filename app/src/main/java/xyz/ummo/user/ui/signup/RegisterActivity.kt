@@ -41,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
     private var userName: String = ""
 
     //Firebase Phone Auth Variables
+    private lateinit var mixpanel: MixpanelAPI
     private lateinit var mAuth: FirebaseAuth
     private lateinit var mCallbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private var mResendToken: PhoneAuthProvider.ForceResendingToken? = null
@@ -55,6 +56,11 @@ class RegisterActivity : AppCompatActivity() {
 
         /** Init'ing Firebase Auth **/
         mAuth = FirebaseAuth.getInstance()
+
+        mixpanel = MixpanelAPI.getInstance(
+            this.applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         /** Hiding the toolbar **/
         try {
@@ -76,15 +82,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun termsAndConditions() {
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
-
         registerBinding.legalTermsTextView.isClickable = true
         registerBinding.legalTermsTextView.movementMethod = LinkMovementMethod.getInstance()
-        val legalTerms = "<div>By signing up, you agree to Ummo's <a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms of Use</a> & <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy </a></div>"
+        val legalTerms =
+            "<div>By signing up, you agree to Ummo's <a href='https://sites.google.com/view/ummo-terms-and-conditions/home'>Terms of Use</a> & <a href='https://sites.google.com/view/ummo-privacy-policy/home'> Privacy Policy </a></div>"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            registerBinding.legalTermsTextView.text = Html.fromHtml(legalTerms, Html.FROM_HTML_MODE_LEGACY)
+            registerBinding.legalTermsTextView.text =
+                Html.fromHtml(legalTerms, Html.FROM_HTML_MODE_LEGACY)
 
             Timber.e("USING HTML FLAG")
         } else {
@@ -135,8 +140,6 @@ class RegisterActivity : AppCompatActivity() {
     //TODO: Reload user details from savedInstanceState bundle - instead of re-typing
     override fun onResume() {
         super.onResume()
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         intent.getIntExtra(TRYING_AGAIN, 0)
 
@@ -145,7 +148,7 @@ class RegisterActivity : AppCompatActivity() {
             registerBinding.userContactTextInputEditText.error = "Please try again."
             registerBinding.userNameTextInputEditText.requestFocus()
 
-            mixpanel?.track("registration_tryingAgain")
+            mixpanel.track("Registration: Trying Again")
         }
         Timber.e("WE'RE BACK")
     }
@@ -156,31 +159,30 @@ class RegisterActivity : AppCompatActivity() {
      * **/
     private fun register() {
         var nameApproved = false
-        val mixpanel = MixpanelAPI.getInstance(applicationContext,
-                resources.getString(R.string.mixpanelToken))
 
         registerBinding.registerButton.setOnClickListener {
 
             registerBinding.registrationCcp.registerCarrierNumberEditText(registerBinding.userContactTextInputEditText)
-            fullFormattedPhoneNumber = registerBinding.registrationCcp.fullNumberWithPlus.toString().trim()
+            fullFormattedPhoneNumber =
+                registerBinding.registrationCcp.fullNumberWithPlus.toString().trim()
             userName = registerBinding.userNameTextInputEditText.text.toString().trim()
 
             if (userName.isBlank()) {
                 showSnackbar("Please enter your name.", 0)
                 registerBinding.userNameTextInputEditText.error = "Enter your name here."
                 registerBinding.userNameTextInputEditText.requestFocus()
-                mixpanel?.track("registrationStarted_nameLeftBlank_issue")
+                mixpanel.track("Registration-Started: Name-Left-Blank-Issue")
 
             } else if (!userName.contains(" ")) {
                 showSnackbar("You forgot your last name.", 0)
                 registerBinding.userNameTextInputEditText.error = "Please include your last name."
                 registerBinding.userNameTextInputEditText.requestFocus()
-                mixpanel?.track("registrationStarted_surnameNotIncluded_issue")
+                mixpanel.track("Registration-Started: Surname-Not-Included-Issue")
 
             } else if (userName.length < 3) {
                 registerBinding.userNameTextInputEditText.error = "Please enter your real name."
                 registerBinding.userNameTextInputEditText.requestFocus()
-                mixpanel?.track("registrationStarted_nameTooShort_issue")
+                mixpanel.track("Registration-Started: Name-Too-Short-Issue")
 
             } else if (registerBinding.registrationCcp.isValidFullNumber) {
 
@@ -201,7 +203,7 @@ class RegisterActivity : AppCompatActivity() {
 
                         startActivity(intent)
                         reCAPTCHA()
-                        mixpanel?.track("registrationStarted_nextButton")
+                        mixpanel.track("Registration-Started: Proceeding")
 
                         finish()
                     }
@@ -210,7 +212,7 @@ class RegisterActivity : AppCompatActivity() {
                 timer.start()
 
             } else {
-                mixpanel?.track("registrationStarted_incorrectContact")
+                mixpanel.track("Registration-Started: Incorrect-Contact")
 
                 showSnackbar("Please enter a correct number.", 0)
                 registerBinding.userContactTextInputEditText.error = "Edit your contact."
@@ -254,9 +256,11 @@ class RegisterActivity : AppCompatActivity() {
                     Timber.e("reCAPTCHA Verified from Server -> ${String(data)}")
                     recaptchaStateEvent.recaptchaPassed = true
                     EventBus.getDefault().post(recaptchaStateEvent)
+                    mixpanel.track("Registration: reCaptcha Passed")
                 } else {
                     recaptchaStateEvent.recaptchaPassed = false
                     EventBus.getDefault().post(recaptchaStateEvent)
+                    mixpanel.track("Registration: reCaptcha Failed")
                     Timber.e("reCAPTCHA could NOT be verified -> ${String(data)}")
                 }
             }

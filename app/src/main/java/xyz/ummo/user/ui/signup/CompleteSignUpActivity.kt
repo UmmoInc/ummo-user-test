@@ -45,6 +45,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
     private var fcmToken: String? = ""
     private var readyToSignUp: Boolean = false
     private lateinit var viewBinding: CompleteSignUpBinding
+    private lateinit var mixpanel: MixpanelAPI
     private var userName: String = ""
     private var userContact: String = ""
     private var prefManager: PrefManager? = null
@@ -53,6 +54,11 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        mixpanel = MixpanelAPI.getInstance(
+            this.applicationContext,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         viewBinding = CompleteSignUpBinding.inflate(layoutInflater)
         val view = viewBinding.root
@@ -125,6 +131,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
     @Subscribe
     fun onContactAutoVerificationEvent(contactAutoVerificationEvent: ContactAutoVerificationEvent) {
         Timber.e("CONTACT AUTO-VERIFIED -> ${contactAutoVerificationEvent.contactAutoVerified}")
+        mixpanel.track("Complete-Sign-up: Contact-Auto-Verified")
 
         if (contactAutoVerificationEvent.contactAutoVerified!!) {
             showSnackbarBlue("Contact auto verified", -1)
@@ -182,6 +189,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     emailField.requestFocus()
                 }
                 else -> {
+                    val jseObject = JSONObject()
                     val progress = ProgressDialog(this)
                     progress.setMessage("Signing up...")
                     progress.show()
@@ -194,6 +202,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     /** Retrieving OneSignal PlayerId before signing up **/
                     if (!onePlayerId.isNullOrEmpty()) {
                         try {
+                            mixpanel.track("Complete-Sign-up: Sign-up Successful")
                             setupMixpanelUserIdentity(userName, userContact, userEmail)
                             //Ummo server sign-up
                             signUp(userName, userEmail, userContact, onePlayerId)
@@ -203,10 +212,14 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
                         } catch (e: JSONException) {
                             e.printStackTrace()
+                            jseObject.put("JSE", e)
+                            mixpanel.track("Complete-Sign-up: GLITCHED", jseObject)
                             Timber.e("User Signup JSON Exception -> $e")
                         }
                     } else {
                         Timber.e("USER-PID is null/empty -> $onePlayerId")
+                        jseObject.put("Exception", "Missing PlayerID")
+                        mixpanel.track("Complete-Sign-up: GLITCHED", jseObject)
 
                         onePlayerId = generatePID()
                         setupMixpanelUserIdentity(userName, userContact, userEmail)
@@ -266,10 +279,6 @@ class CompleteSignUpActivity : AppCompatActivity() {
 
     @SuppressLint("SimpleDateFormat")
     private fun signUp(name: String, email: String, contact: String, playerId: String) {
-        val mixpanel = MixpanelAPI.getInstance(
-            applicationContext,
-            resources.getString(R.string.mixpanelToken)
-        )
         val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         val currentDate = simpleDateFormat.format(Date())
 
@@ -297,9 +306,9 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     userObject.put(SIGN_UP_DATE, currentDate)
                     userObject.put(MIXPANEL_NAME, name)
 
-                    mixpanel?.people?.identify(contact)
-                    mixpanel?.identify(contact)
-                    mixpanel?.track("userRegistering_userDetails", userObject)
+                    mixpanel.people?.identify(contact)
+                    mixpanel.identify(contact)
+                    mixpanel.track("Complete-Sign-up: DONE", userObject)
                     Timber.e("successfully logging in-> ${String(data)}")
                     identifyUserWithSentry()
                 } else {
@@ -332,7 +341,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             applicationContext,
-                            Objects.requireNonNull(task.exception)!!.message,
+                            Objects.requireNonNull(task.exception).message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
