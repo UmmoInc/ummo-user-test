@@ -371,6 +371,8 @@ class MainScreen : AppCompatActivity() {
 
     private fun welcomeUserAboard() {
 
+        val allServicesFragment = AllServicesFragment()
+
         val welcomeEventObject = JSONObject()
         welcomeEventObject.put("EVENT_DATE_TIME", currentDate)
 
@@ -382,26 +384,25 @@ class MainScreen : AppCompatActivity() {
 
         introDialogBuilder.setView(introDialogView)
 
-        introDialogBuilder.setPositiveButton("Send Survey") { dialogInterface, i ->
+        introDialogBuilder.setPositiveButton("Send Survey") { _, _ ->
             Timber.e("USER IS IN!!!")
-//            val pagesFragment = PagesFragment()
-            val serviceCategories = ServiceCategories()
-            openFragment(serviceCategories)
+            openFragment(allServicesFragment)
 
             editor.putBoolean(NEW_SESSION, false).apply()
 
             /** [MixpanelAPI] Tracking when the User first experiences Ummo **/
 
-            mixpanel.track("welcomePromptUser_sendSurvey", welcomeEventObject)
+            mixpanel.track("Welcome Prompt User: Send Survey", welcomeEventObject)
 
             showSnackbarBlue("Thank you. We'll send it later today :)", 0)
         }
 
-        introDialogBuilder.setNegativeButton("No thanks") { dialogInterface, i ->
+        introDialogBuilder.setNegativeButton("No thanks") { _, _ ->
+            openFragment(allServicesFragment)
+
             editor.putBoolean(NEW_SESSION, false).apply()
 
-            mixpanel.track("welcomePromptUser_dontSendSurvey", welcomeEventObject)
-
+            mixpanel.track("Welcome Prompt User:  Don't Send Survey", welcomeEventObject)
         }
 
         introDialogBuilder.setOnDismissListener {

@@ -209,11 +209,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/whatsapp_support_card"
-                android:layout_margin="4dp"
-                app:cardBackgroundColor="@color/White"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="8dp"
-                app:strokeColor="@color/ummo_1"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="3dp"
+                app:cardElevation="1dp"
+                app:cardMaxElevation="1dp"
+                app:cardPreventCornerOverlap="true"
+                app:cardUseCompatPadding="true"
+                app:contentPaddingBottom="4dp"
+                app:contentPaddingTop="4dp"
+                app:strokeColor="@color/ummo_2"
                 app:strokeWidth="1dp">
 
                 <androidx.core.widget.NestedScrollView
@@ -247,9 +253,9 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignTop="@+id/delegated_service_header_image_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
-                                android:text="My Service"
+                                android:text="Service"
                                 android:textColor="@color/black"
-                                android:textSize="20sp" />
+                                android:textSize="18sp" />
 
                             <TextView
                                 android:id="@+id/delegated_service_header_name"
@@ -258,8 +264,8 @@
                                 android:layout_below="@+id/delegated_service_header_title_text_view"
                                 android:layout_toEndOf="@id/delegated_service_header_image_view"
                                 android:text="Service Name"
-                                android:textColor="@color/black"
-                                android:textSize="18sp" />
+                                android:textColor="@color/Grey"
+                                android:textSize="14sp" />
 
                         </RelativeLayout>
 
@@ -354,7 +360,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="@string/product_cost"
-                                        android:textColor="@color/Grey"
+                                        android:textColor="@color/black"
                                         android:textSize="16sp" />
 
                                     <TextView
@@ -363,8 +369,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/cost_header_text_view"
                                         android:text="@string/cost"
-                                        android:textColor="@color/black"
-                                        android:textSize="14sp" />
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
 
                                     <RelativeLayout
                                         android:id="@+id/delegation_fee__query_icon_relative_layout"
@@ -426,7 +432,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="Service Date"
                                         android:textColor="@color/black"
-                                        android:textSize="18sp" />
+                                        android:textSize="16sp" />
 
                                     <TextView
                                         android:id="@+id/service_schedule_text_view"
@@ -434,8 +440,8 @@
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/duration_header_text_view"
                                         android:text="Thursday, 14 May 2021"
-                                        android:textColor="@color/black"
-                                        android:textSize="16sp" />
+                                        android:textColor="@color/Grey"
+                                        android:textSize="12sp" />
 
                                     <TextView
                                         android:id="@+id/reschedule_text_view"

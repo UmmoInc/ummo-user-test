@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
@@ -36,7 +35,7 @@ import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
 
 
-class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
+class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
     private lateinit var rootView: View
     private lateinit var recyclerView: RecyclerView
@@ -98,15 +97,17 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         setupSearchView()
 
         /** Checking if SearchView is expanded to decide how to handle its appearance **/
-        allServiceBinding.serviceSearchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+        /*allServiceBinding.serviceSearchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
             if (hasFocus || !allServiceBinding.serviceSearchView.isIconified) {
-                /** If focused, hide title text **/
+                */
+        /** If focused, hide title text **//*
                 allServiceBinding.allServicesIntroTitleTextView.visibility = View.GONE
             } else if (!hasFocus || allServiceBinding.serviceSearchView.isIconified) {
-                /** Otherwise, leave it as is **/
+                */
+        /** Otherwise, leave it as is **//*
                 allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
             }
-        }
+        }*/
 
         /** Reloading all services on either Refresh or "Thank You" events **/
         allServiceBinding.thankYouButton.setOnClickListener {
@@ -245,7 +246,7 @@ class AllServicesFragment : Fragment(), SearchView.OnQueryTextListener {
         allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
         allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
         allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
-        allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
+//        allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
         allServiceBinding.serviceSearchView.isIconified = true
         allServiceBinding.serviceSearchView.clearFocus()
     }

@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.search
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import java.io.IOException
 class AllServicesViewModel(private val allServicesRepository: AllServicesRepository) : ViewModel() {
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
     val searchedServicesLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
+    val serviceLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
 
     /** A simple suspend function for retrieving services from the online API **/
     suspend fun getAllServicesFromServer() {
@@ -51,5 +53,9 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
                 }
             }
         }
+    }
+
+    fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
+        return allServicesRepository.getServiceById(serviceId)
     }
 }

@@ -2,6 +2,7 @@ package xyz.ummo.user.data.repo.allServices
 
 import android.app.Activity
 import android.preference.PreferenceManager
+import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -190,6 +191,10 @@ class AllServicesRepository(
     /** Retrieving the services saved by [saveServicesInRoom], returning [servicesArrayList] **/
     fun getLocallyStoredServices(): ArrayList<ServiceEntity> {
         return serviceDao.serviceListData as ArrayList<ServiceEntity>
+    }
+
+    fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
+        return serviceDao.getServiceLiveDataById(serviceId)
     }
 
     fun saveSingleServiceInRoom(mService: ServiceObject) {

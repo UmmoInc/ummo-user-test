@@ -34,7 +34,7 @@ class AppIntro : AppIntro() {
         addSlide(
             AppIntroFragment.createInstance(
                 title = "Find your service",
-                description = "By searching for it or using a service-filter",
+                description = "By either searching for it or choosing a service-filter.",
                 imageDrawable = R.drawable.find_your_service,
                 backgroundColorRes = R.color.screenWhite,
                 titleColorRes = R.color.ummo_2,
@@ -45,7 +45,7 @@ class AppIntro : AppIntro() {
         addSlide(
             AppIntroFragment.createInstance(
                 title = "Help improve your service",
-                description = "Leave a comment, give a thumbs-up or thumbs-down",
+                description = "By leaving a comment, give a thumbs-up or thumbs-down.",
                 imageDrawable = R.drawable.engage_your_service,
                 backgroundColorRes = R.color.screenWhite,
                 titleColorRes = R.color.ummo_2,
@@ -67,7 +67,7 @@ class AppIntro : AppIntro() {
         addSlide(
             AppIntroFragment.createInstance(
                 title = "Sharing is caring",
-                description = "Send a service to your friends and family.",
+                description = "Send a service to your friends and family and help them save time.",
                 imageDrawable = R.drawable.share_your_service,
                 backgroundColorRes = R.color.screenWhite,
                 titleColorRes = R.color.ummo_2,
