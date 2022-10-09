@@ -35,6 +35,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
@@ -148,6 +151,8 @@ class MainScreen : AppCompatActivity() {
 
     /** ServiceCategoriesViewModel declaration **/
     lateinit var serviceCategoriesViewModel: ServiceCategoriesViewModel
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
+
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,6 +176,12 @@ class MainScreen : AppCompatActivity() {
                 allServicesViewModelProviderFactory
             )[AllServicesViewModel::class.java]
 
+        /** Saving All Services from Server to Room here so we don't get to do it in
+         * [AllServicesFragment]'s onViewCreated **/
+        /*coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.getAllServicesFromServer()
+        }*/
+
         serviceCategoriesViewModel =
             ViewModelProvider(
                 this,
@@ -184,7 +195,7 @@ class MainScreen : AppCompatActivity() {
             Timber.e("VIEW_SOURCE -> $bundle")
 
         /** Init MainViewModel **/
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         /** Setting up Socket Worker from MainViewModel **/
         mainViewModel!!.socketConnect()
@@ -971,6 +982,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     companion object {
+        private val parentJob = Job()
 
         // tags used to attach the fragments
         private const val TAG_HOME = "home"

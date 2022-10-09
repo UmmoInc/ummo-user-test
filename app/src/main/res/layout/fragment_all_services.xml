@@ -185,8 +185,78 @@
             android:layout_centerVertical="true"
             android:layout_marginTop="20dp"
             android:paddingTop="10dp"
-            android:visibility="visible" />
+            android:visibility="invisible" />
 
+        <!-- [START] NO SERVICES FOUND Layout -->
+        <RelativeLayout
+            android:id="@+id/no_services_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_no_services_24" />
+
+            <TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Yeses! Looks like services failed to load properly. \n\nPlease make sure you have a good connection &amp; try again."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <!--<Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_servicesTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reload_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_services_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Reload Services"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_baseline_refresh_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+        <!-- [END] NO SERVICES FOUND Layout -->
+
+        <!-- [START] NO RESULTS FOUND Layout -->
         <RelativeLayout
             android:id="@+id/no_results_layout"
             android:layout_width="wrap_content"
@@ -253,7 +323,9 @@
                 app:iconGravity="textEnd"
                 tools:targetApi="lollipop" />
         </RelativeLayout>
+        <!-- [END] NO RESULTS FOUND Layout -->
 
+        <!-- [START] MISSING SERVICE CAPTURED Layout -->
         <RelativeLayout
             android:id="@+id/missing_service_captured_layout"
             android:layout_width="wrap_content"
@@ -320,6 +392,7 @@
                 app:iconGravity="textEnd"
                 tools:targetApi="lollipop" />
         </RelativeLayout>
+        <!-- [END] MISSING SERVICE CAPTURED Layout -->
 
         <!--<RelativeLayout
             android:id="@+id/no_services_relative_layout"

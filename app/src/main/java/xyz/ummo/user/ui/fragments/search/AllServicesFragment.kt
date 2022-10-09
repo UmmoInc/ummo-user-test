@@ -64,6 +64,13 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             context,
             resources.getString(R.string.mixpanelToken)
         )
+
+        /** Fetching Services from server & storing them to Room **/
+        /** Instantiating [allServicesViewModel] **/
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+        /*coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.getAllServicesFromServer()
+        }*/
     }
 
     override fun onStart() {
@@ -115,6 +122,10 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         }
 
         allServiceBinding.missingServiceCapturedImageView.setOnClickListener {
+            reloadAllServices()
+        }
+
+        allServiceBinding.reloadServicesButton.setOnClickListener {
             reloadAllServices()
         }
 
@@ -171,13 +182,11 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         /** Instantiating [allServicesViewModel] **/
         allServicesViewModel = (activity as MainScreen).allServicesViewModel
 
-        /** Within this [coroutineScope], we're fetching locally stored services **/
+//        getAllServicesFromRoomAndDisplay()
+
         coroutineScope.launch(Dispatchers.IO) {
-            allServicesViewModel.getLocallyStoredServices()
+            displayServicesFromRoom(getAllServicesFromRoom())
         }
-
-        getAllServicesFromRoomAndDisplay()
-
         filterServicesByCategory()
     }
 
@@ -203,16 +212,21 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
             if (activity != null && isAdded) {
 
-                coroutineScope.launch(Dispatchers.IO) {
+                coroutineScope.launch(Dispatchers.Main) {
                     if (response.isEmpty()) {
+                        Timber.e("SERVICES RESPONSE IS EMPTY")
                         allServicesViewModel.getAllServicesFromServer()
 
-                        requireActivity().runOnUiThread {
-                            showServicesViewAndHideEverythingElse()
-                        }
+                        //getAllServicesFromRoomAndDisplay()
 
+                    } else {
                         Handler(Looper.getMainLooper()).post {
                             checkForServices(response)
+                        }
+
+                        Timber.e("SERVICES RESPONSE IS NOT EMPTY")
+                        requireActivity().runOnUiThread {
+                            showServicesViewAndHideEverythingElse()
                         }
                     }
                 }
@@ -220,16 +234,57 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         }
     }
 
+    private fun getAllServicesFromServer() {
+        /** Within this [coroutineScope], we're fetching locally stored services **/
+        coroutineScope.launch(Dispatchers.IO) {
+            Timber.e("GETTING ALL SERVICES FROM SERVER")
+            allServicesViewModel.getAllServicesFromServer()
+        }
+    }
+
+    private suspend fun getAllServicesFromRoom(): ArrayList<ServiceEntity> {
+        return allServicesViewModel.returnLocallyStoredServices()
+    }
+
+    private fun displayServicesFromRoom(servicesFromRoom: ArrayList<ServiceEntity>) {
+        if (servicesFromRoom.isNotEmpty()) {
+            allServicesDiffUtilAdapter.differ.submitList(servicesFromRoom)
+            Timber.e("SERVICES RETURNED FROM ROOM FOR DISPLAY -> $servicesFromRoom")
+
+        } else {
+            Timber.e("ROOM IS EMPTY ATM!")
+            getAllServicesFromServer()
+
+            requireActivity().runOnUiThread {
+                reloadAllServices()
+            }
+        }
+    }
+
     /** This will run everytime the UI is refreshed or when the User doesn't find a service &
      * has to reload the UI accordingly. **/
     private fun reloadAllServices() {
-        val timer = object : CountDownTimer(2000, 1000) {
+        val timer = object : CountDownTimer(3000, 1000) {
             override fun onTick(p0: Long) {
                 showProgressBar()
             }
 
             override fun onFinish() {
-                getAllServicesFromRoomAndDisplay()
+                coroutineScope.launch(Dispatchers.IO) {
+//                    displayServicesFromRoom(getAllServicesFromRoom())
+                    Timber.e("RELOADING SERVICES -> ${getAllServicesFromRoom()}")
+
+                    if (getAllServicesFromRoom().isNotEmpty()) {
+                        allServicesDiffUtilAdapter.differ.submitList(getAllServicesFromRoom())
+                        requireActivity().runOnUiThread {
+                            showServicesViewAndHideEverythingElse()
+                        }
+                    } else {
+                        requireActivity().runOnUiThread {
+                            displayNoServicesForDisplay()
+                        }
+                    }
+                }
             }
         }
         timer.start()
@@ -245,8 +300,8 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         allServiceBinding.noResultsLayout.visibility = View.GONE
         allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
         allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+        allServiceBinding.noServicesLayout.visibility = View.GONE
         allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
-//        allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
         allServiceBinding.serviceSearchView.isIconified = true
         allServiceBinding.serviceSearchView.clearFocus()
     }
@@ -267,7 +322,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
         } else {
             Timber.e("SEARCH RESULTS NOT FOUND -> ${searchResultsEvent.searchedService}!")
-            displayNoServicesFound()
+            displayNoServicesFoundFromSearch()
 
             letMeKnowClicker(searchResultsEvent.searchedService)
         }
@@ -316,11 +371,11 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
     /** This function is meant to give the "We're working on it, quickly!" UX. We show the progress
      *  bar for 2 seconds and then check if the [serviceEntityArrayList] is empty or not.
-     *  If it IS empty, we [displayNoServicesFound] to the User;
+     *  If it IS empty, we [displayNoServicesFoundFromSearch] to the User;
      *  Else, we [showServicesViewAndHideEverythingElse] **/
     private fun checkForServices(serviceEntityArrayList: ArrayList<ServiceEntity>) {
 
-        val timer = object : CountDownTimer(2000, 1000) {
+        val timer = object : CountDownTimer(3000, 1000) {
 
             override fun onTick(p0: Long) {
                 showProgressBar()
@@ -328,7 +383,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
             override fun onFinish() {
                 if (serviceEntityArrayList.isEmpty()) {
-                    displayNoServicesFound()
+                    displayNoServicesForDisplay()
                     letMeKnowClicker("")
                 } else {
                     showServicesViewAndHideEverythingElse()
@@ -340,7 +395,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
     /** This function displays a loader for 2 seconds && displays that no service was found from
      *  the search **/
-    private fun displayNoServicesFound() {
+    private fun displayNoServicesFoundFromSearch() {
         val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(p0: Long) {
                 allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
@@ -354,6 +409,25 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 allServiceBinding.noResultsLayout.visibility = View.VISIBLE
             }
         }
+        timer.start()
+    }
+
+    private fun displayNoServicesForDisplay() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.noServicesLayout.visibility = View.VISIBLE
+            }
+        }
+
         timer.start()
     }
 
@@ -493,7 +567,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                     Timber.e("SEARCHING FOR -> $searchResults")
 
                     if (searchResults.isNullOrEmpty()) {
-                        displayNoServicesFound()
+                        displayNoServicesFoundFromSearch()
                         letMeKnowClicker(searchQueryString)
                     } else {
                         allServicesDiffUtilAdapter.differ.submitList(searchResults)

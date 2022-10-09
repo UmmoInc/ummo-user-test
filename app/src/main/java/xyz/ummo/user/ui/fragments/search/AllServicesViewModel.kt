@@ -34,6 +34,11 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
         }
     }
 
+    suspend fun returnLocallyStoredServices(): ArrayList<ServiceEntity> =
+        withContext(Dispatchers.IO) {
+            return@withContext allServicesRepository.getLocallyStoredServices()
+        }
+
     /** We're executing our service search via the [viewModelScope] coroutine whereby we check
      *  if the [searchQuery] is not empty, if it is, we fill up [searchedServicesLiveDataList]
      *  with all services retrieved by [getLocallyStoredServices];

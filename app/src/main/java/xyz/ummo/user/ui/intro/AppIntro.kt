@@ -103,7 +103,7 @@ class AppIntro : AppIntro() {
         mixpanel.track("AppIntro: App Tour Skipped")
         startActivity(Intent(this, RegisterActivity::class.java))
         editor.putBoolean(APP_INTRO_COMPLETE, true)
-        finish()
+
     }
 
     override fun onDonePressed(currentFragment: Fragment?) {
