@@ -29,11 +29,12 @@ import xyz.ummo.user.adapters.ServicesDiffUtilAdapter
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentAllServicesBinding
 import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.ui.fragments.bottomSheets.queryExtender.QueryExtender
 import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
-
 
 class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -329,8 +330,10 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
     }
 
     private fun letMeKnowClicker(serviceString: String) {
+        val queryExtender = QueryExtender()
         allServiceBinding.letMeKnowButton.setOnClickListener {
-            capturingMissingService(serviceString)
+//            capturingMissingService(serviceString)
+            queryExtender.show(supportFM, QueryExtender.TAG)
         }
     }
 

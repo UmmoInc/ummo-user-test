@@ -719,11 +719,11 @@ class MainScreen : AppCompatActivity() {
                 val feedbackEventObject = JSONObject()
                 feedbackEventObject.put("EVENT_DATE_TIME", currentDate)
                     .put("FEEDBACK", feedbackText)
-                mixpanel?.track("feedback_submitted", feedbackEventObject)
+                mixpanel?.track("Feedback Submitted", feedbackEventObject)
 
             } else {
                 showSnackbarRed("You forgot your feedback", -1)
-                mixpanel?.track("feedback_cancelled")
+                mixpanel?.track("Feedback Cancelled")
             }
 
         }
@@ -773,7 +773,7 @@ class MainScreen : AppCompatActivity() {
             val i = Intent(Intent.ACTION_VIEW)
             i.data = Uri.parse(url)
             startActivity(i)
-            mixpanel.track("supportCentre_whatsAppChatInitiated")
+            mixpanel.track("Support Centre - WhatsAppChatInitiated")
         } catch (e: PackageManager.NameNotFoundException) {
             showSnackbarYellow("WhatsApp not installed.", -1)
             e.printStackTrace()
@@ -782,7 +782,7 @@ class MainScreen : AppCompatActivity() {
 
     private fun launchPhoneDialer() {
 
-        mixpanel.track("supportCentre_phoneDialerInitiated")
+        mixpanel.track("Support Centre - Phone Dialer Initiated")
 
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:+26876804065")
@@ -887,7 +887,7 @@ class MainScreen : AppCompatActivity() {
         profileViewModel?.emailVerifiedEvent()
     }
 
-    private fun openFragment(fragment: Fragment) {
+    fun openFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.frame, fragment)
         transaction.commit()

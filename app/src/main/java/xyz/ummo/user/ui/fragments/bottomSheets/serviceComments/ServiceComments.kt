@@ -1,12 +1,14 @@
 package xyz.ummo.user.ui.fragments.bottomSheets.serviceComments
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -141,6 +143,12 @@ class ServiceComments : BottomSheetDialogFragment() {
                     serviceCommentsViewModel.saveServiceCommentFromUserToRoom(
                         newServiceCommentEntity
                     )
+
+                    /** Hiding Soft Input Keyboard Window below **/
+                    val inputMethodManager: InputMethodManager =
+                        requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
+
                     this@ServiceComments.dismiss()
                     viewBinding.serviceCommentEditText.clearComposingText()
                 }

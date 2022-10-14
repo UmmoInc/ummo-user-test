@@ -13,7 +13,7 @@
             android:layout_height="match_parent">
 
             <RelativeLayout
-                android:id="@+id/delegation_intro_body_layout"
+                android:id="@+id/service_query_extender_intro_body_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
@@ -41,10 +41,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_margin="8dp"
                         app:srcCompat="@drawable/ic_hourglass_bottom_blue_24" />
 
                     <RelativeLayout
@@ -100,6 +97,7 @@
                         android:id="@+id/delegate_description_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="58dp"
                         android:fontFamily="@font/rubik"
                         android:text="Get your service from home."
                         android:textColor="@color/White"
@@ -125,7 +123,7 @@
                             app:srcCompat="@drawable/ic_service_prep_checklist_24" />
 
                         <TextView
-                            android:id="@+id/service_prep_main_text_view"
+                            android:id="@+id/service_query_main_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toEndOf="@+id/service_prep_image_view"
@@ -139,8 +137,8 @@
                             android:id="@+id/service_prep_sub_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/service_prep_main_text_view"
-                            android:layout_alignStart="@+id/service_prep_main_text_view"
+                            android:layout_below="@id/service_query_main_text_view"
+                            android:layout_alignStart="@+id/service_query_main_text_view"
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="10dp"
                             android:layout_toEndOf="@+id/service_prep_image_view"
@@ -253,7 +251,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                app:layout_constraintTop_toBottomOf="@+id/delegation_intro_body_layout">
+                app:layout_constraintTop_toBottomOf="@+id/service_query_extender_intro_body_layout">
 
                 <ImageView
                     android:id="@+id/service_guarantee_image_view"

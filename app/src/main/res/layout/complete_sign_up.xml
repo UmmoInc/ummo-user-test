@@ -19,7 +19,7 @@
         android:fontFamily="@font/rubik"
         android:text="@string/email_prompt"
         android:textColor="@color/black"
-        android:textSize="24sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/email_prompt"
