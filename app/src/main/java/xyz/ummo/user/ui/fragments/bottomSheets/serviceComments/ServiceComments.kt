@@ -2,6 +2,7 @@ package xyz.ummo.user.ui.fragments.bottomSheets.serviceComments
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -37,6 +42,7 @@ import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class ServiceComments : BottomSheetDialogFragment() {
     private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
     private lateinit var recyclerView: RecyclerView
@@ -52,6 +58,8 @@ class ServiceComments : BottomSheetDialogFragment() {
     private lateinit var mixpanelAPI: MixpanelAPI
     private lateinit var serviceCommentsViewModel: ServiceCommentsViewModel
     private val coroutineScope = CoroutineScope((Dispatchers.Main + parentJob))
+
+    private lateinit var serviceCommentChipGroup: ChipGroup
 
     private var profileViewModel: ProfileViewModel? = null
     private var serviceCommentsViewModelOld: ServiceCommentsViewModelOld? = null
@@ -86,7 +94,7 @@ class ServiceComments : BottomSheetDialogFragment() {
 
         serviceCommentPrefs = context?.getSharedPreferences(ummoUserPreferences, mode)!!
 
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+//        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
     }
 
     override fun onCreateView(
@@ -113,10 +121,29 @@ class ServiceComments : BottomSheetDialogFragment() {
         /*initializeServiceCommentsBottomSheetTitle()
         checkForCommentsAndStopProgressBar()*/
 //        populateServiceCommentsRecyclerView()
-        submitServiceComment(serviceId)
+//        submitServiceComment(serviceId)
 
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        serviceCommentChipGroup = viewBinding.serviceCommentChipGroup
+
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        inputMethodManager.showSoftInput(
+            viewBinding.serviceCommentEditText,
+            InputMethodManager.SHOW_FORCED
+        )
+
+        initializeServiceCommentEditText()
+
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initializeServiceCommentEditText()
+        submitServiceComment(serviceId)
+        prefillServiceCommentFromChipChoices()
     }
 
     private fun submitServiceComment(serviceId: String) {
@@ -143,19 +170,104 @@ class ServiceComments : BottomSheetDialogFragment() {
                     serviceCommentsViewModel.saveServiceCommentFromUserToRoom(
                         newServiceCommentEntity
                     )
-
-                    /** Hiding Soft Input Keyboard Window below **/
-                    val inputMethodManager: InputMethodManager =
-                        requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
-
-                    this@ServiceComments.dismiss()
-                    viewBinding.serviceCommentEditText.clearComposingText()
                 }
+
+                /** Hiding Soft Input Keyboard Window below **/
+                val inputMethodManager: InputMethodManager =
+                    requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
+                viewBinding.serviceCommentEditText.setText("")
+                viewBinding.serviceCommentEditText.clearComposingText()
+
+                this@ServiceComments.dismiss()
             } else {
                 viewBinding.serviceCommentEditText.error = "Your comment is missing..."
             }
         }
+    }
+
+    private fun prefillServiceCommentFromChipChoices() {
+        serviceCommentChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            for (checkedId in checkedIds) {
+                val serviceCommentPrefill: String =
+                    group.findViewById<Chip>(checkedId)?.text as String
+                Timber.e("CHECKED CHIP ID -> $serviceCommentPrefill")
+
+                when (serviceCommentPrefill) {
+                    "How do I..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                    "How much..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                    "What if..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                    "How long..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                    "I think..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                    "I need to..." -> {
+                        prefillServiceComment(serviceCommentPrefill)
+                        trackCommentPickedOnMixpanel(serviceCommentPrefill)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun prefillServiceComment(comment: String) {
+        val formattedComment = comment.subSequence(0, (comment.length - 3))
+        viewBinding.serviceCommentEditText.setText("$formattedComment ")
+        serviceCommentChipGroup.visibility = View.GONE
+        viewBinding.serviceCommentEditText.isEmojiCompatEnabled
+        viewBinding.serviceCommentEditText.setSelection(formattedComment.length)
+    }
+
+    private fun trackCommentPickedOnMixpanel(comment: String) {
+        val commentChipJSONObject = JSONObject()
+        commentChipJSONObject.put("Comment", comment)
+        mixpanelAPI.track("Comment Chip Picked", commentChipJSONObject)
+    }
+
+    private fun showOrHideServiceCommentChipGroup() {
+        var serviceCommentCount = viewBinding.serviceCommentEditText.text!!.length
+        viewBinding.serviceCommentEditText.isEmojiCompatEnabled
+    }
+
+    override fun onPause() {
+        super.onPause()
+        /** Hiding Soft Input Keyboard Window below **/
+        val inputMethodManager: InputMethodManager =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        /** Hiding Soft Input Keyboard Window below **/
+        val inputMethodManager: InputMethodManager =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
+    private fun initializeServiceCommentEditText() {
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        inputMethodManager.showSoftInput(
+            viewBinding.serviceCommentEditText,
+            InputMethodManager.SHOW_FORCED
+        )
+
+        viewBinding.serviceCommentChipGroup.visibility = View.VISIBLE
     }
 
     companion object {
@@ -168,6 +280,13 @@ class ServiceComments : BottomSheetDialogFragment() {
                 arguments = Bundle().apply {
 
                 }
+                val inputMethodManager =
+                    requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                inputMethodManager.showSoftInput(
+                    viewBinding.serviceCommentEditText,
+                    InputMethodManager.SHOW_FORCED
+                )
             }
     }
 }

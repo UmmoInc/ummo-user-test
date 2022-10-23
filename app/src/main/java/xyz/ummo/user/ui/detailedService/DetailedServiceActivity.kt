@@ -2,6 +2,7 @@ package xyz.ummo.user.ui.detailedService
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.TargetApi
+import android.app.Activity
 import android.app.DownloadManager
 import android.app.ProgressDialog
 import android.content.*
@@ -13,6 +14,7 @@ import android.os.*
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -228,11 +230,19 @@ class DetailedServiceActivity : AppCompatActivity() {
         serviceCommentBundle.putString(SERVICE_ID, mServiceId)
 
         serviceCommentEditText!!.setOnClickListener {
+            Timber.e("INPUT FIELD CLICKED!")
+
             serviceCommentBottomSheet.arguments = serviceCommentBundle
             serviceCommentBottomSheet.show(
                 supportFragmentManager,
                 ServiceComments.TAG
             )
+
+            val inputMethodManager =
+                this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val serviceCommentEditText = findViewById<EditText>(R.id.service_comment_edit_text)
+
+            inputMethodManager.showSoftInput(serviceCommentEditText, InputMethodManager.SHOW_FORCED)
         }
 
         serviceCommentEditText!!.setOnFocusChangeListener { view, hasFocus ->
@@ -242,6 +252,15 @@ class DetailedServiceActivity : AppCompatActivity() {
                 serviceCommentBottomSheet.show(
                     supportFragmentManager,
                     ServiceComments.TAG
+                )
+                val inputMethodManager =
+                    this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val serviceCommentEditText =
+                    findViewById<EditText>(R.id.service_comment_edit_text_1)
+
+                inputMethodManager.showSoftInput(
+                    serviceCommentEditText,
+                    InputMethodManager.SHOW_FORCED
                 )
             }
         }
@@ -371,7 +390,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         noServiceCommentsRelativeLayout = findViewById(R.id.no_comments_relative_layout)
         serviceCommentsProgressBar = findViewById(R.id.load_service_comments_progress_bar)
         nestedServiceCommentsScrollView = findViewById(R.id.service_comment_nested_scroll_view)
-        serviceCommentEditText = findViewById(R.id.service_comment_edit_text)
+        serviceCommentEditText = findViewById(R.id.service_comment_edit_text_1)
         serviceCommentTextInputLayout = findViewById(R.id.service_comment_text_input_layout)
         /** [END] Service Comments View Elements **/
 
@@ -615,7 +634,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         if (countOfDelegatedServices > 0) {
             delegatedServiceViewModel!!.delegatedServiceEntityLiveData
-                .observe(this, { delegatedServiceEntity ->
+                .observe(this) { delegatedServiceEntity ->
                     val delegatedServiceId = delegatedServiceEntity.delegatedProductId
                     val serviceAgent =
                         detailedServicePrefs.getString(SERVICE_AGENT_ID, SERVICE_AGENT_ID)!!
@@ -636,7 +655,7 @@ class DetailedServiceActivity : AppCompatActivity() {
                         /** Tracking a repeat request **/
                         mixpanelAPI.track("detailedService_repeatingRequest", serviceRequestObject)
                     }
-                })
+                }
 
         } else {
             requestAgentBtn!!.setOnClickListener {
@@ -701,6 +720,11 @@ class DetailedServiceActivity : AppCompatActivity() {
         super.onResume()
         serviceCommentEditText!!.clearFocus()
         serviceCommentEditText!!.isFocusable = true
+
+        /** Hiding Soft Input Keyboard Window below **/
+        val inputMethodManager: InputMethodManager =
+            this.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(detailedServiceBinding.root.windowToken, 0)
 
         Timber.e("ON RESUME -> ${serviceCommentEditText!!.hasFocus()}")
     }
@@ -956,15 +980,19 @@ class DetailedServiceActivity : AppCompatActivity() {
             benefitTitleTextView.text = benefitTitle
             benefitBodyTextView.text = benefitBody
 
-            if (i == 0) {
-                serviceBenefitOneTitle?.text = "${i + 1}. $benefitTitle"
-                serviceBenefitOneBody?.text = benefitBody
-            } else if (i == 1) {
-                serviceBenefitTwoTitle?.text = "${i + 1}. $benefitTitle"
-                serviceBenefitTwoBody?.text = benefitBody
-            } else if (i == 2) {
-                serviceBenefitThreeTitle?.text = "${i + 1}. $benefitTitle"
-                serviceBenefitThreeBody?.text = benefitBody
+            when (i) {
+                0 -> {
+                    serviceBenefitOneTitle?.text = "${i + 1}. $benefitTitle"
+                    serviceBenefitOneBody?.text = benefitBody
+                }
+                1 -> {
+                    serviceBenefitTwoTitle?.text = "${i + 1}. $benefitTitle"
+                    serviceBenefitTwoBody?.text = benefitBody
+                }
+                2 -> {
+                    serviceBenefitThreeTitle?.text = "${i + 1}. $benefitTitle"
+                    serviceBenefitThreeBody?.text = benefitBody
+                }
             }
         }
     }

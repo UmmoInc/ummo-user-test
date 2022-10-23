@@ -1063,7 +1063,7 @@ class ServiceItem(
 
         commentDialogBuilder.setPositiveButton("Comment") { dialogInterface, i ->
             val serviceCommentEditText = commentDialogView
-                .findViewById<TextInputEditText>(R.id.service_comment_edit_text)
+                .findViewById<TextInputEditText>(R.id.service_comment_edit_text_1)
 
             val serviceComment = serviceCommentEditText.text?.trim().toString()
             captureServiceComment(viewHolder, serviceComment, date)

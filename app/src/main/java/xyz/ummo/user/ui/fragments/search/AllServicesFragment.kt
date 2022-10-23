@@ -496,19 +496,19 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             Timber.e("CHECKED GROUP -> $group")
             Timber.e("CHECKED CHIP -> $checkedId")
 
-            val titleOrNull = group.findViewById<Chip>(checkedId)?.text
+            val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String
             Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
 
             when (titleOrNull) {
 
                 "All Services" -> {
-                    mixpanel.track("All Services Filtered - All Services")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     getAllServicesFromRoomAndDisplay()
                     allServiceBinding.serviceSearchView.isIconified
                 }
                 "Home Affairs" -> {
                     searchServiceArrayList(HOME_AFFAIRS)
-                    mixpanel.track("All Services Filtered - Home-Affairs")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -516,7 +516,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
                 "Commerce" -> {
                     searchServiceArrayList(COMMERCE)
-                    mixpanel.track("All Services Filtered - Commerce")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Commerce"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -524,7 +524,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
                 "Revenue" -> {
                     searchServiceArrayList(REVENUE)
-                    mixpanel.track("All Services Filtered - Revenue")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Revenue"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -532,7 +532,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
                 "Agriculture" -> {
                     searchServiceArrayList(AGRICULTURE)
-                    mixpanel.track("All Services Filtered - Agriculture")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Agriculture"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -540,7 +540,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
                 "Health" -> {
                     searchServiceArrayList(HEALTH)
-                    mixpanel.track("All Services Filtered - Health")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Health"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -548,7 +548,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
                 "Education" -> {
                     searchServiceArrayList(EDUCATION)
-                    mixpanel.track("All Services Filtered - Home-Affairs")
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                     loadingCategoryServicesEvent.categoryLoading = "Education"
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
@@ -556,6 +556,12 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                 }
             }
         }
+    }
+
+    private fun trackServiceFilterPickedOnMixpanel(serviceFilter: String) {
+        val serviceFilterJSONObject = JSONObject()
+        serviceFilterJSONObject.put("Filter", serviceFilter)
+        mixpanel.track("All Services Filtered", serviceFilterJSONObject)
     }
 
     /** This is our MVP function!
