@@ -2,6 +2,7 @@ package xyz.ummo.user.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,10 @@ import org.json.JSONObject
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
+import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
-import xyz.ummo.user.utilities.PARENT
-import xyz.ummo.user.utilities.SERVICE_ENTITY
+import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.utilities.*
 import java.io.Serializable
 
 
@@ -28,6 +30,8 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
     private lateinit var mContext: Context
 
     private lateinit var mixpanel: MixpanelAPI
+
+    private lateinit var serviceItemSlicePreferences: SharedPreferences
 
     interface OptionsMenuClickListener {
         fun onOptionsMenuClicked(position: Int)
@@ -54,6 +58,8 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
             mContext.resources.getString(R.string.mixpanelToken)
         )
 
+        serviceItemSlicePreferences = mContext.getSharedPreferences(ummoUserPreferences, mode)
+
         return ServiceViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.service_slice,
@@ -76,7 +82,8 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
             }
 
             if (serviceEntity.delegatable!!) {
-                service_delegatable_tag_relative_layout.visibility = View.VISIBLE
+                //service_delegatable_tag_relative_layout.visibility = View.VISIBLE
+                service_slice_request_agent_button.visibility = View.VISIBLE
             }
 
             options_menu_service_slice.setOnClickListener {
@@ -111,6 +118,38 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
             service_description_text_view_slice.setOnClickListener {
                 showServiceDetails(serviceEntity)
             }
+
+            service_slice_request_agent_button.setOnClickListener {
+                requestServiceAgent(serviceEntity)
+            }
+        }
+    }
+
+    private fun requestServiceAgent(serviceEntity: ServiceEntity) {
+        val requestBundle = Bundle()
+        requestBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
+
+        val introduceDelegateBottomSheetDialog = IntroduceDelegate()
+        introduceDelegateBottomSheetDialog.arguments = requestBundle
+
+        val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
+        serviceRequestBottomSheetDialog.arguments = requestBundle
+
+        val serviceRequested = JSONObject()
+        serviceRequested.put(SERVICE_ENTITY, serviceEntity)
+
+        if (serviceItemSlicePreferences.getBoolean(DELEGATION_INTRO_IS_CONFIRMED, false)) {
+            serviceRequestBottomSheetDialog.show(
+                (mContext as FragmentActivity).supportFragmentManager,
+                ServiceRequestBottomSheet.TAG
+            )
+            mixpanel.track("All Services - Requesting Service", serviceRequested)
+        } else {
+            introduceDelegateBottomSheetDialog.show(
+                (mContext as FragmentActivity).supportFragmentManager,
+                IntroduceDelegate.TAG
+            )
+            mixpanel.track("All Services - Requesting Service (INTRO)", serviceRequested)
         }
     }
 

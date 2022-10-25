@@ -77,10 +77,11 @@
                     android:layout_below="@+id/service_description_text_view_slice"
                     android:layout_alignStart="@+id/service_description_text_view_slice">
 
-                    <RelativeLayout
+                    <!--<RelativeLayout
                         android:id="@+id/service_delegatable_tag_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
                         android:visibility="gone"
                         tools:visibility="visible">
 
@@ -106,23 +107,22 @@
                             android:text="Assignable"
                             android:textSize="8sp"
                             app:fontFamily="@font/rubik" />
-                    </RelativeLayout>
+                    </RelativeLayout>-->
 
                     <RelativeLayout
                         android:id="@+id/public_service_tag_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/service_description_text_view_slice"
+                        android:layout_centerVertical="true"
                         android:layout_toEndOf="@+id/service_delegatable_tag_relative_layout"
-                        android:visibility="visible"
-                        tools:visibility="visible">
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/public_service_image_view_slice"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:layout_centerVertical="true"
-                            android:layout_marginStart="4dp"
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="4dp"
                             android:layout_marginBottom="4dp"
@@ -140,7 +140,25 @@
                             android:textSize="8sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/service_slice_request_agent_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/ummo_2"
+                        android:layout_alignParentEnd="true"
+                        android:text="Request Service"
+                        app:cornerRadius="8dp"
+                        android:textColor="@color/ummo_2"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:iconGravity="textStart"
+                        tools:targetApi="lollipop"
+                        tools:visibility="visible" />
                 </RelativeLayout>
+
             </RelativeLayout>
 
             <RelativeLayout

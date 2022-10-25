@@ -52,6 +52,12 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
             launchServiceRequestBottomSheet(serviceEntity)
         }
 
+        viewBinding.introduceDelegateNestedScrollView.post {
+            viewBinding.introduceDelegateNestedScrollView.fullScroll(
+                View.FOCUS_DOWN
+            )
+        }
+
         termsAndConditions()
         // Inflate the layout for this fragment
         return rootView
@@ -84,6 +90,8 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
                 supportFM,
                 ServiceRequestBottomSheet.TAG
             )
+
+        this.dismiss()
     }
 
     companion object {

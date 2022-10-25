@@ -59,6 +59,7 @@ import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.ui.WebViewActivity
 import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModel
 import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModelFactory
+import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
@@ -653,7 +654,10 @@ class DetailedServiceActivity : AppCompatActivity() {
                         }
 
                         /** Tracking a repeat request **/
-                        mixpanelAPI.track("detailedService_repeatingRequest", serviceRequestObject)
+                        mixpanelAPI.track(
+                            "Detailed Service - Repeating Request",
+                            serviceRequestObject
+                        )
                     }
                 }
 
@@ -662,15 +666,32 @@ class DetailedServiceActivity : AppCompatActivity() {
                 /** Creating bottomSheet service request **/
                 val requestBundle = Bundle()
                 requestBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
+
+                val introduceDelegateBottomSheetDialog = IntroduceDelegate()
+                introduceDelegateBottomSheetDialog.arguments = requestBundle
+
                 val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
                 serviceRequestBottomSheetDialog.arguments = requestBundle
-                serviceRequestBottomSheetDialog
-                    .show(
+
+                val serviceRequested = JSONObject()
+                serviceRequested.put(SERVICE_ENTITY, serviceEntity)
+
+                if (detailedServicePrefs.getBoolean(DELEGATION_INTRO_IS_CONFIRMED, false)) {
+                    serviceRequestBottomSheetDialog.show(
                         this.supportFragmentManager,
                         ServiceRequestBottomSheet.TAG
                     )
-
-                mixpanelAPI.track("Detailed Service - Requesting Service", serviceRequestObject)
+                    mixpanelAPI.track("Detailed Service - Requesting Service", serviceRequested)
+                } else {
+                    introduceDelegateBottomSheetDialog.show(
+                        this.supportFragmentManager,
+                        IntroduceDelegate.TAG
+                    )
+                    mixpanelAPI.track(
+                        "Detailed Service - Requesting Service (INTRO)",
+                        serviceRequested
+                    )
+                }
             }
         }
     }

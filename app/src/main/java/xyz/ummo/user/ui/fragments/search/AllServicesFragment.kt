@@ -307,7 +307,6 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         allServiceBinding.serviceSearchView.clearFocus()
     }
 
-
     private fun justShowAllServicesReturnedFromAdapter() {
         allServiceBinding.noResultsLayout.visibility = View.GONE
         allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
