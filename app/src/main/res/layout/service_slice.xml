@@ -70,18 +70,6 @@
                     android:textSize="12sp"
                     app:fontFamily="@font/rubik" />
 
-                <ImageView
-                    android:id="@+id/service_slice_bookmark_image"
-                    android:layout_width="20dp"
-                    android:layout_height="30dp"
-                    android:layout_alignBottom="@+id/service_title_text_view_slice"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_toStartOf="@+id/service_slice_menu_relative_layout"
-                    android:layout_toLeftOf="@id/service_slice_menu_relative_layout"
-                    app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
-
                 <RelativeLayout
                     android:id="@+id/service_tags_relative_layout"
                     android:layout_width="wrap_content"
@@ -163,7 +151,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/public_service_tag_relative_layout"
                         android:orientation="horizontal"
-                        android:weightSum="3">
+                        android:weightSum="4">
 
                         <RelativeLayout
                             android:id="@+id/service_slice_views_relative_layout"
@@ -257,6 +245,37 @@
                                 android:text="@string/shares_placeholder"
                                 android:textSize="8sp"
                                 app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_bookmark_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_bookmark_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_bookmark_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_bookmark_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text="2 bookmarks"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik"/>
                         </RelativeLayout>
                     </LinearLayout>
                     <!-- [END] Service Actions Layout -->

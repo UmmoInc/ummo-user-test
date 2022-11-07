@@ -462,11 +462,9 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         editor = detailedServicePrefs.edit()
 
-        detailedProductViewModel = ViewModelProvider(this)
-            .get(DetailedProductViewModel::class.java)
+        detailedProductViewModel = ViewModelProvider(this)[DetailedProductViewModel::class.java]
 
-        delegatedServiceViewModel = ViewModelProvider(this)
-            .get(DelegatedServiceViewModel::class.java)
+        delegatedServiceViewModel = ViewModelProvider(this)[DelegatedServiceViewModel::class.java]
 
         serviceCostTextInputLayout = findViewById(R.id.detailed_service_cost_dropdown)
 
