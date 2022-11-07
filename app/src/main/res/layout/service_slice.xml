@@ -32,7 +32,7 @@
                 android:id="@+id/service_info_title_relative_layout_slice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="50dp">
+                android:layout_marginEnd="10dp">
 
                 <ImageView
                     android:id="@+id/service_card_avatar_image_view_slice"
@@ -70,12 +70,25 @@
                     android:textSize="12sp"
                     app:fontFamily="@font/rubik" />
 
+                <ImageView
+                    android:id="@+id/service_slice_bookmark_image"
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_alignBottom="@+id/service_title_text_view_slice"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_toStartOf="@+id/service_slice_menu_relative_layout"
+                    android:layout_toLeftOf="@id/service_slice_menu_relative_layout"
+                    app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
                 <RelativeLayout
                     android:id="@+id/service_tags_relative_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/service_description_text_view_slice"
-                    android:layout_alignStart="@+id/service_description_text_view_slice">
+                    android:layout_alignStart="@+id/service_description_text_view_slice"
+                    android:layout_marginTop="16dp">
 
                     <!--<RelativeLayout
                         android:id="@+id/service_delegatable_tag_relative_layout"
@@ -109,12 +122,13 @@
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>-->
 
+                    <!-- [START] Public Service Tag Layout -->
                     <RelativeLayout
                         android:id="@+id/public_service_tag_relative_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/service_description_text_view_slice"
-                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="8dp"
                         android:layout_toEndOf="@+id/service_delegatable_tag_relative_layout"
                         android:visibility="visible">
 
@@ -140,21 +154,129 @@
                             android:textSize="8sp"
                             app:fontFamily="@font/rubik" />
                     </RelativeLayout>
+                    <!-- [END] Public Service Tag Layout -->
+
+                    <!-- [START] Service Actions Layout -->
+                    <LinearLayout
+                        android:id="@+id/service_slice_actions_linear_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/public_service_tag_relative_layout"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_views_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingEnd="4dp"
+                            android:visibility="visible">
+
+                            <ImageView
+                                android:id="@+id/service_slice_views_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="2dp"
+                                app:srcCompat="@drawable/ic_outline_visibility_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_views_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_views_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text="2 views"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_comments_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_comments_image"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginBottom="2dp"
+                                app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_comments_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_comments_image"
+                                android:fontFamily="@font/rubik"
+                                android:text="@string/comments_placeholder"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_share_icon_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_shares_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_share_grey_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_shares_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_shares_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text="@string/shares_placeholder"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                    <!-- [END] Service Actions Layout -->
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/service_slice_request_agent_button"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="@color/ummo_2"
+                        android:layout_below="@+id/service_slice_actions_linear_layout"
                         android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="0dp"
                         android:text="Request Service"
-                        app:cornerRadius="8dp"
                         android:textColor="@color/ummo_2"
                         android:textSize="8sp"
                         android:textStyle="bold"
                         android:visibility="gone"
+                        app:cornerRadius="8dp"
                         app:iconGravity="textStart"
+                        app:strokeColor="@color/ummo_2"
+                        app:strokeWidth="1dp"
                         tools:targetApi="lollipop"
                         tools:visibility="visible" />
                 </RelativeLayout>
@@ -162,7 +284,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/view_service_relative_layout"
+                android:id="@+id/service_slice_menu_relative_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

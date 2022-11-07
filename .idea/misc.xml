@@ -15,6 +15,8 @@
         <entry key="app/src/main/res/drawable/ic_baseline_chat_24.xml" value="0.40520833333333334" />
         <entry key="app/src/main/res/drawable/ic_help_outline_black_24dp.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_account_circle_black_24.xml" value="0.43796296296296294" />
+        <entry key="app/src/main/res/drawable/ic_outline_bookmark_border_24.xml" value="0.1735" />
+        <entry key="app/src/main/res/drawable/ic_outline_chat_bubble_grey_24.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_outline_feedback_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_handyman_black_24.xml" value="0.43796296296296294" />
         <entry key="app/src/main/res/drawable/ic_outline_language_black_24.xml" value="0.43796296296296294" />
@@ -68,7 +70,7 @@
         <entry key="app/src/main/res/layout/notify_user_of_email_status_done.xml" value="0.45692307692307693" />
         <entry key="app/src/main/res/layout/register.xml" value="0.30462962962962964" />
         <entry key="app/src/main/res/layout/right_chat_bubble.xml" value="0.4791666666666667" />
-        <entry key="app/src/main/res/layout/service_card.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/service_card.xml" value="0.32011331444759206" />
         <entry key="app/src/main/res/layout/service_category.xml" value="0.33" />
         <entry key="app/src/main/res/layout/service_comment.xml" value="0.29739583333333336" />
         <entry key="app/src/main/res/layout/service_comment_bottom_sheet.xml" value="0.1" />

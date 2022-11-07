@@ -75,6 +75,8 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
         holder.itemView.apply {
             service_title_text_view_slice.text = serviceEntity.serviceName
             service_description_text_view_slice.text = serviceEntity.serviceDescription
+            service_slice_views_count_text_view.text = serviceEntity.serviceViews.toString()
+            service_slice_comments_count_text_view.text = serviceEntity.commentCount.toString()
             setOnClickListener {
                 onItemClickListener?.let {
                     it(serviceEntity)

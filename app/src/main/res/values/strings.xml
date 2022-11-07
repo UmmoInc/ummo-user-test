@@ -164,8 +164,8 @@
     <string name="service_requirements_placeholder">Requirements</string>
     <string name="disapproval_placeholder">2</string>
     <string name="approval_placeholder">2</string>
-    <string name="comments_placeholder">2</string>
-    <string name="shares_placeholder">2</string>
+    <string name="comments_placeholder">2 comments</string>
+    <string name="shares_placeholder">2 shares</string>
     <string name="more_info">MORE INFO</string>
     <string name="you_upvoted_this">You upvoted</string>
     <string name="you_downvoted_this">You downvoted</string>
