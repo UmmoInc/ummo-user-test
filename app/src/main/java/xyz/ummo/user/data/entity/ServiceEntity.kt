@@ -18,15 +18,12 @@ data class ServiceEntity(
     @ColumnInfo(name = "service_id") //0
     var serviceId: String,
 
-    @NonNull
     @ColumnInfo(name = "service_name") //1
     var serviceName: String? = null,
 
-    @NonNull
     @ColumnInfo(name = "service_description") //2
     var serviceDescription: String? = null,
 
-    @NonNull
     @ColumnInfo(name = "service_eligibility") //3
     var serviceEligibility: String? = null,
 
@@ -34,11 +31,9 @@ data class ServiceEntity(
     var serviceCentres: ArrayList<String>? = null,
 //    override var serviceCentres: String? = null
 
-    @NonNull
     @ColumnInfo(name = "delegatable") //5
     var delegatable: Boolean? = null,
 
-    @NonNull
     @ColumnInfo(name = "service_cost") //6
     var serviceCost: ArrayList<ServiceCostModel>? = null,
 

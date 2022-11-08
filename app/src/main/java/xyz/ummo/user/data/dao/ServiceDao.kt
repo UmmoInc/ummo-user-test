@@ -23,7 +23,7 @@ interface ServiceDao {
 
     @Query("SELECT * FROM service WHERE delegatable = :delegatable")
     fun getNonDelegatableServices(delegatable: Boolean = false): List<ServiceEntity>
-    
+
     @Query("SELECT * FROM service WHERE bookmarked = :bookmarked")
     fun getBookmarkedServicesList(bookmarked: Boolean = true): List<ServiceEntity>
 
@@ -32,6 +32,9 @@ interface ServiceDao {
 
     @Query("UPDATE service SET useful_count = :approvalCount WHERE service_id = :serviceId")
     fun incrementApprovalCount(serviceId: String?, approvalCount: Int)
+
+    @Query("UPDATE service SET service_views = service_views + 1 WHERE  service_id = :serviceId")
+    fun incrementServiceViewCount(serviceId: String?)
 
     @Query("DELETE FROM service")
     fun deleteServices()

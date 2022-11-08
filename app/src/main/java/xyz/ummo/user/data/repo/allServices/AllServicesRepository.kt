@@ -1,6 +1,8 @@
 package xyz.ummo.user.data.repo.allServices
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +14,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.Service
+import xyz.ummo.user.api.UpdateService
 import xyz.ummo.user.data.dao.ServiceDao
 import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.entity.ServiceEntity
@@ -21,6 +24,8 @@ import xyz.ummo.user.utilities.*
 import xyz.ummo.user.workers.fromJSONArray
 import xyz.ummo.user.workers.fromServiceBenefitsJSONArray
 import xyz.ummo.user.workers.fromServiceCostJSONArray
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /** This repo will get data from DB and/or our API and propagate it to the viewModel associated **/
@@ -32,6 +37,9 @@ class AllServicesRepository(
     private lateinit var serviceEntity: ServiceEntity
     private var serviceDao: ServiceDao
     private var allServicesDatabase = AllServicesDatabase.invoke(activity.applicationContext)
+    private var userContactPref = ""
+    private lateinit var sharedPreferences: SharedPreferences
+
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(2, TimeUnit.MINUTES)
@@ -42,6 +50,7 @@ class AllServicesRepository(
 
     init {
         serviceDao = allServicesDatabase.serviceDao()!!
+        sharedPreferences = activity.getSharedPreferences(ummoUserPreferences, mode)
     }
 
     /** Auth JWT **/
@@ -217,5 +226,38 @@ class AllServicesRepository(
         serviceEntity.serviceCategory = mService.serviceCategory
         Timber.e("SAVING SERVICE IN ROOM ->  ${serviceEntity.serviceName}")
         serviceDao.upsertService(serviceEntity)
+    }
+
+    fun incrementServiceViewCounter(serviceEntity: ServiceEntity) {
+        serviceDao.incrementServiceViewCount(serviceEntity.serviceId)
+        updateServiceBySyncingWithServer(serviceEntity, "INCREMENT_VIEW")
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun updateServiceBySyncingWithServer(serviceEntity: ServiceEntity, updateType: String) {
+        val serviceJSONObject = JSONObject()
+        val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
+        val currentDateTime = simpleDateFormat.format(Date())
+
+        userContactPref = sharedPreferences.getString(USER_CONTACT, "").toString()
+
+        try {
+            serviceJSONObject.put("_id", serviceEntity.serviceId)
+                .put("update_time", currentDateTime)
+                .put("update_type", updateType)
+                .put("user_contact", userContactPref)
+
+            object : UpdateService(activity.applicationContext, serviceJSONObject) {
+                override fun done(data: ByteArray, code: Number) {
+                    if (code == 200) {
+                        Timber.e("SERVICE UPDATED AT -> $currentDateTime")
+                    } else {
+                        Timber.e("SERVICE-UPDATE-ERROR -> $code")
+                    }
+                }
+            }
+        } catch (jse: JSONException) {
+            Timber.e("JSONException -> $jse")
+        }
     }
 }

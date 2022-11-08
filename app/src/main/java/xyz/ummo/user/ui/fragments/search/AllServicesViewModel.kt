@@ -60,6 +60,16 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
         }
     }
 
+    suspend fun incrementServiceViewCount(serviceEntity: ServiceEntity) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.incrementServiceViewCounter(serviceEntity)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
     fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
         return allServicesRepository.getServiceById(serviceId)
     }

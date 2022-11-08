@@ -43,12 +43,14 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.adapters.ServiceCommentsDiffUtilAdapter
+import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.db.ServiceCommentsDatabase
 import xyz.ummo.user.data.db.ServiceUtilityDatabase
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
 import xyz.ummo.user.data.entity.ProductEntity
 import xyz.ummo.user.data.entity.ServiceCommentEntity
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 import xyz.ummo.user.data.repo.serviceSomments.ServiceCommentsRepo
 import xyz.ummo.user.data.repo.serviceUtility.ServiceUtilityRepo
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
@@ -66,6 +68,8 @@ import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.serviceComments.ServiceComments
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesFragment
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
@@ -165,6 +169,8 @@ class DetailedServiceActivity : AppCompatActivity() {
     private lateinit var serviceCommentsDiffUtilAdapter: ServiceCommentsDiffUtilAdapter
     private lateinit var serviceCommentsViewBinding: FragmentServiceCommentsBinding
 
+    private lateinit var allServicesViewModel: AllServicesViewModel
+
     var serviceCommentsHeaderSubtitle: TextView? = null
     var serviceCommentsProgressBar: ProgressBar? = null
     var serviceCommentsRecyclerView: RecyclerView? = null
@@ -191,6 +197,18 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         checkServiceUtilityThumbs()
 
+        /** [START] Instantiating [allServicesViewModel] to update [serviceEntity] **/
+        val allServicesRepository = AllServicesRepository(AllServicesDatabase(this), this)
+        val allServicesViewModelProviderFactory =
+            AllServicesViewModelProviderFactory(allServicesRepository)
+
+        allServicesViewModel =
+            ViewModelProvider(
+                this,
+                allServicesViewModelProviderFactory
+            )[AllServicesViewModel::class.java]
+        /** [END] Instantiating [allServicesViewModel] to update [serviceEntity] **/
+
         /** [START] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
         val serviceCommentsRepo = ServiceCommentsRepo(ServiceCommentsDatabase(this), this)
         val serviceCommentsViewModelProviderFactory =
@@ -214,8 +232,16 @@ class DetailedServiceActivity : AppCompatActivity() {
         setupServiceCommentsRecyclerView()
         getAllServiceCommentsFromRoomAndDisplay()
         checkIfCommentIsActiveAndHideRequestButton()
+        incrementServiceViewCount()
         /** [END] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
 
+    }
+
+    private fun incrementServiceViewCount() {
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.incrementServiceViewCount(serviceEntity)
+            Timber.e("SERVICE VIEW COUNT -> ${serviceEntity.serviceViews} INCREMENTED")
+        }
     }
 
     private fun shareServiceOnButtonClick() {
