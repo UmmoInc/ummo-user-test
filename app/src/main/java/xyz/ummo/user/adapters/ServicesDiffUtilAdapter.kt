@@ -75,9 +75,31 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
         holder.itemView.apply {
             service_title_text_view_slice.text = serviceEntity.serviceName
             service_description_text_view_slice.text = serviceEntity.serviceDescription
-            service_slice_views_count_text_view.text = "${serviceEntity.serviceViews.toString()} views"
-            service_slice_comments_count_text_view.text = "${serviceEntity.commentCount.toString()} comments"
-            service_slice_shares_count_text_view.text = "${serviceEntity.serviceShares.toString()} shares"
+
+            if (serviceEntity.serviceViews == 1) {
+                service_slice_views_count_text_view.text =
+                    "${serviceEntity.serviceViews.toString()} view"
+            } else {
+                service_slice_views_count_text_view.text =
+                    "${serviceEntity.serviceViews.toString()} views"
+            }
+
+            if (serviceEntity.commentCount == 1) {
+                service_slice_comments_count_text_view.text =
+                    "${serviceEntity.commentCount.toString()} comment"
+            } else {
+                service_slice_comments_count_text_view.text =
+                    "${serviceEntity.commentCount.toString()} comments"
+            }
+
+            if (serviceEntity.serviceShares == 1) {
+                service_slice_shares_count_text_view.text =
+                    "${serviceEntity.serviceShares.toString()} share"
+            } else {
+                service_slice_shares_count_text_view.text =
+                    "${serviceEntity.serviceShares.toString()} shares"
+            }
+
             service_slice_bookmark_count_text_view.text = "by 5 others"
             setOnClickListener {
                 onItemClickListener?.let {

@@ -15,16 +15,16 @@ abstract class UpdateService(context: Context, serviceUpdate: JSONObject) {
         Fuel.put("${context.getString(R.string.serverUrl)}/service/update_service")
             .jsonBody(serviceUpdate.toString())
             .response { request, response, result ->
-                (context as Activity).runOnUiThread {
-                    done(response.data, response.statusCode)
+//                (context as Activity).runOnUiThread {
+                done(response.data, response.statusCode)
 
-                    if (response.isSuccessful) {
-                        Timber.e("Responding well | Data -> ${response.data}")
-                    } else {
-                        Timber.e("Status Code -> ${String(response.data)}")
-                    }
-                    }
+                if (response.isSuccessful) {
+                    Timber.e("Responding well | Data -> ${response.data}")
+                } else {
+                    Timber.e("Status Code -> ${String(response.data)}")
                 }
+//                    }
+            }
     }
 
     abstract fun done(data: ByteArray, code: Number)
