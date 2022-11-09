@@ -1,5 +1,6 @@
 package xyz.ummo.user.ui.fragments.search
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -35,6 +36,7 @@ import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
 import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
 
 class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQueryTextListener {
     private lateinit var allServiceBinding: FragmentAllServicesBinding
@@ -45,6 +47,9 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
     private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
+
+    private lateinit var allServicesSharedPreferences: SharedPreferences
+    private lateinit var prefEditor: SharedPreferences.Editor
 
     private lateinit var mixpanel: MixpanelAPI
 
@@ -69,9 +74,11 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         /** Fetching Services from server & storing them to Room **/
         /** Instantiating [allServicesViewModel] **/
         allServicesViewModel = (activity as MainScreen).allServicesViewModel
-        /*coroutineScope.launch(Dispatchers.IO) {
-            allServicesViewModel.getAllServicesFromServer()
-        }*/
+
+        allServicesSharedPreferences =
+            (activity as MainScreen).getSharedPreferences(ummoUserPreferences, mode)
+        prefEditor = allServicesSharedPreferences.edit()
+
     }
 
     override fun onStart() {
@@ -139,13 +146,26 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         return rootView
     }
 
+    @Subscribe
+    fun addServiceBookmark(bookmarkedEvent: ServiceBookmarkedEvent) {
+        if (bookmarkedEvent.serviceBookmarked == true) {
+            Timber.e("EB: Adding bookmark to ${bookmarkedEvent.serviceName}")
+//            addServiceBookmark()
+            prefEditor.putBoolean("$SERVICE_BOOKMARKED-${bookmarkedEvent.serviceName}", true)
+            prefEditor.apply()
+        }
+    }
+
+    private fun addServiceBookmark(serviceEntity: ServiceEntity) {
+
+        coroutineScope.launch(Dispatchers.Main) {
+            allServicesViewModel.addServiceBookmark(serviceEntity)
+        }
+    }
+
     private fun setupRecyclerView() {
         allServicesDiffUtilAdapter =
-            ServicesDiffUtilAdapter(object : ServicesDiffUtilAdapter.OptionsMenuClickListener {
-                override fun onOptionsMenuClicked(position: Int) {
-                    performOptionsMenuClick(position)
-                }
-            })
+            ServicesDiffUtilAdapter()
 
         all_services_recycler_view.apply {
             adapter = allServicesDiffUtilAdapter
@@ -189,6 +209,8 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             displayServicesFromRoom(getAllServicesFromRoom())
         }
         filterServicesByCategory()
+        checkIfServiceIsBookmarked()
+
     }
 
     /** 1. In getting all services from Room, we're actually observing the [allServicesViewModel]'s
@@ -217,7 +239,6 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                     if (response.isEmpty()) {
                         Timber.e("SERVICES RESPONSE IS EMPTY")
                         allServicesViewModel.getAllServicesFromServer()
-
                         //getAllServicesFromRoomAndDisplay()
 
                     } else {
@@ -235,6 +256,30 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
         }
     }
 
+    private fun checkIfServiceIsBookmarked() {
+
+        allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { serviceEntities ->
+
+            coroutineScope.launch(Dispatchers.Main) {
+
+                for (serviceEntity in serviceEntities) {
+
+                    if (allServicesSharedPreferences.getBoolean(
+                            "$SERVICE_BOOKMARKED-${serviceEntity.serviceId}",
+                            true
+                        )
+                    ) {
+                        allServicesViewModel.addServiceBookmark(serviceEntity)
+                        Timber.e("SERVICE BOOKMARKED -> TRUE")
+                    } else {
+                        Timber.e("SERVICE BOOKMARKED -> FALSE")
+                    }
+                }
+            }
+        }
+
+    }
+
     private fun getAllServicesFromServer() {
         /** Within this [coroutineScope], we're fetching locally stored services **/
         coroutineScope.launch(Dispatchers.IO) {
@@ -250,7 +295,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
     private fun displayServicesFromRoom(servicesFromRoom: ArrayList<ServiceEntity>) {
         if (servicesFromRoom.isNotEmpty()) {
             allServicesDiffUtilAdapter.differ.submitList(servicesFromRoom)
-            Timber.e("SERVICES RETURNED FROM ROOM FOR DISPLAY -> $servicesFromRoom")
+//            Timber.e("SERVICES RETURNED FROM ROOM FOR DISPLAY -> $servicesFromRoom")
 
         } else {
             Timber.e("ROOM IS EMPTY ATM!")

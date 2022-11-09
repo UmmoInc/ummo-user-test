@@ -70,6 +70,26 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
         }
     }
 
+    suspend fun addServiceBookmark(serviceEntity: ServiceEntity) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.addServiceBookmark(serviceEntity)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun removeServiceBookmark(serviceEntity: ServiceEntity) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.removeServiceBookmark(serviceEntity)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
     fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
         return allServicesRepository.getServiceById(serviceId)
     }

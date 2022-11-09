@@ -248,6 +248,14 @@ class AllServicesRepository(
         updateServiceBySyncingWithServer(serviceEntity, "INCREMENT_VIEW")
     }
 
+    fun addServiceBookmark(serviceEntity: ServiceEntity) {
+        serviceDao.addServiceBookmark(serviceEntity.serviceId)
+    }
+
+    fun removeServiceBookmark(serviceEntity: ServiceEntity) {
+        serviceDao.removeServiceBookmark(serviceEntity.serviceId)
+    }
+
     @SuppressLint("SimpleDateFormat")
     fun updateServiceBySyncingWithServer(serviceEntity: ServiceEntity, updateType: String) {
         val serviceJSONObject = JSONObject()

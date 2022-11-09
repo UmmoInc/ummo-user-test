@@ -91,6 +91,8 @@ const val FILE_NAME = "file_name"
 const val FILE_SIZE = "file_size"
 const val FILE_URI = "file_uri"
 
+const val SERVICE_BOOKMARKED = "SERVICE_BOOKMARKED"
+
 /** The constants below are mostly used in DetailedServiceActivity.kt **/
 const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
 const val ATTACHMENT_DOWNLOADED = "ATTACHMENT_DOWNLOADED"

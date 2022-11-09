@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,18 +14,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.service_slice.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
+import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.utilities.*
+import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
 import java.io.Serializable
 
-
-class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuClickListener) :
+class ServicesDiffUtilAdapter :
     RecyclerView.Adapter<ServicesDiffUtilAdapter.ServiceViewHolder>() {
 
     private lateinit var mContext: Context
@@ -32,6 +40,12 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
     private lateinit var mixpanel: MixpanelAPI
 
     private lateinit var serviceItemSlicePreferences: SharedPreferences
+
+    private val coroutineScope = CoroutineScope((Dispatchers.Main + parentJob))
+
+    private lateinit var allServicesViewModel: AllServicesViewModel
+
+    private val serviceBookmarkedEvent = ServiceBookmarkedEvent()
 
     interface OptionsMenuClickListener {
         fun onOptionsMenuClicked(position: Int)
@@ -75,9 +89,31 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
         holder.itemView.apply {
             service_title_text_view_slice.text = serviceEntity.serviceName
             service_description_text_view_slice.text = serviceEntity.serviceDescription
-            service_slice_views_count_text_view.text = "${serviceEntity.serviceViews.toString()} views"
-            service_slice_comments_count_text_view.text = "${serviceEntity.commentCount.toString()} comments"
-            service_slice_shares_count_text_view.text = "${serviceEntity.serviceShares.toString()} shares"
+
+            if (serviceEntity.serviceViews == 1) {
+                service_slice_views_count_text_view.text =
+                    "${serviceEntity.serviceViews.toString()} view"
+            } else {
+                service_slice_views_count_text_view.text =
+                    "${serviceEntity.serviceViews.toString()} views"
+            }
+
+            if (serviceEntity.commentCount == 1) {
+                service_slice_comments_count_text_view.text =
+                    "${serviceEntity.commentCount.toString()} comment"
+            } else {
+                service_slice_comments_count_text_view.text =
+                    "${serviceEntity.commentCount.toString()} comments"
+            }
+
+            if (serviceEntity.serviceShares == 1) {
+                service_slice_shares_count_text_view.text =
+                    "${serviceEntity.serviceShares.toString()} share"
+            } else {
+                service_slice_shares_count_text_view.text =
+                    "${serviceEntity.serviceShares.toString()} shares"
+            }
+
             service_slice_bookmark_count_text_view.text = "by 5 others"
             setOnClickListener {
                 onItemClickListener?.let {
@@ -126,7 +162,29 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
             service_slice_request_agent_button.setOnClickListener {
                 requestServiceAgent(serviceEntity)
             }
+
+            service_slice_bookmark_image_view.setOnClickListener {
+                bookmarkService(serviceEntity, holder)
+            }
         }
+    }
+
+    private fun bookmarkService(serviceEntity: ServiceEntity, holder: ServiceViewHolder) {
+        serviceBookmarkedEvent.serviceBookmarked = true
+        serviceBookmarkedEvent.serviceName = serviceEntity.serviceId
+        EventBus.getDefault().post(serviceBookmarkedEvent)
+
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+
+            }
+
+            override fun onFinish() {
+                holder.itemView.service_slice_bookmark_image_view.setImageResource(R.drawable.ic_filled_bookmark_24)
+                Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceName}")
+            }
+        }
+        timer.start()
     }
 
     private fun requestServiceAgent(serviceEntity: ServiceEntity) {
@@ -157,6 +215,20 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
         }
     }
 
+    private fun addServiceBookmark(serviceEntity: ServiceEntity) {
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.addServiceBookmark(serviceEntity)
+            Timber.e("SERVICE BOOKMARKED -> ${serviceEntity.serviceName}")
+        }
+    }
+
+    private fun removeServiceBookmark(serviceEntity: ServiceEntity) {
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.removeServiceBookmark(serviceEntity)
+            Timber.e("SERVICE UN-BOOKMARKED -> ${serviceEntity.serviceName}")
+        }
+    }
+
     /** When a service is tapped on, it should expand to a detailed view with more info. **/
     private fun showServiceDetails(serviceEntity: ServiceEntity) {
         val intent = Intent(mContext, DetailedServiceActivity::class.java)
@@ -179,5 +251,9 @@ class ServicesDiffUtilAdapter(private var optionsMenuClickListener: OptionsMenuC
 
     override fun getItemCount(): Int {
         return differ.currentList.size
+    }
+
+    companion object {
+        private val parentJob = Job()
     }
 }

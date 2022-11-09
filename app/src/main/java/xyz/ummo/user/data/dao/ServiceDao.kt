@@ -36,6 +36,12 @@ interface ServiceDao {
     @Query("UPDATE service SET service_views = service_views + 1 WHERE  service_id = :serviceId")
     fun incrementServiceViewCount(serviceId: String?)
 
+    @Query("UPDATE service SET bookmarked = 1 WHERE service_id = :serviceId")
+    fun addServiceBookmark(serviceId: String?)
+
+    @Query("UPDATE service SET bookmarked = 0 WHERE service_id = :serviceId")
+    fun removeServiceBookmark(serviceId: String?)
+
     @Query("DELETE FROM service")
     fun deleteServices()
 
