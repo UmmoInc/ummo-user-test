@@ -40,7 +40,6 @@ class AllServicesRepository(
     private var userContactPref = ""
     private lateinit var sharedPreferences: SharedPreferences
 
-
     private val client = OkHttpClient.Builder()
         .connectTimeout(2, TimeUnit.MINUTES)
         .readTimeout(2, TimeUnit.MINUTES)
@@ -159,15 +158,31 @@ class AllServicesRepository(
                     }
 
                     serviceEntity = ServiceEntity(
-                        serviceId, serviceName,
-                        serviceDescription, serviceEligibility, serviceCentres,
-                        delegatable, serviceCostArrayList, serviceDocuments,
-                        serviceDuration, approvalCount, disapprovalCount,
-                        serviceComments, serviceSteps, commentCount, shareCount, viewCount,
-                        serviceProvider,
-                        true, false, // TODO: Attend to these special bools
-                        serviceCategory, serviceLink, serviceAttachmentName, serviceAttachmentSize,
-                        serviceAttachmentURL, serviceBenefits
+                        serviceId = serviceId, //1
+                        serviceName = serviceName, //2
+                        serviceDescription = serviceDescription, //3
+                        serviceEligibility = serviceEligibility, //4
+                        serviceCentres = serviceCentres, //5
+                        delegatable = delegatable, //6
+                        serviceCost = serviceCostArrayList, //7
+                        serviceDocuments = serviceDocuments, //8
+                        serviceDuration = serviceDuration, //9
+                        usefulCount = approvalCount, //10
+                        notUsefulCount = disapprovalCount, //11
+                        serviceComments = serviceComments, //12
+                        serviceSteps = serviceSteps, //13
+                        commentCount = commentCount, //14
+                        serviceShares = shareCount, //15
+                        serviceViews = viewCount, //16
+                        serviceProvider = serviceProvider, //17
+                        bookmarked = false, //18
+                        isDelegated = false, //19
+                        serviceCategory = serviceCategory, //20
+                        serviceLink = serviceLink, //21
+                        serviceAttachmentName = serviceAttachmentName, //22
+                        serviceAttachmentSize = serviceAttachmentSize, //23
+                        serviceAttachmentURL = serviceAttachmentURL, //24
+                        serviceBenefits = serviceBenefits //25
                     )
 
                     servicesArrayList.add(serviceEntity)
