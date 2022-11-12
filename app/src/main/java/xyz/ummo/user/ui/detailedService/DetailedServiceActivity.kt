@@ -46,13 +46,11 @@ import xyz.ummo.user.adapters.ServiceCommentsDiffUtilAdapter
 import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.db.ServiceCommentsDatabase
 import xyz.ummo.user.data.db.ServiceUtilityDatabase
-import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.data.entity.ProductEntity
-import xyz.ummo.user.data.entity.ServiceCommentEntity
-import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.entity.*
 import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 import xyz.ummo.user.data.repo.serviceSomments.ServiceCommentsRepo
 import xyz.ummo.user.data.repo.serviceUtility.ServiceUtilityRepo
+import xyz.ummo.user.data.repo.viewedServices.ViewedServicesRepo
 import xyz.ummo.user.databinding.ActivityDetailedServiceBinding
 import xyz.ummo.user.databinding.ContentDetailedServiceBinding
 import xyz.ummo.user.databinding.FragmentServiceCommentsBinding
@@ -199,8 +197,10 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         /** [START] Instantiating [allServicesViewModel] to update [serviceEntity] **/
         val allServicesRepository = AllServicesRepository(AllServicesDatabase(this), this)
+        val viewedServicesRepo = ViewedServicesRepo(AllServicesDatabase(this), this)
+
         val allServicesViewModelProviderFactory =
-            AllServicesViewModelProviderFactory(allServicesRepository)
+            AllServicesViewModelProviderFactory(allServicesRepository, viewedServicesRepo)
 
         allServicesViewModel =
             ViewModelProvider(
@@ -233,6 +233,7 @@ class DetailedServiceActivity : AppCompatActivity() {
         getAllServiceCommentsFromRoomAndDisplay()
         checkIfCommentIsActiveAndHideRequestButton()
         incrementServiceViewCount()
+        addServiceToViewedServices()
         /** [END] Retrieving [serviceComments] from [serviceCommentsViewModel] **/
 
     }
@@ -241,6 +242,20 @@ class DetailedServiceActivity : AppCompatActivity() {
         coroutineScope.launch(Dispatchers.IO) {
             allServicesViewModel.incrementServiceViewCount(serviceEntity)
             Timber.e("SERVICE VIEW COUNT -> ${serviceEntity.serviceViews} INCREMENTED")
+        }
+    }
+
+    private fun addServiceToViewedServices() {
+
+        var viewedServices =
+            ViewedServices(
+                vServiceId = 0,
+                vServiceRef = serviceEntity.serviceId,
+                vServicedDateTime = currentTimeStamp
+            )
+
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.saveViewedServicesInRoom(viewedServices)
         }
     }
 

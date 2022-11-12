@@ -8,10 +8,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.entity.ViewedServices
 import xyz.ummo.user.data.repo.allServices.AllServicesRepository
+import xyz.ummo.user.data.repo.viewedServices.ViewedServicesRepo
 import java.io.IOException
 
-class AllServicesViewModel(private val allServicesRepository: AllServicesRepository) : ViewModel() {
+class AllServicesViewModel(
+    private val allServicesRepository: AllServicesRepository,
+    private val viewedServicesRepo: ViewedServicesRepo
+) : ViewModel() {
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
     val searchedServicesLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
     val serviceLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
@@ -92,5 +97,15 @@ class AllServicesViewModel(private val allServicesRepository: AllServicesReposit
 
     fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
         return allServicesRepository.getServiceById(serviceId)
+    }
+
+    suspend fun saveViewedServicesInRoom(viewedServices: ViewedServices) {
+        withContext(Dispatchers.IO) {
+            try {
+                viewedServicesRepo.saveViewedServicesInRoom(viewedServices)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
     }
 }

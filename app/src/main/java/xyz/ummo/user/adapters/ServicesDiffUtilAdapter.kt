@@ -1,10 +1,10 @@
 package xyz.ummo.user.adapters
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,11 +28,12 @@ import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
 import java.io.Serializable
 
-class ServicesDiffUtilAdapter :
+class ServicesDiffUtilAdapter(val activity: Activity) :
     RecyclerView.Adapter<ServicesDiffUtilAdapter.ServiceViewHolder>() {
 
     private lateinit var mContext: Context
@@ -86,7 +87,18 @@ class ServicesDiffUtilAdapter :
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         val serviceEntity = differ.currentList[position]
 
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
         holder.itemView.apply {
+
+            if (serviceEntity.bookmarked == true) {
+                service_slice_bookmarked_relative_layout.visibility = View.VISIBLE
+                service_slice_bookmark_relative_layout.visibility = View.GONE
+            } else if (serviceEntity.bookmarked == false) {
+                service_slice_bookmarked_relative_layout.visibility = View.GONE
+                service_slice_bookmark_relative_layout.visibility = View.VISIBLE
+            }
+
             service_title_text_view_slice.text = serviceEntity.serviceName
             service_description_text_view_slice.text = serviceEntity.serviceDescription
 
@@ -114,7 +126,6 @@ class ServicesDiffUtilAdapter :
                     "${serviceEntity.serviceShares.toString()} shares"
             }
 
-            service_slice_bookmark_count_text_view.text = "by 5 others"
             setOnClickListener {
                 onItemClickListener?.let {
                     it(serviceEntity)
@@ -166,25 +177,55 @@ class ServicesDiffUtilAdapter :
             service_slice_bookmark_image_view.setOnClickListener {
                 bookmarkService(serviceEntity, holder)
             }
+
+            service_slice_bookmark_count_text_view.setOnClickListener {
+                bookmarkService(serviceEntity, holder)
+            }
+
+            service_slice_bookmark_relative_layout.setOnClickListener {
+                bookmarkService(serviceEntity, holder)
+            }
+
+            service_slice_bookmarked_relative_layout.setOnClickListener {
+                unBookmarkService(serviceEntity, holder)
+            }
+
+            service_slice_bookmarked_count_text_view.setOnClickListener {
+                unBookmarkService(serviceEntity, holder)
+            }
+
+            service_slice_bookmarked_image_view.setOnClickListener {
+                unBookmarkService(serviceEntity, holder)
+            }
         }
     }
 
     private fun bookmarkService(serviceEntity: ServiceEntity, holder: ServiceViewHolder) {
         serviceBookmarkedEvent.serviceBookmarked = true
-        serviceBookmarkedEvent.serviceName = serviceEntity.serviceId
+        serviceBookmarkedEvent.serviceName = serviceEntity.serviceName
+
         EventBus.getDefault().post(serviceBookmarkedEvent)
 
-        val timer = object : CountDownTimer(2000, 1000) {
-            override fun onTick(p0: Long) {
+        Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceName}")
 
-            }
+        holder.itemView.service_slice_bookmarked_relative_layout.visibility = View.VISIBLE
+        holder.itemView.service_slice_bookmark_relative_layout.visibility = View.GONE
 
-            override fun onFinish() {
-                holder.itemView.service_slice_bookmark_image_view.setImageResource(R.drawable.ic_filled_bookmark_24)
-                Timber.e("BOOK MARKING SERVICE -> ${serviceEntity.serviceName}")
-            }
-        }
-        timer.start()
+        addServiceBookmark(serviceEntity)
+    }
+
+    private fun unBookmarkService(serviceEntity: ServiceEntity, holder: ServiceViewHolder) {
+        serviceBookmarkedEvent.serviceBookmarked = false
+        serviceBookmarkedEvent.serviceName = serviceEntity.serviceName
+
+        EventBus.getDefault().post(serviceBookmarkedEvent)
+
+        Timber.e("REMOVING SERVICE BOOKMARK -> ${serviceEntity.serviceName}")
+
+        holder.itemView.service_slice_bookmarked_relative_layout.visibility = View.GONE
+        holder.itemView.service_slice_bookmark_relative_layout.visibility = View.VISIBLE
+
+        removeServiceBookmark(serviceEntity)
     }
 
     private fun requestServiceAgent(serviceEntity: ServiceEntity) {
@@ -216,6 +257,8 @@ class ServicesDiffUtilAdapter :
     }
 
     private fun addServiceBookmark(serviceEntity: ServiceEntity) {
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
         coroutineScope.launch(Dispatchers.IO) {
             allServicesViewModel.addServiceBookmark(serviceEntity)
             Timber.e("SERVICE BOOKMARKED -> ${serviceEntity.serviceName}")
@@ -223,6 +266,8 @@ class ServicesDiffUtilAdapter :
     }
 
     private fun removeServiceBookmark(serviceEntity: ServiceEntity) {
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
         coroutineScope.launch(Dispatchers.IO) {
             allServicesViewModel.removeServiceBookmark(serviceEntity)
             Timber.e("SERVICE UN-BOOKMARKED -> ${serviceEntity.serviceName}")

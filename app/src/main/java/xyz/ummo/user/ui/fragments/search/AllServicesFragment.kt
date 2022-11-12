@@ -165,7 +165,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
     private fun setupRecyclerView() {
         allServicesDiffUtilAdapter =
-            ServicesDiffUtilAdapter()
+            ServicesDiffUtilAdapter(requireActivity())
 
         all_services_recycler_view.apply {
             adapter = allServicesDiffUtilAdapter

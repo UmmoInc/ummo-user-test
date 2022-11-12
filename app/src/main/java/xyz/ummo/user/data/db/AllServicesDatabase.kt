@@ -6,14 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import xyz.ummo.user.data.dao.ServiceDao
+import xyz.ummo.user.data.dao.ViewedServicesDao
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.data.entity.ViewedServices
 import xyz.ummo.user.data.utils.Converters
 import xyz.ummo.user.data.utils.ServiceBenefitsTypeConverter
 import xyz.ummo.user.data.utils.ServiceCostTypeConverter
 
 @Database(
-    entities = [ServiceEntity::class],
-    version = 4,
+    entities = [ServiceEntity::class, ViewedServices::class],
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(
@@ -24,6 +26,7 @@ import xyz.ummo.user.data.utils.ServiceCostTypeConverter
 abstract class AllServicesDatabase : RoomDatabase() {
 
     abstract fun serviceDao(): ServiceDao?
+    abstract fun viewedServicesDao(): ViewedServicesDao?
 
     companion object {
         @Volatile
@@ -41,7 +44,7 @@ abstract class AllServicesDatabase : RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 AllServicesDatabase::class.java,
-                "all_services_db.db"
+                "all_services_db.db" //TODO: Rename to "all_services.db"
             ).fallbackToDestructiveMigration().build()
     }
 }

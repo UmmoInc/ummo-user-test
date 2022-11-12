@@ -25,8 +25,8 @@ class ServiceSliceItem(
     private val bundle = Bundle()
 
     /** Initializing ServiceViewModel **/
-    private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
-        .get(ServiceViewModel::class.java)
+    private var serviceViewModel =
+        ViewModelProvider(context as FragmentActivity)[ServiceViewModel::class.java]
     private lateinit var serviceEntity: ServiceEntity
 
     override fun getLayout(): Int {

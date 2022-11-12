@@ -313,6 +313,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     identifyUserWithSentry()
                 } else {
                     Timber.e("Something happened... $code +  $data  + ${String(data)}")
+                    //TODO: create an appropriate feedback for the user when they encounter this.
 //                    Toast.makeText(this, "Something went Awfully bad", Toast.LENGTH_LONG).show()
                     logWithStaticAPI()
                 }
@@ -341,7 +342,7 @@ class CompleteSignUpActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             applicationContext,
-                            Objects.requireNonNull(task.exception)!!.message,
+                            Objects.requireNonNull(task.exception).message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }

@@ -276,9 +276,44 @@
                                 android:layout_centerVertical="true"
                                 android:layout_toEndOf="@+id/service_slice_bookmark_image_view"
                                 android:fontFamily="@font/rubik"
-                                android:text="2 bookmarks"
+                                android:text=" "
                                 android:textSize="8sp"
-                                app:fontFamily="@font/rubik"/>
+                                app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_bookmarked_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/service_slice_bookmarked_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginBottom="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_filled_bookmark_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_bookmarked_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_bookmarked_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text=" "
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
                         </RelativeLayout>
                     </LinearLayout>
                     <!-- [END] Service Actions Layout -->

@@ -7,11 +7,18 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceOptionsMenuBottomSheetBinding
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.SERVICE_ENTITY
+import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
 
 class ServiceOptionsMenuBottomSheet : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
@@ -21,6 +28,7 @@ class ServiceOptionsMenuBottomSheet : BottomSheetDialogFragment() {
     private lateinit var mixpanel: MixpanelAPI
     private lateinit var serviceEntity: ServiceEntity
     private val serviceBundle = Bundle()
+    private val coroutineScope = CoroutineScope((Dispatchers.Main + parentJob))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +65,18 @@ class ServiceOptionsMenuBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         shareServiceSelected()
+
+        viewBinding.bookmarkServiceMenuRelativeLayout.setOnClickListener {
+            bookmarkServiceSelected(serviceEntity)
+        }
+
+        viewBinding.bookmarkServiceMenuImageView.setOnClickListener {
+            bookmarkServiceSelected(serviceEntity)
+        }
+
+        viewBinding.bookmarkServiceMenuTextView.setOnClickListener {
+            bookmarkServiceSelected(serviceEntity)
+        }
     }
 
     private fun shareServiceSelected() {
@@ -70,12 +90,15 @@ class ServiceOptionsMenuBottomSheet : BottomSheetDialogFragment() {
                 requireActivity().supportFragmentManager,
                 ShareServiceInfoBottomSheet.TAG
             )
+            this.dismiss()
         }
+
         viewBinding.shareServiceMenuImageView.setOnClickListener {
             shareServiceInfoBottomSheet.show(
                 requireActivity().supportFragmentManager,
                 ShareServiceInfoBottomSheet.TAG
             )
+            this.dismiss()
         }
 
         viewBinding.shareServiceMenuTextView.setOnClickListener {
@@ -83,11 +106,28 @@ class ServiceOptionsMenuBottomSheet : BottomSheetDialogFragment() {
                 requireActivity().supportFragmentManager,
                 ShareServiceInfoBottomSheet.TAG
             )
+            this.dismiss()
+        }
+    }
+
+    private fun bookmarkServiceSelected(serviceEntity: ServiceEntity) {
+
+        val serviceBookmarkedEvent = ServiceBookmarkedEvent()
+        serviceBookmarkedEvent.serviceBookmarked = true
+        serviceBookmarkedEvent.serviceName = serviceEntity.serviceName
+        EventBus.getDefault().post(serviceBookmarkedEvent)
+
+        val allServicesViewModel = (activity as MainScreen).allServicesViewModel
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.addServiceBookmark(serviceEntity)
+            Timber.e("SERVICE BOOKMARKED -> ${serviceEntity.serviceName}")
+            this@ServiceOptionsMenuBottomSheet.dismiss()
         }
     }
 
     companion object {
         const val TAG = "ServiceOptionsMenuBottomSheet"
+        private val parentJob = Job()
 
         @JvmStatic
         fun newInstance(param1: String, param2: String) =

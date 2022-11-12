@@ -50,7 +50,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="4dp"
-                app:srcCompat="@drawable/ic_share_blue_24" />
+                app:srcCompat="@drawable/ic_share_grey_24" />
 
             <TextView
                 android:id="@+id/share_service_menu_text_view"
@@ -61,41 +61,42 @@
                 android:layout_marginBottom="4dp"
                 android:layout_toEndOf="@+id/share_service_menu_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="Share Service"
+                android:text="Share service"
                 android:textColor="@color/dim_gray"
                 android:textSize="16sp" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/save_service_menu_relative_layout"
+            android:id="@+id/bookmark_service_menu_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/share_service_menu_relative_layout"
             android:layout_marginStart="30dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginEnd="30dp">
 
             <ImageView
-                android:id="@+id/save_service_menu_image_view"
+                android:id="@+id/bookmark_service_menu_image_view"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="4dp"
-                app:srcCompat="@drawable/ic_bookmarks_24_icon" />
+                app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
 
             <TextView
-                android:id="@+id/save_service_menu_text_view"
+                android:id="@+id/bookmark_service_menu_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="20dp"
                 android:layout_marginBottom="4dp"
-                android:layout_toEndOf="@+id/save_service_menu_image_view"
+                android:layout_toEndOf="@+id/bookmark_service_menu_image_view"
                 android:fontFamily="@font/rubik"
-                android:text="Save Service"
+                android:text="Bookmark service"
                 android:textColor="@color/dim_gray"
                 android:textSize="16sp" />
 

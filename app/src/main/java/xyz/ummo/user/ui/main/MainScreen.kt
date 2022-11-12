@@ -53,6 +53,7 @@ import xyz.ummo.user.data.entity.ProfileEntity
 import xyz.ummo.user.data.entity.ServiceProviderEntity
 import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 import xyz.ummo.user.data.repo.serviceCategories.ServiceCategoriesRepo
+import xyz.ummo.user.data.repo.viewedServices.ViewedServicesRepo
 import xyz.ummo.user.databinding.ActivityMainScreenBinding
 import xyz.ummo.user.databinding.AppBarMainScreenBinding
 import xyz.ummo.user.databinding.DelegationIntroCardBinding
@@ -158,13 +159,15 @@ class MainScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        checkingForDelegatedServiceFromRoom()
+//        checkingForDelegatedServiceFromRoom()
 
         /** Instantiating [allServicesViewModel] with AllServicesRepository **/
         //TODO: Saved for issue [UMMO-75]
         val allServicesRepository = AllServicesRepository(AllServicesDatabase(this), this)
+        val viewedServicesRepo = ViewedServicesRepo(AllServicesDatabase(this), this)
+
         val allServicesViewModelProviderFactory =
-            AllServicesViewModelProviderFactory(allServicesRepository)
+            AllServicesViewModelProviderFactory(allServicesRepository, viewedServicesRepo)
 
         val serviceCategoriesRepo = ServiceCategoriesRepo(ServiceCategoryDatabase(this), this)
         val serviceCategoriesViewModelProviderFactory =
@@ -324,10 +327,10 @@ class MainScreen : AppCompatActivity() {
 
         val delegatedServiceFragment = DelegatedServiceFragment()
 
-        if (openDelegation == 1) {
+        /*if (openDelegation == 1) {
             openFragment(DelegatedServiceFragment())
             Timber.e("$DELEGATION_STATE -> $delegationState")
-        }
+        }*/
     }
 
     private fun checkForFragmentDestinationAndLaunch(fragmentDestination: String) {
@@ -467,7 +470,7 @@ class MainScreen : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Timber.e("ON_START")
-        checkingForDelegatedServiceFromRoom()
+//        checkingForDelegatedServiceFromRoom()
         /** [NetworkStateEvent-2] Registering the Connectivity Broadcast Receiver -
          * to monitor the network state **/
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -651,7 +654,7 @@ class MainScreen : AppCompatActivity() {
         Timber.e("SERVICE-BOOK-MARKED-EVENT -> ${serviceBookmarkedEvent.serviceBookmarked}")
 
         if (serviceBookmarkedEvent.serviceBookmarked!!)
-            showSnackbarYellow("Saving ${serviceBookmarkedEvent.serviceName} offline", -1)
+            showSnackbarYellow("Bookmarking ${serviceBookmarkedEvent.serviceName}", -1)
 //        else
 //            showSnackbarYellow("Service removed from your bookmarks", -1)
 //        val bookmarkingServicesList = serviceViewModel?.getServicesList()
@@ -683,7 +686,7 @@ class MainScreen : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Timber.e("ON_RESUME")
-        checkingForDelegatedServiceFromRoom()
+//        checkingForDelegatedServiceFromRoom()
     }
 
     private fun startServiceSearch() {
@@ -947,7 +950,7 @@ class MainScreen : AppCompatActivity() {
 
         val textView =
             snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-        textView.textSize = 14F
+        textView.textSize = 12F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -964,7 +967,7 @@ class MainScreen : AppCompatActivity() {
         snackbar.setTextColor(resources.getColor(R.color.gold))
         val textView =
             snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-        textView.textSize = 14F
+        textView.textSize = 12F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
@@ -976,7 +979,7 @@ class MainScreen : AppCompatActivity() {
         snackbar.setTextColor(resources.getColor(R.color.orange_red))
         val textView =
             snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-        textView.textSize = 14F
+        textView.textSize = 12F
         snackbar.anchorView = bottomNav
         snackbar.show()
     }
