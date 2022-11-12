@@ -20,4 +20,6 @@ class ViewedServicesRepo(
     fun saveViewedServicesInRoom(mViewedServices: ViewedServices) {
         viewedServicesDao.upsertViewedServices(mViewedServices)
     }
+
+//    fun getViewedServicesInRoom(): LiveData<>
 }

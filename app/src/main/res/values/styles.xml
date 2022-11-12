@@ -132,7 +132,7 @@
         <item name="checkedIconVisible">true</item>
         <item name="closeIconVisible">false</item>
 
-        <item name="checkedIcon">@drawable/ic_mtrl_chip_checked_black</item>
+        <!--<item name="checkedIcon">@drawable/ic_mtrl_chip_checked_black</item>-->
 
         <item name="android:textColor">@color/mtrl_choice_chip_text_color</item>
 

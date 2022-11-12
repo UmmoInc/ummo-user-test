@@ -218,6 +218,10 @@ class AllServicesRepository(
         return serviceDao.serviceListData as ArrayList<ServiceEntity>
     }
 
+    fun getBookmarkedServices(): kotlin.collections.List<ServiceEntity> {
+        return serviceDao.getBookmarkedServicesList()
+    }
+
     fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
         return serviceDao.getServiceLiveDataById(serviceId)
     }

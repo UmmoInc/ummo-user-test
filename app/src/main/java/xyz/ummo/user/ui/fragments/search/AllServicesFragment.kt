@@ -13,6 +13,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
@@ -46,6 +47,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
     private lateinit var allServicesDiffUtilAdapter: ServicesDiffUtilAdapter
     private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
     private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
+    private lateinit var bookmarkedServices: LiveData<ServiceEntity>
     private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
 
     private lateinit var allServicesSharedPreferences: SharedPreferences
@@ -65,6 +67,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
 
         serviceObjectArrayList = ArrayList(listOf<ServiceObject>())
         serviceEntityArrayList = ArrayList(listOf<ServiceEntity>())
+//        bookmarkedServices = ArrayList(listOf<ServiceEntity>())
 
         mixpanel = MixpanelAPI.getInstance(
             context,
@@ -143,13 +146,37 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             mixpanel.track("All Services View Refreshed")
         }
 
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.getBookmarkedServices()
+        }
+
+        checkForBookmarkedServicesAndShowChip()
+
         return rootView
+    }
+
+    private fun checkForBookmarkedServicesAndShowChip() {
+
+        allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+
+            if (bookmarkedServices.isNotEmpty()) {
+                allServiceBinding.bookmarkedServicesChip.visibility = View.VISIBLE
+                Timber.e("BOOKMARKED SERVICES -> $bookmarkedServices")
+            } else
+                Timber.e("NONE!")
+        }
+
+        /*if (bookmarkedServices.value != null) {
+            allServiceBinding.bookmarkedServicesChip.visibility = View.VISIBLE
+            Timber.e("SERVICE BOOKMARKS EXIST")
+        } else {
+            Timber.e("NO SERVICE BOOKMARKS")
+        }*/
     }
 
     @Subscribe
     fun addServiceBookmark(bookmarkedEvent: ServiceBookmarkedEvent) {
         if (bookmarkedEvent.serviceBookmarked == true) {
-            Timber.e("EB: Adding bookmark to ${bookmarkedEvent.serviceName}")
 //            addServiceBookmark()
             prefEditor.putBoolean("$SERVICE_BOOKMARKED-${bookmarkedEvent.serviceName}", true)
             prefEditor.apply()
@@ -209,8 +236,8 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             displayServicesFromRoom(getAllServicesFromRoom())
         }
         filterServicesByCategory()
+//        filterMyServices()
         checkIfServiceIsBookmarked()
-
     }
 
     /** 1. In getting all services from Room, we're actually observing the [allServicesViewModel]'s
@@ -310,7 +337,7 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
     /** This will run everytime the UI is refreshed or when the User doesn't find a service &
      * has to reload the UI accordingly. **/
     private fun reloadAllServices() {
-        val timer = object : CountDownTimer(3000, 1000) {
+        val timer = object : CountDownTimer(2000, 1000) {
             override fun onTick(p0: Long) {
                 showProgressBar()
             }
@@ -540,13 +567,13 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             Timber.e("CHECKED GROUP -> $group")
             Timber.e("CHECKED CHIP -> $checkedId")
 
-            val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String
-            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
+            //            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
 
-            when (titleOrNull) {
+            when (val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String) {
 
                 "All Services" -> {
                     trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    reloadAllServices()
                     getAllServicesFromRoomAndDisplay()
                     allServiceBinding.serviceSearchView.isIconified
                 }
@@ -557,6 +584,18 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
                     loadingCategoryServicesEvent.loadingService = true
                     EventBus.getDefault().post(loadingCategoryServicesEvent)
                     allServiceBinding.serviceSearchView.isIconified
+                }
+                "Bookmarks" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    Timber.e("BOOKMARKED SERVICES -> $titleOrNull")
+
+                    allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+                        allServicesDiffUtilAdapter.differ.submitList(bookmarkedServices)
+                    }
+                    justShowAllServicesReturnedFromAdapter()
+                }
+                "History" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
                 }
                 "Commerce" -> {
                     searchServiceArrayList(COMMERCE)
@@ -601,6 +640,32 @@ class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQ
             }
         }
     }
+
+    /*private fun filterMyServices() {
+
+        allServiceBinding.savedServicesChipGroup.setOnCheckedChangeListener { group, checkedId ->
+
+            when (val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String) {
+                "Bookmark" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+
+                    allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+                        if (bookmarkedServices.isNotEmpty()) {
+                            allServicesDiffUtilAdapter.notifyDataSetChanged()
+                            allServicesDiffUtilAdapter.differ.submitList(bookmarkedServices)
+                            justShowAllServicesReturnedFromAdapter()
+                            Timber.e("BOOKMARKED SERVICES -> $bookmarkedServices")
+                        } else {
+                            Timber.e("NO BOOKMARKED SERVICES")
+                        }
+                    }
+                }
+                "History" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                }
+            }
+        }
+    }*/
 
     private fun trackServiceFilterPickedOnMixpanel(serviceFilter: String) {
         val serviceFilterJSONObject = JSONObject()

@@ -19,6 +19,7 @@ class AllServicesViewModel(
 ) : ViewModel() {
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
     val searchedServicesLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
+    val bookmarkedServices: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
     val serviceLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
 
     /** A simple suspend function for retrieving services from the online API **/
@@ -36,6 +37,14 @@ class AllServicesViewModel(
     suspend fun getLocallyStoredServices() {
         withContext(Dispatchers.IO) {
             servicesLiveDataList.postValue(allServicesRepository.getLocallyStoredServices())
+        }
+    }
+
+    suspend fun getBookmarkedServices() {
+        withContext(Dispatchers.IO) {
+            allServicesRepository.getBookmarkedServices().let {
+                bookmarkedServices.postValue(it)
+            }
         }
     }
 

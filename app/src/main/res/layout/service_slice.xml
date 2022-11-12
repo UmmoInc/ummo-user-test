@@ -227,7 +227,7 @@
                             android:paddingEnd="4dp">
 
                             <ImageView
-                                android:id="@+id/service_slice_shares_image_view"
+                                android:id="@+id/service_slice_share_image_view"
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
                                 android:layout_centerVertical="true"
@@ -236,11 +236,11 @@
                                 app:srcCompat="@drawable/ic_share_grey_24" />
 
                             <TextView
-                                android:id="@+id/service_slice_shares_count_text_view"
+                                android:id="@+id/service_slice_share_count_text_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
-                                android:layout_toEndOf="@+id/service_slice_shares_image_view"
+                                android:layout_toEndOf="@+id/service_slice_share_image_view"
                                 android:fontFamily="@font/rubik"
                                 android:text="@string/shares_placeholder"
                                 android:textSize="8sp"

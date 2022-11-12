@@ -27,6 +27,7 @@ import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceRequestBottomSheet
+import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceInfoBottomSheet
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
@@ -119,10 +120,10 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
             }
 
             if (serviceEntity.serviceShares == 1) {
-                service_slice_shares_count_text_view.text =
+                service_slice_share_count_text_view.text =
                     "${serviceEntity.serviceShares.toString()} share"
             } else {
-                service_slice_shares_count_text_view.text =
+                service_slice_share_count_text_view.text =
                     "${serviceEntity.serviceShares.toString()} shares"
             }
 
@@ -197,7 +198,37 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
             service_slice_bookmarked_image_view.setOnClickListener {
                 unBookmarkService(serviceEntity, holder)
             }
+
+            service_slice_share_icon_relative_layout.setOnClickListener {
+                shareServiceInfo(serviceEntity)
+            }
+
+            service_slice_share_image_view.setOnClickListener {
+                shareServiceInfo(serviceEntity)
+            }
+
+            service_slice_share_count_text_view.setOnClickListener {
+                shareServiceInfo(serviceEntity)
+            }
         }
+    }
+
+    private fun shareServiceInfo(mServiceEntity: ServiceEntity) {
+        val sharedServiceEntity = JSONObject()
+        val shareBundle = Bundle()
+        shareBundle.putSerializable(SERVICE_ENTITY, mServiceEntity)
+        val fragmentActivity = mContext as FragmentActivity
+        val fragmentManager = fragmentActivity.supportFragmentManager
+
+        val shareServiceInfoBottomSheet = ShareServiceInfoBottomSheet()
+        shareServiceInfoBottomSheet.arguments = shareBundle
+        shareServiceInfoBottomSheet.show(
+            fragmentManager,
+            ShareServiceInfoBottomSheet.TAG
+        )
+
+        sharedServiceEntity.put("service_name", mServiceEntity.serviceName)
+        mixpanel.track("All Services - Sharing ServiceInfo: PhaseOne")
     }
 
     private fun bookmarkService(serviceEntity: ServiceEntity, holder: ServiceViewHolder) {
