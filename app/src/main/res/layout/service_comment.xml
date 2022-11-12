@@ -21,61 +21,68 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/user_avatar_image_view"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:padding="4dp"
-                    app:srcCompat="@drawable/ic_round_person_blue_24" />
+                <RelativeLayout
+                    android:id="@+id/user_commenter_info_relative_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/user_name_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/user_avatar_image_view"
-                    android:layout_toEndOf="@id/user_avatar_image_view"
-                    android:text="Username"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    <ImageView
+                        android:id="@+id/user_avatar_image_view"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="4dp"
+                        app:srcCompat="@drawable/ic_round_person_blue_24" />
 
-                <TextView
-                    android:id="@+id/bullet_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/user_avatar_image_view"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_toEndOf="@id/user_name_text_view"
-                    android:text="\u2022"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/user_name_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/user_avatar_image_view"
+                        android:text="Username"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/comment_datetime_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/user_avatar_image_view"
-                    android:layout_toEndOf="@id/bullet_text_view"
-                    android:text="Monday, 14th October 2021"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:textStyle="normal" />
+                    <TextView
+                        android:id="@+id/bullet_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_toEndOf="@id/user_name_text_view"
+                        android:text="\u2022"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/comment_datetime_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@id/bullet_text_view"
+                        android:text="Monday, 14th October 2021"
+                        android:textColor="@color/black"
+                        android:textSize="10sp"
+                        android:textStyle="normal" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/service_comment_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/user_name_text_view"
-                    android:layout_marginTop="14dp"
+                    android:layout_below="@+id/user_commenter_info_relative_layout"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_toEndOf="@id/user_avatar_image_view"
                     android:text="This is the comment that User-1 has made. We will rejoice, and be glad with it."
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
 
             </RelativeLayout>
 
@@ -84,9 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_below="@id/service_comment_layout"
-                android:layout_marginStart="55dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="50dp"
                 android:background="@color/screenWhite" />
 
             <!--<LinearLayout

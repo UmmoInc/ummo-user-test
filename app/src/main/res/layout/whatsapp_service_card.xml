@@ -46,7 +46,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/whatsapp_support_image_view"
-                android:layout_margin="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_toEndOf="@+id/whatsapp_support_image_view"
                 android:fontFamily="@font/rubik"
                 android:text="Ummo Service Assistance"
@@ -68,15 +71,15 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/divider2"
                 android:layout_margin="8dp"
-                android:text="Thank you for using Ummo. We'll do our best to help you save time.\n\nFor now, we'll be using WhatsApp to assist you with your service."
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:text="Thank you for using Ummo.\n\nWe will keep you posted on WhatsApp about anything regarding your service."
+                android:textColor="@color/Grey"
+                android:textSize="12sp" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/whatsapp_support_body_text_view"
-                android:layout_alignParentEnd="true">
+                android:layout_centerHorizontal="true">
 
                 <TextView
                     android:id="@+id/whatsapp_support_text_view"
@@ -86,7 +89,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="8dp"
                     android:text="Text us"
-                    android:textColor="@color/ummo_2"
+                    android:textColor="@color/green"
                     android:textSize="14sp" />
 
                 <ImageView

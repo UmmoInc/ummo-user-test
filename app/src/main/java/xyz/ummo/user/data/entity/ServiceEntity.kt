@@ -4,70 +4,92 @@ import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import xyz.ummo.user.data.model.ServiceModel
+import androidx.room.TypeConverters
+import xyz.ummo.user.data.utils.ServiceBenefitsTypeConverter
+import xyz.ummo.user.data.utils.ServiceCostTypeConverter
+import xyz.ummo.user.models.ServiceBenefit
 import xyz.ummo.user.models.ServiceCostModel
+import java.io.Serializable
 
 @Entity(tableName = "service")
-class ServiceEntity : ServiceModel {
+data class ServiceEntity(
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "service_id") //0
-    override var serviceId: String? = null
+    var serviceId: String,
 
-    @NonNull
     @ColumnInfo(name = "service_name") //1
-    override var serviceName: String? = null
+    var serviceName: String? = null,
 
-    @NonNull
     @ColumnInfo(name = "service_description") //2
-    override var serviceDescription: String? = null
+    var serviceDescription: String? = null,
 
-    @NonNull
     @ColumnInfo(name = "service_eligibility") //3
-    override var serviceEligibility: String? = null
+    var serviceEligibility: String? = null,
 
     @ColumnInfo(name = "service_centres") //4
-    override var serviceCentres: ArrayList<String>? = null
+    var serviceCentres: ArrayList<String>? = null,
 //    override var serviceCentres: String? = null
 
-    @NonNull
     @ColumnInfo(name = "delegatable") //5
-    override var delegatable: Boolean? = null
+    var delegatable: Boolean? = null,
 
-    /*@NonNull
     @ColumnInfo(name = "service_cost") //6
-    override var serviceCost: ArrayList<ServiceCostModel>? = null*/
+    var serviceCost: ArrayList<ServiceCostModel>? = null,
 
     @ColumnInfo(name = "service_documents") //7
-    override var serviceDocuments: ArrayList<String>? = null
+    var serviceDocuments: ArrayList<String>? = null,
 
     @ColumnInfo(name = "service_duration") //8
-    override var serviceDuration: String? = null
+    var serviceDuration: String? = null,
 
     @ColumnInfo(name = "useful_count") //9
-    override var usefulCount: Int? = null
+    var usefulCount: Int? = null,
 
     @ColumnInfo(name = "not_useful_count") //10
-    override var notUsefulCount: Int? = null
+    var notUsefulCount: Int? = null,
 
+    @TypeConverters(ServiceCostTypeConverter::class)
     @ColumnInfo(name = "service_comment") //11
-    override var serviceComments: ArrayList<String>? = null
+    var serviceComments: ArrayList<String>? = null,
 
-    @ColumnInfo(name = "comment_count") //12
-    override var commentCount: Int? = null
+    @ColumnInfo(name = "service_steps") //12
+    var serviceSteps: ArrayList<String>? = null,
 
-    @ColumnInfo(name = "service_shares") //13
-    override var serviceShares: Int? = null
+    @ColumnInfo(name = "comment_count") //13
+    var commentCount: Int? = null,
 
-    @ColumnInfo(name = "service_views") //14
-    override var serviceViews: Int? = null
+    @ColumnInfo(name = "service_shares") //14
+    var serviceShares: Int? = null,
 
-    @ColumnInfo(name = "service_provider") //15
-    override var serviceProvider: String? = null
+    @ColumnInfo(name = "service_views") //15
+    var serviceViews: Int? = null,
 
-    @ColumnInfo(name = "bookmarked") //16
-    override var bookmarked: Boolean? = false
+    @ColumnInfo(name = "service_provider") //16
+    var serviceProvider: String? = null,
 
-    @ColumnInfo(name = "is_delegated")
-    override var isDelegated: Boolean? = false
-}
+    @ColumnInfo(name = "bookmarked") //17
+    var bookmarked: Boolean? = false,
+
+    @ColumnInfo(name = "is_delegated") //18
+    var isDelegated: Boolean? = false,
+
+    @ColumnInfo(name = "service_category") //19
+    var serviceCategory: String? = null,
+
+    @ColumnInfo(name = "service_link") //20
+    var serviceLink: String? = null,
+
+    @ColumnInfo(name = "service_attachment_name") //21
+    var serviceAttachmentName: String? = null,
+
+    @ColumnInfo(name = "service_attachment_size") //22
+    var serviceAttachmentSize: String? = null,
+
+    @ColumnInfo(name = "service_attachment_url") //23
+    var serviceAttachmentURL: String? = null,
+
+    @TypeConverters(ServiceBenefitsTypeConverter::class)
+    @ColumnInfo(name = "service_benefits") //24
+    var serviceBenefits: ArrayList<ServiceBenefit>
+) : Serializable

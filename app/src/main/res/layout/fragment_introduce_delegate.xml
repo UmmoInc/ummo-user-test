@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/introduce_delegate_nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#222222">
@@ -13,7 +14,7 @@
             android:layout_height="match_parent">
 
             <RelativeLayout
-                android:id="@+id/delegation_intro_body_layout"
+                android:id="@+id/service_query_extender_intro_body_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
@@ -33,17 +34,16 @@
                     android:id="@+id/delegate_intro_header_relative_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/divider_1"
-                    android:layout_marginEnd="4dp">
+                    android:layout_below="@+id/divider_1">
 
                     <ImageView
                         android:id="@+id/description_image_view"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_marginBottom="8dp"
                         app:srcCompat="@drawable/ic_hourglass_bottom_blue_24" />
 
@@ -69,10 +69,10 @@
                             android:fontFamily="@font/rubik"
                             android:text="Out of Time?"
                             android:textColor="@color/White"
-                            android:textSize="26sp"
+                            android:textSize="24sp"
                             android:textStyle="bold" />
 
-                        <TextView
+                        <!--<TextView
                             android:id="@+id/delegate_subtitle_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                             android:fontFamily="@font/rubik"
                             android:text="Try Ummo Delegate"
                             android:textColor="@color/White"
-                            android:textSize="16sp" />
+                            android:textSize="12sp" />-->
                     </RelativeLayout>
 
                 </RelativeLayout>
@@ -93,15 +93,15 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/delegate_intro_header_relative_layout"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp">
 
                     <TextView
                         android:id="@+id/delegate_description_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="38dp"
                         android:fontFamily="@font/rubik"
-                        android:text="Get your service from home."
+                        android:text="Get your service from home"
                         android:textColor="@color/White"
                         android:textSize="20sp" />
 
@@ -115,8 +115,8 @@
 
                         <ImageView
                             android:id="@+id/service_prep_image_view"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
@@ -125,29 +125,29 @@
                             app:srcCompat="@drawable/ic_service_prep_checklist_24" />
 
                         <TextView
-                            android:id="@+id/service_prep_main_text_view"
+                            android:id="@+id/service_query_main_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toEndOf="@+id/service_prep_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="1. Specify your service"
+                            android:text="1. Make a Service Appointment"
                             android:textColor="@color/White"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/service_prep_sub_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/service_prep_main_text_view"
-                            android:layout_alignStart="@+id/service_prep_main_text_view"
+                            android:layout_below="@id/service_query_main_text_view"
+                            android:layout_alignStart="@+id/service_query_main_text_view"
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="10dp"
                             android:layout_toEndOf="@+id/service_prep_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="\u2022 Select your nearest service centre.\n\u2022 Choose the type of service you'd like.\n\u2022 Pick a date that suits your schedule."
+                            android:text="Pick a date and time that suits your schedule."
                             android:textColor="#999999"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </RelativeLayout>
                     <!--[END] Service Prep. Relative Layout -->
@@ -162,8 +162,8 @@
 
                         <ImageView
                             android:id="@+id/request_service_image_view"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
@@ -177,9 +177,9 @@
                             android:layout_height="wrap_content"
                             android:layout_toEndOf="@+id/request_service_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="2. Connect with your Agent"
+                            android:text="2. Connect with Your Agent"
                             android:textColor="@color/White"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -189,12 +189,12 @@
                             android:layout_below="@id/request_service_main_text_view"
                             android:layout_alignStart="@+id/request_service_main_text_view"
                             android:layout_marginTop="4dp"
-                            android:layout_marginEnd="5dp"
+                            android:layout_marginEnd="20dp"
                             android:layout_toEndOf="@+id/request_service_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="\u2022 Your Agent will arrange to carry out your service.\n\u2022 Service charges apply."
+                            android:text="Your Ummo Agent will be in touch to carry out your service."
                             android:textColor="#999999"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </RelativeLayout>
                     <!--[END] Request Service Assistance Relative Layout -->
@@ -209,8 +209,8 @@
 
                         <ImageView
                             android:id="@+id/share_service_image_view"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:layout_centerVertical="true"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
@@ -224,9 +224,9 @@
                             android:layout_height="wrap_content"
                             android:layout_toEndOf="@+id/share_service_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="3. Stay Safe &amp; Secure"
+                            android:text="3. Experience Convenience"
                             android:textColor="@color/White"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -239,9 +239,9 @@
                             android:layout_marginEnd="10dp"
                             android:layout_toEndOf="@+id/share_service_image_view"
                             android:fontFamily="@font/rubik"
-                            android:text="Enjoy your day with a peace of mind."
+                            android:text="Spend your time more conveniently - where it matters."
                             android:textColor="#999999"
-                            android:textSize="14sp" />
+                            android:textSize="12sp" />
 
                     </RelativeLayout>
                     <!--[END] Share Service Info Relative Layout -->
@@ -253,12 +253,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                app:layout_constraintTop_toBottomOf="@+id/delegation_intro_body_layout">
+                app:layout_constraintTop_toBottomOf="@+id/service_query_extender_intro_body_layout">
 
                 <ImageView
                     android:id="@+id/service_guarantee_image_view"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_centerHorizontal="true"
                     android:padding="2dp"
                     app:srcCompat="@drawable/ic_clean_hands_blue_24" />
@@ -274,20 +274,21 @@
                     android:layout_marginBottom="30dp"
                     android:text="Ummo and all its affiliates are COVID-19 compliant. \n\nTerms and Conditions apply."
                     android:textColor="#999999"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/confirm_delegation_intro_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/service_guarantee_text_view"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:backgroundTint="@color/ummo_3"
                     android:text="GOT IT"
                     android:textColor="@color/White"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
+                    app:cornerRadius="8sp"
                     app:iconGravity="textEnd"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

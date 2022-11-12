@@ -4,12 +4,11 @@ import android.app.Activity
 import android.preference.PreferenceManager
 import com.github.kittinunf.fuel.Fuel
 import com.google.firebase.perf.metrics.AddTrace
-import okhttp3.*
-import org.json.JSONException
-import org.json.JSONObject
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import timber.log.Timber
-import xyz.ummo.user.R
-
 
 abstract class GetAllServices(private val activity: Activity) {
 
@@ -19,7 +18,7 @@ abstract class GetAllServices(private val activity: Activity) {
 
     init {
         getAllServices()
-        getAllServicesOK("${activity.getString(R.string.serverUrl)}/product", object : Callback {
+        /*getAllServicesOK("${activity.getString(R.string.serverUrl)}/product", object : Callback {
             override fun onFailure(call: Call, e: java.io.IOException) {
                 Timber.e("OK HTTP FAILED -> $e")
             }
@@ -37,11 +36,11 @@ abstract class GetAllServices(private val activity: Activity) {
                     }
                 }
             }
-        })
+        })*/
     }
 
     @AddTrace(name = "get_all_services")
-    private fun getAllServices() {
+    fun getAllServices() {
         Fuel.get("/product")
             .response { request, response, result ->
                 activity.runOnUiThread {
@@ -60,23 +59,6 @@ abstract class GetAllServices(private val activity: Activity) {
         call.enqueue(callback)
         return call
     }
-
-    /*private fun getAllServicesOk() {
-        val okHttp = OkHttpClient()
-
-        val requestBuilder =
-            Request.Builder()
-                .url("${activity.getString(R.string.serverUrl)}/product")
-                .build()
-
-        activity.runOnUiThread {
-
-
-            if (response.isSuccessful) {
-                Timber.e("OK HTTP RESPONSE -> ${response.body}")
-            }
-        }
-    }*/
 
     abstract fun done(data: ByteArray, code: Number)
 }

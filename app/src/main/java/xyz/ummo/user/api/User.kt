@@ -78,7 +78,14 @@ class User : MultiDexApplication() {
 
     companion object {
         fun getUserId(_jwt: String): String { //Remember, it takes a jwt string
-            return JSONObject(String(Base64.decode(_jwt.split(".")[1], Base64.DEFAULT))).getString("_id")
+            return JSONObject(
+                String(
+                    Base64.decode(
+                        _jwt.split(".")[1],
+                        Base64.DEFAULT
+                    )
+                )
+            ).getString("_id")
         }
     }
 
@@ -87,50 +94,23 @@ class User : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-
-        /*
-        OneSignal.handleNotificationOpen(applicationContext, )
-        */
-
-        /*OneSignal.idsAvailable { userId: String?, registrationId: String? ->
-            Timber.e("IDs Available: USER -> $userId; REG -> $registrationId")
-
-            if (userId == null) {
-                val sharedPreferences = getSharedPreferences(ummoUserPreferences, mode)
-                val editor: SharedPreferences.Editor
-                editor = sharedPreferences.edit()
-                editor.putString("USER_PID", userId)
-                editor.apply()
-            }
-        }*/
     }
-
-    /*override fun notificationOpened(result: OSNotificationOpenResult?) {
-        val actionType: OSNotificationAction.ActionType = result!!.action.type
-        val data: JSONObject = result.notification.payload.additionalData
-        if (data != null) {
-            Timber.e("NOTIFICATION OPENED [DATA] -> $data")
-        } else
-            Timber.e("NOTIFICATION DATA IS NULL!")
-        if (actionType == OSNotificationAction.ActionType.ActionTaken)
-            Timber.e("BUTTOn PRESSED WITH ID -> ${result.action.actionID}")
-        Timber.e("NOTIFICATION OPENED [actionType] -> $actionType")
-    }*/
 
     override fun onCreate() {
         super.onCreate()
 
         /** Init Mixpanel **/
         mixpanelAPI = MixpanelAPI.getInstance(
-                applicationContext,
-                resources.getString(R.string.mixpanelToken)
+            applicationContext,
+            resources.getString(R.string.mixpanelToken)
         )
+
+        /** Auth JWT **/
+        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString("jwt", "").toString()
 
         /** Init MainViewModel **/
 //        mainViewModel = ViewModelProvider().get(MainViewModel::class.java)
-
-        val jwt: String = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("jwt", "").toString()
 
         FuelManager.instance.basePath = getString(serverUrl)
 
@@ -155,21 +135,6 @@ class User : MultiDexApplication() {
             initializeSocketWithId(getUserId(jwt))
 
             Timber.e("{JWT} No Socket Event - Server URL [1]->${getString(serverUrl)}")
-
-            //SocketIO.mSocket?.connect()
-            /*SocketIO.mSocket?.on("connect") {
-                socketStateEvent.socketConnected = true
-                EventBus.getDefault().post(socketStateEvent)
-                Timber.e("{JWT} Socket Connected Event - Server URL [1]->${getString(serverUrl)}")
-            }*/
-
-//            mainViewModel!!.socketConnect()
-
-            /*SocketIO.mSocket?.on("connect_error") {
-                Timber.e("{JWT} Socket Connection Error-> ${it[0].toString() + SocketIO.mSocket?.io()}")
-                socketStateEvent.socketConnected = false
-                EventBus.getDefault().post(socketStateEvent)
-            }*/
 
             SocketIO.mSocket?.on("message1") {
                 Timber.e("it[0].toString()")
@@ -250,14 +215,20 @@ class User : MultiDexApplication() {
                 val intent = Intent(this, MainScreen::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
-                intent.putExtra("SERVICE_ID", JSONObject(it[0].toString())
-                        .getString("_id"))
+                intent.putExtra(
+                    "SERVICE_ID", JSONObject(it[0].toString())
+                        .getString("_id")
+                )
 
-                intent.putExtra("SERVICE_AGENT_ID", JSONObject(it[0].toString())
-                        .getString("agent"))
+                intent.putExtra(
+                    "SERVICE_AGENT_ID", JSONObject(it[0].toString())
+                        .getString("agent")
+                )
 
-                intent.putExtra("DELEGATED_PRODUCT_ID", JSONObject(it[0].toString())
-                        .getString("product"))
+                intent.putExtra(
+                    "DELEGATED_PRODUCT_ID", JSONObject(it[0].toString())
+                        .getString("product")
+                )
 
                 intent.putExtra("OPEN_DELEGATED_SERVICE_FRAG", 1)
 
@@ -323,8 +294,22 @@ class User : MultiDexApplication() {
             val body = result.notification.body
             val data = result.notification.rawPayload
             val dataObject = JSONObject(data)
-            val customObject = JSONObject(dataObject.getString("custom")).getJSONObject("a")
-            val openURL = customObject.getString("OPEN_URL")
+            var customObject = JSONObject()
+            var a = JSONObject()
+            var openURL = ""
+
+            if (dataObject.has("custom")) {
+                customObject = JSONObject(dataObject.getString("custom"))
+            }
+
+            if (customObject.has("a")) {
+                a = customObject.getJSONObject("a")
+            }
+
+            if (customObject.has("OPEN_URL")) {
+                openURL = customObject.getString("OPEN_URL")
+
+            }
             val url = result.notification.launchURL
 
             val notificationJSONObject = JSONObject()
@@ -352,7 +337,7 @@ class User : MultiDexApplication() {
             Timber.e("OS NOTIFICATION TITLE -> $title")
             Timber.e("OS NOTIFICATION BODY -> $body")
             Timber.e("OS NOTIFICATION DATA -> $dataObject")
-            Timber.e("OS NOTIFICATION CUSTOM DATA -> $customObject")
+            Timber.e("OS NOTIFICATION CUSTOM DATA -> $a")
             Timber.e("OS NOTIFICATION OPEN URL -> $openURL")
         }
     }

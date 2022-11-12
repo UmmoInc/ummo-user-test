@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mini_service_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="1dp"
+    app:cardMaxElevation="1dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:contentPaddingBottom="4dp"
+    app:contentPaddingTop="0dp"
+    app:strokeColor="@color/Grey"
+    app:strokeWidth="1dp">
+
+    <RelativeLayout
+        android:id="@+id/mini_service_root_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/service_header_relative_layout_slice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp">
+
+            <RelativeLayout
+                android:id="@+id/service_info_title_relative_layout_slice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp">
+
+                <ImageView
+                    android:id="@+id/service_card_avatar_image_view_slice"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    app:srcCompat="@drawable/esw_gov" />
+
+                <TextView
+                    android:id="@+id/service_title_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
+                    android:fontFamily="@font/rubik"
+                    android:text="@string/service_name"
+                    android:textColor="@color/ummo_2"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/rubik" />
+
+                <TextView
+                    android:id="@+id/service_description_text_view_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/service_title_text_view_slice"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/service_description"
+                    android:textSize="12sp"
+                    app:fontFamily="@font/rubik" />
+
+                <RelativeLayout
+                    android:id="@+id/service_tags_relative_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_description_text_view_slice"
+                    android:layout_alignStart="@+id/service_description_text_view_slice"
+                    android:layout_marginTop="16dp">
+
+                    <!--<RelativeLayout
+                        android:id="@+id/service_delegatable_tag_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/service_delegatable_image_view_slice"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginBottom="4dp"
+                            app:srcCompat="@drawable/ic_delegate_icon" />
+
+                        <TextView
+                            android:id="@+id/service_delegatable_text_view_slice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/service_delegatable_image_view_slice"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="8dp"
+                            android:text="Assignable"
+                            android:textSize="8sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>-->
+
+                    <!-- [START] Public Service Tag Layout -->
+                    <RelativeLayout
+                        android:id="@+id/public_service_tag_relative_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/service_description_text_view_slice"
+                        android:layout_marginBottom="8dp"
+                        android:layout_toEndOf="@+id/service_delegatable_tag_relative_layout"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/public_service_image_view_slice"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_marginBottom="4dp"
+                            app:srcCompat="@drawable/ic_public_service" />
+
+                        <TextView
+                            android:id="@+id/public_service_text_view_slice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/public_service_image_view_slice"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="8dp"
+                            android:text="Government Service"
+                            android:textSize="8sp"
+                            app:fontFamily="@font/rubik" />
+                    </RelativeLayout>
+                    <!-- [END] Public Service Tag Layout -->
+
+                    <!-- [START] Service Actions Layout -->
+                    <LinearLayout
+                        android:id="@+id/service_slice_actions_linear_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/public_service_tag_relative_layout"
+                        android:orientation="horizontal"
+                        android:weightSum="4">
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_views_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingEnd="4dp"
+                            android:visibility="visible">
+
+                            <ImageView
+                                android:id="@+id/service_slice_views_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="2dp"
+                                app:srcCompat="@drawable/ic_outline_visibility_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_views_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_views_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text="2 views"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_comments_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_comments_image"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginBottom="2dp"
+                                app:srcCompat="@drawable/ic_outline_chat_bubble_grey_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_comments_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_comments_image"
+                                android:fontFamily="@font/rubik"
+                                android:text="@string/comments_placeholder"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_share_icon_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_share_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_share_grey_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_share_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_share_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text="@string/shares_placeholder"
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_bookmark_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp">
+
+                            <ImageView
+                                android:id="@+id/service_slice_bookmark_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginBottom="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_outline_bookmark_border_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_bookmark_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_bookmark_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text=" "
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/service_slice_bookmarked_relative_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingStart="2dp"
+                            android:paddingEnd="4dp"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/service_slice_bookmarked_image_view"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="2dp"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginEnd="2dp"
+                                android:layout_marginBottom="2dp"
+                                android:contentDescription="@string/save_service"
+                                app:srcCompat="@drawable/ic_filled_bookmark_24" />
+
+                            <TextView
+                                android:id="@+id/service_slice_bookmarked_count_text_view"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/service_slice_bookmarked_image_view"
+                                android:fontFamily="@font/rubik"
+                                android:text=" "
+                                android:textSize="8sp"
+                                app:fontFamily="@font/rubik" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                    <!-- [END] Service Actions Layout -->
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/service_slice_request_agent_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/service_slice_actions_linear_layout"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="0dp"
+                        android:text="Request Service"
+                        android:textColor="@color/ummo_2"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:cornerRadius="8dp"
+                        app:iconGravity="textStart"
+                        app:strokeColor="@color/ummo_2"
+                        app:strokeWidth="1dp"
+                        tools:targetApi="lollipop"
+                        tools:visibility="visible" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/service_slice_menu_relative_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="end"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <TextView
+                    android:id="@+id/options_menu_service_slice"
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center"
+                    android:text="⋮"
+                    android:textAppearance="?android:textAppearanceLarge"
+                    android:textStyle="bold" />
+
+                <!--<ImageView
+                    android:id="@+id/open_service_image_slice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/options_menu_service_slice"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    app:srcCompat="@drawable/ic_baseline_arrow_forward_24" />-->
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

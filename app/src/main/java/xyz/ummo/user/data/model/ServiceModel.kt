@@ -1,14 +1,11 @@
 package xyz.ummo.user.data.model
 
-import xyz.ummo.user.models.ServiceCostModel
-
 interface ServiceModel {
     var serviceId: String? //0
     var serviceName: String? //1
     var serviceDescription: String? //2
     var serviceEligibility: String? //3
     var serviceCentres: ArrayList<String>? //4
-    //    var serviceCentres: String?
     var delegatable: Boolean? //5
 //    var serviceCost: ArrayList<ServiceCostModel>? //6
     var serviceDocuments: ArrayList<String>? //7
@@ -22,4 +19,5 @@ interface ServiceModel {
     var serviceProvider: String? //15
     var bookmarked: Boolean? //16
     var isDelegated: Boolean? //17
+    var serviceCategory: String? //18
 }

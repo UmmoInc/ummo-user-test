@@ -11,7 +11,7 @@ class ServiceProviderEntity : ServiceProviderModel {
     @NonNull
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "service_provider_id")
-    override var serviceProviderId: String? = null
+    override lateinit var serviceProviderId: String
 
     @ColumnInfo(name = "service_provider_name")
     override var serviceProviderName: String? = null

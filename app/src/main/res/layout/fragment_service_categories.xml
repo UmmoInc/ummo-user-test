@@ -5,9 +5,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/parent_constraint_layout"
-        android:background="#1111"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#1111"
         tools:context=".ui.fragments.categories.ServiceCategories">
 
         <com.google.android.material.card.MaterialCardView
@@ -71,12 +71,70 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <RelativeLayout
+            android:id="@+id/no_service_categories_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/no_results_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_warning_24" />
+
+            <TextView
+                android:id="@+id/no_results_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_results_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Service categories couldn't fully load. \n\nPlease try reloading."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reload_service_categories_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_results_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Reload"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_baseline_refresh_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/service_category_nested_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="150dp"
             android:scrollbars="vertical"
+            android:visibility="visible"
             app:layout_constraintTop_toBottomOf="@+id/home_bar_card_view">
 
             <androidx.recyclerview.widget.RecyclerView

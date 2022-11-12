@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="?android:attr/actionBarSize"
+        android:background="@color/White"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/all_services_intro_card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="1dp"
+            app:cardMaxElevation="1dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true"
+            app:strokeColor="@color/Grey"
+            app:strokeWidth="1dp">
+
+            <RelativeLayout
+                android:id="@+id/all_services_intro_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!--<TextView
+                    android:id="@+id/all_services_intro_title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/rubik"
+                    android:padding="4dp"
+                    android:text="Search for a service..."
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>-->
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/service_search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/all_services_intro_title_text_view"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#1111"
+                    android:focusable="true"
+                    android:textSize="12sp"
+                    app:iconifiedByDefault="false"
+                    app:queryHint="Search for your service..." />
+
+            </RelativeLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!--<include
+            android:id="@+id/home_info_card"
+            layout="@layout/info_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>-->
+
+        <HorizontalScrollView
+            android:id="@+id/chip_group_horizontal_scroller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/all_services_intro_card_view"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/service_chips_linear_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/service_category_chip_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:checkedChip="@id/all_services_chip"
+                    app:chipSpacing="2dp"
+                    app:chipSpacingHorizontal="2dp"
+                    app:chipSpacingVertical="2dp"
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/all_services_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="All Services"
+                        android:textSize="8sp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/bookmarked_services_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Bookmarks"
+                        android:textSize="8sp"
+                        android:visibility="gone"
+                        app:chipIcon="@drawable/ic_filled_bookmark_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/viewed_services_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="History"
+                        android:textSize="8sp"
+                        android:visibility="gone"
+                        app:chipIcon="@drawable/ic_history_black_24dp"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/home_affairs_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Home Affairs"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_identity_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/commerce_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Commerce"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_document_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/revenue_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Revenue"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_receipt_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/agriculture_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Agriculture"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_agriculture_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/health_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Health"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_health_and_safety_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/education_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Education"
+                        android:textSize="8sp"
+                        app:chipIcon="@drawable/ic_baseline_school_dark"
+                        app:chipIconSize="18dp"
+                        tools:ignore="SmallSp" />
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/all_services_swipe_refresher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/chip_group_horizontal_scroller"
+            android:layout_marginBottom="10dp"
+            android:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/all_services_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/service_slice" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <ProgressBar
+            android:id="@+id/load_all_services_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:visibility="invisible" />
+
+        <!-- [START] NO SERVICES FOUND Layout -->
+        <RelativeLayout
+            android:id="@+id/no_services_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_no_services_24" />
+
+            <TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Yeses! Looks like services failed to load properly. \n\nPlease make sure you have a good connection &amp; try again."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <!--<Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_servicesTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reload_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_services_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Reload Services"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_baseline_refresh_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+        <!-- [END] NO SERVICES FOUND Layout -->
+
+        <!-- [START] NO RESULTS FOUND Layout -->
+        <RelativeLayout
+            android:id="@+id/no_results_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/no_results_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_baseline_search_off_24" />
+
+            <TextView
+                android:id="@+id/no_results_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_results_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/service_not_found_message"
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <!--<Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_resultsTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/let_me_know_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/no_results_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Let me know"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_baseline_mark_chat_unread_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+        <!-- [END] NO RESULTS FOUND Layout -->
+
+        <!-- [START] MISSING SERVICE CAPTURED Layout -->
+        <RelativeLayout
+            android:id="@+id/missing_service_captured_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/missing_service_captured_image_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_unarchive_24" />
+
+            <TextView
+                android:id="@+id/missing_service_captured_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/missing_service_captured_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Great! \n\nSo, our team will look for your service and let you know ASAP."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="16sp" />
+
+            <!--<Button
+                android:id="@+id/reload_all_services_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_resultsTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/thank_you_button"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/missing_service_captured_text_view"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:backgroundTint="@color/ummo_2"
+                android:enabled="true"
+                android:text="Thank you"
+                android:textColor="@color/White"
+                app:icon="@drawable/ic_sharing_is_caring_24"
+                app:iconGravity="textEnd"
+                tools:targetApi="lollipop" />
+        </RelativeLayout>
+        <!-- [END] MISSING SERVICE CAPTURED Layout -->
+
+        <!--<RelativeLayout
+            android:id="@+id/no_services_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            tools:visibility="invisible">
+
+            <ImageView
+                android:id="@+id/no_services_image_view"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                app:srcCompat="@drawable/ic_twotone_folder_open_24" />
+
+            &lt;!&ndash;<TextView
+                android:id="@+id/no_services_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_services_image_view"
+                android:fontFamily="@font/rubik"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="There are no services under this category at the moment.\n\nPlease check again soon."
+                android:textAlignment="center"
+                android:textColor="@color/ummo_2"
+                android:textSize="18sp" />&ndash;&gt;
+
+            <Button
+                android:id="@+id/let_me_know_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/no_resultsTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
+                android:text="Let me know"
+                android:textColor="@color/ummo_1" />
+        </RelativeLayout>-->
+
+    </RelativeLayout>
+
+</layout>

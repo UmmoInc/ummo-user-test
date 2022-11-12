@@ -1,12 +1,8 @@
 package xyz.ummo.user.ui.fragments.bottomSheets
 
 import android.content.Context
-import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.preference.PreferenceManager
@@ -34,9 +30,11 @@ import xyz.ummo.user.R
 import xyz.ummo.user.api.RequestService
 import xyz.ummo.user.api.User
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentServiceRequestBottomSheetBinding
 import xyz.ummo.user.models.ServiceCostModel
 import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceFragment
 import xyz.ummo.user.ui.fragments.delegatedService.DelegatedServiceViewModel
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
@@ -51,8 +49,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var serviceObjectParam: Serializable? = null
-    private var serviceObject: ServiceObject? = null
+    private var serviceEntityParam: Serializable? = null
+    private var serviceEntity: ServiceEntity? = null
     private var layouts: IntArray? = null
     var serviceCentresRadioGroup: RadioGroup? = null
     var serviceCentreRadioButton: RadioButton? = null
@@ -109,44 +107,47 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         )
 
         /** Unpacking [ServiceObject] from [getArguments]**/
-        serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)
-        serviceObject = serviceObjectParam as ServiceObject
-        Timber.e("SERVICE OBJECT PARAM -> $serviceObjectParam")
+        serviceEntityParam = arguments?.getSerializable(SERVICE_ENTITY)
+        serviceEntity = serviceEntityParam as ServiceEntity
+        Timber.e("SERVICE OBJECT PARAM -> $serviceEntityParam")
 
         serviceRequestStepOne()
-        serviceRequestStepTwo()
+//        serviceRequestStepTwo()
 
         return view
     }
 
-    private fun serviceRequestStepOne() {
+    /*private fun serviceRequestStepOne() {
 
         serviceLayoutInflater = LayoutInflater.from(context)
             .context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        /** Introducing Request Sheet to User**/
+        */
+    /** Introducing Request Sheet to User**//*
         val requestAgentText = String.format(
             resources.getString(R.string.request_ummo_agent),
-            serviceObject!!.serviceName
+            serviceEntity!!.serviceName
         )
         val requestAgentTextView = viewBinding.requestDescriptionTextView
         requestAgentTextView.text = requestAgentText
 
-        /** Populating the Service Centre RadioGroup**/
-        val serviceCentresList = ArrayList(serviceObject!!.serviceCentres)
+        */
+    /** Populating the Service Centre RadioGroup**//*
+        val serviceCentresList = ArrayList(serviceEntity!!.serviceCentres)
         var serviceCentreRadioButton: RadioButton?
-        val serviceCentresRadioGroup: RadioGroup = viewBinding.serviceCentreRadioGroupDialogFragment
+//        val serviceCentresRadioGroup: RadioGroup = viewBinding.serviceCentreRadioGroupDialogFragment
 
         if (serviceCentresList.isNotEmpty()) {
 
-            serviceCentresRadioGroup.removeAllViews()
+            serviceCentresRadioGroup?.removeAllViews()
             for (i in serviceCentresList.indices) {
                 serviceCentreRadioButton = RadioButton(requireContext())
                 serviceCentreRadioButton.id = i
                 serviceCentreRadioButton.text = serviceCentresList[i].replace("\"\"", "")
                 serviceCentreRadioButton.textSize = 14F
 
-                /** Setting RadioButton color state-list **/
+                */
+    /** Setting RadioButton color state-list **//*
                 if (Build.VERSION.SDK_INT >= 21) {
                     val colorStateList = ColorStateList(
                         arrayOf(
@@ -159,8 +160,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                     )
                     serviceCentreRadioButton.buttonTintList = colorStateList
                 }
-                serviceCentresRadioGroup.addView(serviceCentreRadioButton)
-                serviceCentresRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
+                serviceCentresRadioGroup?.addView(serviceCentreRadioButton)
+                serviceCentresRadioGroup?.setOnCheckedChangeListener { radioGroup, checkedId ->
 
                     val checkedBox = radioGroup.findViewById<RadioButton>(checkedId)
                     chosenServiceCentre = checkedBox.text.toString()
@@ -176,12 +177,12 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         } else {
             Timber.e("onCreate: docsList is EMPTY!")
         }
-    }
+    }*/
 
-    private fun serviceRequestStepTwo() {
+    /*private fun serviceRequestStepTwo() {
         val autoCompleteTextView = viewBinding.sheetServiceCostTextView
 
-        serviceCostArrayList = serviceObject!!.serviceCost
+        serviceCostArrayList = serviceEntity!!.serviceCost!!
         serviceCostAdapter =
             ArrayAdapter(requireContext(), R.layout.list_item, serviceCostArrayList)
 
@@ -191,7 +192,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
             val selectedText = autoCompleteTextView.text.toString()
             var currencyIndex = 0
 
-            /** Parsing through the selectedText to pull out the [specCost] **/
+            */
+    /** Parsing through the selectedText to pull out the [specCost] **//*
             for (j in selectedText.indices) {
                 val char = selectedText[j]
                 if (char == 'E')
@@ -211,9 +213,16 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
             viewBinding.serviceBookingRelativeLayout.visibility = View.VISIBLE
             serviceRequestStepThree()
         }
-    }
+    }*/
 
-    private fun serviceRequestStepThree() {
+    private fun serviceRequestStepOne() {
+        val requestAgentText = String.format(
+            resources.getString(R.string.request_ummo_agent),
+            serviceEntity!!.serviceName
+        )
+        val requestAgentTextView = viewBinding.requestDescriptionTextView
+        requestAgentTextView.text = requestAgentText
+
         val pickDateButton: MaterialButton = viewBinding.reserveDateButton
 
         /** For a better UX, we need the User to not accidentally select a date from the past **/
@@ -276,34 +285,33 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
         viewBinding.confirmServiceRelativeLayout.visibility = View.VISIBLE
         viewBinding.confirmPaymentCheckBox.visibility = View.VISIBLE
 
-        val confirmServiceCostTextView = viewBinding.confirmServiceCostTextView
+        /*val confirmServiceCostTextView = viewBinding.confirmServiceCostTextView
         val delegationCostTextView = viewBinding.confirmDelegationCostTextView
-        val totalCostTextView = viewBinding.confirmTotalCostTextView
+        val totalCostTextView = viewBinding.confirmTotalCostTextView*/
         val confirmPaymentCheckBox = viewBinding.confirmPaymentCheckBox
         val confirmRequestButton = viewBinding.confirmRequestButton
         val delegationFee = JSONObject()
 
-        confirmServiceCostTextView.text = "E$specCost"
+//        confirmServiceCostTextView.text = "E$specCost"
         /** 1) Removing the currency from the fee
          *  2) Converting fee string to int
          *  3) Adding [Delegation Fee] to get Total Cost (int)
          *  4) Displaying Total Cost **/
 
-        val serviceCost: String = specCost
+//        val serviceCost: String = specCost
 
-        val formattedServiceCost: String = if (serviceCost.contains(",")) {
+        /*val formattedServiceCost: String = if (serviceCost.contains(",")) {
             serviceCost.replace(",", "")
         } else {
             serviceCost
-        }
+        }*/
 
         val totalCostInt: Int
 
         Timber.e("SERVICE COST -> $specCost")
-        Timber.e("SERVICE FORMATTED -> $formattedServiceCost")
-        val serviceCostInt = Integer.parseInt(formattedServiceCost)
+//        val serviceCostInt = Integer.parseInt(formattedServiceCost)
 
-        totalCostInt = when {
+        /*totalCostInt = when {
             chosenServiceCentre.contains("Manzini", true) -> {
                 delegationCostTextView.text = 119.toString()
                 serviceCostInt + 119
@@ -320,11 +328,11 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 delegationCostTextView.text = 99.toString()
                 serviceCostInt + 99
             }
-        }
-        totalCostTextView.text = "E$totalCostInt"
+        }*/
+//        totalCostTextView.text = "E99"
 
-        delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
-            .put(TOTAL_DELEGATION_FEE, totalCostInt)
+        /*delegationFee.put(CHOSEN_SERVICE_SPEC, serviceSpec)
+            .put(TOTAL_DELEGATION_FEE, totalCostInt)*/
 
         confirmPaymentCheckBox.setOnClickListener {
             if (confirmPaymentCheckBox.isChecked) {
@@ -337,9 +345,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                 confirmRequestButton.setOnClickListener {
                     requestAgentDelegate(
-                        serviceObject!!.serviceId,
-                        delegationFee,
-                        chosenServiceCentre
+                        serviceEntity!!.serviceId
                     )
                 }
                 /*paymentTermsEvent.paymentTermsConfirmed = true
@@ -354,9 +360,7 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun requestAgentDelegate(
-        mServiceId: String,
-        mDelegationFee: JSONObject,
-        mChosenServiceCentre: String
+        mServiceId: String
     ) {
         val jwt = PreferenceManager.getDefaultSharedPreferences(context).getString("jwt", "")
         val serviceRequestObject = JSONObject()
@@ -369,11 +373,11 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
             try {
                 serviceRequestObject.put("user_id", User.getUserId(jwt))
-                        .put("product_name", serviceObject!!.serviceName)
-                        .put("product_id", mServiceId)
-                        .put("delegation_fee", mDelegationFee)
-                        .put("chosen_service_centre", mChosenServiceCentre)
-                        .put("service_date", serviceDate)
+                    .put("product_name", serviceEntity!!.serviceName)
+                    .put("product_id", mServiceId)
+                    /*.put("delegation_fee", mDelegationFee)
+                    .put("chosen_service_centre", mChosenServiceCentre)*/
+                    .put("service_date", serviceDate)
                 Timber.e("SUCCESSFULLY SCHEDULING SERVICE VIA SOCKET")
 
                 /** [scheduleServiceSocketEvent] takes the $serviceRequestObject && emits this event
@@ -391,8 +395,6 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                 context,
                 User.getUserId(jwt),
                 mServiceId,
-                mDelegationFee,
-                mChosenServiceCentre,
                 serviceDate
             ) {
                 override fun done(data: ByteArray, code: Int) {
@@ -414,17 +416,17 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             //TODO: remove after service is done
                             editor.putString(
                                 DELEGATED_SERVICE_ID,
-                                serviceObject!!.serviceId
+                                serviceEntity!!.serviceId
                             )
 //                            editor.putString(SERVICE_AGENT_ID, serviceAgent)
-                            editor.putString(
+                            /*editor.putString(
                                 DELEGATION_FEE,
                                 mDelegationFee.getString(TOTAL_DELEGATION_FEE)
                             )
                             editor.putString(
                                 DELEGATION_SPEC,
                                 mDelegationFee.getString(CHOSEN_SERVICE_SPEC)
-                            )
+                            )*/
                             editor.putString(SERVICE_DATE, serviceDate)
                             editor.apply()
 
@@ -437,8 +439,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 
                                 override fun onFinish() {
                                     launchDelegatedService(
-                                            context,
-                                            delegatedServiceId, delegationId
+                                        context,
+                                        delegatedServiceId, delegationId
                                     )
 
                                     return
@@ -449,8 +451,8 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
                             /** Saving Service Delegation in Room **/
                             val delegatedServiceEntity = DelegatedServiceEntity()
                             val delegatedServiceViewModel =
-                                    ViewModelProvider((context as FragmentActivity?)!!)
-                                            .get(DelegatedServiceViewModel::class.java)
+                                ViewModelProvider((context as FragmentActivity?)!!)
+                                    .get(DelegatedServiceViewModel::class.java)
 
                             val progress = java.util.ArrayList<String>()
 
@@ -532,10 +534,10 @@ class ServiceRequestBottomSheet : BottomSheetDialogFragment() {
 //        bundle.putString(SERVICE_AGENT_ID, agentId)
         bundle.putString(DELEGATION_ID, delegationId)
         bundle.putString(TAKE_ME_TO, DELEGATED_SERVICE_FRAGMENT)
+        bundle.putString(FRAGMENT_DESTINATION, DelegatedServiceFragment.toString())
 
         Timber.e("DELEGATION_ID -> $delegationId")
         Timber.e("DELEGATED_SERVICE_ID -> $delegatedServiceId")
-//        Timber.e("SERVICE_AGENT_ID -> $agentId")
         Timber.e("SERVICE_DATE -> $serviceDate")
 
         val progress = java.util.ArrayList<String>()

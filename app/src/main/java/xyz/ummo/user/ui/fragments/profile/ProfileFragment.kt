@@ -1,7 +1,6 @@
 package xyz.ummo.user.ui.fragments.profile
 
 import android.app.Activity
-import android.app.Application
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,7 +17,6 @@ import androidx.annotation.Keep
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -527,7 +525,7 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    class ProfileViewModelFactory(private val application: Application) :
+    /*class ProfileViewModelFactory(private val application: Application) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
@@ -536,5 +534,5 @@ class ProfileFragment : Fragment() {
                 throw IllegalArgumentException("Unknown ViewModel class")
             }
         }
-    }
+    }*/
 }

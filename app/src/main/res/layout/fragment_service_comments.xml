@@ -14,20 +14,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="20dp" />
+            android:layout_centerVertical="true" />
 
         <View
             android:id="@+id/divider_1"
-            android:layout_width="40dp"
-            android:layout_height="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
-            android:background="@color/black"
-            android:padding="20dp" />
+            android:background="@color/Grey"
+            android:padding="10dp" />
 
         <RelativeLayout
             android:id="@+id/service_comments_header_relative_layout"
@@ -36,7 +33,7 @@
             android:layout_below="@+id/divider_1"
             android:layout_marginEnd="4dp">
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/service_comments_header_image_view"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -46,38 +43,50 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:padding="8dp"
-                app:srcCompat="@drawable/ic_baseline_bubble_chart_24" />
+                app:srcCompat="@drawable/ic_baseline_bubble_chart_24" />-->
 
             <RelativeLayout
                 android:id="@+id/service_comment_title_relative_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_toEndOf="@+id/service_comments_header_image_view">
-
-                <TextView
-                    android:id="@+id/service_comments_header_title_text_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/rubik"
-                    android:text="Public Reviews for"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                android:layout_centerVertical="true"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/service_comments_header_subtitle_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/service_comments_header_title_text_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="Service Reviews and Comments"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/service_comments_sub_header_subtitle_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/service_comments_header_subtitle_text_view"
+                    android:fontFamily="@font/rubik"
+                    android:text="Share your thoughts about the service with others"
+                    android:textColor="@color/Grey"
+                    android:textSize="12sp" />
+
+                <!--<TextView
+                    android:id="@+id/service_comments_header_subtitle_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/service_comments_header_title_text_view"
                     android:layout_marginTop="0dp"
+                    android:layout_marginStart="8dp"
                     android:fontFamily="@font/rubik"
                     android:text="@string/service_comments_subtitle"
                     android:textColor="@color/ummo_2"
-                    android:textSize="16sp" />
+                    android:textSize="16sp" />-->
             </RelativeLayout>
 
-            <View
+            <!--<View
                 android:id="@+id/divider_2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -85,124 +94,79 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="5dp"
-                android:background="@color/Grey" />
+                android:background="@color/Grey" />-->
         </RelativeLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/service_comment_nested_scroll_view"
+        <RelativeLayout
+            android:id="@+id/service_comment_content_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/service_comments_header_relative_layout"
-            android:layout_marginBottom="90dp"
-            android:scrollbars="vertical"
-            android:visibility="invisible">
+            android:layout_marginBottom="10dp"
+            android:padding="10dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/service_comment_recycler_view"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/service_comment_nested_scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/service_comments_header_relative_layout"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/service_comment" />
-        </androidx.core.widget.NestedScrollView>
+                android:layout_below="@+id/service_comments_header_relative_layout"
+                android:layout_marginBottom="10dp"
+                android:scrollbars="vertical">
 
-        <RelativeLayout
-            android:id="@+id/no_comments_relative_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:visibility="invisible"
-            tools:visibility="visible">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/service_comment_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/service_comments_header_relative_layout"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/service_comment" />
+            </androidx.core.widget.NestedScrollView>
 
-            <ImageView
-                android:id="@+id/no_comments_image_view"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="20dp"
-                app:srcCompat="@drawable/ic_twotone_add_comment_24" />
-
-            <TextView
-                android:id="@+id/no_comments_text_view"
+            <RelativeLayout
+                android:id="@+id/no_comments_relative_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/no_comments_image_view"
-                android:fontFamily="@font/rubik"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:text="Looks like you might be the first to comment on this service.\n\nLet your voice be heard!"
-                android:textAlignment="center"
-                android:textColor="@color/ummo_2"
-                android:textSize="18sp" />
+                android:layout_below="@+id/service_comment_nested_scroll_view"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/no_comments_image_view"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="20dp"
+                    app:srcCompat="@drawable/ic_twotone_add_comment_24" />
+
+                <TextView
+                    android:id="@+id/no_comments_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/no_comments_image_view"
+                    android:fontFamily="@font/rubik"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="You might be the first to comment on this service.\n\nLet your voice be heard!"
+                    android:textAlignment="center"
+                    android:textColor="@color/ummo_2"
+                    android:textSize="14sp" />
+            </RelativeLayout>
 
         </RelativeLayout>
 
-        <LinearLayout
+        <!--<LinearLayout
             android:id="@+id/service_comment_box_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/no_comments_relative_layout"
             android:layout_alignParentBottom="true"
             android:background="@color/White"
-            android:gravity="bottom"
             android:orientation="horizontal"
-            android:weightSum="20">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/service_comment_text_input_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="5dp"
-                android:layout_weight="19"
-                android:background="@color/White"
-                android:gravity="bottom|end"
-                android:paddingTop="8dp"
-                app:boxStrokeColor="@color/ummo_2"
-                app:endIconDrawable="@drawable/ic_round_send_24"
-                app:endIconMode="custom"
-                app:hintTextColor="@color/ummo_2">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/service_comment_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:cursorVisible="true"
-                    android:fontFamily="@font/rubik"
-                    android:hint="Share your thoughts..."
-                    android:lines="1"
-                    android:textColorHint="@color/ummo_2"
-                    android:textCursorDrawable="@drawable/cursor"
-                    android:textSize="18sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!--<com.google.android.material.button.MaterialButton
-                android:id="@+id/make_service_comment_button"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
-                android:layout_width="50dp"
-                android:layout_height="75dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/ummo_1"
-                android:paddingTop="1dp"
-                android:text=""
-                android:textColor="@color/White"
-                android:textSize="16sp"
-                app:icon="@drawable/ic_send_white_24"
-                app:iconGravity="textEnd"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:targetApi="lollipop" />-->
-
-        </LinearLayout>
-
+            android:layout_marginBottom="10dp"
+            android:weightSum="20">-->
+        <!--</LinearLayout>-->
     </RelativeLayout>
 </layout>

@@ -154,7 +154,7 @@
     <string name="service_description">Service Description</string>
     <string name="service_eligibility">This service is for:</string>
     <string name="service_eligibility_placeholder">Who is eligible to receive this service?</string>
-    <string name="service_centres">Service found at:</string>
+    <string name="service_centres">Service found at</string>
     <string name="service_centre_placeholder">Service Centre</string>
     <string name="service_cost_string">Service Cost</string>
     <string name="service_cost_placeholder">Free</string>
@@ -164,8 +164,8 @@
     <string name="service_requirements_placeholder">Requirements</string>
     <string name="disapproval_placeholder">2</string>
     <string name="approval_placeholder">2</string>
-    <string name="comments_placeholder">2</string>
-    <string name="shares_placeholder">2</string>
+    <string name="comments_placeholder">2 comments</string>
+    <string name="shares_placeholder">2 shares</string>
     <string name="more_info">MORE INFO</string>
     <string name="you_upvoted_this">You upvoted</string>
     <string name="you_downvoted_this">You downvoted</string>
@@ -210,8 +210,8 @@
     <string name="user_support_text">• Do you have any questions about your service? \n\n• Are you interested in knowing more about us? \n\n• We would love to talk.</string>
     <string name="scan_to_check_in">Scan to check in</string>
     <string name="service_created">Service Created</string>
-    <string name="service_requirements_detailed_info">You will need:</string>
-    <string name="service_duration_detailed_info">It usually takes:</string>
+    <string name="service_requirements_detailed_info">You will need</string>
+    <string name="service_duration_detailed_info">It usually takes</string>
     <string name="service_name_detailed_info">Service Name</string>
     <string name="view_service_prices">View Service Prices</string>
     <string name="show_you_care">Not knowing what to do can be frustrating. \n\nHelp a friend by sharing how to %1$s.</string>
@@ -223,5 +223,6 @@
     <string name="verify_email_prompt">Please check your email, %1$s, to verify your Ummo account.\n\nIf you haven\'t received it yet, you may resend it below.</string>
     <string name="service_benefits_title_text">Why %1$s</string>
     <string name="making_request">We\'re making your request…</string>
+    <string name="service_not_found_message"><![CDATA[Well this is embarrassing! \nSo we couldn\'t find your service.\n\nWe\'ll keep looking & let you know when we do find it.]]></string>
 
 </resources>

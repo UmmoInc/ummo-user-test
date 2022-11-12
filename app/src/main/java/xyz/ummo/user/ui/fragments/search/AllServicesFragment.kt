@@ -1,0 +1,697 @@
+package xyz.ummo.user.ui.fragments.search
+
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.get
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
+import com.mixpanel.android.mpmetrics.MixpanelAPI
+import kotlinx.android.synthetic.main.fragment_all_services.*
+import kotlinx.android.synthetic.main.fragment_all_services.view.*
+import kotlinx.android.synthetic.main.service_slice.view.*
+import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.json.JSONObject
+import timber.log.Timber
+import xyz.ummo.user.R
+import xyz.ummo.user.adapters.ServicesDiffUtilAdapter
+import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.databinding.FragmentAllServicesBinding
+import xyz.ummo.user.models.ServiceObject
+import xyz.ummo.user.ui.fragments.bottomSheets.queryExtender.QueryExtender
+import xyz.ummo.user.ui.main.MainScreen
+import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
+import xyz.ummo.user.utilities.*
+import xyz.ummo.user.utilities.eventBusEvents.LoadingCategoryServicesEvent
+import xyz.ummo.user.utilities.eventBusEvents.SearchResultsEvent
+import xyz.ummo.user.utilities.eventBusEvents.ServiceBookmarkedEvent
+
+class AllServicesFragment : Fragment(), androidx.appcompat.widget.SearchView.OnQueryTextListener {
+    private lateinit var allServiceBinding: FragmentAllServicesBinding
+    private lateinit var rootView: View
+    private lateinit var recyclerView: RecyclerView
+
+    private lateinit var allServicesDiffUtilAdapter: ServicesDiffUtilAdapter
+    private lateinit var serviceObjectArrayList: ArrayList<ServiceObject>
+    private lateinit var serviceEntityArrayList: ArrayList<ServiceEntity>
+    private lateinit var bookmarkedServices: LiveData<ServiceEntity>
+    private var loadingCategoryServicesEvent = LoadingCategoryServicesEvent()
+
+    private lateinit var allServicesSharedPreferences: SharedPreferences
+    private lateinit var prefEditor: SharedPreferences.Editor
+
+    private lateinit var mixpanel: MixpanelAPI
+
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
+
+    /** Initializing ServiceViewModel **/
+    /*private var serviceViewModel = ViewModelProvider(context as FragmentActivity)
+        .get(ServiceViewModel::class.java)*/
+    private lateinit var allServicesViewModel: AllServicesViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        serviceObjectArrayList = ArrayList(listOf<ServiceObject>())
+        serviceEntityArrayList = ArrayList(listOf<ServiceEntity>())
+//        bookmarkedServices = ArrayList(listOf<ServiceEntity>())
+
+        mixpanel = MixpanelAPI.getInstance(
+            context,
+            resources.getString(R.string.mixpanelToken)
+        )
+
+        /** Fetching Services from server & storing them to Room **/
+        /** Instantiating [allServicesViewModel] **/
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
+        allServicesSharedPreferences =
+            (activity as MainScreen).getSharedPreferences(ummoUserPreferences, mode)
+        prefEditor = allServicesSharedPreferences.edit()
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        allServiceBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_all_services,
+            container,
+            false
+        )
+
+        rootView = allServiceBinding.root
+
+        /** Scaffolding the [recyclerView] **/
+        recyclerView = rootView.all_services_recycler_view
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = rootView.all_services_recycler_view?.layoutManager
+
+        setupSearchView()
+
+        /** Checking if SearchView is expanded to decide how to handle its appearance **/
+        /*allServiceBinding.serviceSearchView.setOnQueryTextFocusChangeListener { _, hasFocus ->
+            if (hasFocus || !allServiceBinding.serviceSearchView.isIconified) {
+                */
+        /** If focused, hide title text **//*
+                allServiceBinding.allServicesIntroTitleTextView.visibility = View.GONE
+            } else if (!hasFocus || allServiceBinding.serviceSearchView.isIconified) {
+                */
+        /** Otherwise, leave it as is **//*
+                allServiceBinding.allServicesIntroTitleTextView.visibility = View.VISIBLE
+            }
+        }*/
+
+        /** Reloading all services on either Refresh or "Thank You" events **/
+        allServiceBinding.thankYouButton.setOnClickListener {
+            reloadAllServices()
+        }
+
+        allServiceBinding.missingServiceCapturedImageView.setOnClickListener {
+            reloadAllServices()
+        }
+
+        allServiceBinding.reloadServicesButton.setOnClickListener {
+            reloadAllServices()
+        }
+
+        allServiceBinding.allServicesSwipeRefresher.setOnRefreshListener {
+            reloadAllServices()
+            allServiceBinding.allServicesSwipeRefresher.isRefreshing = false
+            mixpanel.track("All Services View Refreshed")
+        }
+
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.getBookmarkedServices()
+        }
+
+        checkForBookmarkedServicesAndShowChip()
+
+        return rootView
+    }
+
+    private fun checkForBookmarkedServicesAndShowChip() {
+
+        allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+
+            if (bookmarkedServices.isNotEmpty()) {
+                allServiceBinding.bookmarkedServicesChip.visibility = View.VISIBLE
+                Timber.e("BOOKMARKED SERVICES -> $bookmarkedServices")
+            } else
+                Timber.e("NONE!")
+        }
+
+        /*if (bookmarkedServices.value != null) {
+            allServiceBinding.bookmarkedServicesChip.visibility = View.VISIBLE
+            Timber.e("SERVICE BOOKMARKS EXIST")
+        } else {
+            Timber.e("NO SERVICE BOOKMARKS")
+        }*/
+    }
+
+    @Subscribe
+    fun addServiceBookmark(bookmarkedEvent: ServiceBookmarkedEvent) {
+        if (bookmarkedEvent.serviceBookmarked == true) {
+//            addServiceBookmark()
+            prefEditor.putBoolean("$SERVICE_BOOKMARKED-${bookmarkedEvent.serviceName}", true)
+            prefEditor.apply()
+        }
+    }
+
+    private fun addServiceBookmark(serviceEntity: ServiceEntity) {
+
+        coroutineScope.launch(Dispatchers.Main) {
+            allServicesViewModel.addServiceBookmark(serviceEntity)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        allServicesDiffUtilAdapter =
+            ServicesDiffUtilAdapter(requireActivity())
+
+        all_services_recycler_view.apply {
+            adapter = allServicesDiffUtilAdapter
+            layoutManager = LinearLayoutManager(activity)
+            hasFixedSize()
+        }
+    }
+
+    private fun performOptionsMenuClick(position: Int) {
+        val serviceMenu =
+            PopupMenu(requireContext(), recyclerView[position].options_menu_service_slice)
+        serviceMenu.inflate(R.menu.services_menu)
+
+        serviceMenu.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
+            override fun onMenuItemClick(item: MenuItem?): Boolean {
+                when (item?.itemId) {
+                    R.id.action_save_service -> {
+                        return true
+                    }
+                    R.id.action_share_service -> {
+                        return true
+                    }
+                }
+                return false
+            }
+
+        })
+        serviceMenu.show()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        /** Instantiating [allServicesViewModel] **/
+        allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
+//        getAllServicesFromRoomAndDisplay()
+
+        coroutineScope.launch(Dispatchers.IO) {
+            displayServicesFromRoom(getAllServicesFromRoom())
+        }
+        filterServicesByCategory()
+//        filterMyServices()
+        checkIfServiceIsBookmarked()
+    }
+
+    /** 1. In getting all services from Room, we're actually observing the [allServicesViewModel]'s
+     *    livedata returned from [AllServicesViewModel.getLocallyStoredServices] suspend function;
+     *    this function runs a call on AllServicesRepository to getLocallyStoredServices for us.
+     *
+     *   2. With that result, we pass it to our diffUtil operation in [allServicesDiffUtilAdapter] whose
+     *     callback function compares if the adapter elements or contents are similar;
+     *     this is useful in ensuring that we have a clean list of info that doesn't repeat.
+     *
+     *   3. We then [checkForServices] and follow its UX functionality, accordingly.
+     *
+     *   4. But because the contents of the livedata may be empty, we then run another
+     *      [coroutineScope] on an IO dispatcher (b/c we're reading from the network) to actually
+     *      fetch service data from the server and store them in Room, before attempting to display
+     *      them again. **/
+    private fun getAllServicesFromRoomAndDisplay() {
+        allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { response ->
+            allServicesDiffUtilAdapter.differ.submitList(response)
+            showServicesViewAndHideEverythingElse()
+            checkForServices(response)
+
+            if (activity != null && isAdded) {
+
+                coroutineScope.launch(Dispatchers.Main) {
+                    if (response.isEmpty()) {
+                        Timber.e("SERVICES RESPONSE IS EMPTY")
+                        allServicesViewModel.getAllServicesFromServer()
+                        //getAllServicesFromRoomAndDisplay()
+
+                    } else {
+                        Handler(Looper.getMainLooper()).post {
+                            checkForServices(response)
+                        }
+
+                        Timber.e("SERVICES RESPONSE IS NOT EMPTY")
+                        requireActivity().runOnUiThread {
+                            showServicesViewAndHideEverythingElse()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkIfServiceIsBookmarked() {
+
+        allServicesViewModel.servicesLiveDataList.observe(viewLifecycleOwner) { serviceEntities ->
+
+            coroutineScope.launch(Dispatchers.Main) {
+
+                for (serviceEntity in serviceEntities) {
+
+                    if (allServicesSharedPreferences.getBoolean(
+                            "$SERVICE_BOOKMARKED-${serviceEntity.serviceId}",
+                            true
+                        )
+                    ) {
+                        allServicesViewModel.addServiceBookmark(serviceEntity)
+                        Timber.e("SERVICE BOOKMARKED -> TRUE")
+                    } else {
+                        Timber.e("SERVICE BOOKMARKED -> FALSE")
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun getAllServicesFromServer() {
+        /** Within this [coroutineScope], we're fetching locally stored services **/
+        coroutineScope.launch(Dispatchers.IO) {
+            Timber.e("GETTING ALL SERVICES FROM SERVER")
+            allServicesViewModel.getAllServicesFromServer()
+        }
+    }
+
+    private suspend fun getAllServicesFromRoom(): ArrayList<ServiceEntity> {
+        return allServicesViewModel.returnLocallyStoredServices()
+    }
+
+    private fun displayServicesFromRoom(servicesFromRoom: ArrayList<ServiceEntity>) {
+        if (servicesFromRoom.isNotEmpty()) {
+            allServicesDiffUtilAdapter.differ.submitList(servicesFromRoom)
+//            Timber.e("SERVICES RETURNED FROM ROOM FOR DISPLAY -> $servicesFromRoom")
+
+        } else {
+            Timber.e("ROOM IS EMPTY ATM!")
+            getAllServicesFromServer()
+
+            requireActivity().runOnUiThread {
+                reloadAllServices()
+            }
+        }
+    }
+
+    /** This will run everytime the UI is refreshed or when the User doesn't find a service &
+     * has to reload the UI accordingly. **/
+    private fun reloadAllServices() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                showProgressBar()
+            }
+
+            override fun onFinish() {
+                coroutineScope.launch(Dispatchers.IO) {
+//                    displayServicesFromRoom(getAllServicesFromRoom())
+                    Timber.e("RELOADING SERVICES -> ${getAllServicesFromRoom()}")
+
+                    if (getAllServicesFromRoom().isNotEmpty()) {
+                        allServicesDiffUtilAdapter.differ.submitList(getAllServicesFromRoom())
+                        requireActivity().runOnUiThread {
+                            showServicesViewAndHideEverythingElse()
+                        }
+                    } else {
+                        requireActivity().runOnUiThread {
+                            displayNoServicesForDisplay()
+                        }
+                    }
+                }
+            }
+        }
+        timer.start()
+    }
+
+    private fun showProgressBar() {
+        allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+        allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+        allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+    }
+
+    private fun showServicesViewAndHideEverythingElse() {
+        allServiceBinding.noResultsLayout.visibility = View.GONE
+        allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+        allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+        allServiceBinding.noServicesLayout.visibility = View.GONE
+        allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
+        allServiceBinding.serviceSearchView.isIconified = true
+        allServiceBinding.serviceSearchView.clearFocus()
+    }
+
+    private fun justShowAllServicesReturnedFromAdapter() {
+        allServiceBinding.noResultsLayout.visibility = View.GONE
+        allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+        allServiceBinding.missingServiceCapturedLayout.visibility = View.GONE
+        allServiceBinding.allServicesSwipeRefresher.visibility = View.VISIBLE
+    }
+
+    @Subscribe
+    fun onSearchResultsEvent(searchResultsEvent: SearchResultsEvent) {
+
+        if (searchResultsEvent.searchResultsFound!!) {
+            Timber.e("SEARCH RESULTS FOUND -> ${searchResultsEvent.searchedService}!")
+
+        } else {
+            Timber.e("SEARCH RESULTS NOT FOUND -> ${searchResultsEvent.searchedService}!")
+            displayNoServicesFoundFromSearch()
+
+            letMeKnowClicker(searchResultsEvent.searchedService)
+        }
+    }
+
+    private fun letMeKnowClicker(serviceString: String) {
+        val queryExtender = QueryExtender()
+        allServiceBinding.letMeKnowButton.setOnClickListener {
+//            capturingMissingService(serviceString)
+            queryExtender.show(supportFM, QueryExtender.TAG)
+        }
+    }
+
+    /** First, we want to capture the value of the missing service and then send it over to
+     *  Mixpanel for record keeping. In doing so, our UX needs to make it appealing to the
+     *  User. It needs to take care of the following:
+     *  1. Inform them that their query's been sent back for review;
+     *  2. Let them know that we'll reach out to them as soon as we find more info on their service
+     *  3. Tie ourselves to an SLA of no more than 2 days.
+     *  Let's begin! **/
+    private fun capturingMissingService(missingService: String) {
+        val missingServiceObject = JSONObject()
+        missingServiceObject.put("Missing Service", missingService)
+        mixpanel.track("Service Not Found", missingServiceObject)
+        allServiceBinding.noResultsLayout.visibility = View.GONE
+        displayMissingServiceCapturedUI()
+    }
+
+    private fun displayMissingServiceCapturedUI() {
+
+        val timer = object : CountDownTimer(1000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+
+                coroutineScope.launch(Dispatchers.Main) {
+                    allServiceBinding.noResultsLayout.visibility = View.GONE
+                    allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                    allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                    allServiceBinding.missingServiceCapturedLayout.visibility = View.VISIBLE
+                }
+            }
+        }
+        timer.start()
+    }
+
+    /** This function is meant to give the "We're working on it, quickly!" UX. We show the progress
+     *  bar for 2 seconds and then check if the [serviceEntityArrayList] is empty or not.
+     *  If it IS empty, we [displayNoServicesFoundFromSearch] to the User;
+     *  Else, we [showServicesViewAndHideEverythingElse] **/
+    private fun checkForServices(serviceEntityArrayList: ArrayList<ServiceEntity>) {
+
+        val timer = object : CountDownTimer(3000, 1000) {
+
+            override fun onTick(p0: Long) {
+                showProgressBar()
+            }
+
+            override fun onFinish() {
+                if (serviceEntityArrayList.isEmpty()) {
+                    displayNoServicesForDisplay()
+                    letMeKnowClicker("")
+                } else {
+                    showServicesViewAndHideEverythingElse()
+                }
+            }
+        }
+        timer.start()
+    }
+
+    /** This function displays a loader for 2 seconds && displays that no service was found from
+     *  the search **/
+    private fun displayNoServicesFoundFromSearch() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+
+                allServiceBinding.noResultsLayout.visibility = View.VISIBLE
+            }
+        }
+        timer.start()
+    }
+
+    private fun displayNoServicesForDisplay() {
+        val timer = object : CountDownTimer(2000, 1000) {
+            override fun onTick(p0: Long) {
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.VISIBLE
+            }
+
+            override fun onFinish() {
+                allServiceBinding.loadAllServicesProgressBar.visibility = View.GONE
+                allServiceBinding.allServicesSwipeRefresher.visibility = View.GONE
+                allServiceBinding.noResultsLayout.visibility = View.GONE
+                allServiceBinding.noServicesLayout.visibility = View.VISIBLE
+            }
+        }
+
+        timer.start()
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.top_app_bar, menu)
+
+        val search: MenuItem = menu.findItem(R.id.service_search)
+        val searchView = search.actionView as SearchView
+        searchView.queryHint = "Search here... "
+        searchView.isSubmitButtonEnabled = true
+
+        searchView.setOnQueryTextListener(this)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }*/
+
+    private fun setupSearchView() {
+        allServiceBinding.serviceSearchView.setOnQueryTextListener(this)
+    }
+
+    companion object {
+
+        private val parentJob = Job()
+
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            AllServicesFragment().apply {
+                arguments = Bundle().apply {
+
+                }
+            }
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        MainScope().launch {
+            delay(1000L)
+            query?.let {
+                if (query.isNotEmpty()) {
+                    searchServiceArrayList(query)
+                } else
+                    getAllServicesFromRoomAndDisplay()
+            }
+        }
+        return false
+    }
+
+    override fun onQueryTextChange(query: String?): Boolean {
+
+        MainScope().launch {
+            delay(1000L)
+            query?.let {
+                if (query.isNotEmpty()) {
+                    searchServiceArrayList(query)
+                } else
+                    getAllServicesFromRoomAndDisplay()
+            }
+        }
+        return false
+    }
+
+    private fun filterServicesByCategory() {
+
+        allServiceBinding.serviceCategoryChipGroup.setOnCheckedChangeListener { group, checkedId ->
+            Timber.e("CHECKED GROUP -> $group")
+            Timber.e("CHECKED CHIP -> $checkedId")
+
+            //            Timber.e("CHECKED CHIP ID ->>> $titleOrNull")
+
+            when (val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String) {
+
+                "All Services" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    reloadAllServices()
+                    getAllServicesFromRoomAndDisplay()
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Home Affairs" -> {
+                    searchServiceArrayList(HOME_AFFAIRS)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Home-Affairs"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Bookmarks" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    Timber.e("BOOKMARKED SERVICES -> $titleOrNull")
+
+                    allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+                        allServicesDiffUtilAdapter.differ.submitList(bookmarkedServices)
+                    }
+                    justShowAllServicesReturnedFromAdapter()
+                }
+                "History" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                }
+                "Commerce" -> {
+                    searchServiceArrayList(COMMERCE)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Commerce"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Revenue" -> {
+                    searchServiceArrayList(REVENUE)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Revenue"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Agriculture" -> {
+                    searchServiceArrayList(AGRICULTURE)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Agriculture"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Health" -> {
+                    searchServiceArrayList(HEALTH)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Health"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+                "Education" -> {
+                    searchServiceArrayList(EDUCATION)
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                    loadingCategoryServicesEvent.categoryLoading = "Education"
+                    loadingCategoryServicesEvent.loadingService = true
+                    EventBus.getDefault().post(loadingCategoryServicesEvent)
+                    allServiceBinding.serviceSearchView.isIconified
+                }
+            }
+        }
+    }
+
+    /*private fun filterMyServices() {
+
+        allServiceBinding.savedServicesChipGroup.setOnCheckedChangeListener { group, checkedId ->
+
+            when (val titleOrNull = group.findViewById<Chip>(checkedId)?.text as String) {
+                "Bookmark" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+
+                    allServicesViewModel.bookmarkedServices.observe(viewLifecycleOwner) { bookmarkedServices ->
+                        if (bookmarkedServices.isNotEmpty()) {
+                            allServicesDiffUtilAdapter.notifyDataSetChanged()
+                            allServicesDiffUtilAdapter.differ.submitList(bookmarkedServices)
+                            justShowAllServicesReturnedFromAdapter()
+                            Timber.e("BOOKMARKED SERVICES -> $bookmarkedServices")
+                        } else {
+                            Timber.e("NO BOOKMARKED SERVICES")
+                        }
+                    }
+                }
+                "History" -> {
+                    trackServiceFilterPickedOnMixpanel(titleOrNull)
+                }
+            }
+        }
+    }*/
+
+    private fun trackServiceFilterPickedOnMixpanel(serviceFilter: String) {
+        val serviceFilterJSONObject = JSONObject()
+        serviceFilterJSONObject.put("Filter", serviceFilter)
+        mixpanel.track("All Services Filtered", serviceFilterJSONObject)
+    }
+
+    /** This is our MVP function!
+     *  It searches for services represented by [searchQueryString] using
+     *  [AllServicesViewModel.searchedServicesLiveDataList].
+     *  We observe for any response and alter the UI accordingly.**/
+    private fun searchServiceArrayList(searchQueryString: String?) {
+        if (searchQueryString!!.isNotEmpty()) {
+            allServicesViewModel.searchForServices(searchQueryString)
+            allServicesViewModel.searchedServicesLiveDataList
+                .observe(viewLifecycleOwner) { searchResults ->
+                    Timber.e("SEARCHING FOR -> $searchResults")
+
+                    if (searchResults.isNullOrEmpty()) {
+                        displayNoServicesFoundFromSearch()
+                        letMeKnowClicker(searchQueryString)
+                    } else {
+                        allServicesDiffUtilAdapter.differ.submitList(searchResults)
+                        justShowAllServicesReturnedFromAdapter()
+                    }
+                }
+        }
+    }
+}

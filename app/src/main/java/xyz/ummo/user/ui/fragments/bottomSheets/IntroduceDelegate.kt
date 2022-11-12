@@ -11,19 +11,20 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.FragmentIntroduceDelegateBinding
 import xyz.ummo.user.models.ServiceObject
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
 import xyz.ummo.user.utilities.DELEGATION_INTRO_IS_CONFIRMED
-import xyz.ummo.user.utilities.SERVICE_OBJECT
+import xyz.ummo.user.utilities.SERVICE_ENTITY
 import xyz.ummo.user.utilities.mode
 import xyz.ummo.user.utilities.ummoUserPreferences
 import java.io.Serializable
 
 class IntroduceDelegate : BottomSheetDialogFragment() {
 
-    private lateinit var serviceObject: ServiceObject
-    private lateinit var serviceObjectParam: Serializable
+    private lateinit var serviceEntity: ServiceEntity
+    private lateinit var serviceEntityParam: Serializable
     private lateinit var viewBinding: FragmentIntroduceDelegateBinding
     private lateinit var rootView: View
     private lateinit var sharedPreferences: SharedPreferences
@@ -43,12 +44,18 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
         rootView = viewBinding.root
 
         /** Unpacking [ServiceObject] from [getArguments]**/
-        serviceObjectParam = arguments?.getSerializable(SERVICE_OBJECT)!!
-        serviceObject = serviceObjectParam as ServiceObject
-        Timber.e("SERVICE OBJECT PARAM -> $serviceObjectParam")
+        serviceEntityParam = arguments?.getSerializable(SERVICE_ENTITY)!!
+        serviceEntity = serviceEntityParam as ServiceEntity
+        Timber.e("SERVICE OBJECT PARAM -> $serviceEntityParam")
 
         viewBinding.confirmDelegationIntroButton.setOnClickListener {
-            launchServiceRequestBottomSheet(serviceObject)
+            launchServiceRequestBottomSheet(serviceEntity)
+        }
+
+        viewBinding.introduceDelegateNestedScrollView.post {
+            viewBinding.introduceDelegateNestedScrollView.fullScroll(
+                View.FOCUS_DOWN
+            )
         }
 
         termsAndConditions()
@@ -68,14 +75,14 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
         }
     }
 
-    private fun launchServiceRequestBottomSheet(serviceObject: ServiceObject) {
+    private fun launchServiceRequestBottomSheet(serviceEntity: ServiceEntity) {
 
         sharedPreferences = requireContext().getSharedPreferences(ummoUserPreferences, mode)
         editor = sharedPreferences.edit()
         editor.putBoolean(DELEGATION_INTRO_IS_CONFIRMED, true).apply()
         /** Creating bottomSheet service request **/
         val requestBundle = Bundle()
-        requestBundle.putSerializable(SERVICE_OBJECT, serviceObject)
+        requestBundle.putSerializable(SERVICE_ENTITY, serviceEntity)
         val serviceRequestBottomSheetDialog = ServiceRequestBottomSheet()
         serviceRequestBottomSheetDialog.arguments = requestBundle
         serviceRequestBottomSheetDialog
@@ -83,6 +90,8 @@ class IntroduceDelegate : BottomSheetDialogFragment() {
                 supportFM,
                 ServiceRequestBottomSheet.TAG
             )
+
+        this.dismiss()
     }
 
     companion object {

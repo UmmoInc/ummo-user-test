@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#222222"
-    tools:context=".ui.intro.Intro">
+    tools:context=".ui.intro.UmmoIntro">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
@@ -75,7 +75,7 @@
                         app:srcCompat="@drawable/ic_service_prep_checklist_24" />
 
                     <TextView
-                        android:id="@+id/service_prep_main_text_view"
+                        android:id="@+id/service_query_main_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@+id/service_prep_image_view"
@@ -89,8 +89,8 @@
                         android:id="@+id/service_prep_sub_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/service_prep_main_text_view"
-                        android:layout_alignStart="@+id/service_prep_main_text_view"
+                        android:layout_below="@id/service_query_main_text_view"
+                        android:layout_alignStart="@+id/service_query_main_text_view"
                         android:layout_marginStart="-1dp"
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"

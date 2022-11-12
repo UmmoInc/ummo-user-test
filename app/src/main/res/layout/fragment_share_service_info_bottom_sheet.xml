@@ -11,10 +11,13 @@
 
         <ImageView
             android:id="@+id/sharing_is_caring_icon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerHorizontal="true"
-            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_sharing_is_caring_24" />
 
@@ -26,8 +29,9 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/rubik"
             android:text="Sharing is Caring"
-            android:textSize="22sp"
-            android:textColor="@color/ummo_2" />
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <View
             android:id="@+id/divider_1"
@@ -43,18 +47,23 @@
             android:id="@+id/share_service_info_main_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginTop="8dp"
-            android:layout_below="@+id/sharing_is_caring_text">
+            android:layout_below="@+id/divider_1">
 
-            <ImageView
+            <!--<ImageView
                 android:id="@+id/caring_image_view"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:layout_margin="8dp"
-                app:srcCompat="@drawable/ic_care_24" />
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:srcCompat="@drawable/ic_care_24" />-->
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/show_care_title_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,18 +71,21 @@
                 android:layout_toEndOf="@id/caring_image_view"
                 android:text="Show you care"
                 android:textColor="@color/black"
+                android:textStyle="bold"
                 android:layout_marginBottom="4dp"
-                android:textSize="16sp" />
+                android:textSize="18sp" />-->
 
             <TextView
                 android:id="@+id/show_care_main_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/show_care_title_text_view"
+                android:layout_centerInParent="true"
                 android:layout_toEndOf="@id/caring_image_view"
+                android:fontFamily="@font/rubik"
                 android:text="@string/show_you_care"
-                android:textColor="#666"
-                android:textSize="16sp" />
+                android:textColor="@color/black"
+                android:textSize="12sp" />
 
         </RelativeLayout>
 
@@ -130,13 +142,17 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_info_button"
             android:layout_width="300dp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/share_service_info_main_relative_layout"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/ummo_2"
-            android:text="Share info"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/ummo_3"
+            android:text="Share Service info"
             android:textColor="@color/White"
+            android:textSize="12sp"
             app:icon="@drawable/ic_share_purple_24"
             app:iconGravity="textEnd"
             tools:targetApi="lollipop" />

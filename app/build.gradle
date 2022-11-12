@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         maven { url 'https://plugins.gradle.org/m2/' }
+        mavenCentral()
     }
     dependencies {
         classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:0.13.4'
@@ -10,9 +11,9 @@ buildscript {
 plugins {
     id 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 }
-apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 repositories {
+    maven { url "https://jitpack.io" }
     maven { url 'https://maven.google.com' }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
@@ -22,15 +23,16 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions' //TODO: Deprecate Extensions
 //apply plugin: 'kotlin-parcelize'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     defaultConfig {
         applicationId "xyz.ummo.user"
         minSdkVersion 20
-        targetSdkVersion 31
-        versionCode 36
-        versionName "1.2.1"
+        targetSdkVersion 32
+        versionCode 441
+        versionName "1.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -45,7 +47,7 @@ android {
         //[END] OneSignal Integration
     }
     buildTypes {
-        student{
+        student {
             minifyEnabled true
             debuggable true
             signingConfig signingConfigs.debug
@@ -55,7 +57,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '29.0.2'
 
     dexOptions {
         javaMaxHeapSize "4g"
@@ -77,13 +78,14 @@ android {
     lintOptions {
         checkReleaseBuilds false
     }
+    buildToolsVersion '30.0.3'
 }
 
 dependencies {
 
     def multidex_version = "2.0.1"
     def lifecycle_version = '2.2.0'
-    def room_version = '2.2.6'
+    def room_version = '2.4.2'
     def versions_work = "2.7.1"
 
     /**Dex**/
@@ -92,13 +94,12 @@ dependencies {
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.4.0"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.5.1'
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'com.google.android.material:material:1.6.0-alpha02'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.material:material:1.8.0-alpha01'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
     implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
@@ -111,22 +112,23 @@ dependencies {
     implementation "com.google.android.gms:play-services-safetynet:18.0.1"
 
     //GSON
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     //GIF Viewer
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.+'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
 
     //Firebase SDK
-    implementation platform('com.google.firebase:firebase-bom:28.4.0') //Bill of Materials
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation platform('com.google.firebase:firebase-bom:30.5.0') //Bill of Materials
+    implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-inappmessaging-display-ktx'
 //    implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-dynamic-links'
     implementation 'com.google.firebase:firebase-perf-ktx'
 
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -149,7 +151,7 @@ dependencies {
     }
 
     //OneSignal
-    implementation 'com.onesignal:OneSignal:4.4.1'
+    implementation 'com.onesignal:OneSignal:4.8.2'
     //GroupieAdapter
     implementation "com.xwray:groupie:2.8.0"
 
@@ -157,7 +159,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     //EventBus
-    implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'org.greenrobot:eventbus:3.3.1'
 
     //Mixpanel
     implementation 'com.mixpanel.android:mixpanel-android:5.8.4'
@@ -169,10 +171,10 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
 
     //circular imageview
-    implementation 'com.mikhaellopez:circularimageview:3.2.0'
+    implementation 'com.mikhaellopez:circularimageview:4.3.0'
 
     //CPP
-    implementation 'com.hbb20:ccp:2.3.7'
+    implementation 'com.hbb20:ccp:2.6.1'
     //define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.0"))
 
@@ -182,17 +184,17 @@ dependencies {
 
     //DevOps Tools
     //Sentry && SLF4J
-    implementation 'io.sentry:sentry-android:5.3.0'
-    implementation 'org.slf4j:slf4j-nop:2.0.0-alpha1'
+    implementation 'io.sentry:sentry-android:6.4.2'
+    implementation 'org.slf4j:slf4j-nop:2.0.0-alpha7'
 
     // viewpager
     implementation 'androidx.viewpager:viewpager:1.0.0'
     //Simplified logger with lint rules
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     implementation 'com.github.moondroid.coverflow:library:1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.32"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21'
 
     implementation 'com.github.kittinunf.fuel:fuel:2.3.1'
     implementation 'com.github.kittinunf.fuel:fuel-android:2.3.1'
@@ -203,22 +205,32 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1-native-mt'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
 //    implementation 'com.google.mlkit:barcode-scanning:17.0.0'
-    implementation 'com.karumi:dexter:6.2.1'
-    implementation 'com.otaliastudios:cameraview:2.6.4'
+    implementation 'com.karumi:dexter:6.2.3'
+    implementation 'com.otaliastudios:cameraview:2.7.2'
 
     // WorkManager dependency
     implementation "androidx.work:work-runtime-ktx:$versions_work"
 
+    // Coroutine Lifecycle Scopes
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+
+    // Room
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+
+    // AppIntro
+    implementation 'com.github.AppIntro:AppIntro:6.2.0'
+
 }
 
-apply plugin: 'io.sentry.android.gradle'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
-repositories {
-    mavenCentral()
-}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'

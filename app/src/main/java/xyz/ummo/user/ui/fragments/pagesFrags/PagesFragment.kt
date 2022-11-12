@@ -33,7 +33,6 @@ import xyz.ummo.user.ui.viewmodels.ServiceProviderViewModel
 import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.SERVICE_CATEGORY
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PagesFragment : Fragment() {
 
@@ -43,7 +42,7 @@ class PagesFragment : Fragment() {
     private var serviceProviderViewModel: ServiceProviderViewModel? = null
     private var serviceProviderEntity = ServiceProviderEntity()
     private var serviceViewModel: ServiceViewModel? = null
-    private var serviceEntity = ServiceEntity()
+    private lateinit var serviceEntity: ServiceEntity
     private var category = ""
     private lateinit var mixpanel: MixpanelAPI
     private val tfumaObject = Tfuma()

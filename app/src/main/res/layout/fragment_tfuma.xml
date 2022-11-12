@@ -9,17 +9,15 @@
         android:layout_height="match_parent"
         android:layout_marginTop="104dp"
         android:background="#1111"
-        android:layout_marginBottom="?android:attr/actionBarSize"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp">
+        android:layout_marginBottom="?android:attr/actionBarSize">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/tfuma_intro_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="1dp"
+            app:cardElevation="1dp"
             app:cardMaxElevation="1dp"
             app:cardPreventCornerOverlap="true"
             app:cardUseCompatPadding="true"
@@ -53,6 +51,7 @@
                     android:fontFamily="@font/rubik"
                     android:text="You can hire an Agent to assist you with the following."
                     android:textSize="12sp"
+                    android:textColor="@color/black"
                     android:textStyle="normal" />
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -76,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
+                android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/service_card" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -121,14 +121,31 @@
                 android:textColor="@color/ummo_2"
                 android:textSize="18sp" />
 
+            <!--<Button
+                android:id="@+id/reload_tfuma_services_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/offlineTextView"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/rounded_button_transparent_blue"
+                android:text="@string/retry_button_string"
+                android:textColor="@color/ummo_1" />-->
+
             <Button
                 android:id="@+id/reload_tfuma_services_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/offlineTextView"
                 android:layout_centerInParent="true"
-                android:layout_margin="10dp"
-                android:background="@drawable/rounded_button_transparent_blue"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="#1111"
                 android:text="@string/retry_button_string"
                 android:textColor="@color/ummo_1" />
         </RelativeLayout>
@@ -141,7 +158,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:visibility="invisible"
-            tools:visibility="visible">
+            tools:visibility="invisible">
 
             <ImageView
                 android:id="@+id/no_services_image_view"

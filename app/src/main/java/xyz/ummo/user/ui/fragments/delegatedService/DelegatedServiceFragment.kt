@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -31,7 +32,6 @@ import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.api.DelegationFeedback
 import xyz.ummo.user.data.entity.DelegatedServiceEntity
-import xyz.ummo.user.data.entity.ServiceEntity
 import xyz.ummo.user.databinding.AppBarDelegatedScreenBinding
 import xyz.ummo.user.databinding.ConfirmServiceDeliveredViewBinding
 import xyz.ummo.user.databinding.FragmentDelegatedBinding
@@ -39,9 +39,10 @@ import xyz.ummo.user.ui.detailedService.DetailedProductViewModel
 import xyz.ummo.user.ui.fragments.bottomSheets.DelegationFeeQuery
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceQueryBottomSheetFragment
 import xyz.ummo.user.ui.fragments.bottomSheets.ShareServiceProgressBottomSheet
-import xyz.ummo.user.ui.fragments.pagesFrags.PagesFragment
+import xyz.ummo.user.ui.fragments.categories.ServiceCategories
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.ui.main.MainScreen.Companion.supportFM
-import xyz.ummo.user.ui.viewmodels.ServiceViewModel
 import xyz.ummo.user.utilities.*
 import xyz.ummo.user.utilities.eventBusEvents.RatingSentEvent
 import xyz.ummo.user.utilities.eventBusEvents.ServiceUpdateEvents
@@ -88,7 +89,7 @@ class DelegatedServiceFragment : Fragment {
     private var mListener: OnFragmentInteractionListener? = null
     private var delegatedServiceViewModel: DelegatedServiceViewModel? = null
     private var detailedProductViewModel: DetailedProductViewModel? = null
-    private var serviceViewModel: ServiceViewModel? = null
+    private var serviceViewModel: AllServicesViewModel? = null
     private var delegatedServiceEntity = DelegatedServiceEntity()
     private var confirmReceiptDialog: AlertDialog? = null
     private var hasConfirmed = false
@@ -121,8 +122,10 @@ class DelegatedServiceFragment : Fragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mixpanel = MixpanelAPI.getInstance(context,
-                resources.getString(R.string.mixpanelToken))
+        mixpanel = MixpanelAPI.getInstance(
+            context,
+            resources.getString(R.string.mixpanelToken)
+        )
 
         confirmReceiptDialog = AlertDialog.Builder(context).create()
         appBarBinding = AppBarDelegatedScreenBinding.inflate(layoutInflater)
@@ -130,7 +133,7 @@ class DelegatedServiceFragment : Fragment {
 
         /** Initializing [DelegatedServiceViewModel] && [countOfDelegatedServices] **/
         delegatedServiceViewModel = ViewModelProvider(this)
-                .get(DelegatedServiceViewModel::class.java)
+            .get(DelegatedServiceViewModel::class.java)
 
         countOfDelegatedServices = delegatedServiceViewModel!!.getCountOfDelegatedServices()
         if (countOfDelegatedServices != 0) {
@@ -138,15 +141,17 @@ class DelegatedServiceFragment : Fragment {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
         /** Initializing [viewBinding] && attaching it to [R.layout.fragment_delegated] layout **/
         viewBinding = DataBindingUtil
-                .inflate(inflater, R.layout.fragment_delegated, container, false)
+            .inflate(inflater, R.layout.fragment_delegated, container, false)
 
         rateDelegationBinding = DataBindingUtil
-                .inflate(inflater, R.layout.confirm_service_delivered_view, container, false)
+            .inflate(inflater, R.layout.confirm_service_delivered_view, container, false)
 
         val view = viewBinding.root
 
@@ -156,10 +161,16 @@ class DelegatedServiceFragment : Fragment {
 
         delegatedServiceId = delegatedServicePreferences.getString(DELEGATED_SERVICE_ID, "")
         serviceState = delegatedServicePreferences.getInt(SERVICE_STATE, 0)
-        delegationFee = delegatedServicePreferences.getString(DELEGATION_FEE, "Couldn't load fee...")!!
-        delegationSpec = delegatedServicePreferences.getString(DELEGATION_SPEC, "Couldn't load service spec...")!!
-        serviceDate = delegatedServicePreferences.getString(SERVICE_DATE, "Couldn't load Service Date...")
-        serviceViewModel = ViewModelProvider(this).get(ServiceViewModel::class.java)
+        delegationFee =
+            delegatedServicePreferences.getString(DELEGATION_FEE, "Couldn't load fee...")!!
+        delegationSpec = delegatedServicePreferences.getString(
+            DELEGATION_SPEC,
+            "Couldn't load service spec..."
+        )!!
+        serviceDate =
+            delegatedServicePreferences.getString(SERVICE_DATE, "Couldn't load Service Date...")
+//        serviceViewModel = ViewModelProvider(this)[ServiceViewModel::class.java]
+        serviceViewModel = (activity as MainScreen).allServicesViewModel
 
         /** The commented block below will be used in a later version of the app **/
         /*agentNameTextView = viewBinding.delegatedAgentNameTextView
@@ -241,11 +252,12 @@ class DelegatedServiceFragment : Fragment {
         Timber.e("CURRENT SERVICE-DATE -> $serviceDate")
         /** For a better UX, we need the User to not accidentally select a date from the past **/
         val constraintsBuilder = CalendarConstraints.Builder()
-                .setValidator(DateValidatorPointForward.now())
+            .setValidator(DateValidatorPointForward.now())
+
         /** Creating a MaterialDateBuilder object **/
         val dateBuilder: MaterialDatePicker.Builder<*> = MaterialDatePicker.Builder.datePicker()
-                .setCalendarConstraints(constraintsBuilder.build())
-                .setTitleText("Pick a Date for your Service")
+            .setCalendarConstraints(constraintsBuilder.build())
+            .setTitleText("Pick a Date for your Service")
 
         val datePicker = dateBuilder.build()
         datePicker.show(this.childFragmentManager, datePicker.tag)
@@ -391,31 +403,34 @@ class DelegatedServiceFragment : Fragment {
     private fun confirmServiceDelivery() {
         val confirmServiceDeliveryDialogBuilder = MaterialAlertDialogBuilder(requireContext())
         val confirmServiceDeliveryView = LayoutInflater
-                .from(context).inflate(R.layout.confirm_service_delivered_view, null)
+            .from(context).inflate(R.layout.confirm_service_delivered_view, null)
 
         confirmServiceDeliveryDialogBuilder.setTitle("Confirm Service Delivery")
-                .setIcon(R.drawable.logo).setView(confirmServiceDeliveryView)
-                .setPositiveButton("SEND") { dialogInterface, i ->
+            .setIcon(R.drawable.logo).setView(confirmServiceDeliveryView)
+            .setPositiveButton("SEND") { dialogInterface, i ->
 
-                    val delegationFeedbackText = confirmServiceDeliveryView
-                            .findViewById<TextInputEditText>(R.id.delegation_feedback_text_field)
-                    val delegationRatingBar = confirmServiceDeliveryView.findViewById<RatingBar>(R.id.delegation_rating_bar)
-                    Timber.e("RATING VALUE -> ${delegationRatingBar.rating}")
-                    Timber.e("CONFIRMING DELIVERY -> ${delegationFeedbackText.text?.trim()}")
+                val delegationFeedbackText = confirmServiceDeliveryView
+                    .findViewById<TextInputEditText>(R.id.delegation_feedback_text_field)
+                val delegationRatingBar =
+                    confirmServiceDeliveryView.findViewById<RatingBar>(R.id.delegation_rating_bar)
+                Timber.e("RATING VALUE -> ${delegationRatingBar.rating}")
+                Timber.e("CONFIRMING DELIVERY -> ${delegationFeedbackText.text?.trim()}")
 
-                    Timber.e("DELEGATION ID CONFIRMATION -> $delegationId")
-                    rateDelegation(delegationId!!,
-                            delegationRatingBar.rating.toInt(),
-                            delegationFeedbackText.text?.trim().toString())
+                Timber.e("DELEGATION ID CONFIRMATION -> $delegationId")
+                rateDelegation(
+                    delegationId!!,
+                    delegationRatingBar.rating.toInt(),
+                    delegationFeedbackText.text?.trim().toString()
+                )
 
-                    ratingSentEvent.ratingSent = true
-                    EventBus.getDefault().post(ratingSentEvent)
+                ratingSentEvent.ratingSent = true
+                EventBus.getDefault().post(ratingSentEvent)
 
-                    clearDelegationCache()
-                }
-                .setNegativeButton("LATER") { dialogInterface, i ->
-                    Timber.e("REJECTING DELIVERY")
-                }
+                clearDelegationCache()
+            }
+            .setNegativeButton("LATER") { dialogInterface, i ->
+                Timber.e("REJECTING DELIVERY")
+            }
 
         confirmServiceDeliveryDialogBuilder.show()
     }
@@ -531,31 +546,43 @@ class DelegatedServiceFragment : Fragment {
     private fun inflateDelegatedServiceView(delegatedServiceId: String?) {
         delegatedServicePreferences = (activity)?.getSharedPreferences(ummoUserPreferences, mode)!!
 
-        //TODO: cater for null-safety on non-null live-data
         if (serviceViewModel != null) {
-            serviceViewModel!!.getServiceEntityLiveDataById(delegatedServiceId!!)
-                    .observe(viewLifecycleOwner, { serviceEntity: ServiceEntity ->
-                        serviceName = serviceEntity.serviceName!!
-                        delegatedProductNameTextView!!.text = serviceEntity.serviceName
-//                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
-
-                        delegatedProductCostTextView!!.text = "E$delegationFee"
-                    })
+            serviceViewModel!!.getServiceById(delegatedServiceId!!)
+                .observe(viewLifecycleOwner) { serviceEntity ->
+                    serviceName = serviceEntity.serviceName!!
+                    delegatedProductNameTextView!!.text = serviceName
+                    delegatedProductCostTextView!!.text = "E$delegationFee"
+                }
         } else {
             Timber.e("NO SERVICE VIEW MODEL!")
             return
         }
+        //TODO: cater for null-safety on non-null live-data
+        /*if (serviceViewModel != null) {
+            serviceViewModel!!.serviceLiveDataList
+                .observe(viewLifecycleOwner) { serviceEntity ->
+
+                    serviceName = serviceEntity[0].serviceName!!
+                    delegatedProductNameTextView!!.text = serviceName
+//                            delegatedProductDescriptionTextView!!.text = serviceEntity.serviceDescription
+
+                    delegatedProductCostTextView!!.text = "E$delegationFee"
+                }
+        } else {
+            Timber.e("NO SERVICE VIEW MODEL!")
+            return
+        }*/
     }
 
     private fun takeMeHome() {
         viewBinding.homeButton.setOnClickListener {
-            val pagesFragment: Fragment = PagesFragment()
+            val serviceCategoriesFragment: Fragment = ServiceCategories()
 
             mixpanel.track("delegatedServiceFragment_takingUserHome")
 
             val fm: FragmentManager = activity?.supportFragmentManager!!
             val transaction: FragmentTransaction = fm.beginTransaction()
-            transaction.replace(R.id.frame, pagesFragment)
+            transaction.replace(R.id.frame, serviceCategoriesFragment)
             transaction.commit()
         }
     }

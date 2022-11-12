@@ -49,7 +49,7 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
 
                     /** Checking if our Socket event is on "connect" **/
                     SocketIO.mSocket?.on("connect") {
-//                        makeStatusNotification("Socket", "We're LIVE!", appContext)
+                        //makeStatusNotification("Socket", "We're LIVE!", appContext)
                         socketStateEvent.socketConnected = true
                         EventBus.getDefault().post(socketStateEvent)
 
@@ -67,8 +67,8 @@ class SocketConnectWorker(context: Context, params: WorkerParameters) : Worker(c
                     }
 
                 } else {
-                    makeStatusNotification("Socket", "Failed to connect", appContext)
-                    Timber.e("NOT DOING WORK")
+//                    makeStatusNotification("Socket", "Failed to connect", appContext)
+//                    Timber.e("NOT DOING WORK")
                 }
             }
             Result.success()

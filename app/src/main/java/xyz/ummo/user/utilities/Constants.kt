@@ -3,6 +3,10 @@
 package xyz.ummo.user.utilities
 
 import android.app.Activity
+import org.json.JSONArray
+import org.json.JSONObject
+import xyz.ummo.user.models.ServiceBenefit
+import xyz.ummo.user.models.ServiceCostModel
 
 /** Notification Channel constants
  * Name of Notification Channel for verbose notifications of background work **/
@@ -39,6 +43,7 @@ const val CURRENT_SERVICE_PENDING = "CURRENT_SERVICE_PENDING"
 const val SERVICE_ID = "SERVICE_ID"
 const val DELEGATION_ID = "DELEGATION_ID"
 const val SERVICE_OBJECT = "SERVICE_OBJECT"
+const val SERVICE_ENTITY = "SERVICE_ENTITY"
 const val SERVICE_IMAGE = "SERVICE_IMAGE"
 const val SERVICE_COMMENTS = "SERVICE_COMMENTS"
 const val DELEGATION_FEE = "DELEGATION_FEE"
@@ -71,6 +76,7 @@ const val SERV_DURATION = "service_duration"
 const val UPVOTE_COUNT = "useful_count"
 const val DOWNVOTE_COUNT = "not_useful_count"
 const val SERV_COMMENTS = "service_comments"
+const val SERV_STEPS = "service_steps"
 const val SERV_COMMENT_COUNT = "service_comment_count"
 const val SERV_SHARE_COUNT = "service_share_count"
 const val SERV_VIEW_COUNT = "service_view_count"
@@ -84,6 +90,8 @@ const val SERV_ATTACH_OBJS = "service_attachment_objects"
 const val FILE_NAME = "file_name"
 const val FILE_SIZE = "file_size"
 const val FILE_URI = "file_uri"
+
+const val SERVICE_BOOKMARKED = "SERVICE_BOOKMARKED"
 
 /** The constants below are mostly used in DetailedServiceActivity.kt **/
 const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
@@ -101,9 +109,10 @@ const val MIXPANEL_NAME = "\$name"
 const val EMAIL_VERIFIED = "EMAIL_VERIFIED"
 
 /** App Startup Constants **/
-const val CONTINUED = "CONTINUED"
+const val UMMO_INTRO_COMPLETE = "UMMO_INTRO_COMPLETE"
 const val SIGNED_UP = "SIGNED_UP"
 const val FIRST_LAUNCH = "FIRST_LAUNCH"
+const val APP_INTRO_COMPLETE = "APP_INTRO_COMPLETE"
 
 const val DELEGATION_INTRO_IS_CONFIRMED = "DELEGATION_INTRO_IS_CONFIRMED"
 const val CATEGORY = "CATEGORY"
@@ -116,4 +125,62 @@ const val DETAILED_SERVICE = "DETAILED_SERVICE"
 const val TAKE_ME_TO = "TAKE_ME_TO"
 const val DELEGATED_SERVICE_FRAGMENT = "DELEGATED_SERVICE_FRAGMENT"
 
-/** Crash states**/
+const val OFFLINE_LOADED = "OFFLINE_LOADED"
+
+/** Service Variables **/
+lateinit var serviceId: String //1
+lateinit var serviceName: String //2
+lateinit var serviceDescription: String //3
+lateinit var serviceEligibility: String //4
+var serviceCentres = ArrayList<String>() //5
+lateinit var serviceCentresJSONArray: JSONArray //5.1
+var delegatable: Boolean = false //6
+lateinit var serviceCost: String //7
+lateinit var serviceCostArrayList: ArrayList<ServiceCostModel> //7.1
+lateinit var serviceCostJSONArray: JSONArray //7.1
+var serviceDocuments = ArrayList<String>() //8
+lateinit var serviceDocumentsJSONArray: JSONArray //8.1
+lateinit var serviceDuration: String //9
+var approvalCount: Int = 0 //10
+var disapprovalCount: Int = 0 //11
+var serviceComments = ArrayList<String>() //12
+lateinit var serviceCommentsJSONArray: JSONArray //12.1
+var serviceSteps = ArrayList<String>()
+lateinit var serviceStepsJSONArray: JSONArray
+var commentCount: Int = 0 //13
+var shareCount: Int = 0 //14
+var viewCount: Int = 0 //15
+lateinit var serviceProvider: String //16
+var serviceLink: String = "" //17
+var serviceAttachmentJSONArray = JSONArray() //18
+var serviceAttachmentJSONObject = JSONObject() //18.1
+var serviceAttachmentName = "" //18.2
+var serviceAttachmentSize = "" //18.3
+var serviceAttachmentURL = "" //18.4
+var serviceBenefitJSONArray = JSONArray() //19
+var serviceBenefits = ArrayList<ServiceBenefit>() //19.1
+var serviceCategory = "" //20
+
+var serviceCategoryName = ""
+var serviceCategoryTotal = 0
+
+const val PARENT = "PARENT"
+const val FRAGMENT_DESTINATION = "FRAG_DEN"
+const val OPEN_DELEGATED_SERVICE_FRAG = "OPEN_DELEGATED_SERVICE_FRAG"
+
+/** Service Provider Constants **/
+const val EDUCATION = "61827579ab47d4cbaf5a3615"
+const val HEALTH = "61825c2dab47d4cbaf5a360a"
+const val AGRICULTURE = "61827559ab47d4cbaf5a3614"
+const val REVENUE = "601268ff5ad77100154da835"
+const val COMMERCE = "601266be5ad77100154da833"
+const val HOME_AFFAIRS = "601268725ad77100154da834"
+
+const val SERVICE_QUERY = "SERVICE_QUERY"
+const val QUERY_URGENCY = "QUERY_URGENCY"
+const val QUERY_COMMUNICATION = "QUERY_COMMUNICATION"
+const val QUERY_EXTENDED = "QUERY_EXTENDED"
+
+const val WHATSAPP = "WHATSAPP"
+const val EMAIL = "EMAIL"
+const val CALL = "CALL"
