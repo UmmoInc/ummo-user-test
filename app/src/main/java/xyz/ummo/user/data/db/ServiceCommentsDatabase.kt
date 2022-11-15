@@ -9,7 +9,7 @@ import xyz.ummo.user.data.entity.ServiceCommentEntity
 
 @Database(
     entities = [ServiceCommentEntity::class],
-    version = 4,
+    version = 6,
     exportSchema = false
 )
 abstract class ServiceCommentsDatabase : RoomDatabase() {
@@ -28,7 +28,7 @@ abstract class ServiceCommentsDatabase : RoomDatabase() {
             Room.databaseBuilder(
                 context.applicationContext,
                 ServiceCommentsDatabase::class.java,
-                "service_comments_db.db"
+                "service_comments.db"
             ).fallbackToDestructiveMigration().build()
     }
 }

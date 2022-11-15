@@ -9,7 +9,7 @@ import xyz.ummo.user.data.entity.ServiceCommentEntity
 
 @Dao
 interface ServiceCommentDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsertServiceComment(serviceCommentEntity: ServiceCommentEntity)
 
     @get:Query("SELECT * FROM service_comment")

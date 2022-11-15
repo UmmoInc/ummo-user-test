@@ -221,6 +221,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         coroutineScope.launch(Dispatchers.IO) {
             serviceCommentsViewModel.saveServiceCommentsToRoom()
+            Timber.e("SERVICE COMMENTS SAVED INTO ROOM!")
         }
         /** [END] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
 
