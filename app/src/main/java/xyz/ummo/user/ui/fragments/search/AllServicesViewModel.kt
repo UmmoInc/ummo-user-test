@@ -17,6 +17,10 @@ class AllServicesViewModel(
     private val allServicesRepository: AllServicesRepository,
     private val viewedServicesRepo: ViewedServicesRepo
 ) : ViewModel() {
+    private val _serviceViewsCounter = MutableLiveData(0)
+
+    val serviceViewsCounter: LiveData<Int> = _serviceViewsCounter
+
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
     val searchedServicesLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
     val bookmarkedServices: MutableLiveData<List<ServiceEntity>> = MutableLiveData()

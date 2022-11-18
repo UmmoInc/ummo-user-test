@@ -23,6 +23,7 @@ import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
 import xyz.ummo.user.data.entity.ServiceEntity
+import xyz.ummo.user.databinding.ServiceSliceBinding
 import xyz.ummo.user.ui.detailedService.DetailedServiceActivity
 import xyz.ummo.user.ui.fragments.bottomSheets.IntroduceDelegate
 import xyz.ummo.user.ui.fragments.bottomSheets.ServiceOptionsMenuBottomSheet
@@ -53,7 +54,13 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
         fun onOptionsMenuClicked(position: Int)
     }
 
-    inner class ServiceViewHolder(serviceView: View) : RecyclerView.ViewHolder(serviceView)
+    inner class ServiceViewHolder(val serviceViewBinding: ServiceSliceBinding) :
+        RecyclerView.ViewHolder(serviceViewBinding.root) {
+        fun bind(serviceEntity: ServiceEntity) {
+            /** This is the variable we've declared in the Data tag over in [service_slice.xml]**/
+            serviceViewBinding.serviceEntity = serviceEntity
+        }
+    }
 
     private val differCallback = object : DiffUtil.ItemCallback<ServiceEntity>() {
         override fun areItemsTheSame(oldItem: ServiceEntity, newItem: ServiceEntity): Boolean {
@@ -76,19 +83,17 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
 
         serviceItemSlicePreferences = mContext.getSharedPreferences(ummoUserPreferences, mode)
 
-        return ServiceViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.service_slice,
-                parent,
-                false
-            )
-        )
+        val inflater = LayoutInflater.from(parent.context)
+        val serviceEntityDataBinding = ServiceSliceBinding.inflate(inflater, parent, false)
+        return ServiceViewHolder(serviceEntityDataBinding)
     }
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         val serviceEntity = differ.currentList[position]
 
         allServicesViewModel = (activity as MainScreen).allServicesViewModel
+
+        holder.bind(serviceEntity)
 
         holder.itemView.apply {
 
@@ -103,29 +108,29 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
             service_title_text_view_slice.text = serviceEntity.serviceName
             service_description_text_view_slice.text = serviceEntity.serviceDescription
 
-            if (serviceEntity.serviceViews == 1) {
+            /*if (serviceEntity.serviceViews == 1) {
                 service_slice_views_count_text_view.text =
                     "${serviceEntity.serviceViews.toString()} view"
             } else {
                 service_slice_views_count_text_view.text =
                     "${serviceEntity.serviceViews.toString()} views"
-            }
+            }*/
 
-            if (serviceEntity.commentCount == 1) {
+            /*if (serviceEntity.commentCount == 1) {
                 service_slice_comments_count_text_view.text =
                     "${serviceEntity.commentCount.toString()} comment"
             } else {
                 service_slice_comments_count_text_view.text =
                     "${serviceEntity.commentCount.toString()} comments"
-            }
+            }*/
 
-            if (serviceEntity.serviceShares == 1) {
+            /*if (serviceEntity.serviceShares == 1) {
                 service_slice_share_count_text_view.text =
                     "${serviceEntity.serviceShares.toString()} share"
             } else {
                 service_slice_share_count_text_view.text =
                     "${serviceEntity.serviceShares.toString()} shares"
-            }
+            }*/
 
             setOnClickListener {
                 onItemClickListener?.let {

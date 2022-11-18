@@ -208,6 +208,9 @@ class AllServicesRepository(
         }
     }
 
+    fun getViewCountByServiceId(serviceId: String): Int =
+        serviceDao.getServiceViewCountByServiceId(serviceId)
+
     /** This is where the magic happens!
      *  Returning the [serviceEntity] being searched for from the [searchQuery] provided via
      *  [serviceDao]. **/
