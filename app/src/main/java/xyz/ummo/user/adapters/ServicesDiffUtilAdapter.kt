@@ -105,8 +105,8 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
                 service_slice_bookmark_relative_layout.visibility = View.VISIBLE
             }
 
-            service_title_text_view_slice.text = serviceEntity.serviceName
-            service_description_text_view_slice.text = serviceEntity.serviceDescription
+            /*service_title_text_view_slice.text = serviceEntity.serviceName
+            service_description_text_view_slice.text = serviceEntity.serviceDescription*/
 
             /*if (serviceEntity.serviceViews == 1) {
                 service_slice_views_count_text_view.text =
@@ -311,7 +311,7 @@ class ServicesDiffUtilAdapter(val activity: Activity) :
     }
 
     /** When a service is tapped on, it should expand to a detailed view with more info. **/
-    private fun showServiceDetails(serviceEntity: ServiceEntity) {
+    fun showServiceDetails(serviceEntity: ServiceEntity) {
         val intent = Intent(mContext, DetailedServiceActivity::class.java)
         intent.putExtra(PARENT, "ServicesAdapter")
         val serviceResults = JSONObject()

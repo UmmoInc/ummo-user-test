@@ -60,7 +60,8 @@
                         android:layout_marginBottom="8dp"
                         android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
                         android:fontFamily="@font/rubik"
-                        android:text="@string/service_name"
+                        android:text="@{serviceEntity.serviceName}"
+                        tools:text="@string/service_name"
                         android:textColor="@color/ummo_2"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -75,7 +76,8 @@
                         android:layout_toEndOf="@+id/service_card_avatar_image_view_slice"
                         android:paddingStart="0dp"
                         android:paddingEnd="8dp"
-                        android:text="@string/service_description"
+                        android:text="@{serviceEntity.serviceDescription}"
+                        tools:text="@string/service_description"
                         android:textSize="12sp"
                         app:fontFamily="@font/rubik" />
 
