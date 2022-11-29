@@ -8,19 +8,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.service_comment_bottom_sheet.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,14 +23,19 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
+import xyz.ummo.user.data.db.AllServicesDatabase
 import xyz.ummo.user.data.db.ServiceCommentsDatabase
 import xyz.ummo.user.data.entity.ServiceCommentEntity
+import xyz.ummo.user.data.repo.allServices.AllServicesRepository
 import xyz.ummo.user.data.repo.serviceSomments.ServiceCommentsRepo
+import xyz.ummo.user.data.repo.viewedServices.ViewedServicesRepo
 import xyz.ummo.user.databinding.ServiceCommentBottomSheetBinding
 import xyz.ummo.user.models.ServiceCommentObject
 import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModel
 import xyz.ummo.user.ui.detailedService.serviceComments.ServiceCommentsViewModelFactory
 import xyz.ummo.user.ui.fragments.profile.ProfileViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
+import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
 import xyz.ummo.user.utilities.*
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -44,8 +43,6 @@ import java.util.*
 
 
 class ServiceComments : BottomSheetDialogFragment() {
-    private lateinit var gAdapter: GroupAdapter<GroupieViewHolder>
-    private lateinit var recyclerView: RecyclerView
     private lateinit var viewBinding: ServiceCommentBottomSheetBinding
     private lateinit var rootView: View
     private lateinit var serviceCommentObject: ServiceCommentObject
@@ -57,6 +54,8 @@ class ServiceComments : BottomSheetDialogFragment() {
     private lateinit var serviceName: String
     private lateinit var mixpanelAPI: MixpanelAPI
     private lateinit var serviceCommentsViewModel: ServiceCommentsViewModel
+    private lateinit var allServicesViewModel: AllServicesViewModel
+
     private val coroutineScope = CoroutineScope((Dispatchers.Main + parentJob))
 
     private lateinit var serviceCommentChipGroup: ChipGroup
@@ -71,6 +70,20 @@ class ServiceComments : BottomSheetDialogFragment() {
         arguments?.let {
             serviceId = arguments?.getString(SERVICE_ID)!!
         }
+
+        /** Instantiating [allServicesViewModel] to update service comment count **/
+        val allServicesRepository =
+            AllServicesRepository(AllServicesDatabase(requireContext()), requireActivity())
+        val viewedServicesRepo =
+            ViewedServicesRepo(AllServicesDatabase(requireContext()), requireActivity())
+        val allServicesViewModelProviderFactory =
+            AllServicesViewModelProviderFactory(allServicesRepository, viewedServicesRepo)
+
+        allServicesViewModel =
+            ViewModelProvider(
+                this,
+                allServicesViewModelProviderFactory
+            )[AllServicesViewModel::class.java]
 
         /** [START] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
         val serviceCommentsRepo =
@@ -166,10 +179,14 @@ class ServiceComments : BottomSheetDialogFragment() {
                 newServiceCommentEntity =
                     ServiceCommentEntity(serviceCommentText, serviceId, date, userName, userContact)
 
+                /** In this coroutine, we're simultaneously saving a service comment via
+                 * [serviceCommentsViewModel] && also incrementing that service's comment count **/
                 coroutineScope.launch(Dispatchers.IO) {
                     serviceCommentsViewModel.saveServiceCommentFromUserToRoom(
                         newServiceCommentEntity
                     )
+
+                    incrementServiceCommentCount(serviceId)
                 }
 
                 /** Hiding Soft Input Keyboard Window below **/
@@ -183,6 +200,13 @@ class ServiceComments : BottomSheetDialogFragment() {
             } else {
                 viewBinding.serviceCommentEditText.error = "Your comment is missing..."
             }
+        }
+    }
+
+    private fun incrementServiceCommentCount(mServiceId: String) {
+        coroutineScope.launch(Dispatchers.IO) {
+            allServicesViewModel.incrementServiceCommentCount(mServiceId)
+            Timber.e("SERVICE COMMENT INCREMENTED")
         }
     }
 

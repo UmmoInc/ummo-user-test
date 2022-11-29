@@ -17,6 +17,10 @@ class AllServicesViewModel(
     private val allServicesRepository: AllServicesRepository,
     private val viewedServicesRepo: ViewedServicesRepo
 ) : ViewModel() {
+    private val _serviceViewsCounter = MutableLiveData(0)
+
+    val serviceViewsCounter: LiveData<Int> = _serviceViewsCounter
+
     val servicesLiveDataList: MutableLiveData<ArrayList<ServiceEntity>> = MutableLiveData()
     val searchedServicesLiveDataList: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
     val bookmarkedServices: MutableLiveData<List<ServiceEntity>> = MutableLiveData()
@@ -77,7 +81,27 @@ class AllServicesViewModel(
     suspend fun incrementServiceViewCount(serviceEntity: ServiceEntity) {
         withContext(Dispatchers.IO) {
             try {
-                allServicesRepository.incrementServiceViewCounter(serviceEntity)
+                allServicesRepository.incrementServiceViewCount(serviceEntity)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun incrementServiceCommentCount(mServiceId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.incrementServiceCommentCount(mServiceId)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun incrementServiceShareCount(mServiceId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.incrementServiceShareCount(mServiceId)
             } catch (IOE: IOException) {
                 IOE.printStackTrace()
             }
@@ -105,7 +129,7 @@ class AllServicesViewModel(
     }
 
     fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
-        return allServicesRepository.getServiceById(serviceId)
+        return allServicesRepository.getServiceLiveDataById(serviceId)
     }
 
     suspend fun saveViewedServicesInRoom(viewedServices: ViewedServices) {

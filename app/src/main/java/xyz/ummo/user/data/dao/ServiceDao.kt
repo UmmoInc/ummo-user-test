@@ -18,6 +18,9 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE service_id = :serviceId ")
     fun getServiceLiveDataById(serviceId: String?): LiveData<ServiceEntity>
 
+    @Query("SELECT * FROM service WHERE service_id = :serviceId")
+    fun getServiceEntityById(serviceId: String?): ServiceEntity
+
     @Query("SELECT * FROM service WHERE delegatable = :delegatable")
     fun getDelegatableServices(delegatable: Boolean = true): List<ServiceEntity>
 
@@ -27,6 +30,9 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE bookmarked = :bookmarked")
     fun getBookmarkedServicesList(bookmarked: Boolean = true): List<ServiceEntity>
 
+    @Query("SELECT service_views FROM service WHERE service_id = :serviceId")
+    fun getServiceViewCountByServiceId(serviceId: String?): Int
+
     @Update
     fun updateService(serviceEntity: ServiceEntity?)
 
@@ -35,6 +41,12 @@ interface ServiceDao {
 
     @Query("UPDATE service SET service_views = service_views + 1 WHERE  service_id = :serviceId")
     fun incrementServiceViewCount(serviceId: String?)
+
+    @Query("UPDATE service SET comment_count = comment_count + 1 WHERE service_id = :serviceId")
+    fun incrementServiceCommentCount(serviceId: String?)
+
+    @Query("UPDATE service SET service_shares = service_shares + 1 WHERE service_id = :serviceId")
+    fun incrementServiceShareCount(serviceId: String?)
 
     @Query("UPDATE service SET bookmarked = 1 WHERE service_id = :serviceId")
     fun addServiceBookmark(serviceId: String?)

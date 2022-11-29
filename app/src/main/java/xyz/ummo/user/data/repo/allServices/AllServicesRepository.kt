@@ -208,6 +208,9 @@ class AllServicesRepository(
         }
     }
 
+    fun getViewCountByServiceId(serviceId: String): Int =
+        serviceDao.getServiceViewCountByServiceId(serviceId)
+
     /** This is where the magic happens!
      *  Returning the [serviceEntity] being searched for from the [searchQuery] provided via
      *  [serviceDao]. **/
@@ -222,9 +225,11 @@ class AllServicesRepository(
         return serviceDao.getBookmarkedServicesList()
     }
 
-    fun getServiceById(serviceId: String): LiveData<ServiceEntity> {
-        return serviceDao.getServiceLiveDataById(serviceId)
-    }
+    fun getServiceLiveDataById(serviceId: String): LiveData<ServiceEntity> =
+        serviceDao.getServiceLiveDataById(serviceId)
+
+    private fun getServiceEntityById(serviceId: String): ServiceEntity =
+        serviceDao.getServiceEntityById(serviceId)
 
     fun saveSingleServiceInRoom(mService: ServiceObject) {
         serviceEntity.serviceId = mService.serviceId
@@ -247,21 +252,32 @@ class AllServicesRepository(
         serviceDao.upsertService(serviceEntity)
     }
 
-    fun incrementServiceViewCounter(serviceEntity: ServiceEntity) {
-        serviceDao.incrementServiceViewCount(serviceEntity.serviceId)
-        updateServiceBySyncingWithServer(serviceEntity, "INCREMENT_VIEW")
+    fun incrementServiceViewCount(mServiceEntity: ServiceEntity) {
+        serviceDao.incrementServiceViewCount(mServiceEntity.serviceId)
+        updateServiceBySyncingWithServer(mServiceEntity, "INCREMENT_VIEW")
     }
 
-    fun addServiceBookmark(serviceEntity: ServiceEntity) {
-        serviceDao.addServiceBookmark(serviceEntity.serviceId)
+    fun incrementServiceCommentCount(mServiceId: String) {
+        serviceDao.incrementServiceCommentCount(mServiceId)
+        updateServiceBySyncingWithServer(getServiceEntityById(mServiceId), "COMMENT_ADDED")
     }
 
-    fun removeServiceBookmark(serviceEntity: ServiceEntity) {
-        serviceDao.removeServiceBookmark(serviceEntity.serviceId)
+    fun incrementServiceShareCount(mServiceId: String) {
+        serviceDao.incrementServiceShareCount(mServiceId)
+        updateServiceBySyncingWithServer(getServiceEntityById(mServiceId), "SERVICE_SHARED")
     }
+
+    fun addServiceBookmark(mServiceEntity: ServiceEntity) {
+        serviceDao.addServiceBookmark(mServiceEntity.serviceId)
+    }
+
+    fun removeServiceBookmark(mServiceEntity: ServiceEntity) {
+        serviceDao.removeServiceBookmark(mServiceEntity.serviceId)
+    }
+
 
     @SuppressLint("SimpleDateFormat")
-    fun updateServiceBySyncingWithServer(serviceEntity: ServiceEntity, updateType: String) {
+    private fun updateServiceBySyncingWithServer(serviceEntity: ServiceEntity, updateType: String) {
         val serviceJSONObject = JSONObject()
         val simpleDateFormat = SimpleDateFormat("dd/M/yyy hh:mm:ss")
         val currentDateTime = simpleDateFormat.format(Date())

@@ -24,7 +24,7 @@ class ServiceCommentsRepo(
     private var serviceCommentDao: ServiceCommentDao
     private var serviceCommentsDatabase =
         ServiceCommentsDatabase.invoke(activity.applicationContext)
-    private var serviceComments = ArrayList<ServiceCommentEntity>()
+    private var serviceCommentsArrayList = ArrayList<ServiceCommentEntity>()
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(2, TimeUnit.MINUTES)
@@ -40,7 +40,7 @@ class ServiceCommentsRepo(
         serviceCommentDao = serviceCommentsDatabase.serviceCommentDao()!!
     }
 
-    /** We need to populate [serviceComments] with data from the API **/
+    /** We need to populate [serviceCommentsArrayList] with data from the API **/
     private fun fetchServiceComments(serviceID: String): String {
         val request = Request.Builder()
             .url("${activity.resources.getString(R.string.serverUrl)}/product/comments?_id=$serviceID")
@@ -92,44 +92,55 @@ class ServiceCommentsRepo(
                 for (i in 0 until serviceCommentsJSONArray.length()) {
                     serviceComment = serviceCommentsJSONArray[i] as JSONObject
 
+                    Timber.e("COUNT OF SERVICE COMMENTS -> ${serviceCommentsJSONArray.length()}")
                     Timber.e("SERVICE COMMENT -> $serviceComment")
                     serviceId = serviceComment.getString("_id")
                     commentString = serviceComment.getString("service_comment")
                     commentDateTime = serviceComment.getString("comment_date")
-                    userObject = serviceComment.getJSONObject("user_contact")
 
-                    /*if (!serviceComment.isNull("user_contact"))
-                        userObject = "Anonymous"*/
-                    serviceCommentEntity =
-                        ServiceCommentEntity(
-                            commentString,
-                            serviceId,
-                            commentDateTime,
-                            userObject.getString("name"),
-                            userObject.getString("mobile_contact")
-                        )
+                    if (serviceComment.has("user_contact")) {
 
-                    serviceComments.add(serviceCommentEntity)
-                    Timber.e("SERVICE COMMENTS -> $serviceComments")
+                        userObject = serviceComment.getJSONObject("user_contact")
+                        serviceCommentEntity =
+                            ServiceCommentEntity(
+                                commentString,
+                                serviceId,
+                                commentDateTime,
+                                userObject.getString("name"),
+                                userObject.getString("mobile_contact")
+                            )
+                    } else {
+                        serviceCommentEntity =
+                            ServiceCommentEntity(
+                                commentString,
+                                serviceId,
+                                commentDateTime,
+                                userName = "Anonymous",
+                                userContact = "N/A"
+                            )
+                    }
+                    serviceCommentsArrayList.add(serviceCommentEntity)
+                    Timber.e("SERVICE COMMENTS -> $serviceCommentsArrayList")
                 }
             } catch (jse: JSONException) {
                 Timber.e("FAILED TO PARSE SERVICE COMMENT -> $jse")
             }
         }
-        return serviceComments
+        return serviceCommentsArrayList
     }
 
     suspend fun saveServiceCommentsFromServerToRoom(serviceID: String) {
         val mServiceCommentsArrayList =
             parseServiceCommentStringReturnServiceCommentEntityArrayList(serviceID)
         for (serviceComment in mServiceCommentsArrayList) {
-            Timber.e("SAVING SERVICE COMMENT IN ROOM -> ${serviceCommentEntity.serviceComment}")
-            serviceCommentDao.upsertServiceComment(serviceCommentEntity)
+            Timber.e("SAVING SERVICE COMMENT INTO ROOM -> $serviceComment")
+            serviceCommentDao.upsertServiceComment(serviceComment)
         }
     }
 
     fun saveServiceCommentFromInputToRoom(serviceCommentEntity: ServiceCommentEntity) {
         postServiceCommentToServer(serviceCommentEntity)
+        Timber.e("SAVING SERVICE COMMENT FROM INPUT INTO ROOM -> ${serviceCommentEntity.serviceComment}")
         serviceCommentDao.upsertServiceComment(serviceCommentEntity)
     }
 

@@ -39,6 +39,8 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import kotlinx.android.synthetic.main.content_delegation_progress.*
 import kotlinx.android.synthetic.main.content_detailed_service.*
 import kotlinx.coroutines.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
 import timber.log.Timber
 import xyz.ummo.user.R
@@ -70,8 +72,7 @@ import xyz.ummo.user.ui.fragments.search.AllServicesViewModel
 import xyz.ummo.user.ui.fragments.search.AllServicesViewModelProviderFactory
 import xyz.ummo.user.ui.main.MainScreen
 import xyz.ummo.user.utilities.*
-import xyz.ummo.user.utilities.eventBusEvents.ConfirmPaymentTermsEvent
-import xyz.ummo.user.utilities.eventBusEvents.ServiceSpecifiedEvent
+import xyz.ummo.user.utilities.eventBusEvents.*
 import java.net.MalformedURLException
 import java.util.*
 
@@ -177,6 +178,11 @@ class DetailedServiceActivity : AppCompatActivity() {
     var serviceCommentEditText: TextInputEditText? = null
     var serviceCommentTextInputLayout: TextInputLayout? = null
 
+    private val isUpvotedEvent = UpvoteServiceEvent()
+    private val isDownvotedEvent = DownvoteServiceEvent()
+    private val serviceCommentEvent = ServiceCommentEvent()
+    private val serviceBookmarkedEvent = ServiceBookmarkedEvent()
+
     companion object {
         private val parentJob = Job()
     }
@@ -184,6 +190,8 @@ class DetailedServiceActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         mixpanelAPI.timeEvent("Viewing DETAILED SERVICE")
+
+        EventBus.getDefault().register(this)
 
         val serviceUtilityRepo = ServiceUtilityRepo(ServiceUtilityDatabase(this), this)
         val serviceUtilityViewModelProviderFactory =
@@ -221,6 +229,7 @@ class DetailedServiceActivity : AppCompatActivity() {
 
         coroutineScope.launch(Dispatchers.IO) {
             serviceCommentsViewModel.saveServiceCommentsToRoom()
+            Timber.e("SERVICE COMMENTS SAVED INTO ROOM!")
         }
         /** [END] Instantiating [serviceCommentsViewModel] to save [serviceComments] **/
 
@@ -999,6 +1008,8 @@ class DetailedServiceActivity : AppCompatActivity() {
             dividerView.visibility = View.GONE
         }
 
+        toggleServiceRequirements()
+
     }
 
     /** We need the User to toggle between showing Service Benefits, and hiding them **/
@@ -1023,6 +1034,36 @@ class DetailedServiceActivity : AppCompatActivity() {
                 expandServiceBenefitsImageView.visibility = View.VISIBLE
                 collapseServiceBenefitsImageView.visibility = View.GONE
                 mixpanelAPI.track("Detailed Service - Hiding Benefits")
+            }
+        }
+    }
+
+    /** We need the User to toggle between showing Service Benefits, and hiding them **/
+    private fun toggleServiceRequirements() {
+        val toggleServiceRequirementsRelativeLayout =
+            findViewById<RelativeLayout>(R.id.service_requirements_action_layout)
+        val toggleServiceRequirementsTextView =
+            findViewById<TextView>(R.id.service_requirements_action_text_view)
+        val expandServiceRequirementsImageView =
+            findViewById<ImageView>(R.id.service_requirements_expand_image_view)
+        val collapseServiceRequirementsImageView =
+            findViewById<ImageView>(R.id.service_requirements_collapse_image_view)
+
+        toggleServiceRequirementsRelativeLayout.setOnClickListener {
+
+            if (service_requirements_linear_layout?.visibility == View.VISIBLE) {
+                service_requirements_linear_layout?.visibility = View.GONE
+                toggleServiceRequirementsTextView.text = "Show Requirements"
+                expandServiceRequirementsImageView.visibility = View.GONE
+                collapseServiceRequirementsImageView.visibility = View.VISIBLE
+                mixpanelAPI.track("Detailed Service - Showing Requirements")
+
+            } else {
+                service_requirements_linear_layout?.visibility = View.VISIBLE
+                toggleServiceRequirementsTextView.text = "Hide Requirements"
+                expandServiceRequirementsImageView.visibility = View.VISIBLE
+                collapseServiceRequirementsImageView.visibility = View.GONE
+                mixpanelAPI.track("Detailed Service - Hiding Requirements")
             }
         }
     }
@@ -1244,6 +1285,11 @@ class DetailedServiceActivity : AppCompatActivity() {
             service_util_thumbs_up_selected_image_view.visibility = View.VISIBLE
             service_util_thumbs_down_selected_image_view.visibility = View.GONE
             service_util_thumbs_down_image_view.visibility = View.VISIBLE
+
+            isUpvotedEvent.serviceUpvote = true
+            isUpvotedEvent.serviceId = serviceEntity.serviceId
+            EventBus.getDefault().post(isUpvotedEvent)
+
         } else if (!serviceHelpful) {
             service_util_thumbs_up_image_view.visibility = View.VISIBLE
             service_util_thumbs_up_selected_image_view.visibility = View.GONE
@@ -1254,10 +1300,21 @@ class DetailedServiceActivity : AppCompatActivity() {
             service_util_thumbs_down_image_view.visibility = View.GONE
             service_util_thumbs_up_selected_image_view.visibility = View.GONE
             service_util_thumbs_up_image_view.visibility = View.VISIBLE
+
+            isUpvotedEvent.serviceUpvote = false
+            isUpvotedEvent.serviceId = serviceEntity.serviceId
+            EventBus.getDefault().post(isUpvotedEvent)
+
         } else if (!serviceHelpful) {
             service_util_thumbs_down_image_view.visibility = View.VISIBLE
             service_util_thumbs_down_selected_image_view.visibility = View.GONE
         }
+    }
+
+    @Subscribe
+    fun onServiceUpvoted(serviceUpvoteServiceEvent: UpvoteServiceEvent) {
+        if (serviceUpvoteServiceEvent.serviceUpvote!!)
+            showSnackbarBlue("Service Upvoted", -1)
     }
 
     /** When the User confirms that a service's info was helpful, we should:
@@ -1320,6 +1377,22 @@ class DetailedServiceActivity : AppCompatActivity() {
             snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
         textView.textSize = 14F
         snackbar.anchorView = requestAgentButton
+        snackbar.show()
+    }
+
+    fun showSnackbarBlue(message: String, length: Int) {
+        /**
+         * Length is 0 for Snackbar.LENGTH_LONG
+         *  Length is -1 for Snackbar.LENGTH_SHORT
+         *  Length is -2 for Snackbar.LENGTH_INDEFINITE
+         *  **/
+        val snackbar =
+            Snackbar.make(this.findViewById(android.R.id.content), message, length)
+        snackbar.setTextColor(resources.getColor(R.color.ummo_4))
+
+        val textView =
+            snackbar.view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        textView.textSize = 12F
         snackbar.show()
     }
 
