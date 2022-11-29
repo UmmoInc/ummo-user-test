@@ -62,7 +62,7 @@
                                     app:srcCompat="@drawable/ic_stat_service_avatar" />
 
                                 <TextView
-                                    android:id="@+id/delegated_service_header_title_text_view"
+                                    android:id="@+id/detailed_service_name_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignTop="@+id/delegated_service_header_image_view"
@@ -70,19 +70,19 @@
                                     android:fontFamily="@font/rubik"
                                     android:text="@string/service_name_detailed_info"
                                     android:textColor="@color/black"
-                                    android:textSize="18sp"
+                                    android:textSize="16sp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:id="@+id/detailed_service_name_text_view"
+                                    android:id="@+id/detailed_description_text_view"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/delegated_service_header_title_text_view"
+                                    android:layout_below="@+id/detailed_service_name_text_view"
                                     android:layout_toEndOf="@id/delegated_service_header_image_view"
                                     android:fontFamily="@font/rubik"
-                                    android:text="@string/service_name_detailed_info"
+                                    android:text="@string/service_description"
                                     android:textColor="@color/black"
-                                    android:textSize="14sp" />
+                                    android:textSize="12sp" />
 
                             </RelativeLayout>
 
@@ -92,56 +92,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/delegated_service_header_layout">
-
-                                <!--ProductModel Description Layout Start-->
-                                <RelativeLayout
-                                    android:id="@+id/description_layout"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="4dp"
-                                    android:layout_marginTop="4dp"
-                                    android:layout_marginEnd="4dp"
-                                    android:layout_marginBottom="4dp">
-
-                                    <ImageView
-                                        android:id="@+id/description_image_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:layout_margin="8dp"
-                                        android:padding="8dp"
-                                        app:srcCompat="@drawable/ic_stat_description_icon" />
-
-                                    <RelativeLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_centerInParent="true"
-                                        android:layout_toEndOf="@+id/description_image_view">
-
-                                        <TextView
-                                            android:id="@+id/description_header_text_view"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:fontFamily="@font/rubik"
-                                            android:text="What it's about"
-                                            android:textColor="@color/black"
-                                            android:textSize="18sp"
-                                            android:textStyle="bold" />
-
-                                        <TextView
-                                            android:id="@+id/detailed_description_text_view"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:layout_below="@id/description_header_text_view"
-                                            android:layout_marginTop="0dp"
-                                            android:fontFamily="@font/rubik"
-                                            android:text="@string/description_default_string"
-                                            android:textColor="@color/black"
-                                            android:textSize="14sp" />
-                                    </RelativeLayout>
-
-                                </RelativeLayout>
-                                <!--ProductModel Description Layout End-->
 
                                 <View
                                     android:id="@+id/divider_2"
@@ -182,7 +132,7 @@
                                         android:fontFamily="@font/rubik"
                                         android:text="@string/service_benefits_title_text"
                                         android:textColor="@color/black"
-                                        android:textSize="18sp"
+                                        android:textSize="16sp"
                                         android:textStyle="bold" />
 
                                     <!-- [START] Action Layout (ID: "action_layout")-->
@@ -197,15 +147,6 @@
                                         android:focusable="true"
                                         android:paddingTop="4dp">
 
-                                        <!--<View
-                                            android:id="@+id/divider"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="1dp"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_marginTop="2dp"
-                                            android:layout_marginEnd="20dp"
-                                            android:background="?android:attr/listDivider" />-->
-
                                         <TextView
                                             android:id="@+id/action_text_view"
                                             android:layout_width="wrap_content"
@@ -214,7 +155,7 @@
                                             android:clickable="true"
                                             android:focusable="true"
                                             android:text="Show Service Benefits"
-                                            android:textColor="@color/ummo_1"
+                                            android:textColor="@color/ummo_2"
                                             android:textSize="12sp"
                                             android:textStyle="bold" />
 
@@ -248,6 +189,7 @@
                                     </RelativeLayout>
                                     <!-- [END] Action Layout (ID: "action_layout")-->
 
+                                    <!-- [START] Service Benefits -->
                                     <RelativeLayout
                                         android:id="@+id/service_benefits_holder_relative_layout"
                                         android:layout_width="match_parent"
@@ -325,23 +267,24 @@
                                             android:textColor="@color/black"
                                             android:textSize="14sp" />
                                     </RelativeLayout>
+                                    <!-- [END] Service Benefits -->
 
                                 </RelativeLayout>
                                 <!-- [END] Expandable Layout (ID: "expandable_relative_layout")-->
-                                <View
+                                <!--<View
                                     android:id="@+id/divider_3"
                                     android:layout_width="match_parent"
                                     android:layout_height="1dp"
                                     android:layout_below="@id/service_benefits_main_relative_layout"
                                     android:layout_gravity="center_horizontal"
                                     android:layout_marginTop="8dp"
-                                    android:background="?android:attr/listDivider" />
+                                    android:background="?android:attr/listDivider" />-->
                                 <!--ProductModel Cost Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_cost_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/divider_3"
+                                    android:layout_below="@id/service_benefits_main_relative_layout"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -393,7 +336,6 @@
                                                 android:inputType="none"
                                                 android:text="@string/view_service_prices"
                                                 android:textSize="16sp" />
-
                                         </com.google.android.material.textfield.TextInputLayout>
 
                                         <RelativeLayout
@@ -427,20 +369,20 @@
 
                                 </RelativeLayout>
                                 <!--ProductModel Cost Layout End-->
-                                <View
+                                <!--<View
                                     android:id="@+id/divider_4"
                                     android:layout_width="match_parent"
                                     android:layout_height="1dp"
                                     android:layout_below="@id/service_cost_layout"
                                     android:layout_gravity="center_horizontal"
                                     android:layout_marginTop="8dp"
-                                    android:background="?android:attr/listDivider" />
+                                    android:background="?android:attr/listDivider" />-->
                                 <!--ProductModel Duration Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_duration_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/divider_4"
+                                    android:layout_below="@+id/service_cost_layout"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -464,7 +406,7 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="@string/service_duration_detailed_info"
                                             android:textColor="@color/black"
-                                            android:textSize="18sp"
+                                            android:textSize="16sp"
                                             android:textStyle="bold" />
 
                                         <TextView
@@ -475,27 +417,27 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="@string/service_duration_detailed_info"
                                             android:textColor="@color/black"
-                                            android:textSize="14sp" />
+                                            android:textSize="12sp" />
                                     </RelativeLayout>
 
                                 </RelativeLayout>
                                 <!--ProductModel Duration Layout End-->
 
-                                <View
+                                <!--<View
                                     android:id="@+id/divider_5"
                                     android:layout_width="match_parent"
                                     android:layout_height="1dp"
                                     android:layout_below="@id/service_duration_layout"
                                     android:layout_gravity="center_horizontal"
                                     android:layout_marginTop="2dp"
-                                    android:background="?android:attr/listDivider" />
+                                    android:background="?android:attr/listDivider" />-->
 
                                 <!--ProductModel Docs Layout Start-->
                                 <RelativeLayout
                                     android:id="@+id/service_docs_relative_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@+id/divider_5"
+                                    android:layout_below="@+id/service_duration_layout"
                                     android:layout_margin="4dp">
 
                                     <ImageView
@@ -523,12 +465,68 @@
                                             android:textSize="18sp"
                                             android:textStyle="bold" />
 
+                                        <!-- [START] Action Layout (ID: "action_layout")-->
+                                        <RelativeLayout
+                                            android:id="@+id/service_requirements_action_layout"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_below="@id/docs_header_text_view"
+                                            android:layout_alignStart="@+id/service_benefits_header_text_view"
+                                            android:layout_marginTop="0dp"
+                                            android:clickable="true"
+                                            android:focusable="true"
+                                            android:paddingTop="4dp">
+
+                                            <TextView
+                                                android:id="@+id/service_requirements_action_text_view"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginTop="0dp"
+                                                android:clickable="true"
+                                                android:focusable="true"
+                                                android:text="Show Requirements"
+                                                android:textColor="@color/ummo_2"
+                                                android:textSize="12sp"
+                                                android:textStyle="bold" />
+
+                                            <ImageView
+                                                android:id="@+id/service_requirements_expand_image_view"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignTop="@+id/action_text_view"
+                                                android:layout_alignParentEnd="true"
+                                                android:layout_centerInParent="true"
+                                                android:paddingStart="8dp"
+                                                android:paddingLeft="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:paddingRight="8dp"
+                                                android:visibility="gone"
+                                                app:srcCompat="@drawable/ic_stat_expand_less"
+                                                tools:visibility="visible" />
+
+                                            <ImageView
+                                                android:id="@+id/service_requirements_collapse_image_view"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:layout_alignParentEnd="true"
+                                                android:layout_centerInParent="true"
+                                                android:paddingStart="8dp"
+                                                android:paddingLeft="8dp"
+                                                android:paddingEnd="8dp"
+                                                android:paddingRight="8dp"
+                                                android:visibility="visible"
+                                                app:srcCompat="@drawable/ic_stat_expand_more" />
+                                        </RelativeLayout>
+                                        <!-- [END] Action Layout (ID: "action_layout")-->
+
                                         <LinearLayout
                                             android:id="@+id/service_requirements_linear_layout"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:layout_below="@+id/docs_header_text_view"
+                                            android:layout_below="@+id/service_requirements_action_layout"
                                             android:layout_margin="5dp"
+                                            android:visibility="gone"
+                                            tools:visibility="visible"
                                             android:orientation="vertical" />
 
                                     </RelativeLayout>
@@ -564,7 +562,7 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="@string/service_centres"
                                             android:textColor="@color/black"
-                                            android:textSize="18sp"
+                                            android:textSize="16sp"
                                             android:textStyle="bold" />
 
                                         <!--<TextView
@@ -639,7 +637,7 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="Service Documents"
                                             android:textColor="@color/black"
-                                            android:textSize="18sp"
+                                            android:textSize="16sp"
                                             android:textStyle="bold" />
 
                                         <LinearLayout
@@ -692,7 +690,7 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="Service Steps"
                                             android:textColor="@color/black"
-                                            android:textSize="18sp"
+                                            android:textSize="16sp"
                                             android:textStyle="bold" />
 
                                         <HorizontalScrollView
@@ -754,7 +752,7 @@
                                             android:fontFamily="@font/rubik"
                                             android:text="Verify online"
                                             android:textColor="@color/black"
-                                            android:textSize="18sp"
+                                            android:textSize="16sp"
                                             android:textStyle="bold" />
 
                                         <TextView
