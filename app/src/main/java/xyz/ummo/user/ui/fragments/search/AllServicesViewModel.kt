@@ -98,6 +98,16 @@ class AllServicesViewModel(
         }
     }
 
+    suspend fun incrementServiceShareCount(mServiceId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                allServicesRepository.incrementServiceShareCount(mServiceId)
+            } catch (IOE: IOException) {
+                IOE.printStackTrace()
+            }
+        }
+    }
+
     suspend fun addServiceBookmark(serviceEntity: ServiceEntity) {
         withContext(Dispatchers.IO) {
             try {

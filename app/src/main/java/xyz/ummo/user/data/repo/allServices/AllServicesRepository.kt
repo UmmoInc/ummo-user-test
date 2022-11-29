@@ -228,7 +228,7 @@ class AllServicesRepository(
     fun getServiceLiveDataById(serviceId: String): LiveData<ServiceEntity> =
         serviceDao.getServiceLiveDataById(serviceId)
 
-    fun getServiceEntityById(serviceId: String): ServiceEntity =
+    private fun getServiceEntityById(serviceId: String): ServiceEntity =
         serviceDao.getServiceEntityById(serviceId)
 
     fun saveSingleServiceInRoom(mService: ServiceObject) {
@@ -260,6 +260,11 @@ class AllServicesRepository(
     fun incrementServiceCommentCount(mServiceId: String) {
         serviceDao.incrementServiceCommentCount(mServiceId)
         updateServiceBySyncingWithServer(getServiceEntityById(mServiceId), "COMMENT_ADDED")
+    }
+
+    fun incrementServiceShareCount(mServiceId: String) {
+        serviceDao.incrementServiceShareCount(mServiceId)
+        updateServiceBySyncingWithServer(getServiceEntityById(mServiceId), "SERVICE_SHARED")
     }
 
     fun addServiceBookmark(mServiceEntity: ServiceEntity) {

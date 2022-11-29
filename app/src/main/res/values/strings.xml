@@ -187,7 +187,7 @@
 
     <!--<string name="serverUrl">https://stage.ummo.xyz</string>-->
     <!--<string name="serverUrl">https://ummo-stage-server.herokuapp.com</string>-->
-    <string name="serverUrl">https://ummo-api.herokuapp.com</string>
+    <string name="serverUrl">https://ummo-services-api.herokuapp.com</string>
     <!--<string name="serverUrl">http://192.168.8.101:3000</string>-->
     <string name="delegation_fee">E50</string>
     <string name="intro_header_text"><![CDATA[Thank you for helping improve Ummo.]]></string>
@@ -214,7 +214,7 @@
     <string name="service_duration_detailed_info">It usually takes</string>
     <string name="service_name_detailed_info">Service Name</string>
     <string name="view_service_prices">View Service Prices</string>
-    <string name="show_you_care">Not knowing what to do can be frustrating. \n\nHelp a friend by sharing how to %1$s.</string>
+    <string name="show_you_care">Help a friend by sharing how to %1$s.</string>
     <string name="google_play_source"><![CDATA[<p>Try the Ummo App from <a href=\'https://play.google.com/store/apps/details?id=xyz.ummo.user\'>Google Play Store</a> and discover more services from the Eswatini Government.</p>]]></string>
     <string name="taking_you_to_whatsapp">We\'re taking you to WhatsApp…</string>
     <string name="ask_us_anything">We\'ll do our best to help you where we can. \n\nSometimes, we may need to look things up, just to be sure.</string>
